@@ -1,2 +1,2 @@
 # TeNOR
-Repository for T-NOVA Orchestrator components
+Repository for TeNOR, the T-NOVA Orchestrator
