@@ -1,0 +1,205 @@
+{
+    "nsd": {
+        "id": "418420e3-e2a8-4338-bc8c-be685548bad2",
+        "name": "MyGreatService",
+        "vendor": "T-NOVA",
+        "version": "1.0.0",
+        "manifest_file_md5": "fa8773350c4c236268f0bd7807c8a3b2",
+        "vnfds": [
+            "52439e7c-c85c-4bae-88c4-8ee8da4c5485"
+        ],
+        "vnffgd": {
+            "id": "418420e3-e2a8-4338-bc8c-be685548bad2",
+            "vendor": "NCSRD",
+            "version": "1.0",
+            "ns_version": "1.0.0",
+            "manifest_file_md5": "fa8773350c4c236268f0bd7807c8a3b2",
+            "vnffgs": [
+                {
+                    "vnffg_id": "vnffg0",
+                    "number_of_endpoints": 2,
+                    "number_of_virtual_links": 2,
+                    "depedent_virtual_links": [
+                        "vld1",
+                        "vld2",
+                        "vld3"
+                    ],
+                    "network_forwarding_path": [
+                        {
+                            "nfp_id": "nfp1",
+                            "graph": [
+                                "vld1",
+                                "vld3"
+                            ],
+                            "connection_points": [
+                                "data0",
+                                "data1"
+                            ],
+                            "constituent_vnfs": [
+                                "vnfd0:flavour0"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "lifecycle_events": {
+            "start": [
+                {
+                    "vnf_id": "52439e7c-c85c-4bae-88c4-8ee8da4c5485",
+                    "vnf_event": "start"
+                }
+            ],
+            "stop": [
+                {
+                    "vnf_id": "52439e7c-c85c-4bae-88c4-8ee8da4c5485",
+                    "vnf_event": "stop"
+                }
+            ],
+            "scale_out": [
+                {
+                    "vnf_id": "52439e7c-c85c-4bae-88c4-8ee8da4c5485",
+                    "vnf_event": "scale_out"
+                }
+            ]
+        },
+        "vnf_depedency": [
+            "52439e7c-c85c-4bae-88c4-8ee8da4c5485:52439e7c-c85c-4bae-88c4-8ee8da4c5485"
+        ],
+        "monitoring_parameters": [
+            {
+                "desc": "Availability",
+                "metric": "availability",
+                "unit": "%"
+            },
+            {
+                "desc": "CPU Usage",
+                "metric": "cpu_usage",
+                "unit": "%"
+            }
+        ],
+        "vld": {
+            "id": "52439e7c-c85c-4bae-88c4-8ee8da4c5485",
+            "vendor": "T-NOVA",
+            "descriptor_version": "1.0",
+            "manifest_file_md5": "fa8773350c4c236268f0bd7807c8a3b2",
+            "number_of_endpoints": 2,
+            "vitual_links": [
+                {
+                    "vld_id": "vld0",
+                    "root_requirements": "10Gbps",
+                    "leaf_requirements": "10Gbps",
+                    "qos": {
+                        "none": "not used"
+                    },
+                    "test_access": "none",
+                    "connections": [
+                        "vnf0:mngt0",
+                        "mngt0"
+                    ],
+                    "connectivity_type": "E-Line"
+                },
+                {
+                    "vld_id": "vld1",
+                    "root_requirements": "10Gbps",
+                    "leaf_requirements": "10Gbps",
+                    "qos": [
+                        {
+                            "average": "",
+                            "peak": "",
+                            "burst": ""
+                        }
+                    ],
+                    "test_access": "none",
+                    "connections": [
+                        "vnf0:data0",
+                        "data0"
+                    ],
+                    "connectivity_type": "E-Line"
+                },
+                {
+                    "vld_id": "vld2",
+                    "root_requirements": "10Gbps",
+                    "leaf_requirements": "10Gbps",
+                    "qos": {
+                        "none": "not used"
+                    },
+                    "test_access": "none",
+                    "connections": [
+                        "vnf0:data1",
+                        "data1"
+                    ],
+                    "connectivity_type": "E-Line"
+                }
+            ]
+        },
+        "sla": [
+            {
+                "id": "flavor0",
+                "flavor_key": "Basic",
+                "assurance_parameters": [
+                    {
+                        "formula": "MIN(VNF:623.availability)",
+                        "id": "availability",
+                        "name": "availability",
+                        "penalty": {
+                            "type": "Discount",
+                            "unit": "%",
+                            "validity": "P1D",
+                            "value": 10
+                        },
+                        "unit": "%",
+                        "value": "LT(99)",
+                        "violations": [
+                            {
+                                "breaches_count": 2,
+                                "interval": 360
+                            }
+                        ]
+                    }
+                ],
+                "billing": {
+                    "model": "PAYG",
+                    "price": {
+                        "price_per_period": 20,
+                        "setup": 5,
+                        "unit": "EUR"
+                    }
+                },
+                "constituent_vnf": [
+                    {
+                        "number_of_instances": 1,
+                        "redundancy_model": "Active",
+                        "vnf_flavour_id_reference": "gold",
+                        "vnf_reference": 623
+                    }
+                ]
+            }
+        ],
+        "auto_scale_policy": {
+            "criteria": [
+                {
+                    "end-to-end bandwidth": "10Mbps"
+                },
+                {
+                    "test": "test"
+                }
+            ],
+            "action": "upgrade"
+        },
+        "connection_points": [
+            {
+                "connection_point_id": "mngt0",
+                "type": "ip"
+            },
+            {
+                "connection_point_id": "data0",
+                "type": "bridge"
+            },
+            {
+                "connection_point_id": "stor0",
+                "type": "bridge"
+            }
+        ]
+    }
+}

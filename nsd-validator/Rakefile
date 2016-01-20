@@ -1,0 +1,16 @@
+require 'yard'
+
+def config
+  @config ||= YAML.load_file File.join(rakefile_directory, 'config/config.yml')
+end
+
+desc "Start The Application" 
+task :start do
+	conf = File.expand_path('config.ru', File.dirname(__FILE__))
+	conf2 = File.expand_path('config/config.yml', File.dirname(__FILE__))
+	exec("thin -C #{conf2} -R #{conf} --debug start")
+end
+
+YARD::Rake::YardocTask.new do |t|
+	t.files = ['main.rb', 'helpers/nsd.rb', 'routes/nsd.rb']
+end

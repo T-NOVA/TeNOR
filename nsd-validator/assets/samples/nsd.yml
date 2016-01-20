@@ -1,0 +1,106 @@
+nsd:
+  id: "418420e3-e2a8-4338-bc8c-be685548bad2"
+  name: "MyGreatService" #arbitrary name
+  vendor: "T-NOVA" #NS Composer
+  version: "1.0.0" #version of the NS
+  manifest_file_md5: "fa8773350c4c236268f0bd7807c8a3b2"
+  vnfds: ["52439e7c-c85c-4bae-88c4-8ee8da4c5485"]
+
+  -vnffgd:
+     id: "418420e3-e2a8-4338-bc8c-be685548bad2"
+     vendor: "NCSRD"
+     version: "1.0"
+     ns_version: "1.0.0"
+     manifest_file_md5: "fa8773350c4c236268f0bd7807c8a3b2"
+
+     -vnffg_id: "vnffg0"
+     number_of_endpoints: 2
+     number_of_virtual_links: 2
+     depedent_virtual_links: {"vld1","vld2","vld3"}
+     -network_forwarding_path: #
+     nfp_id: "nfp0"
+     graph: {"vld1","vld2"}
+     nfp_id: "nfp1"
+     graph: {"vld1","vld3"}
+     connection_points: {"data0","data1"}
+     constituent_vnfs: {"vnfd0:flavour0"}
+
+  lifecycle_events:
+     start:
+      - vnf_id: "52439e7c-c85c-4bae-88c4-8ee8da4c5485"
+        vnf_event: "start"
+     stop:
+      - vnf_id: "52439e7c-c85c-4bae-88c4-8ee8da4c5485"
+        vnf_event: "stop"
+     scale_out:
+      - vnf_id: "52439e7c-c85c-4bae-88c4-8ee8da4c5485"
+        vnf_event: "scale_out"
+
+  vnf_depedency:
+    - "52439e7c-c85c-4bae-88c4-8ee8da4c5485:52439e7c-c85c-4bae-88c4-8ee8da4c5485" # implies workflow in instantiation of each VNF in the chain
+      #the above could be ommited as there is only one VNF in this NS
+      #- "source_vnf": "sourcevnfid"
+  monitoring_parameters: ["end-to-end bandwidth"]
+
+######### Insert VLD here #########
+  vld:
+    id: "52439e7c-c85c-4bae-88c4-8ee8da4c5485"
+    vendor: "T-NOVA"
+    descriptor_version: "1.0"
+    manifest_file_md5: "fa8773350c4c236268f0bd7807c8a3b2"
+
+    number_of_endpoints: 2 #two endpoints of the NS, OPTIONAL
+
+    vitual_links: # external Virtual Links
+        -vld_id: "vld0"
+        root_requirements: "10Gbps"
+        leaf_requirements: "10Gbps"
+        qos: {"none":"not used"}
+        test_access: "none"
+        connections: ["vnf0:mngt0","mngt0"] #connection points references
+        connectivity_type: E-Line
+
+        -vld_id: "vld1"
+        root_requirements: "10Gbps"
+        leaf_requirements: "10Gbps"
+        qos:
+           -average: ""
+           peak: ""
+           burst: ""
+
+        test_access: "none"
+        connections: ["vnf0:data0","data0"] #connection points references
+        connectivity_type: E-Line
+
+        -vld_id: "vld2"
+        root_requirements: "10Gbps"
+        leaf_requirements: "10Gbps"
+        qos: {"none":"not used"}
+        test_access: "none"
+        connections: ["vnf0:data1","data1"] #connection points references
+        connectivity_type: E-Line
+
+
+    sla:
+        -flavour_id: "flavour0"
+        flavor_key: "Basic"
+        constituent_vnf:
+          vnf_reference: "2439e7c-c85c-4bae-88c4-8ee8da4c5485"
+          vnf_flavour_id_reference: "vnfd0:flavour0"
+          redudancy_model: "active" #active or standby - optional
+          affinity: "placement policy between instances" #optional to check about same CPU/adjacent controlers etc
+          number_of_instances: 1
+          -assurance_parameters:
+            -formula: MIN(VNF:623.availability)
+            id: availability
+            name: availability
+            penalty:
+              type: Discount
+              unit: '%'
+              validity: P1D
+              value: 10
+            unit: '%'
+            value: LT(99)
+            violations:
+            - breaches_count: 2
+              interval: 360

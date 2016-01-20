@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+	<nsd>
+		<ns_id>1</ns_id>
+		<name>NS name</name>
+		<description>eUCNC Demo</description>
+		<vendor></vendor>
+		<version>1.0</version>
+		<vnfs>1</vnfs>
+		<vnfs>23</vnfs>
+		<vnffgd>management-fgd</vnffgd>
+		<vnffgd>data-fgd</vnffgd>
+		<vld>vld-1</vld>
+		<vld>vld-2</vld>
+		<lifecycle_events>
+			<initialization>URI for the initialization script</initialization>
+		</lifecycle_events>
+		<lifecycle_events>
+			<termination>URI for the termination script</termination>
+		</lifecycle_events>
+		<lifecycle_events>
+			<scaling>URI for the scaling script</scaling>
+		</lifecycle_events>
+		<vnf_dependencies>21</vnf_dependencies>
+		<vnf_dependencies>1</vnf_dependencies>
+		<monitoring_parameters>
+			<name>availability</name>
+			<description>Percentage of time the NS has been available over the last 365 days</description>
+			<unit>%</unit>
+		</monitoring_parameters>
+		<monitoring_parameters>
+			<name>ram-consumption</name>
+			<description>Amount of RAM memory consumed by the service</description>
+			<unit>MB</unit>
+		</monitoring_parameters>
+		<assurance_parameters>
+			<param-id>availability</param-id>
+			<value>GT(min(vnfs[1].availability, vnfs[2].availability))</value>
+			<violation>
+				<breaches_count>5</breaches_count>
+				<interval>120</interval>
+				<penalty>not included, as they're not relevant to the Orchestrator</penalty>
+			</violation>
+		</assurance_parameters>
+		<assurance_parameters>
+			<param-id>ram-consumption</param-id>
+			<value>LT(add(vnfs[1].memory-consumption, vnfs[2].memory-consumption, 100))</value>
+			<violation>
+				<breaches_count>5</breaches_count>
+				<interval>120</interval>
+				<penalty>not included, as they're not relevant to the Orchrstrator</penalty>
+			</violation>
+		</assurance_parameters>
+		<service_deployment_flavour>
+			<id>1</id>
+			<flavour_key></flavour_key>
+			<constituent_vnf>
+				<vnf_reference>1</vnf_reference>
+				<vnf-flavour_id_reference></vnf-flavour_id_reference>
+				<redundancy_model></redundancy_model>
+				<affinity></affinity>
+				<capability></capability>
+				<number_of_instances></number_of_instances>
+			</constituent_vnf>
+		</service_deployment_flavour>
+		<connection_points>
+			<id>1</id>
+			<type></type>
+		</connection_points>
+	</nsd>
+	

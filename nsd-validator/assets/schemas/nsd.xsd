@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="nsd">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="id" type="xs:integer" />
+                <xs:element name="vendor" type="xs:string" />
+                <xs:element name="version" />
+                <xs:element name="published_to_customers" />
+                <xs:element name="availability" />
+                <xs:element name="vnfd" maxOccurs="unbounded" />
+                <xs:element name="vnffgd" maxOccurs="unbounded" />
+                <xs:element name="vld" maxOccurs="unbounded" />
+                <xs:element name="lifecycle_events" maxOccurs="unbounded">
+                <xs:element name="vnf_dependencies" />
+                <xs:element name="monitoring_parameters" minOccurs="0" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="id" type="xs:integer" />
+                            <xs:element name="name" type="xs:string" minOccurs="0" />
+                            <xs:element name="description" type="xs:string" minOccurs="0" />
+                            <xs:element name="definition" type="xs:string" minOccurs="0" />
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="service_deployment_flavour" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="id" type="xs:integer" />
+                            <xs:element name="flavour_key" type="xs:string" />
+                            <xs:element name="constituent_vnf" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="vnf_reference" type="xs:integer" />
+                                        <xs:element name="vnf-flavour_id_reference" type="xs:string" />
+                                        <xs:element name="redundancy_model" type="xs:string" />
+                                        <xs:element name="affinity" type="xs:string" />
+                                        <xs:element name="capability" type="xs:string" />
+                                        <xs:element name="number_of_instances" type="xs:string" />
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="sla_specification" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="sla_id" type="xs:integer" />
+                            <xs:element name="service_deployment_flavour_reference" type="xs:string" />
+                            <xs:element name="assurance_parameters" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="assurance_parameter" type="xs:integer" />
+                                        <xs:element name="limit" type="xs:string" />
+                                        <xs:element name="value" type="xs:string" />
+                                        <xs:element name="unit" type="xs:string" />
+                                        <xs:element name="violation" type="xs:string" />
+                                        <xs:element name="penalty" type="xs:string" />
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="billing_model" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="id" type="xs:integer" />
+                                        <xs:element name="type" type="xs:string" />
+                                        <xs:element name="period" type="xs:string" />
+                                        <xs:element name="price" type="xs:string" />
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="auto_scale_policies" minOccurs="0" maxOccurs="unbounded" />
+                <xs:element name="connection_points" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="id" type="xs:integer" minOccurs="1" maxOccurs="1" />
+                            <xs:element name="type" minOccurs="1" maxOccurs="1" />
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="pnfd" minOccurs="0" />
+                <xs:element name="nsd_security" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
