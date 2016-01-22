@@ -23,3 +23,21 @@ namespace :db do
 		require './main'
 	end
 end
+
+task :headers do
+  require 'rubygems'
+  require 'copyright_header'
+
+  args = {
+    :license => 'ASL2',
+    :copyright_software => 'TeNOR',
+    :copyright_software_description => "NS Catalogue",
+    :copyright_holders => ['i2CAT Foundation'],
+    :copyright_years => ['2014-2016'],
+    :add_path => 'routes:helpers',
+    :output_dir => '.'
+  }
+
+  command_line = CopyrightHeader::CommandLine.new( args )
+  command_line.execute
+end
