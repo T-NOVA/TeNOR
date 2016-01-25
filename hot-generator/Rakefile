@@ -1,0 +1,14 @@
+require 'yard'
+require 'yaml'
+
+desc 'Start the service'
+task :start do
+	conf = File.expand_path('config.ru', File.dirname(__FILE__))
+	conf2 = File.expand_path('config/config.yml', File.dirname(__FILE__))
+	exec("thin -C #{conf2} -R #{conf} --debug start")
+end
+
+YARD::Rake::YardocTask.new do |t|
+	`rm -rf doc`
+	t.files = ['main.rb', 'helpers/hot.rb', 'routes/hot.rb', 'models/floating_ip.rb', 'models/hot.rb', 'models/net.rb', 'models/port.rb', 'models/resource.rb', 'models/router_interface.rb', 'models/router.rb', 'models/server.rb', 'models/subnet.rb', 'models/vnfd_to_hot.rb']
+end
