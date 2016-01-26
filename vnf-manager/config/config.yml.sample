@@ -1,0 +1,20 @@
+---
+servicename: vnf-manager
+environment: production
+address: 0.0.0.0
+port: 4567
+max_conns: 1024
+timeout: 30
+max_persistent_conns: 512
+daemonize: false
+
+logstash_host: 84.88.40.160
+logstash_port: 9999
+
+vnf_catalogue: http://localhost:4569
+vnf_provisioning: http://localhost:4572
+ns_manager: http://apis.t-nova.eu/orchestrator
+gk: http://localhost:8000
+wicm: http://193.136.92.173:12891
+
+service_key: 40add159-6e28-486d-9a81-ab5422d90529
