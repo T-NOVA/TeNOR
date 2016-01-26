@@ -1,0 +1,17 @@
+---
+servicename: vnf-catalogue
+environment: production
+address: 0.0.0.0
+port: 4569
+max_conns: 1024
+timeout: 30
+max_persistent_conns: 512
+daemonize: false
+
+logstash_host: 84.88.40.160
+logstash_port: 9999
+
+vnfd_validator: http://localhost:4570
+gk: http://192.168.2.19:8000
+
+service_key: b12d3d96-3454-4744-9b2c-231f33b66a3e
