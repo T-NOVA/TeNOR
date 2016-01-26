@@ -1,0 +1,116 @@
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="vnfd">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element type="xs:byte" name="id"/>
+        <xs:element type="xs:string" name="vendor"/>
+        <xs:element type="xs:string" name="descriptor_version"/>
+        <xs:element type="xs:string" name="version"/>
+        <xs:element name="vdus">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="vdu" maxOccurs="unbounded" minOccurs="1">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element type="xs:byte" name="id"/>
+                    <xs:element type="xs:string" name="vm_image"/>
+                    <xs:element type="xs:string" name="computation_requirement"/>
+                    <xs:element name="virtual_memory_resource_element">
+                      <xs:complexType>
+                        <xs:simpleContent>
+                          <xs:extension base="xs:byte">
+                            <xs:attribute type="xs:string" name="unit" use="required"/>
+                          </xs:extension>
+                        </xs:simpleContent>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element type="xs:string" name="lifecycle_events"/>
+                    <xs:element type="xs:byte" name="high_availability"/>
+                    <xs:element type="xs:byte" name="scale_in_out"/>
+                    <xs:element type="xs:string" name="OpenStack_Flavour"/>
+                    <xs:element name="vnfc">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element type="xs:byte" name="id"/>
+                          <xs:element name="connection_point" maxOccurs="unbounded" minOccurs="1">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element type="xs:byte" name="id"/>
+                                <xs:element type="xs:string" name="virtual_link_reference"/>
+                                <xs:element name="virtual_network_bandwidth_resource">
+                                  <xs:complexType>
+                                    <xs:simpleContent>
+                                      <xs:extension base="xs:byte">
+                                        <xs:attribute type="xs:string" name="unit" use="required"/>
+                                      </xs:extension>
+                                    </xs:simpleContent>
+                                  </xs:complexType>
+                                </xs:element>
+                                <xs:element type="xs:string" name="type"/>
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="cpu">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element type="xs:string" name="cpu_instruction_set_extension"/>
+                          <xs:element type="xs:string" name="cpu_model"/>
+                          <xs:element type="xs:byte" name="cpu_core_reservation"/>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="memory">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="memory_parameter">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element type="xs:byte" name="number_of_large_pages_required_per_vdu"/>
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="hypervisor">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element type="xs:string" name="hypervisor_type"/>
+                          <xs:element type="xs:string" name="hypervisor_version"/>
+                          <xs:element type="xs:string" name="hypervisor_address_translation_support"/>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="deployment_flavour">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element type="xs:byte" name="id"/>
+              <xs:element type="xs:byte" name="flavour_key"/>
+              <xs:element name="constituent_vdu" maxOccurs="unbounded" minOccurs="1">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element type="xs:byte" name="vdu_reference"/>
+                    <xs:element type="xs:byte" name="number_of_instances"/>
+                    <xs:element type="xs:byte" name="constituent_vnfc"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element type="xs:string" name="auto_scale_policy"/>
+        <xs:element type="xs:string" name="manifest_file"/>
+        <xs:element type="xs:string" name="manifest_file_security"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
