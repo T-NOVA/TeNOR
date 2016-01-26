@@ -1,0 +1,21 @@
+---
+development:
+  sessions:
+    default:
+      database: vnf_catalogue
+      hosts:
+      - 10.10.1.64:27017
+
+test:
+  sessions:
+    default:
+      database: vnf_catalogue_test
+      hosts:
+      - 127.0.0.1:27017
+
+production:
+  sessions:
+    default:
+      database: vnf_catalogue
+      hosts:
+      - 10.10.1.64:27017
