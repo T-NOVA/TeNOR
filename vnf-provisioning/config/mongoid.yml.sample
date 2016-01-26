@@ -1,0 +1,21 @@
+---
+development:
+  sessions:
+    default:
+      database: vnf_provisioning
+      hosts:
+      - 10.10.1.64:27017
+
+test:
+  sessions:
+    default:
+      database: vnf_provisioning_test
+      hosts:
+      - 10.10.1.64:27017
+
+production:
+  sessions:
+    default:
+      database: vnf_provisioning
+      hosts:
+      - 10.10.1.64:27017
