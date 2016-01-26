@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<vnfd>
+	<id>1</id>
+	<vendor>NCSRD</vendor>
+	<descriptor_version>1.0.0</descriptor_version>
+	<version></version>
+	<vdus>
+		<vdu>
+			<id>1</id>
+			<vm_image>DPI.qcow2</vm_image>
+			<computation_requirement>High</computation_requirement>
+			<virtual_memory_resource_element unit="GB">4</virtual_memory_resource_element>
+			<lifecycle_events></lifecycle_events>
+			<high_availability>0</high_availability>
+			<scale_in_out>0</scale_in_out>
+			<OpenStack_Flavour>to be added</OpenStack_Flavour>
+			<vnfc>
+				<id>1</id>
+				<connection_point>
+					<id>1</id>
+					<virtual_link_reference>eth0</virtual_link_reference>
+					<virtual_network_bandwidth_resource unit="GB">10</virtual_network_bandwidth_resource>
+					<type>external</type>
+				</connection_point>
+				<connection_point>
+					<id>2</id>
+					<virtual_link_reference>eth1</virtual_link_reference>
+					<virtual_network_bandwidth_resource unit="GB">10</virtual_network_bandwidth_resource>
+					<type>internal</type>
+				</connection_point>
+			</vnfc>
+			<cpu>
+				<cpu_instruction_set_extension>VMX</cpu_instruction_set_extension>
+				<cpu_model>Intel E5-2680 v2</cpu_model>
+				<cpu_core_reservation>2</cpu_core_reservation>
+			</cpu>
+			<memory>
+				<memory_parameter>
+					<number_of_large_pages_required_per_vdu>2</number_of_large_pages_required_per_vdu>
+				</memory_parameter>
+			</memory>
+			<hypervisor>
+				<hypervisor_type>QEMU</hypervisor_type>
+				<hypervisor_version>1.0.0.6.0.0.2</hypervisor_version>
+				<hypervisor_address_translation_support></hypervisor_address_translation_support>
+			</hypervisor>
+		</vdu>
+		<vdu>
+			<id>2</id>
+			<vm_image>fwdcls.qcow2</vm_image>
+			<computation_requirement>High</computation_requirement>
+			<virtual_memory_resource_element unit="GB">4</virtual_memory_resource_element>
+			<lifecycle_events></lifecycle_events>
+			<high_availability>0</high_availability>
+			<scale_in_out>0</scale_in_out>
+			<OpenStack_Flavour>to be added</OpenStack_Flavour>
+			<vnfc>
+				<id>2</id>
+				<connection_point>
+					<id>3</id>
+					<virtual_link_reference>eth0</virtual_link_reference>
+					<virtual_network_bandwidth_resource unit="GB">10</virtual_network_bandwidth_resource>
+					<type>ingress</type>
+				</connection_point>
+				<connection_point>
+					<id>4</id>
+					<virtual_link_reference>eth1</virtual_link_reference>
+					<virtual_network_bandwidth_resource unit="GB">10</virtual_network_bandwidth_resource>
+					<type>egress</type>
+				</connection_point>
+			</vnfc>
+			<cpu>
+				<cpu_instruction_set_extension>VMX</cpu_instruction_set_extension>
+				<cpu_model>Intel E5-2680 v2</cpu_model>
+				<cpu_core_reservation>2</cpu_core_reservation>
+			</cpu>
+			<memory>
+				<memory_parameter>
+					<number_of_large_pages_required_per_vdu>2</number_of_large_pages_required_per_vdu>
+				</memory_parameter>
+			</memory>
+			<hypervisor>
+				<hypervisor_type>QEMU</hypervisor_type>
+				<hypervisor_version>1.0.0.6.0.0.2</hypervisor_version>
+				<hypervisor_address_translation_support></hypervisor_address_translation_support>
+			</hypervisor>
+		</vdu>
+	</vdus>
+	<deployment_flavour>
+		<id>1</id>
+		<flavour_key>1</flavour_key>
+		<constituent_vdu>
+			<vdu_reference>1</vdu_reference>
+			<number_of_instances>1</number_of_instances>
+			<constituent_vnfc>1</constituent_vnfc>
+		</constituent_vdu>
+		<constituent_vdu>
+			<vdu_reference>2</vdu_reference>
+			<number_of_instances>1</number_of_instances>
+			<constituent_vnfc>2</constituent_vnfc>
+		</constituent_vdu>
+	</deployment_flavour>
+	<auto_scale_policy></auto_scale_policy>
+	<manifest_file></manifest_file>
+	<manifest_file_security></manifest_file_security>
+</vnfd>
