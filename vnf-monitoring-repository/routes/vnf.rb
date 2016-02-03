@@ -1,5 +1,5 @@
 #
-# TeNOR - NS Monitoring Repository
+# TeNOR - VNF Monitoring Repository
 #
 # Copyright 2014-2016 i2CAT Foundation, Portugal Telecom Inovação
 #
@@ -68,4 +68,3 @@ class OrchestratorVnfMonitoring < Sinatra::Application
 		end
 	end
 end
-
