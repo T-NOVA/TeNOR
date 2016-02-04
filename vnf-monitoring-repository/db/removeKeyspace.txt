@@ -1,0 +1,9 @@
+use tnova_monitoring;
+drop column family vnfmonitoring;
+drop keyspace tnova_monitoring;
+
+
+use tnova_monitoring;
+DROP TABLE vnfmonitoring;
+DROP KEYSPACE tnova_monitoring
+

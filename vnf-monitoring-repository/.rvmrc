@@ -1,0 +1,1 @@
+rvm use --create ruby-2.1.5@orchestrator_vnf-monitoring-repository

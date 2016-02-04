@@ -1,0 +1,13 @@
+---
+servicename: vnf-monitoring
+environment: development
+address: 0.0.0.0
+port: 4573
+max_conns: 1024
+timeout: 30
+max_persistent_conns: 512
+daemonize: false
+
+vnf_manager: http://localhost:4567
+vim_monitoring: http://10.10.1.62:8080
+vnf_monitor_db: http://localhost:4018

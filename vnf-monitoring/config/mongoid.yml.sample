@@ -1,0 +1,22 @@
+development:
+  sessions:
+    default:
+      database: vnf_monitoring
+      hosts:
+      - 127.0.0.1:27017
+
+test:
+  sessions:
+    default:
+      database: vnf_monitoring_test
+      hosts:
+      - 127.0.0.1:27017
+
+production:
+  sessions:
+    default:
+      database: vnf_monitoring
+      hosts:
+      - 127.0.0.1:27017
+      user: i2cat
+      password: tnova@i2cat
