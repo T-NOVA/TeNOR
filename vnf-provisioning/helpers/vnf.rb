@@ -139,6 +139,7 @@ class OrchestratorVnfProvisioning < Sinatra::Application
       end while response['stack']['stack_status'].downcase == 'create_in_progress'
 
       # After stack create is complete, send information back to provisioning
+      response[:ns_manager_callback] = ns_manager_callback
       response[:vim_info] = vim_info # Needed to delete the stack if it failed
       begin
         RestClient.post "http://localhost:#{settings.port}/vnf-provisioning/#{vnfr_id}/stack/#{response['stack']['stack_status'].downcase}", response.to_json, :content_type => :json
