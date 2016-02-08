@@ -72,8 +72,13 @@ class OrchestratorVnfProvisioning < Sinatra::Application
 
     # Convert VNF to HOT (call HOT Generator)
     halt 400, 'No T-NOVA flavour defined.' unless instantiation_info.has_key?('flavour')
+    hot_generator_message = {
+      vnf: vnf,
+      networks_id: instantiation_info['networks'],
+      security_group_id: instantiation_info['security_group_id']
+    }
     begin
-      hot = parse_json(RestClient.post settings.hot_generator + '/hot/' + instantiation_info['flavour'], vnf.to_json, :content_type => :json, :accept => :json)
+      hot = parse_json(RestClient.post settings.hot_generator + '/hot/' + instantiation_info['flavour'], hot_generator_message.to_json, :content_type => :json, :accept => :json)
     rescue Errno::ECONNREFUSED
       halt 500, 'HOT Generator unreachable'
     rescue => e
@@ -96,12 +101,11 @@ class OrchestratorVnfProvisioning < Sinatra::Application
     logger.debug 'Provision response: ' + response.to_json
 
     # Build the VNFR and store it
-    #TODO: Receive the VIM ID
     begin
       vnfr = Vnfr.create!(
         nsr_instance: Array(instantiation_info['ns_id']),
         vnfd_reference: vnf['_id'],
-        vim_id: nil,
+        vim_id: instantiation_info['vim_id'],
         vlr_instances: nil,
         vnf_addresses: nil,
         vnf_status: 3,
@@ -118,8 +122,7 @@ class OrchestratorVnfProvisioning < Sinatra::Application
     end
     logger.debug 'Created VNFR: ' + vnfr.to_json
 
-    ns_manager_callback = ''
-    create_thread_to_monitor_stack(vnfr.id, vnfr.stack_url, vim_info, ns_manager_callback)
+    create_thread_to_monitor_stack(vnfr.id, vnfr.stack_url, vim_info, instantiation_info['callback_url'])
     logger.debug 'Created thread to monitor stack'
 
     # Send the VNFR to the mAPI
@@ -327,6 +330,20 @@ class OrchestratorVnfProvisioning < Sinatra::Application
         vms_id: vms_id,
         lifecycle_events_values: lifecycle_events_values)
       logger.debug 'Updated VNFR: ' + vnfr.to_json
+
+      # Build message to send to the NS Manager callback
+      vnfi_id = []
+      vnfr.vms_id.each {|key, value| vnfi_id << value}
+      ns_manager = { vnfd_id: vnfr.vnfd_reference, vnfi_id: vnfi_id}
+      logger.debug 'NS Manager message: ' + ns_manager.to_json
+      begin
+        response = RestClient.post "#{stack_info['ns_manager_callback']}", ns_manager.to_json, 'X-Auth-Token' => @client_token, :content_type => :json, :accept => :json
+      rescue Errno::ECONNREFUSED
+        halt 500, 'NS Manager callback'
+      rescue => e
+        logger.error e.response
+        halt e.response.code, e.response.body
+      end
     else
       # If the stack has failed to create
       if params[:status] == 'create_failed'
@@ -336,6 +353,7 @@ class OrchestratorVnfProvisioning < Sinatra::Application
         auth_token = token_info['access']['token']['id']
         logger.debug 'Token info: ' + token_info.to_json
 
+=begin
         # Request VIM to delete the stack
         begin
           response = RestClient.delete vnfr.stack_url, 'X-Auth-Token' => auth_token, :accept => :json
@@ -346,6 +364,7 @@ class OrchestratorVnfProvisioning < Sinatra::Application
           halt e.response.code, e.response.body
         end
         logger.debug 'Response from VIM to destroy allocated resources: ' + response.to_json
+=end
 
         # Delete the VNFR from mAPI
         begin
@@ -362,7 +381,7 @@ class OrchestratorVnfProvisioning < Sinatra::Application
       end
     end
 
-    # TODO: Send info to NS Manager
+    halt 200
 
   end
 
