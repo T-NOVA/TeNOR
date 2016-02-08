@@ -18,6 +18,10 @@
 # @see TnovaManager
 class TnovaManager < Sinatra::Application
 
+	# @method get_elastic
+	# @overload get '/elastic/*'
+	# Get logs from elasticsearch/logstash. Different strings allowed in order to filter the required data
+	# @param [string]
   get '/elastic/*' do
   	begin
   		response = RestClient::Request.new(

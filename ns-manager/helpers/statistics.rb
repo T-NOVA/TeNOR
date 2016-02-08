@@ -18,23 +18,15 @@
 # @see TnovaManager
 class TnovaManager < Sinatra::Application
 
-
   def updateStatistics(name)
   	begin
     	@statistic = StatisticModel.find_by(:name =>  name)
     	val = @statistic['value'].to_i + 1
       @statistic.update_attribute(:value, val)
     rescue Mongoid::Errors::DocumentNotFound => e
-    #  return 400, 'This NSD not exists'
     	StatisticModel.new(:name => name, :value => 1).save!
     end
-    
-    # if(@statistic)
-    #   val = @statistic['value'] + 1
-    #   @statistic.update_attribute(:value, val)
-    # else
-    #   StatisticModel.new(:name => name, :value => 1).save!
-    # end
+
   end
 
 

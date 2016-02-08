@@ -36,7 +36,6 @@ class TnovaManager < Sinatra::Application
 		end
 	end
 
-
 	# @method get_root
 	# @overload get '/'
 	# 	Get all available interfaces

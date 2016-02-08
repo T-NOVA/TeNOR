@@ -70,7 +70,7 @@ class TnovaManager < Sinatra::Application
       return e.response.code, e.response.body
     end
 
-    updateStatistics('ns_created_requests')
+    #updateStatistics('vnfs_created_requests')
     return response.code, response.body
 
   end
@@ -151,7 +151,7 @@ class TnovaManager < Sinatra::Application
       return e.response.code, e.response.body
     end
 
-    updateStatistics('ns_created_request')
+    updateStatistics('ns_created_requests')
 
     return response.code, response.body
 

@@ -67,6 +67,9 @@ class TnovaManager < Sinatra::Application
       return e.response.code, e.response.body
     end
 
+    updateStatistics('ns_updated_requests')
+    updateStatistics('ns_terminated_requests')
+
     return response.code, response.body
   end
 
