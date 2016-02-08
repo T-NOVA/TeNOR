@@ -31,19 +31,29 @@ class VnfdToHot
 	#
 	# @param [Hash] vnfd the VNFD
 	# @param [String] tnova_flavour the T-NOVA flavour to generate the HOT for
+	# @param [Array] networks_id the IDs of the networks created by NS Manager
+	# @param [String] security_group_id the ID of the T-NOVA security group
 	# @return [HOT] returns an HOT object
-	def build(vnfd, tnova_flavour)
+	def build(vnfd, tnova_flavour, networks_id, security_group_id)
 		# Parse needed outputs
 		parse_outputs(vnfd['vnf_lifecycle_events']['events'])
 
 		# Get T-NOVA deployment flavour
-		deployment_information = vnfd['deployment_flavours'].detect{|flavour| flavour['flavour_key'] == tnova_flavour}
+		deployment_information = vnfd['deployment_flavours'].detect{|flavour| flavour['id'] == tnova_flavour}
+
+		# Get the vlinks references for the deployment flavour
+		vlinks = deployment_information['vlink_reference']
 
 		deployment_information['vdu_reference'].each do |vdu_ref|
+			# Get VDU for deployment
 			vdu = vnfd['vdu'].detect { |vdu| vdu['id'] == vdu_ref }
+
 			image_name = create_image(vdu)
 			flavor_name = create_flavor(vdu)
-			ports = create_port(vdu_ref, vdu['vnfc']['id'], vdu['vnfc']['networking'])
+
+			ports = create_ports(vdu['connection_points'], vnfd['vlinks'], networks_id, security_group_id)
+			#ports = create_ports(vdu_ref, vdu['vnfc']['id'], vdu['vnfc']['networking'])
+
 			create_server(vdu, image_name, flavor_name, ports)
 		end
 
@@ -92,8 +102,38 @@ class VnfdToHot
 	# @param [String] vdu_id the VDU ID from the VNFD
 	# @param [String] vnfc_id the VNFC ID from the VNFD
 	# @param [Array] vnfcs the list of VNFCS for the VDU
+	# @param [Array] networks_id the IDs of the networks created by NS Manager
+	# @param [String] security_group_id the ID of the T-NOVA security group
 	# @return [Array] a list of ports
-	def create_port(vdu_id, vnfc_id, vnfcs)
+	def create_ports(connection_points, vlinks, networks_id, security_group_id)
+		ports = []
+
+		connection_points.each do |connection_point|
+			vlink = vlinks.find {|vlink| vlink['id'] == connection_point['vlink_ref']}
+			network_id = networks_id.find{ |network| network['alias'] == vlink['alias'] }['id']
+			port_name = "#{connection_point['id']}"
+			ports << { port: {get_resource: port_name} }
+			@hot.resources_list << Port.new(port_name, network_id, security_group_id)
+
+			# Check if it's necessary to create an output for this resource
+			if @outputs.has_key?('ip') && @outputs['ip'].include?(port_name)
+				@hot.outputs_list << Output.new("#{port_name}#ip", "#{port_name} IP address", {get_attr: [port_name, 'fixed_ips', 0, 'ip_address']})
+			end
+
+			# Check if the port has a Floating IP
+			if vlink['access']
+				floating_ip_name = get_resource_name
+				# TODO: Receive the floating ip pool name?
+				@hot.resources_list << FloatingIp.new(floating_ip_name, 'public')
+				@hot.resources_list << FloatingIpAssociation.new(get_resource_name, {get_resource: floating_ip_name}, {get_resource: port_name})
+				@hot.outputs_list << Output.new("#{port_name}#floating_ip", "#{port_name} Floating IP", {get_attr: [floating_ip_name, 'floating_ip_address']})
+			end
+		end
+
+		ports
+	end
+=begin
+	def create_ports(vdu_id, vnfc_id, vnfcs)
 		ports = []
 
 		vnfcs.each do |vnfc|
@@ -117,6 +157,7 @@ class VnfdToHot
 
 		ports
 	end
+=end
 
 	# Creates an HEAT flavor resource from the VNFD
 	#

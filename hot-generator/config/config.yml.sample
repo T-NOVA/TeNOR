@@ -1,6 +1,6 @@
 ---
 servicename: hot-generator
-environment: production
+environment: development
 address: 0.0.0.0
 port: 4571
 max_conns: 1024
