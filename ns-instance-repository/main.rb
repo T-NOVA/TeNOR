@@ -24,7 +24,12 @@ configure do
 end
 
 before do
-	logger = LogStashLogger.new(host: settings.logstash_host, port: settings.logstash_port)
+	logger = LogStashLogger.new(
+			type: :multi_logger,
+			outputs: [
+					{ type: :stdout, formatter: ::Logger::Formatter },
+					{ host: settings.logstash_host, port: settings.logstash_port }
+			])
 	LogStashLogger.configure do |config|
 		config.customize_event do |event|
 			event["module"] = settings.servicename
