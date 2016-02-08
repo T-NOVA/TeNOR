@@ -1,0 +1,20 @@
+development:
+  sessions:
+    default:
+      database: ns_instance_repository
+      hosts:
+      - 127.0.0.1:27017
+
+test:
+  sessions:
+    default:
+      database: ns_instance_repository_test
+      hosts:
+      - 127.0.0.1:27017
+
+production:
+  sessions:
+    default:
+      database: ns_instance_repository
+      hosts:
+      - 127.0.0.1:27017

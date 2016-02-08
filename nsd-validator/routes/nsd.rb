@@ -49,7 +49,6 @@ class OrchestratorNsdValidator < Sinatra::Application
 		# Read body content-type
 		content_type = request.content_type
 		body = request.body.read
-		logger.debug "Content-Type: #{content_type}"
 
 		# Return if content-type is invalid
 		return 415 unless ( (content_type == 'application/json') or (content_type == 'application/xml') )

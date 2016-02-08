@@ -1,0 +1,20 @@
+orchestrator: bundle exec rake start
+
+#NS Manager dependencies
+ns_manager: sleep 6; sh -c 'exec rake start'
+ns_catalogue: sleep 6; sh -c 'cd ../orchestrator_ns-catalogue && exec rake start'
+nsd_validator: sleep 6; sh -c 'cd ../orchestrator_nsd-validator && exec rake start'
+ns_provisioning: sleep 6; sh -c 'cd ../orchestrator_ns-provisioning && exec rake start'
+ns_inst_repo: sleep 6; sh -c 'cd ../orchestrator_ns-instance-repository && exec rake start'
+ns_monitoring: sleep 6; sh -c 'cd ../orchestrator_ns-monitoring && exec rake start'
+ns_monitoring_repo: sleep 6; sh -c 'cd ../orchestrator_ns-monitoring-repository && exec rake start'
+
+#VNF Manager dependencies
+vnf_manager: sleep 6; sh -c 'cd ../orchestrator_vnf-manager && exec rake start'
+vnf_catalogue: sleep 6; sh -c 'cd ../orchestrator_vnf-catalogue && exec rake start'
+vnfd_validator: sleep 6; sh -c 'cd ../orchestrator_vnfd-validator && exec rake start'
+vnf_provisioning: sleep 6; sh -c 'cd ../orchestrator_vnf-provisioning && exec rake start'
+vnf_monitoring: sleep 6; sh -c 'cd ../orchestrator_vnf-monitoring && exec rake start'
+vnf_monitoring_repo: sleep 6; sh -c 'cd ../orchestrator_vnf-monitoring-repository && exec rake start'
+hot_generator: sleep 6; sh -c 'cd ../orchestrator_hot-generator && exec rake start'
+

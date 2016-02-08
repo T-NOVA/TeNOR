@@ -5,6 +5,7 @@ require 'sinatra'
 require 'sinatra/config_file'
 require 'yaml'
 require 'logstash-logger'
+require 'eventmachine'
 
 # Require the bundler gem and then call Bundler.require to load in all gems
 # listed in Gemfile.
@@ -24,11 +25,11 @@ end
 
 before do
 	logger = LogStashLogger.new(
-      type: :multi_logger,
-      outputs: [
-          { type: :stdout, formatter: ::Logger::Formatter },
-          { host: settings.logstash_host, port: settings.logstash_port }
-      ])
+			type: :multi_logger,
+			outputs: [
+					{ type: :stdout, formatter: ::Logger::Formatter },
+					{ host: settings.logstash_host, port: settings.logstash_port }
+			])
 	LogStashLogger.configure do |config|
 		config.customize_event do |event|
 			event["module"] = settings.servicename
@@ -38,7 +39,7 @@ before do
 	env['rack.logger'] = logger
 end
 
-class OrchestratorNsdValidator < Sinatra::Application
+class OrchestratorNsProvisioner < Sinatra::Application
 	register Sinatra::ConfigFile
 	# Load configurations
 	config_file 'config/config.yml'

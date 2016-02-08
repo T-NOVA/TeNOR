@@ -11,6 +11,7 @@ require 'logstash-logger'
 require 'bundler'
 Bundler.require :default, ENV['RACK_ENV'].to_sym
 
+require_relative 'models/init'
 require_relative 'routes/init'
 require_relative 'helpers/init'
 
@@ -24,11 +25,11 @@ end
 
 before do
 	logger = LogStashLogger.new(
-      type: :multi_logger,
-      outputs: [
-          { type: :stdout, formatter: ::Logger::Formatter },
-          { host: settings.logstash_host, port: settings.logstash_port }
-      ])
+			type: :multi_logger,
+			outputs: [
+					{ type: :stdout, formatter: ::Logger::Formatter },
+					{ host: settings.logstash_host, port: settings.logstash_port }
+			])
 	LogStashLogger.configure do |config|
 		config.customize_event do |event|
 			event["module"] = settings.servicename
@@ -38,8 +39,9 @@ before do
 	env['rack.logger'] = logger
 end
 
-class OrchestratorNsdValidator < Sinatra::Application
+class TnovaManager < Sinatra::Application
 	register Sinatra::ConfigFile
 	# Load configurations
 	config_file 'config/config.yml'
+	Mongoid.load!('config/mongoid.yml')
 end

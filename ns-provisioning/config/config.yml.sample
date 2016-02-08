@@ -1,0 +1,32 @@
+---
+manager: http://127.0.0.1:4000
+servicename: ns-provisioner
+environment: development
+address: 0.0.0.0
+port: 4012
+max_conns: 1024
+timeout: 30
+max_persistent_conns: 512
+daemonize: false
+logstash_host: 84.88.40.160
+logstash_port: 5228
+
+ns_catalogue: http://localhost:4011
+ns_instance_repository: http://localhost:4013
+ns_monitoring: http://localhost:4014
+ns_mapping: http://localhost:4042
+
+sla_enforcement: http://localhost:4016
+
+vnf_manager: http://localhost:4567
+
+vim_identity_manager: http://localhost
+vim_user: admin
+vim_pass: nomoresecrete
+
+services_list: http://localhost:4000/config/services
+
+gatekeeper:  http://localhost:8000
+
+tenor_api: http://localhost:4000
+infr_repo_api: http://10.10.1.1:8080

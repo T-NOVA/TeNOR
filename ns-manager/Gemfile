@@ -1,0 +1,32 @@
+source 'https://rubygems.org'
+
+gem 'sinatra', '~>1.4'
+gem 'thin', '~>1.6'
+gem 'json', '~>1.8'
+gem 'sinatra-contrib', '~>1.4'
+gem 'nokogiri', '~>1.6'
+gem 'json-schema', '~>2.5'
+gem 'rest-client', '~>1.8'
+
+gem 'rspec'
+gem 'rake'
+gem 'rack'
+gem 'simple_uuid'
+gem 'pry'
+gem "data_mapper"
+gem 'foreman'
+gem 'bundler'
+gem 'addressable'
+gem 'logstash-logger'
+
+group :development do
+	gem 'rerun'
+	# Database
+	gem 'mongoid', '~>4.0' # MongoDB driver
+end
+
+group :doc do
+	gem 'yard', '~>0.8'
+end
+
+

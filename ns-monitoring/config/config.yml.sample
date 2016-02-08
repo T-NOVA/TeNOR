@@ -1,0 +1,13 @@
+---
+servicename: ns-monitoring
+environment: development
+address: 0.0.0.0
+port: 4014
+max_conns: 1024
+timeout: 30
+max_persistent_conns: 512
+daemonize: false
+
+ns_monitor_db: http://localhost:4012
+vnf_manager: http://localhost:4567
+ns_instance_repository: http://localhost:4013
