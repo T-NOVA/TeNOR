@@ -18,3 +18,4 @@
 require_relative 'vnfs'
 require_relative 'vnf_provisioning'
 require_relative 'configs'
+require_relative 'vnf_monitoring'
