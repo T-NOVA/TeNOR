@@ -38,12 +38,15 @@ class OrchestratorHotGenerator < Sinatra::Application
 	# Generate a HOT template
 	#
 	# @param [JSON] vnfd the vnfd
+	# @param [String] flavour_key the T-NOVA flavour
+	# @param [Array] networks_id the IDs of the networks created by the NS Manager
+	# @param [String] security_group_id the ID of the T-NOVA security group
 	# @return [Hash] the generated hot template
-	def generate_hot_template(vnfd, flavour_key)
+	def generate_hot_template(vnfd, flavour_key, networks_id, security_group_id)
 		hot = VnfdToHot.new(vnfd['name'], vnfd['description'])
 
 		begin
-			hot.build(vnfd, flavour_key)
+			hot.build(vnfd, flavour_key, networks_id, security_group_id)
 		rescue CustomException::NoExtensionError => e
 			logger.error e.message
 			halt 400, e.message
