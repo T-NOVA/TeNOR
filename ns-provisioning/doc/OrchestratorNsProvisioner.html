@@ -1,0 +1,1258 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>
+  Class: OrchestratorNsProvisioner
+  
+    &mdash; Documentation by YARD 0.8.7.6
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  hasFrames = window.top.frames.main ? true : false;
+  relpath = '';
+  framesUrl = "frames.html#!OrchestratorNsProvisioner.html";
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div id="header">
+      <div id="menu">
+  
+    <a href="_index.html">Index (O)</a> &raquo;
+    
+    
+    <span class="title">OrchestratorNsProvisioner</span>
+  
+
+  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
+</div>
+
+      <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+      Class List
+    </a>
+  
+    <a class="full_list_link" id="method_list_link"
+        href="method_list.html">
+      Method List
+    </a>
+  
+    <a class="full_list_link" id="file_list_link"
+        href="file_list.html">
+      File List
+    </a>
+  
+</div>
+      <div class="clear"></div>
+    </div>
+
+    <iframe id="search_frame"></iframe>
+
+    <div id="content"><h1>Class: OrchestratorNsProvisioner
+  
+  
+  
+</h1>
+
+<dl class="box">
+  
+    <dt class="r1">Inherits:</dt>
+    <dd class="r1">
+      <span class="inheritName">Sinatra::Application</span>
+      
+        <ul class="fullTree">
+          <li>Object</li>
+          
+            <li class="next">Sinatra::Application</li>
+          
+            <li class="next">OrchestratorNsProvisioner</li>
+          
+        </ul>
+        <a href="#" class="inheritanceTree">show all</a>
+      
+      </dd>
+    
+  
+  
+    
+  
+    
+  
+  
+  
+    <dt class="r2 last">Defined in:</dt>
+    <dd class="r2 last">helpers/ns.rb<span class="defines">,<br />
+  main.rb,<br /> routes/ns.rb</span>
+</dd>
+  
+</dl>
+<div class="clear"></div>
+
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    
+<p>TeNOR - NS Provisioning</p>
+
+<p>Copyright 2014-2016 i2CAT Foundation, Portugal Telecom Inovação</p>
+
+<p>Licensed under the Apache License, Version 2.0 (the “License”); you may not
+use this file except in compliance with the License. You may obtain a copy
+of the License at</p>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_http'>http</span><span class='symbol'>:/</span><span class='op'>/</span><span class='id identifier rubyid_www'>www</span><span class='period'>.</span><span class='id identifier rubyid_apache'>apache</span><span class='period'>.</span><span class='id identifier rubyid_org'>org</span><span class='op'>/</span><span class='id identifier rubyid_licenses'>licenses</span><span class='op'>/</span><span class='const'>LICENSE</span><span class='op'>-</span><span class='float'>2.0</span></code></pre>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+License for the specific language governing permissions and limitations
+under the License.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+  <p class="tag_title">See Also:</p>
+  <ul class="see">
+    
+      <li><span class='object_link'><a href="" title="OrchestratorNsProvisioner (class)">OrchestratorNsProvisioner</a></span></li>
+    
+  </ul>
+
+</div>
+
+
+
+
+
+
+  
+    <h2>
+      Instance Method Summary
+      <small>(<a href="#" class="summary_toggle">collapse</a>)</small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#%2Fns-instances%2F%3Aid%2Finstantiate-instance_method" title="#post (instance method)">- (Object) <strong>post</strong>(&#39;/ns-instances/:id/instantiate&#39;) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Response from VNF-Manager, send a message to marketplace
+/ns-instances/:ns_instance_id/instantiate.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#callMapping-instance_method" title="#callMapping (instance method)">- (Object) <strong>callMapping</strong>(ms) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#generateError-instance_method" title="#generateError (instance method)">- (Object) <strong>generateError</strong>(ns_id, status, message) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#generateMarketplaceResponse-instance_method" title="#generateMarketplaceResponse (instance method)">- (Object) <strong>generateMarketplaceResponse</strong>(marketplaceUrl, message) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#getPopInfo-instance_method" title="#getPopInfo (instance method)">- (Object) <strong>getPopInfo</strong>(popId) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#instantiate-instance_method" title="#instantiate (instance method)">- (Object) <strong>instantiate</strong>(instantiation_info) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#instantiateVNF-instance_method" title="#instantiateVNF (instance method)">- (Object) <strong>instantiateVNF</strong>(instantiation_info) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#post_ns-instance_method" title="#post (instance method)">- (Object) <strong>post</strong>(&#39;/ns&#39;) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Post a NS Request body: “descriptor”, “customer_id”: “some_id”,
+“nap_id”: “some_id”&#39;.</p>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+  
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="/ns-instances/:id/instantiate-instance_method">
+  
+    - (<tt>Object</tt>) <strong>post</strong>(&#39;/ns-instances/:id/instantiate&#39;) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Response from VNF-Manager, send a message to marketplace
+/ns-instances/:ns_instance_id/instantiate</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+  
+
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'routes/ns.rb', line 188</span>
+
+<span class='id identifier rubyid_post'>post</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/ns-instances/:id/instantiate</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>do</span>
+  <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Response about </span><span class='tstring_end'>&quot;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+  <span class='comment'># Return if content-type is invalid
+</span>  <span class='kw'>return</span> <span class='int'>415</span> <span class='kw'>unless</span> <span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_content_type'>content_type</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>application/json</span><span class='tstring_end'>&#39;</span></span>
+  <span class='comment'># Validate JSON format
+</span>  <span class='id identifier rubyid_callback_response'>callback_response</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='op'>=</span> <span class='id identifier rubyid_parse_json'>parse_json</span><span class='lparen'>(</span><span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='int'>400</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span> <span class='kw'>if</span> <span class='id identifier rubyid_errors'>errors</span>
+
+  <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_callback_response'>callback_response</span>
+  <span class='id identifier rubyid_puts'>puts</span> <span class='id identifier rubyid_callback_response'>callback_response</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span>
+
+  <span class='comment'>#find instance id, update data
+</span>  <span class='kw'>begin</span>
+    <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span> <span class='id identifier rubyid_settings'>settings</span><span class='period'>.</span><span class='id identifier rubyid_ns_instance_repository'>ns_instance_repository</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/ns-instances/</span><span class='tstring_end'>&#39;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span>
+  <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='kw'>if</span> <span class='lparen'>(</span><span class='kw'>defined?</span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='rparen'>)</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+      <span class='id identifier rubyid_halt'>halt</span> <span class='int'>400</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>NS-Instance Repository unavailable</span><span class='tstring_end'>&quot;</span></span>
+    <span class='kw'>end</span>
+    <span class='id identifier rubyid_halt'>halt</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
+  <span class='kw'>end</span>
+  <span class='ivar'>@instance</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='op'>=</span> <span class='id identifier rubyid_parse_json'>parse_json</span><span class='lparen'>(</span><span class='id identifier rubyid_response'>response</span><span class='rparen'>)</span>
+
+  <span class='comment'>#vnf = {:vnf_id =&gt; vnf_id, :pop_id =&gt; pop_id}
+</span>  <span class='comment'>#extract vnfi_id from instantatieVNF response
+</span>  <span class='id identifier rubyid_vnf_info'>vnf_info</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
+  <span class='id identifier rubyid_vnf_info'>vnf_info</span><span class='lbracket'>[</span><span class='symbol'>:vnfd_id</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_callback_response'>callback_response</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>vnfd_id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+  <span class='id identifier rubyid_vnf_info'>vnf_info</span><span class='lbracket'>[</span><span class='symbol'>:vnfi_id</span><span class='rbracket'>]</span><span class='op'>=</span> <span class='id identifier rubyid_callback_response'>callback_response</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>vnfi_id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+  <span class='comment'>#@instance[&#39;vnfis&#39;] &lt;&lt; vnf_info
+</span>  <span class='ivar'>@instance</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>vnfs</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
+  <span class='ivar'>@instance</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>vnfs</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='op'>&lt;&lt;</span> <span class='id identifier rubyid_vnf_info'>vnf_info</span>
+
+  <span class='ivar'>@instance</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>status</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>INSTANTIATED</span><span class='tstring_end'>&quot;</span></span>
+
+  <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='ivar'>@instance</span>
+  <span class='ivar'>@instance</span> <span class='op'>=</span> <span class='id identifier rubyid_updateInstance'>updateInstance</span><span class='lparen'>(</span><span class='ivar'>@instance</span><span class='rparen'>)</span>
+
+  <span class='comment'>#get NSD
+</span>  <span class='kw'>begin</span>
+    <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span> <span class='id identifier rubyid_settings'>settings</span><span class='period'>.</span><span class='id identifier rubyid_ns_catalogue'>ns_catalogue</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/network-services/</span><span class='tstring_end'>&#39;</span></span> <span class='op'>+</span> <span class='ivar'>@instance</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>nsd_id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span>
+  <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='kw'>if</span> <span class='lparen'>(</span><span class='kw'>defined?</span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='rparen'>)</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+      <span class='id identifier rubyid_halt'>halt</span> <span class='int'>400</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>NS-Instance Repository unavailable</span><span class='tstring_end'>&quot;</span></span>
+    <span class='kw'>end</span>
+    <span class='id identifier rubyid_halt'>halt</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
+  <span class='kw'>end</span>
+  <span class='id identifier rubyid_nsd'>nsd</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='op'>=</span> <span class='id identifier rubyid_parse_json'>parse_json</span><span class='lparen'>(</span><span class='id identifier rubyid_response'>response</span><span class='rparen'>)</span>
+
+  <span class='comment'>#start monitoring
+</span>  <span class='id identifier rubyid_monitoringData'>monitoringData</span><span class='lparen'>(</span><span class='id identifier rubyid_nsd'>nsd</span><span class='comma'>,</span> <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='rparen'>)</span>
+
+  <span class='comment'>#if done, send mapping information to marketplace
+</span>  <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='ivar'>@instance</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>marketplace_callback</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+  <span class='id identifier rubyid_generateMarketplaceResponse'>generateMarketplaceResponse</span><span class='lparen'>(</span><span class='ivar'>@instance</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>marketplace_callback</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='ivar'>@instance</span><span class='rparen'>)</span>
+
+  <span class='kw'>return</span> <span class='int'>200</span>
+
+  <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_debug'>debug</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Call WICM</span><span class='tstring_end'>&quot;</span></span>
+  <span class='comment'>#customer ID, location ID (NAP), service descriptor and NFVI-PoP ID
+</span>  <span class='id identifier rubyid_wicm_data'>wicm_data</span> <span class='op'>=</span>  <span class='lbrace'>{</span><span class='symbol'>:nsd_id</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_nsd'>nsd</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='symbol'>:customer_id</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_instantiation_info'>instantiation_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>customer_id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='symbol'>:nap_id</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_instantiation_info'>instantiation_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>nap_id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_pop_id'>pop_id</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_popInfo'>popInfo</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>popId</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='rbrace'>}</span>
+  <span class='comment'>#&quot;/vnf-connectivity&quot;
+</span>  <span class='ivar'>@instance</span> <span class='op'>=</span> <span class='id identifier rubyid_updateInstance'>updateInstance</span><span class='lparen'>(</span><span class='ivar'>@instance</span><span class='rparen'>)</span>
+
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="callMapping-instance_method">
+  
+    - (<tt>Object</tt>) <strong>callMapping</strong>(ms) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'helpers/ns.rb', line 21</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_callMapping'>callMapping</span><span class='lparen'>(</span><span class='id identifier rubyid_ms'>ms</span><span class='rparen'>)</span>
+
+	<span class='kw'>begin</span>
+		<span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span>  <span class='ivar'>@service</span><span class='period'>.</span><span class='id identifier rubyid_host'>host</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>:</span><span class='tstring_end'>&quot;</span></span> <span class='op'>+</span> <span class='ivar'>@service</span><span class='period'>.</span><span class='id identifier rubyid_port'>port</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span> <span class='op'>+</span> <span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_fullpath'>fullpath</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>X-Auth-Token</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='ivar'>@client_token</span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span>
+	<span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+		<span class='kw'>return</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
+	<span class='kw'>end</span>
+
+	<span class='id identifier rubyid_nsd'>nsd</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='op'>=</span> <span class='id identifier rubyid_parse_json'>parse_json</span><span class='lparen'>(</span><span class='id identifier rubyid_response'>response</span><span class='rparen'>)</span>
+
+    <span class='id identifier rubyid_mapping'>mapping</span> <span class='op'>=</span> <span class='lbrace'>{</span>
+        <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>created_at</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Thu Nov  5 10:13:25 2015</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+        <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>vnf_mapping</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span>
+            <span class='lbracket'>[</span>
+                <span class='lbrace'>{</span>
+                    <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>maps_to_PoP</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/pop/55ef7cce-1e9b-4b8f-9839-d40ceeb670f7</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+                    <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>vnf</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/</span><span class='tstring_end'>&quot;</span></span><span class='op'>+</span> <span class='id identifier rubyid_nsd'>nsd</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>vnfs</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span>
+                <span class='rbrace'>}</span>
+            <span class='rbracket'>]</span>
+    <span class='rbrace'>}</span>
+
+    <span class='id identifier rubyid_unsuccessfullMapping'>unsuccessfullMapping</span> <span class='op'>=</span> <span class='lbrace'>{</span>
+        <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Error</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Error in MIP problem</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+        <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Info</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>MIP solution is undefined</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+        <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>created_at</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Thu Nov  5 10:11:37 2015</span><span class='tstring_end'>&quot;</span></span>
+    <span class='rbrace'>}</span>
+
+     <span class='kw'>if</span> <span class='id identifier rubyid_ms'>ms</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>development</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+       <span class='kw'>return</span> <span class='id identifier rubyid_mapping'>mapping</span>
+     <span class='kw'>end</span>
+
+     <span class='kw'>begin</span>
+       <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_post'>post</span> <span class='id identifier rubyid_settings'>settings</span><span class='period'>.</span><span class='id identifier rubyid_ns_mapping'>ns_mapping</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/mapper</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_ms'>ms</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span>
+     <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+       <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span>
+       <span class='kw'>if</span> <span class='lparen'>(</span><span class='kw'>defined?</span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='rparen'>)</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+         <span class='comment'>#halt 400, &quot;NS-Mapping unavailable&quot;
+</span>       <span class='kw'>end</span>
+       <span class='comment'>#halt e.response.code, e.response.body
+</span>     <span class='kw'>end</span>
+	
+     <span class='id identifier rubyid_mapping'>mapping</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='op'>=</span> <span class='id identifier rubyid_parse_json'>parse_json</span><span class='lparen'>(</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span><span class='rparen'>)</span>
+     <span class='kw'>return</span> <span class='int'>400</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='kw'>if</span> <span class='id identifier rubyid_errors'>errors</span>
+
+     <span class='kw'>return</span> <span class='id identifier rubyid_mapping'>mapping</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="generateError-instance_method">
+  
+    - (<tt>Object</tt>) <strong>generateError</strong>(ns_id, status, message) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+124
+125
+126
+127
+128
+129
+130
+131</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'helpers/ns.rb', line 124</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_generateError'>generateError</span><span class='lparen'>(</span><span class='id identifier rubyid_ns_id'>ns_id</span><span class='comma'>,</span> <span class='id identifier rubyid_status'>status</span><span class='comma'>,</span> <span class='id identifier rubyid_message'>message</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_message'>message</span> <span class='op'>=</span> <span class='lbrace'>{</span>
+      <span class='symbol'>:nsd_id</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_ns_id'>ns_id</span><span class='comma'>,</span>
+      <span class='symbol'>:status</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_status'>status</span><span class='comma'>,</span>
+      <span class='symbol'>:cause</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_message'>message</span>
+  <span class='rbrace'>}</span>
+  <span class='kw'>return</span> <span class='id identifier rubyid_message'>message</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="generateMarketplaceResponse-instance_method">
+  
+    - (<tt>Object</tt>) <strong>generateMarketplaceResponse</strong>(marketplaceUrl, message) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'helpers/ns.rb', line 113</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_generateMarketplaceResponse'>generateMarketplaceResponse</span><span class='lparen'>(</span><span class='id identifier rubyid_marketplaceUrl'>marketplaceUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_message'>message</span><span class='rparen'>)</span>
+<span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_marketplaceUrl'>marketplaceUrl</span>
+<span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_message'>message</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span>
+<span class='kw'>begin</span>
+	<span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_post'>post</span> <span class='id identifier rubyid_marketplaceUrl'>marketplaceUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_message'>message</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span>
+<span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+	<span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span>
+	<span class='comment'>#halt e.response.code, e.response.body
+</span><span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="getPopInfo-instance_method">
+  
+    - (<tt>Object</tt>) <strong>getPopInfo</strong>(popId) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'helpers/ns.rb', line 80</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_getPopInfo'>getPopInfo</span><span class='lparen'>(</span><span class='id identifier rubyid_popId'>popId</span><span class='rparen'>)</span>
+
+	<span class='id identifier rubyid_popInfo'>popInfo</span> <span class='op'>=</span> <span class='lbrace'>{</span>
+			<span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>metadata</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='lbrace'>{</span>
+					<span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>source</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>T-Nova-AuthZ-Service</span><span class='tstring_end'>&quot;</span></span>
+			<span class='rbrace'>}</span><span class='comma'>,</span>
+			<span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>info</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='lbracket'>[</span>
+					<span class='lbrace'>{</span>
+							<span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>msg</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Datacenter details.</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+							<span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>dcname</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>mypop-x</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+							<span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>adminuser</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>t-nova</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+							<span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>password</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>t-n0v@</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+							<span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>extrainfo</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>pop-ip=10.10.1.2 keystone-endpoint=http://10.10.1.2:35357/v2.0 orch-endpoint=http://10.10.1.2:8004/v1 neutron-endpoint=http://10.10.1.2:9696/v2.0</span><span class='tstring_end'>&quot;</span></span>
+					<span class='rbrace'>}</span>
+			<span class='rbracket'>]</span>
+	<span class='rbrace'>}</span>
+
+	<span class='kw'>return</span> <span class='id identifier rubyid_popInfo'>popInfo</span>
+
+	<span class='kw'>begin</span>
+		<span class='id identifier rubyid_popInfo'>popInfo</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_settings'>settings</span><span class='period'>.</span><span class='id identifier rubyid_gatekeeper'>gatekeeper</span><span class='embexpr_end'>}</span><span class='tstring_content'>/admin/dc/</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_pop_id'>pop_id</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>X-Auth-Token</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_settings'>settings</span><span class='period'>.</span><span class='id identifier rubyid_token'>token</span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span>
+	<span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+		<span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span>
+		<span class='kw'>if</span> <span class='lparen'>(</span><span class='kw'>defined?</span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='rparen'>)</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+			<span class='id identifier rubyid_error'>error</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='symbol'>:info</span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>The PoP is not registered in Gatekeeper</span><span class='tstring_end'>&quot;</span></span><span class='rbrace'>}</span>
+			<span class='comment'>#marketplace URL here´
+</span>			<span class='comment'>#generateMarketplaceResponse()
+</span>			<span class='id identifier rubyid_halt'>halt</span> <span class='int'>503</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>The PoP is not registered in Gatekeeper</span><span class='tstring_end'>&quot;</span></span>
+		<span class='kw'>end</span>
+	<span class='kw'>end</span>
+	<span class='id identifier rubyid_halt'>halt</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="instantiate-instance_method">
+  
+    - (<tt>Object</tt>) <strong>instantiate</strong>(instantiation_info) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'helpers/ns.rb', line 133</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_instantiate'>instantiate</span><span class='lparen'>(</span><span class='id identifier rubyid_instantiation_info'>instantiation_info</span><span class='rparen'>)</span>
+	<span class='comment'>#nsd = getNSD(ns[&#39;ns_id&#39;].to_s)
+</span>	<span class='id identifier rubyid_callbackUrl'>callbackUrl</span> <span class='op'>=</span> <span class='id identifier rubyid_instantiation_info'>instantiation_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>callbackUrl</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+
+	<span class='id identifier rubyid_nsd'>nsd</span> <span class='op'>=</span> <span class='id identifier rubyid_instantiation_info'>instantiation_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>nsd</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+
+   <span class='id identifier rubyid_flavour'>flavour</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>flavor0</span><span class='tstring_end'>&quot;</span></span>
+
+	<span class='id identifier rubyid_ms'>ms</span> <span class='op'>=</span> <span class='lbrace'>{</span>
+			<span class='symbol'>:NS_id</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_nsd'>nsd</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='comma'>,</span>
+			<span class='symbol'>:tenor_api</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_settings'>settings</span><span class='period'>.</span><span class='id identifier rubyid_tenor_api'>tenor_api</span><span class='comma'>,</span>
+			<span class='symbol'>:infr_repo_api</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_settings'>settings</span><span class='period'>.</span><span class='id identifier rubyid_infr_repo_api'>infr_repo_api</span><span class='comma'>,</span>
+			<span class='symbol'>:ir_simulation</span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>true</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+			<span class='symbol'>:ns_simulation</span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>true</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+       <span class='symbol'>:development</span> <span class='op'>=&gt;</span> <span class='kw'>true</span><span class='comma'>,</span>
+			<span class='symbol'>:NS_sla</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_flavour'>flavour</span>
+	<span class='rbrace'>}</span>
+	<span class='comment'>#choose select mapping
+</span>	<span class='id identifier rubyid_mapping'>mapping</span> <span class='op'>=</span> <span class='id identifier rubyid_callMapping'>callMapping</span><span class='lparen'>(</span><span class='id identifier rubyid_ms'>ms</span><span class='rparen'>)</span>
+
+	<span class='kw'>if</span><span class='lparen'>(</span> <span class='op'>!</span><span class='id identifier rubyid_mapping'>mapping</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>vnf_mapping</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='rparen'>)</span>
+		<span class='comment'>#halt 400, &quot;Mapping: not enough resources.&quot;
+</span>		<span class='id identifier rubyid_generateMarketplaceResponse'>generateMarketplaceResponse</span><span class='lparen'>(</span><span class='id identifier rubyid_callbackUrl'>callbackUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_generateError'>generateError</span><span class='lparen'>(</span><span class='id identifier rubyid_nsd'>nsd</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>FAILED</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Internal error: Mapping: not enough resources.</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='rparen'>)</span>
+	<span class='kw'>end</span>
+
+	<span class='comment'>#generate instance ID - Send instantiation to NS Instance repository
+</span>	<span class='ivar'>@instance</span> <span class='op'>=</span> <span class='id identifier rubyid_createInstance'>createInstance</span><span class='lparen'>(</span><span class='lbrace'>{</span><span class='symbol'>:nsd_id</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_nsd'>nsd</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='symbol'>:status</span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>INIT</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:vendor</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_nsd'>nsd</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>vendor</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='symbol'>:version</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_nsd'>nsd</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>version</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='symbol'>:marketplace_callback</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_callbackUrl'>callbackUrl</span> <span class='rbrace'>}</span><span class='rparen'>)</span>
+   <span class='kw'>if</span> <span class='ivar'>@instance</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+     <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span> <span class='id identifier rubyid_error'>error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Instance repo not connected</span><span class='tstring_end'>&quot;</span></span>
+		<span class='id identifier rubyid_generateMarketplaceResponse'>generateMarketplaceResponse</span><span class='lparen'>(</span><span class='id identifier rubyid_callbackUrl'>callbackUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_generateError'>generateError</span><span class='lparen'>(</span><span class='id identifier rubyid_nsd'>nsd</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>FAILED</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Internal error: instance repository not connected.</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='rparen'>)</span>
+   <span class='kw'>end</span>
+
+	<span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='ivar'>@instance</span>
+
+	<span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_debug'>debug</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Calling SLA Enforcement</span><span class='tstring_end'>&quot;</span></span>
+	<span class='comment'>#each service_deployment_flavour has one or more assurance_parameters
+</span>	<span class='comment'>#sla_enforcement(nsd, @instance[&#39;id&#39;].to_s)
+</span>
+	<span class='comment'>#call NS monitoring
+</span>	<span class='comment'>#monitoringData(nsd)
+</span>
+	<span class='ivar'>@instance</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>vnfs</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='const'>Array</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span>
+	<span class='comment'>#@instance[&#39;vnfis&#39;] = Array.new
+</span>	<span class='comment'>#for each VNF mapping, find the PoP information
+</span>   <span class='id identifier rubyid_mapping'>mapping</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>vnf_mapping</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_vnf'>vnf</span><span class='op'>|</span>
+		<span class='id identifier rubyid_pop_id'>pop_id</span> <span class='op'>=</span> <span class='id identifier rubyid_vnf'>vnf</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>maps_to_PoP</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_delete'>delete</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/pop/</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+		<span class='id identifier rubyid_vnf_id'>vnf_id</span> <span class='op'>=</span> <span class='id identifier rubyid_vnf'>vnf</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>vnf</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_delete'>delete</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+     <span class='id identifier rubyid_vnf_info'>vnf_info</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
+
+		<span class='id identifier rubyid_popInfo'>popInfo</span> <span class='op'>=</span> <span class='id identifier rubyid_getPopInfo'>getPopInfo</span><span class='lparen'>(</span><span class='id identifier rubyid_pop_id'>pop_id</span><span class='rparen'>)</span>
+     <span class='id identifier rubyid_vnf_info'>vnf_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>pop_id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_pop_id'>pop_id</span>
+
+		<span class='comment'>#VIM authentication
+</span>		<span class='id identifier rubyid_extra_info'>extra_info</span> <span class='op'>=</span> <span class='id identifier rubyid_popInfo'>popInfo</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>info</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>extrainfo</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'> </span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+
+     <span class='id identifier rubyid_keystoneUrl'>keystoneUrl</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span>
+     <span class='id identifier rubyid_orchUrl'>orchUrl</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span>
+     <span class='id identifier rubyid_neutronUrl'>neutronUrl</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span>
+     <span class='id identifier rubyid_token'>token</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span>
+     <span class='id identifier rubyid_tenant_token'>tenant_token</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span>
+
+     <span class='id identifier rubyid_extra_info'>extra_info</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_item'>item</span><span class='op'>|</span>
+			<span class='id identifier rubyid_key'>key</span> <span class='op'>=</span> <span class='id identifier rubyid_item'>item</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>=</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span>
+			<span class='kw'>if</span> <span class='id identifier rubyid_key'>key</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>keystone-endpoint</span><span class='tstring_end'>&#39;</span></span>
+				<span class='id identifier rubyid_keystoneUrl'>keystoneUrl</span> <span class='op'>=</span> <span class='id identifier rubyid_item'>item</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>=</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='lbracket'>[</span><span class='int'>1</span><span class='rbracket'>]</span>
+			<span class='kw'>elsif</span> <span class='id identifier rubyid_key'>key</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>orch-endpoint</span><span class='tstring_end'>&#39;</span></span>
+				<span class='id identifier rubyid_orchUrl'>orchUrl</span> <span class='op'>=</span> <span class='id identifier rubyid_item'>item</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>=</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='lbracket'>[</span><span class='int'>1</span><span class='rbracket'>]</span>
+       <span class='kw'>elsif</span> <span class='id identifier rubyid_key'>key</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>neutron-endpoint</span><span class='tstring_end'>&#39;</span></span>
+         <span class='id identifier rubyid_neutronUrl'>neutronUrl</span> <span class='op'>=</span> <span class='id identifier rubyid_item'>item</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>=</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='lbracket'>[</span><span class='int'>1</span><span class='rbracket'>]</span>
+       <span class='kw'>end</span>
+		<span class='kw'>end</span>
+		<span class='kw'>if</span> <span class='id identifier rubyid_keystoneUrl'>keystoneUrl</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span> <span class='op'>||</span> <span class='id identifier rubyid_orchUrl'>orchUrl</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+			<span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Keystone and/or openstack url is missing</span><span class='tstring_end'>&#39;</span></span>
+			<span class='id identifier rubyid_generateMarketplaceResponse'>generateMarketplaceResponse</span><span class='lparen'>(</span><span class='id identifier rubyid_callbackUrl'>callbackUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_generateError'>generateError</span><span class='lparen'>(</span><span class='id identifier rubyid_nsd'>nsd</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>FAILED</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Internal error: Keystone and/or openstack url is missing.</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='rparen'>)</span>
+		<span class='kw'>end</span>
+
+		<span class='kw'>if</span> <span class='ivar'>@instance</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>project</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='period'>.</span> <span class='id identifier rubyid_nil?'>nil?</span>
+			<span class='kw'>begin</span>
+				<span class='id identifier rubyid_tenant_name'>tenant_name</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>tenor_instance_</span><span class='tstring_end'>&quot;</span></span> <span class='op'>+</span> <span class='ivar'>@instance</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
+				<span class='id identifier rubyid_token'>token</span> <span class='op'>=</span> <span class='id identifier rubyid_openstackAdminAuthentication'>openstackAdminAuthentication</span><span class='lparen'>(</span><span class='id identifier rubyid_keystoneUrl'>keystoneUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_popInfo'>popInfo</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>info</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>adminuser</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_popInfo'>popInfo</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>info</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>password</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='rparen'>)</span>
+         <span class='id identifier rubyid_vnf_info'>vnf_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>tenant_id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_createProject'>createProject</span><span class='lparen'>(</span><span class='id identifier rubyid_keystoneUrl'>keystoneUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_tenant_name'>tenant_name</span><span class='comma'>,</span> <span class='id identifier rubyid_token'>token</span><span class='rparen'>)</span>
+         <span class='id identifier rubyid_vnf_info'>vnf_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>username</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>user_</span><span class='tstring_end'>&quot;</span></span> <span class='op'>+</span> <span class='ivar'>@instance</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
+         <span class='id identifier rubyid_vnf_info'>vnf_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>password</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>secretsecret</span><span class='tstring_end'>&quot;</span></span>
+         <span class='id identifier rubyid_vnf_info'>vnf_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>user_id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_createUser'>createUser</span><span class='lparen'>(</span><span class='id identifier rubyid_keystoneUrl'>keystoneUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_vnf_info'>vnf_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>tenant_id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_vnf_info'>vnf_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>username</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_vnf_info'>vnf_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>password</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_token'>token</span><span class='rparen'>)</span>
+
+         <span class='id identifier rubyid_role_admin_id'>role_admin_id</span> <span class='op'>=</span> <span class='id identifier rubyid_getListRoles'>getListRoles</span><span class='lparen'>(</span><span class='id identifier rubyid_keystoneUrl'>keystoneUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_token'>token</span><span class='rparen'>)</span>
+         <span class='comment'>#role = roles[&#39;roles&#39;].find{ |role| role[&#39;name&#39;] == &#39;admin&#39;}
+</span>         <span class='id identifier rubyid_putRole'>putRole</span><span class='lparen'>(</span><span class='id identifier rubyid_keystoneUrl'>keystoneUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_vnf_info'>vnf_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>tenant_id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_vnf_info'>vnf_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>user_id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_role_admin_id'>role_admin_id</span><span class='comma'>,</span> <span class='id identifier rubyid_token'>token</span><span class='rparen'>)</span>
+         <span class='id identifier rubyid_tenant_token'>tenant_token</span> <span class='op'>=</span> <span class='id identifier rubyid_openstackAuthentication'>openstackAuthentication</span><span class='lparen'>(</span><span class='id identifier rubyid_keystoneUrl'>keystoneUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_tenant_name'>tenant_name</span><span class='comma'>,</span> <span class='id identifier rubyid_vnf_info'>vnf_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>username</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_vnf_info'>vnf_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>password</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='rparen'>)</span>
+			<span class='kw'>rescue</span>
+				<span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Error creating the Openstack credentials</span><span class='tstring_end'>&quot;</span></span>
+				<span class='id identifier rubyid_error'>error</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>info</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Error creating the Openstack credentials.</span><span class='tstring_end'>&quot;</span></span><span class='rbrace'>}</span>
+				<span class='id identifier rubyid_removeInstance'>removeInstance</span><span class='lparen'>(</span><span class='ivar'>@instance</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rparen'>)</span>
+				<span class='id identifier rubyid_deleteUser'>deleteUser</span><span class='lparen'>(</span><span class='id identifier rubyid_keystoneUrl'>keystoneUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_vnf_info'>vnf_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>user_id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_token'>token</span><span class='rparen'>)</span>
+				<span class='id identifier rubyid_deleteProject'>deleteProject</span><span class='lparen'>(</span><span class='id identifier rubyid_keystoneUrl'>keystoneUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_vnf_info'>vnf_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>tenant_id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_token'>token</span><span class='rparen'>)</span>
+				<span class='id identifier rubyid_generateMarketplaceResponse'>generateMarketplaceResponse</span><span class='lparen'>(</span><span class='id identifier rubyid_callbackUrl'>callbackUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_generateError'>generateError</span><span class='lparen'>(</span><span class='id identifier rubyid_nsd'>nsd</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>FAILED</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Internal error: Error creating the Openstack credentials.</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='rparen'>)</span>
+			<span class='kw'>end</span>
+		<span class='kw'>end</span>
+
+		<span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='ivar'>@instance</span>
+
+     <span class='id identifier rubyid_networks'>networks</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
+		<span class='comment'>#getNetworkList
+</span>		<span class='id identifier rubyid_publicNetworkId'>publicNetworkId</span> <span class='op'>=</span> <span class='id identifier rubyid_publicNetworkId'>publicNetworkId</span><span class='lparen'>(</span><span class='id identifier rubyid_neutronUrl'>neutronUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_tenant_token'>tenant_token</span><span class='rparen'>)</span>
+     <span class='id identifier rubyid_virtual_links'>virtual_links</span> <span class='op'>=</span> <span class='id identifier rubyid_nsd'>nsd</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>vld</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>virtual_links</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+     <span class='id identifier rubyid_nsd'>nsd</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>vld</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>virtual_links</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_vlink'>vlink</span><span class='op'>|</span>
+       <span class='kw'>if</span> <span class='id identifier rubyid_vlink'>vlink</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>flavor_ref_id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='id identifier rubyid_flavour'>flavour</span>
+         <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_vlink'>vlink</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>merge</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+         <span class='id identifier rubyid_networkId'>networkId</span> <span class='op'>=</span> <span class='id identifier rubyid_createNetwork'>createNetwork</span><span class='lparen'>(</span><span class='id identifier rubyid_neutronUrl'>neutronUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_vlink'>vlink</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>alias</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_tenant_token'>tenant_token</span><span class='rparen'>)</span>
+         <span class='id identifier rubyid_subnetId'>subnetId</span> <span class='op'>=</span> <span class='id identifier rubyid_createSubnetwork'>createSubnetwork</span><span class='lparen'>(</span><span class='id identifier rubyid_neutronUrl'>neutronUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_networkId'>networkId</span><span class='comma'>,</span> <span class='id identifier rubyid_tenant_token'>tenant_token</span><span class='rparen'>)</span>
+				<span class='id identifier rubyid_routerId'>routerId</span> <span class='op'>=</span> <span class='id identifier rubyid_createRouter'>createRouter</span><span class='lparen'>(</span><span class='id identifier rubyid_neutronUrl'>neutronUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_publicNetworkId'>publicNetworkId</span><span class='comma'>,</span> <span class='id identifier rubyid_tenant_token'>tenant_token</span><span class='rparen'>)</span>
+				<span class='id identifier rubyid_addInterfaceToRouter'>addInterfaceToRouter</span><span class='lparen'>(</span><span class='id identifier rubyid_neutronUrl'>neutronUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_routerId'>routerId</span><span class='comma'>,</span> <span class='id identifier rubyid_subnetId'>subnetId</span><span class='comma'>,</span> <span class='id identifier rubyid_tenant_token'>tenant_token</span><span class='rparen'>)</span>
+         <span class='id identifier rubyid_networks'>networks</span><span class='period'>.</span><span class='id identifier rubyid_push'>push</span><span class='lparen'>(</span><span class='lbrace'>{</span><span class='symbol'>:id</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_networkId'>networkId</span><span class='comma'>,</span> <span class='symbol'>:alias</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_vlink'>vlink</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>alias</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='symbol'>:subnet</span> <span class='op'>=&gt;</span> <span class='lbrace'>{</span><span class='symbol'>:id</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_subnetId'>subnetId</span><span class='rbrace'>}</span><span class='rbrace'>}</span><span class='rparen'>)</span>
+       <span class='kw'>end</span>
+     <span class='kw'>end</span>
+
+     <span class='ivar'>@instance</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>networks</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_networks'>networks</span>
+		<span class='ivar'>@instance</span><span class='period'>.</span><span class='id identifier rubyid_save!'>save!</span>
+
+		<span class='comment'>#VIM instantiation
+</span>		<span class='id identifier rubyid_vnf_provisioning_info'>vnf_provisioning_info</span> <span class='op'>=</span> <span class='lbrace'>{</span>
+				<span class='symbol'>:ns_id</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_nsd'>nsd</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='comma'>,</span>
+				<span class='symbol'>:vnf_id</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_vnf_id'>vnf_id</span><span class='comma'>,</span>
+         <span class='symbol'>:flavour</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_flavour'>flavour</span><span class='comma'>,</span>
+				<span class='symbol'>:vim_id</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_popInfo'>popInfo</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>info</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>dcname</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='comma'>,</span>
+				<span class='symbol'>:auth</span> <span class='op'>=&gt;</span> <span class='lbrace'>{</span>
+						<span class='symbol'>:url</span> <span class='op'>=&gt;</span> <span class='lbrace'>{</span>
+								<span class='symbol'>:keystone</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_keystoneUrl'>keystoneUrl</span><span class='comma'>,</span>
+								<span class='symbol'>:orch</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_orchUrl'>orchUrl</span>
+						<span class='rbrace'>}</span><span class='comma'>,</span>
+						<span class='symbol'>:tenant</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_tenant_name'>tenant_name</span><span class='comma'>,</span>
+						<span class='symbol'>:username</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_vnf_info'>vnf_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>username</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='comma'>,</span>
+						<span class='symbol'>:password</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_vnf_info'>vnf_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>password</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+				<span class='rbrace'>}</span><span class='comma'>,</span>
+				<span class='symbol'>:networks</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_networks'>networks</span><span class='comma'>,</span>
+				<span class='symbol'>:callback_url</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_settings'>settings</span><span class='period'>.</span><span class='id identifier rubyid_tenor_api'>tenor_api</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/ns-instances/</span><span class='tstring_end'>&quot;</span></span> <span class='op'>+</span> <span class='ivar'>@instance</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/instantiate</span><span class='tstring_end'>&quot;</span></span>
+		<span class='rbrace'>}</span>
+		<span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_vnf_provisioning_info'>vnf_provisioning_info</span>
+		<span class='id identifier rubyid_instantiateVNF'>instantiateVNF</span><span class='lparen'>(</span><span class='id identifier rubyid_vnf_provisioning_info'>vnf_provisioning_info</span><span class='rparen'>)</span>
+	<span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="instantiateVNF-instance_method">
+  
+    - (<tt>Object</tt>) <strong>instantiateVNF</strong>(instantiation_info) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'helpers/ns.rb', line 68</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_instantiateVNF'>instantiateVNF</span><span class='lparen'>(</span><span class='id identifier rubyid_instantiation_info'>instantiation_info</span><span class='rparen'>)</span>
+	<span class='kw'>begin</span>
+		<span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_post'>post</span> <span class='id identifier rubyid_settings'>settings</span><span class='period'>.</span><span class='id identifier rubyid_vnf_manager'>vnf_manager</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/vnf-provisioning/vnf-instances</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_instantiation_info'>instantiation_info</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span>
+	<span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+		<span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span>
+		<span class='kw'>if</span> <span class='lparen'>(</span><span class='kw'>defined?</span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='rparen'>)</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+			<span class='comment'>#halt 503, &quot;VNF-Manager unavailable&quot;
+</span>		<span class='kw'>end</span>
+		<span class='comment'>#halt e.response.code, e.response.body
+</span>	<span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="post_ns-instance_method">
+  
+    - (<tt>Object</tt>) <strong>post</strong>(&#39;/ns&#39;) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Post a NS Request body: “descriptor”, “customer_id”: “some_id”,
+“nap_id”: “some_id”&#39;</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="docstring">
+  <div class="discussion">
+    
+<p>Post a NS in JSON format</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'></span>
+      
+      
+        <span class='type'>(<tt>JSON</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+
+</div>
+
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'routes/ns.rb', line 40</span>
+
+<span class='id identifier rubyid_post'>post</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/ns-instances</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>do</span>
+
+  <span class='comment'># Return if content-type is invalid
+</span>  <span class='kw'>return</span> <span class='int'>415</span> <span class='kw'>unless</span> <span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_content_type'>content_type</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>application/json</span><span class='tstring_end'>&#39;</span></span>
+  <span class='comment'># Validate JSON format
+</span>  <span class='id identifier rubyid_instantiation_info'>instantiation_info</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='op'>=</span> <span class='id identifier rubyid_parse_json'>parse_json</span><span class='lparen'>(</span><span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='int'>400</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span> <span class='kw'>if</span> <span class='id identifier rubyid_errors'>errors</span>
+
+  <span class='comment'>#call thread to process instantiation
+</span>  <span class='const'>EM</span><span class='period'>.</span><span class='id identifier rubyid_defer'>defer</span> <span class='kw'>do</span>
+    <span class='id identifier rubyid_instantiate'>instantiate</span><span class='lparen'>(</span><span class='id identifier rubyid_instantiation_info'>instantiation_info</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+
+  <span class='kw'>return</span> <span class='int'>200</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+    <div id="footer">
+  Generated on Tue Feb  2 14:25:18 2016 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.8.7.6 (ruby-2.0.0).
+</div>
+
+  </body>
+</html>

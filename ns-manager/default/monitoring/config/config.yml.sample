@@ -1,0 +1,19 @@
+---
+manager: http://127.0.0.1:4000
+servicename: monitoring
+environment: development
+address: 0.0.0.0
+port: 4003
+max_conns: 1024
+timeout: 30
+max_persistent_conns: 512
+daemonize: false
+logstash_host: 84.88.40.160
+logstash_port: 5228
+
+#monitoring settings:
+stat_interval: 5
+test_interval: 10
+
+#source settings:
+api_source: http://127.0.0.1:4000/configs/services
