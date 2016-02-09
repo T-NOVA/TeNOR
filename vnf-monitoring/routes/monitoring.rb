@@ -37,7 +37,6 @@ class VNFMonitoring < Sinatra::Application
   post '/vnf-monitoring/:vnfi_id/monitoring-parameters' do
     return 415 unless request.content_type == 'application/json'
 
-    # Validate JSON format
     @json, errors = parse_json(request.body.read)
     return 400, errors.to_json if errors
 
@@ -48,14 +47,14 @@ class VNFMonitoring < Sinatra::Application
     MonitoringMetric.new(@json)
 
     subscribe = {
-        :types => [json['name']],
+        :types => [@json['name']],
         :instances => [params["vnfi_id"]],
         :interval => 1,
         :callbackUrl => settings.vnf_manager + "/vnf-monitoring/" + params['vnfi_id'] + "/readings"
     }
     logger.debug subscribe.to_json
     begin
-      RestClient.post settings.vim_monitoring + "/api/subscribe", subscribe.to_json, :content_type => :json, :accept => :json
+      RestClient.post settings.vim_monitoring + "/api/subscriptions", subscribe.to_json, :content_type => :json, :accept => :json
     rescue
       halt 400, "VIM Monitoring Module not available"
     end
