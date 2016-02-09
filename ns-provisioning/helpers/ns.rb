@@ -261,7 +261,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
           begin
             networkId = createNetwork(neutronUrl, vlink['alias'], tenant_token)
             subnetId = createSubnetwork(neutronUrl, networkId, index, tenant_token)
-            addInterfaceToRouter(neutronUrl, @instance['router_id'], subnetId, tenant_token)
+            addInterfaceToRouter(neutronUrl, vnf_info['router_id'], subnetId, tenant_token)
             networks.push({:id => networkId, :alias => vlink['alias'], :subnet => {:id => subnetId}})
           rescue
             error = "Error creating networks or adding interfaces."

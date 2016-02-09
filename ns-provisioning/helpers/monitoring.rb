@@ -53,11 +53,10 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
     begin
       response = RestClient.post settings.ns_monitoring + '/ns-monitoring/monitoring-parameters', monitoring.to_json, :content_type => :json
+    rescue Errno::ECONNREFUSED
+      halt 500, 'NS Monitoring unreachable'
     rescue => e
-      logger.error e
-      if (defined?(e.response)).nil?
-        halt 503, "NS-Monitoring unavailable"
-      end
+      logger.error e.response
       halt e.response.code, e.response.body
     end
 
