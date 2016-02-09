@@ -31,12 +31,9 @@ class VNFMonitoring < Sinatra::Application
     authorized?
   end
 
-  #definition metric should be monitoring, recevied from NSProvisioning
-  #	{
-  #	 "parameter_id": "uuid",
-  #  "name": "avaliability",
-  #  "unit": "percentage"
-  #}
+  # @method post_vnf-monitoring
+  # @overload post '/vnf-monitoring/:vnfi_id/monitoring-parameters'
+  # Recevie the parameters to monitor given a vnfi_id
   post '/vnf-monitoring/:vnfi_id/monitoring-parameters' do
     return 415 unless request.content_type == 'application/json'
 
@@ -50,21 +47,13 @@ class VNFMonitoring < Sinatra::Application
 
     MonitoringMetric.new(@json)
 
-    #subscribe method
-    #{ "types": [ "cpuidle", "memfree" ], "instances": [ "27ad39af-0267-4f81-bdc6-deda0d64c9ac", "27ad39af-0267-4f81-bdc6-deda0d64c9bd" ], "interval": 1, "callback_url": "http://apis.t-nova.eu/orchestrator/vnf-manager/vnf-monitoring/params['vnfi_id']/readings" }
-
-    #callback url: http://apis.t-nova.eu/orchestrator/vnf-manager/vnf-monitoring/:vnfi_id/readings
-    #url: settings.vnf_manager + vnf-monitoring/:vnfi_id/readings ???
-
-    #instances is VM ID, we should extract the VM_ID with the VNF_ID or receive it from the instanitation
-
     subscribe = {
         :types => [json['name']],
         :instances => [params["vnfi_id"]],
         :interval => 1,
-        :callbackUrl => "http://localhost:4573/vnf-monitoring/" + params['vnfi_id'] + "/readings"
+        :callbackUrl => settings.vnf_manager + "/vnf-monitoring/" + params['vnfi_id'] + "/readings"
     }
-    logger.error subscribe.to_json
+    logger.debug subscribe.to_json
     begin
       RestClient.post settings.vim_monitoring + "/api/subscribe", subscribe.to_json, :content_type => :json, :accept => :json
     rescue
@@ -90,7 +79,6 @@ class VNFMonitoring < Sinatra::Application
     ]
   }
 ]
-
 =end
   post '/vnf-monitoring/:vnfi_id/readings' do
     logger.error "readings"
@@ -98,9 +86,7 @@ class VNFMonitoring < Sinatra::Application
     json, errors = parse_json(request.body.read)
     return 400, errors.to_json if errors
 
-    logger.error json.to_json
-    #the recevied data should be "enriched" with the vnf_instance id
-    #{"cpu": 50, "mem":"10","packetLoss":"11"}'
+    logger.debug json.to_json
 
     json.each do |instance|
       instance['measurements'].each do |measurement|

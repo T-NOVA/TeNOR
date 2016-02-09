@@ -33,8 +33,8 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
   # @method post_ns
   # @overload post '/ns'
-  # 	Post a NS in JSON format
-  # 	@param [JSON]
+  #   Post a NS in JSON format
+  #   @param [JSON]
   # Post a NS
   #Request body: {"nsd": "descriptor", "customer_id": "some_id", "nap_id": "some_id"}'
   post '/ns-instances' do
@@ -223,7 +223,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
   # @method post_ns-instances
   # @overload post '/ns-instances/:id/instantiate'
-  #	Response from VNF-Manager, send a message to marketplace
+  # Response from VNF-Manager, send a message to marketplace
   #/ns-instances/:ns_instance_id/instantiate
   post "/ns-instances/:id/instantiate" do
     logger.debug "Response about " + params['id']
