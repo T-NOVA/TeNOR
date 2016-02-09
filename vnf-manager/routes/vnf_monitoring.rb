@@ -15,7 +15,7 @@ class OrchestratorVnfManager < Sinatra::Application
 
                 # Forward the request to the VNF Monitoring
                 begin
-                    response = RestClient.post "#{settings.monitoring}/vnf-monitoring/#{params[:vnfi_id]}/monitoring-parameters", monitoring_info.to_json, 'X-Auth-Token' => @client_token, :content_type => :json, :accept => :json
+                    response = RestClient.post "#{settings.vnf_monitoring}/vnf-monitoring/#{params[:vnfi_id]}/monitoring-parameters", monitoring_info.to_json, 'X-Auth-Token' => @client_token, :content_type => :json, :accept => :json
                 rescue Errno::ECONNREFUSED
                     halt 500, 'VNF Monitoring unreachable'
                 rescue => e

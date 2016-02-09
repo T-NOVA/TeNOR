@@ -18,19 +18,26 @@
 # @see TnovaManager
 class TnovaManager < Sinatra::Application
 
+	# @method get_elastic
+	# @overload get '/elastic/*'
+	# Get logs from elasticsearch/logstash. Different strings allowed in order to filter the required data
+	# @param [string]
   get '/elastic/*' do
   	begin
   		response = RestClient::Request.new(
 		    :method => :get,
-		    :url => settings.logstash_host + request.fullpath.split("elastic")[1],
+		    :url => settings.logstash_host + request.fullpath.split("elastic")[1].to_s,
 				:user => settings.logstash_user,
 		    :password => settings.logstash_password,
 		    :headers => { :accept => :json,
 		    :content_type => :json }
 		  ).execute
-    rescue => e
-      return e.response.code, e.response.body
-    end
+		rescue Errno::ECONNREFUSED
+			halt 500, 'ElasticSerch/Logstash unreachable'
+		rescue => e
+			logger.error e.response
+			halt e.response.code, e.response.body
+		end
 
     return response
   end

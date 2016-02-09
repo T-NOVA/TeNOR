@@ -33,8 +33,8 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
   # @method post_ns
   # @overload post '/ns'
-  # 	Post a NS in JSON format
-  # 	@param [JSON]
+  #   Post a NS in JSON format
+  #   @param [JSON]
   # Post a NS
   #Request body: {"nsd": "descriptor", "customer_id": "some_id", "nap_id": "some_id"}'
   post '/ns-instances' do
@@ -106,32 +106,30 @@ class OrchestratorNsProvisioner < Sinatra::Application
       halt e.response.code, e.response.body
     end
     @instance, errors = parse_json(response)
-    #@instance['status'] = params['status'].to_s
-    #@instance = updateInstance(@instance)
 
     logger.debug @instance
 
     @instance['vnfs'].each do |vnf|
       puts vnf
-      #get vnf keystoneUrl
-      event = { :event => "stop" }
+      event = {:event => "stop"}
       begin
-        response = RestClient.put settings.vnf_manager + '/vnf-provisioning/vnf-instances/:vnfr_id/config', event.to_json, :content_type => :json
+        response = RestClient.put settings.vnf_manager + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/config', event.to_json, :content_type => :json
+      rescue Errno::ECONNREFUSED
+        halt 500, 'VNF Manager unreachable'
       rescue => e
-        logger.error e
-        if (defined?(e.response)).nil?
-          halt 400, "NS-Instance Repository unavailable"
-        end
+        logger.error e.response
         halt e.response.code, e.response.body
       end
-
     end
+
+    @instance['status'] = params['status'].to_s
+    @instance = updateInstance(@instance)
 
     if params[:status] === 'terminate'
       #remove openstack data
       keystoneUrl = ""
       neutronUrl = ""
-      popInfo = getPopInfo(vnf['pop_id'])
+      popInfo = getPopInfo(@instance['pop_id'])
       #VIM authentication
       extra_info = popInfo['info'][0]['extrainfo'].split(" ")
       for item in extra_info
@@ -145,14 +143,11 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
       #terminate VNF
       token = openstackAuthentication(keystoneUrl, popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
-      deleteRouter(neutronUrl, vnf['router_id'], token)
-      deleteUser(keystoneUrl, vnf['user_id'], token)
-      deleteProject(keystoneUrl, vnf['tenant_id'], token)
-
-      recoverState(keystoneUrl, neutronUrl, vnf_info, @instance, error, token)
-
+      deleteRouter(neutronUrl, @instance['vnf_info']['router_id'], token)
+      deleteUser(keystoneUrl, @instance['vnf_info']['user_id'], token)
+      deleteProject(keystoneUrl, @instance['vnf_info']['tenant_id'], token)
+      recoverState(keystoneUrl, neutronUrl, @instance['vnf_info'], @instance['id'].to_s, error, token)
       removeInstance(@instance)
-
     elsif params[:status] === 'stopped'
       #terminate VNF
       #halt 400, "Not implemented yet."
@@ -223,7 +218,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
   # @method post_ns-instances
   # @overload post '/ns-instances/:id/instantiate'
-  #	Response from VNF-Manager, send a message to marketplace
+  # Response from VNF-Manager, send a message to marketplace
   #/ns-instances/:ns_instance_id/instantiate
   post "/ns-instances/:id/instantiate" do
     logger.debug "Response about " + params['id']
@@ -287,7 +282,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
     logger.debug "Call WICM"
     #customer ID, location ID (NAP), service descriptor and NFVI-PoP ID
-    wicm_data =  {:nsd_id => nsd['id'], :customer_id => instantiation_info['customer_id'], :nap_id => instantiation_info['nap_id'], pop_id => popInfo['popId']}
+    wicm_data = {:nsd_id => nsd['id'], :customer_id => instantiation_info['customer_id'], :nap_id => instantiation_info['nap_id'], pop_id => popInfo['popId']}
     #"/vnf-connectivity"
     @instance = updateInstance(@instance)
   end

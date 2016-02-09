@@ -130,7 +130,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
   def recoverState(keystoneUrl, neutronUrl, vnf_info, instance_id, error, token)
     removeInstance(instance_id)
-    if(!vnf_info['router_id'].nil?)
+    if (!vnf_info['router_id'].nil?)
       deleteRouter(neutronUrl, vnf_info['router_id'], token)
     end
     deleteUser(keystoneUrl, vnf_info['user_id'], token)
@@ -172,7 +172,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
     logger.debug @instance
 
-    logger.debug "Calling SLA Enforcement"
+    #logger.debug "Calling SLA Enforcement"
     #each service_deployment_flavour has one or more assurance_parameters
     #sla_enforcement(nsd, @instance['id'].to_s)
 
@@ -214,8 +214,8 @@ class OrchestratorNsProvisioner < Sinatra::Application
         end
       end
       if keystoneUrl.nil? || orchUrl.nil? || neutronUrl.nil? || computeUrl.nil?
-        logger.error 'Keystone and/or openstack url is missing'
-        generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", "Internal error: Keystone and/or openstack url is missing."))
+        logger.error 'Keystone and/or openstack urls missing'
+        generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", "Internal error: Keystone and/or openstack urls missing."))
       end
 
       if @instance['project'].nil?
@@ -227,9 +227,8 @@ class OrchestratorNsProvisioner < Sinatra::Application
           vnf_info['password'] = "secretsecret"
           vnf_info['user_id'] = createUser(keystoneUrl, vnf_info['tenant_id'], vnf_info['username'], vnf_info['password'], token)
 
-          role_admin_id = getAdminRole(keystoneUrl, token)
-          #role = roles['roles'].find{ |role| role['name'] == 'admin'}
-          putRole(keystoneUrl, vnf_info['tenant_id'], vnf_info['user_id'], role_admin_id, token)
+          roleAdminId = getAdminRole(keystoneUrl, token)
+          putRole(keystoneUrl, vnf_info['tenant_id'], vnf_info['user_id'], roleAdminId, token)
           tenant_token = openstackAuthentication(keystoneUrl, tenant_name, vnf_info['username'], vnf_info['password'])
           secuGroupId = createSecurityGroup(computeUrl, vnf_info['tenant_id'], tenant_token)
           vnf_info['security_group_id'] = secuGroupId
@@ -242,30 +241,33 @@ class OrchestratorNsProvisioner < Sinatra::Application
         rescue
           error = {"info" => "Error creating the Openstack credentials."}
           logger.error error
-          recoverState(keystoneUrl, neturonUrl, vnf_info, @instance['id'].to_s, "", error, token)
+          recoverState(keystoneUrl, neutronUrl, vnf_info, @instance['id'].to_s, error, token)
         end
       end
 
-      logger.error @instance
+      logger.debug @instance
 
       networks = []
-      #getNetworkList
       publicNetworkId = publicNetworkId(neutronUrl, tenant_token)
-      vnf_info['router_id'] =  createRouter(neutronUrl, publicNetworkId, tenant_token)
+      vnf_info['router_id'] = createRouter(neutronUrl, publicNetworkId, tenant_token)
       virtual_links = nsd['vld']['virtual_links']
       nsd['vld']['virtual_links'].each_with_index do |vlink, index|
         if vlink['flavor_ref_id'] == flavour
           logger.error vlink['merge']
-            begin
-              networkId = createNetwork(neutronUrl, vlink['alias'], tenant_token)
-              subnetId = createSubnetwork(neutronUrl, networkId, index, tenant_token)
-              addInterfaceToRouter(neutronUrl, @instance['router_id'], subnetId, tenant_token)
-              networks.push({:id => networkId, :alias => vlink['alias'], :subnet => {:id => subnetId}})
-            rescue
-              error = "Error creating networks or adding interfaces."
-              logger.error error
-              recoverState(keystoneUrl, neturonUrl, vnf_info, @instance['id'].to_s, error, token)
-            end
+          if(vlink['merge'])
+            #TODO
+            #use the same network
+          end
+          begin
+            networkId = createNetwork(neutronUrl, vlink['alias'], tenant_token)
+            subnetId = createSubnetwork(neutronUrl, networkId, index, tenant_token)
+            addInterfaceToRouter(neutronUrl, vnf_info['router_id'], subnetId, tenant_token)
+            networks.push({:id => networkId, :alias => vlink['alias'], :subnet => {:id => subnetId}})
+          rescue
+            error = "Error creating networks or adding interfaces."
+            logger.error error
+            recoverState(keystoneUrl, neturonUrl, vnf_info, @instance['id'].to_s, error, token)
+          end
         end
       end
 

@@ -59,7 +59,6 @@ class NSMonitoring < Sinatra::Application
 		return 400, errors.to_json if errors
 
 		logger.debug json
-		logger.debug json['nsi_id']
 
 		begin
 			response = RestClient.get settings.ns_instance_repository + '/ns-instances/' + json['nsi_id'].to_s, :content_type => :json
@@ -75,20 +74,12 @@ class NSMonitoring < Sinatra::Application
 
 		#read instance info from nsi_id
 		logger.debug @ns_instance
-		logger.debug @ns_instance.to_json
     @ns_instance['vnfs'].each  do |vnf|
       logger.debug vnf
       logger.debug vnf['vnfi_id'][0]
     end
 
-    logger.debug @ns_instance['vnfs']
-    logger.debug @ns_instance['vnfs'][0]
-    logger.debug @ns_instance['vnfs'][0]['vnfi_id']
-    logger.debug @ns_instance['vnfs'][0]['vnfi_id'][0]
-
-		#read the vnfi_id fron there
-
-
+		#read the vnfi_id from there
 		@monitoring_metrics = create_monitoring_metric_object(json)
 		@monitoring_metrics.save!
 
@@ -100,8 +91,6 @@ class NSMonitoring < Sinatra::Application
 					#,:unit => parameter['unit']
 			}
 			logger.error object
-			logger.error object.to_json
-
 
 			#send to VNF-Monitoring the metrics to monitor
 			begin
@@ -140,12 +129,10 @@ class NSMonitoring < Sinatra::Application
 		return 415 unless request.content_type == 'application/json'
 
 		# Validate JSON format
-		enriched, errors = parse_json(request.body.read)
+		response, errors = parse_json(request.body.read)
 		return 400, errors.to_json if errors
 
-    #enriched
-
-    logger.error enriched
+    logger.error response
 
     #NsMonitoringParameter.find_by()
 
@@ -169,23 +156,23 @@ class NSMonitoring < Sinatra::Application
 		end
 
 		begin
-    	#parameter = Parameter.find_by(:id => enriched['parameter_id'])
+    	#parameter = Parameter.find_by(:id => response['parameter_id'])
 		rescue Mongoid::Errors::DocumentNotFound => e
 			#halt 400, "VNF instance no exists"
 		end
 
-	#logger.error parameter['name']
+		#logger.error parameter['name']
     logger.error monMetrics
 
 		#given the parameter_id of this request, search the paramter info of that vnf_id
 
-		#paramInfo = Parameter.find_by(:ns_monitoring_parameter_id => monMetrics['id'], :id => enriched['parameter_id'] )
+		#paramInfo = Parameter.find_by(:ns_monitoring_parameter_id => monMetrics['id'], :id => response['parameter_id'] )
 
     #logger.error paramInfo
 
 		if monMetrics.vnf_instances.length == 1
 			#store value in cassandra
-			data = generateMetric(paramInfo['name'], enriched['value'])
+			data = generateMetric(paramInfo['name'], response['value'])
 			begin
 				RestClient.post settings.ns_monitor_db + '/ns-monitoring/:vnf_instance_id', data.to_json, :content_type => :json, :accept => :json
 			rescue => e
@@ -202,34 +189,34 @@ class NSMonitoring < Sinatra::Application
       next if (vnfInstance['id'] != params['vnf_instance_id'])
       parametersSize = vnfInstance['parameters'].length
       vnfInstance['parameters'].each do |parameters|
-        #next if (vnfInstance['id'] != enriched['parameter_id'])
+        #next if (vnfInstance['id'] != response['parameter_id'])
         logger.error "parameter............................"
 
         @queue = VnfQueue.where(:vnfi_id => vnfInstance['id'])
         if @queue.length == 0
           VnfQueue.new({
                            :vnfi_id => params['vnf_instance_id'],
-                           :parameter_id => enriched['parameter_id'],
-                           :value => enriched['value'],
-                           :timestamp => enriched['timestamp']
+                           :parameter_id => response['parameter_id'],
+                           :value => response['value'],
+                           :timestamp => response['timestamp']
                        }).save!
           #return
         end
 
         @queue.each do |queueValue|
           logger.error queueValue
-          #next if (queueValue['parameter_id'] != enriched['parameter_id'])
-          if enriched['parameter_id'] == queueValue['parameter_id']
-            queueValue.update_attribute(:value, enriched['value'].to_s)
+          #next if (queueValue['parameter_id'] != response['parameter_id'])
+          if response['parameter_id'] == queueValue['parameter_id']
+            queueValue.update_attribute(:value, response['value'].to_s)
             break
-          elsif enriched['parameter_id'] == parameters['id']
+          elsif response['parameter_id'] == parameters['id']
             logger.error "Saving value2 ................................"
-            #if enriched['parameter_id'] == queueValue['parameter_id']
+            #if response['parameter_id'] == queueValue['parameter_id']
             VnfQueue.new({
                              :vnfi_id => params['vnf_instance_id'],
-                             :parameter_id => enriched['parameter_id'],
-                             :value => enriched['value'],
-                             :timestamp => enriched['timestamp']
+                             :parameter_id => response['parameter_id'],
+                             :value => response['value'],
+                             :timestamp => response['timestamp']
                          }).save!
             #return
           end
