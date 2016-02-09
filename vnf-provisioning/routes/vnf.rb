@@ -334,7 +334,7 @@ class OrchestratorVnfProvisioning < Sinatra::Application
       # Build message to send to the NS Manager callback
       vnfi_id = []
       vnfr.vms_id.each {|key, value| vnfi_id << value}
-      ns_manager = { vnfd_id: vnfr.vnfd_reference, vnfi_id: vnfi_id}
+      ns_manager = { vnfd_id: vnfr.vnfd_reference, vnfi_id: vnfi_id, vnfr_id: vnfr.id}
       logger.debug 'NS Manager message: ' + ns_manager.to_json
       begin
         response = RestClient.post "#{stack_info['ns_manager_callback']}", ns_manager.to_json, 'X-Auth-Token' => @client_token, :content_type => :json, :accept => :json
