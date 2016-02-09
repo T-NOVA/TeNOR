@@ -40,6 +40,7 @@ class VnfdToHot
 
 		# Get T-NOVA deployment flavour
 		deployment_information = vnfd['deployment_flavours'].detect{|flavour| flavour['id'] == tnova_flavour}
+		raise CustomException::NoFlavorError, "Flavor #{tnova_flavour} not found" unless deployment_information.nil?
 
 		# Get the vlinks references for the deployment flavour
 		vlinks = deployment_information['vlink_reference']
@@ -66,7 +67,7 @@ class VnfdToHot
 	def parse_outputs(events)
 		outputs = []
 		events.each do |event, event_info|
-			unless event_info.nil?
+			unless event_info.nil? || event_info['template_file'].nil?
 				raise CustomException::InvalidTemplateFileFormat, "Template file format not supported" unless event_info['template_file_format'] == 'json'
 				JSON.parse(event_info['template_file']).each do |id, output|
 					unless outputs.include?(output)

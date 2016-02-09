@@ -56,6 +56,9 @@ class OrchestratorHotGenerator < Sinatra::Application
 		rescue CustomException::InvalidTemplateFileFormat => e
 			logger.error e.message
 			halt 400, e.message
+		rescue CustomException::NoFlavorError => e
+			logger.error e.message
+			halt 400, e.message
 		end
 	end
 end
