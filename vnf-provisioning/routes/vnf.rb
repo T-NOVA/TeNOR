@@ -39,11 +39,11 @@ class OrchestratorVnfProvisioning < Sinatra::Application
     halt 200, interfaces_list.to_json
   end
 
-  # @method get_vnf-provisioning_ns_id
-  # @overload get '/vnf-provisioning/:ns_id'
+  # @method get_vnf-provisioning_network-service_ns_id
+  # @overload get '/vnf-provisioning/network-service/:ns_id'
   #   Get all the VNFRs of a specific NS
   # Get all the VNFRs of a specific NS
-  get '/vnf-provisioning/:nsr_id' do
+  get '/vnf-provisioning/network-service/:nsr_id' do
     begin
       vnfrs = Vnfr.where(nsr_instance: params[:nsr_id])
     rescue => e
@@ -51,6 +51,22 @@ class OrchestratorVnfProvisioning < Sinatra::Application
       halt e.response.code, e.response.body
     end
     logger.debug 'List of VNFRs: ' + vnfrs.to_json
+
+    halt 200, vnfrs.to_json
+  end
+
+  # @method get_vnf-provisioning_vnf-instances
+  # @overload get '/vnf-provisioning/vnf-instances'
+  #   Return all VNF Instances
+  # Return all VNF Instances
+  get '/vnf-provisioning/vnf-instances' do
+    begin
+      vnfrs = Vnfr.all
+    rescue => e
+      logger.error e.response
+      halt e.response.code, e.response.body
+    end
+    logger.debug 'List of all VNFRs: ' + vnfrs.to_json
 
     halt 200, vnfrs.to_json
   end

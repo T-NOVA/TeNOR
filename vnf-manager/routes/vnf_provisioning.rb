@@ -18,15 +18,33 @@
 # @see OrchestratorVnfManager
 class OrchestratorVnfManager < Sinatra::Application
 
-        # @method get_vnf-provisioning_ns_id
-        # @overload get '/vnf-provisioning/:ns_id'
+        # @method get_vnf-provisioning_network-service_ns_id
+        # @overload get '/vnf-provisioning/network-service/:ns_id'
         #   Get all the VNFRs of a specific NS
         #   @param [Integer] ns_id the network service ID
         # Get all the VNFRs of a specific NS
-        get '/vnf-provisioning/:ns_id' do
+        get '/vnf-provisioning/network-service/:ns_id' do
                 # Forward the request to the VNF Provisioning
                 begin
-                        response = RestClient.get settings.vnf_provisioning + '/vnf-provisioning/' + params[:ns_id], 'X-Auth-Token' => @client_token, :accept => :json
+                        response = RestClient.get settings.vnf_provisioning + '/vnf-provisioning/network-service/' + params[:ns_id], 'X-Auth-Token' => @client_token, :accept => :json
+                rescue Errno::ECONNREFUSED
+                        halt 500, 'VNF Provisioning unreachable'
+                rescue => e
+                        logger.error e.response
+                        halt e.response.code, e.response.body
+                end
+
+                halt response.code, response.body
+        end
+
+        # @method get_vnf-provisioning_vnf-instances
+        # @overload get '/vnf-provisioning/vnf-instances'
+        #       Return all VNF Instances
+        # Return all VNF Instances
+        get '/vnf-provisioning/vnf-instances' do
+                # Send request to VNF Provisioning
+                begin
+                        response = RestClient.get settings.vnf_provisioning + '/vnf-provisioning/vnf-instances', 'X-Auth-Token' => @client_token
                 rescue Errno::ECONNREFUSED
                         halt 500, 'VNF Provisioning unreachable'
                 rescue => e
