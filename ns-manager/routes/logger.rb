@@ -32,9 +32,12 @@ class TnovaManager < Sinatra::Application
 		    :headers => { :accept => :json,
 		    :content_type => :json }
 		  ).execute
-    rescue => e
-      return e.response.code, e.response.body
-    end
+		rescue Errno::ECONNREFUSED
+			halt 500, 'ElasticSerch/Logstash unreachable'
+		rescue => e
+			logger.error e.response
+			halt e.response.code, e.response.body
+		end
 
     return response
   end

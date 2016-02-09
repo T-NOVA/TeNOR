@@ -27,8 +27,11 @@ class TnovaManager < Sinatra::Application
 
     begin
       response = RestClient.get  @service.host + ":" + @service.port.to_s + request.fullpath, 'X-Auth-Token' => @client_token, :content_type => :json
+    rescue Errno::ECONNREFUSED
+      halt 500, 'VNF Manager unreachable'
     rescue => e
-      return e.response.code, e.response.body
+      logger.error e.response
+      halt e.response.code, e.response.body
     end
 
     return response.code, response.body
@@ -44,8 +47,11 @@ class TnovaManager < Sinatra::Application
 
     begin
       response = RestClient.get  @service.host + ":" + @service.port.to_s + request.fullpath, 'X-Auth-Token' => @client_token, :content_type => :json
+    rescue Errno::ECONNREFUSED
+      halt 500, 'VNF Manager unreachable'
     rescue => e
-      return e.response.code, e.response.body
+      logger.error e.response
+      halt e.response.code, e.response.body
     end
 
     return response.code, response.body
@@ -65,9 +71,11 @@ class TnovaManager < Sinatra::Application
 
     begin
       response = RestClient.post  @service.host + ":" + @service.port.to_s + request.fullpath, request.body.read, 'X-Auth-Token' => @client_token, :content_type => :json
+    rescue Errno::ECONNREFUSED
+      halt 500, 'VNF Manager unreachable'
     rescue => e
       logger.error e.response
-      return e.response.code, e.response.body
+      halt e.response.code, e.response.body
     end
 
     #updateStatistics('vnfs_created_requests')
@@ -88,9 +96,11 @@ class TnovaManager < Sinatra::Application
 
     begin
       response = RestClient.put  @service.host + ":" + @service.port.to_s + request.fullpath, request.body.read, 'X-Auth-Token' => @client_token, :content_type => :json
+    rescue Errno::ECONNREFUSED
+      halt 500, 'VNF Manager unreachable'
     rescue => e
       logger.error e.response
-      return e.response.code, e.response.body
+      halt e.response.code, e.response.body
     end
 
     return response.code, response.body
@@ -107,8 +117,11 @@ class TnovaManager < Sinatra::Application
 
     begin
       response = RestClient.get  @service.host + ":" + @service.port.to_s + request.fullpath, 'X-Auth-Token' => @client_token, :content_type => :json
+    rescue Errno::ECONNREFUSED
+      halt 500, 'NS Catalogue unreachable'
     rescue => e
-      return e.response.code, e.response.body
+      logger.error e.response
+      halt e.response.code, e.response.body
     end
 
     return response.code, response.body
@@ -125,8 +138,11 @@ class TnovaManager < Sinatra::Application
 
     begin
       response = RestClient.get  @service.host + ":" + @service.port.to_s + request.fullpath, 'X-Auth-Token' => @client_token, :content_type => :json
+    rescue Errno::ECONNREFUSED
+      halt 500, 'NS Catalogue unreachable'
     rescue => e
-      return e.response.code, e.response.body
+      logger.error e.response
+      halt e.response.code, e.response.body
     end
 
     return response.code, response.body
@@ -146,9 +162,11 @@ class TnovaManager < Sinatra::Application
 
     begin
       response = RestClient.post  @service.host + ":" + @service.port.to_s + request.fullpath, request.body.read, 'X-Auth-Token' => @client_token, :content_type => :json
+    rescue Errno::ECONNREFUSED
+      halt 500, 'NS Catalogue unreachable'
     rescue => e
       logger.error e.response
-      return e.response.code, e.response.body
+      halt e.response.code, e.response.body
     end
 
     updateStatistics('ns_created_requests')
@@ -170,9 +188,11 @@ class TnovaManager < Sinatra::Application
 
     begin
       response = RestClient.put  @service.host + ":" + @service.port.to_s + request.fullpath, request.body.read, 'X-Auth-Token' => @client_token, :content_type => :json
+    rescue Errno::ECONNREFUSED
+      halt 500, 'NS Catalogue unreachable'
     rescue => e
       logger.error e.response
-      return e.response.code, e.response.body
+      halt e.response.code, e.response.body
     end
 
     return response.code, response.body
@@ -189,9 +209,11 @@ class TnovaManager < Sinatra::Application
 
     begin
       response = RestClient.delete  @service.host + ":" + @service.port.to_s + request.fullpath, 'X-Auth-Token' => @client_token, :content_type => :json
+    rescue Errno::ECONNREFUSED
+      halt 500, 'NS Catalogue unreachable'
     rescue => e
       logger.error e.response
-      return e.response.code, e.response.body
+      halt e.response.code, e.response.body
     end
 
     return response.code, response.body

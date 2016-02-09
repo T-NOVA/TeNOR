@@ -34,18 +34,22 @@ class TnovaManager < Sinatra::Application
     # Get VNF by id
     begin
       nsd = RestClient.get settings.ns_catalogue + '/network-services/' + instantiation_info['ns_id'].to_s, 'X-Auth-Token' => @client_token
+    rescue Errno::ECONNREFUSED
+      halt 500, 'NS Catalogue unreachable'
     rescue => e
       logger.error e.response
-      return e.response.code, e.response.body
+      halt e.response.code, e.response.body
     end
 
     provisioning = {:nsd => JSON.parse(nsd), :customer_id => "some_id", :nap_id => "some_id", :callbackUrl => instantiation_info['callbackUrl'], :flavour => instantiation_info['flavour']}
 
     begin
       response = RestClient.post @service.host + ":" + @service.port.to_s + request.fullpath, provisioning.to_json, 'X-Auth-Token' => @client_token, :content_type => :json
+    rescue Errno::ECONNREFUSED
+      halt 500, 'NS Provisioning unreachable'
     rescue => e
       logger.error e.response
-      return e.response.code, e.response.body
+      halt e.response.code, e.response.body
     end
 
     updateStatistics('ns_instantiated_requests')
@@ -62,9 +66,11 @@ class TnovaManager < Sinatra::Application
 
     begin
       response = RestClient.put @service.host + ":" + @service.port.to_s + request.fullpath, request.body.read, 'X-Auth-Token' => @client_token, :content_type => :json
+    rescue Errno::ECONNREFUSED
+      halt 500, 'NS Provisioning unreachable'
     rescue => e
       logger.error e.response
-      return e.response.code, e.response.body
+      halt e.response.code, e.response.body
     end
 
     updateStatistics('ns_updated_requests')
@@ -82,9 +88,11 @@ class TnovaManager < Sinatra::Application
 
     begin
       response = RestClient.get @service.host + ":" + @service.port.to_s + request.fullpath, 'X-Auth-Token' => @client_token, :content_type => :json
+    rescue Errno::ECONNREFUSED
+      halt 500, 'NS Provisioning unreachable'
     rescue => e
       logger.error e.response
-      return e.response.code, e.response.body
+      halt e.response.code, e.response.body
     end
 
     return response.code, response.body
@@ -99,9 +107,11 @@ class TnovaManager < Sinatra::Application
 
     begin
       response = RestClient.get @service.host + ":" + @service.port.to_s + request.fullpath, 'X-Auth-Token' => @client_token, :content_type => :json
+    rescue Errno::ECONNREFUSED
+      halt 500, 'NS Provisioning unreachable'
     rescue => e
       logger.error e.response
-      return e.response.code, e.response.body
+      halt e.response.code, e.response.body
     end
 
     return response.code, response.body
@@ -116,9 +126,11 @@ class TnovaManager < Sinatra::Application
 
     begin
       response = RestClient.put @service.host + ":" + @service.port.to_s + request.fullpath, request.body.read, 'X-Auth-Token' => @client_token, :content_type => :json
+    rescue Errno::ECONNREFUSED
+      halt 500, 'NS Provisioning unreachable'
     rescue => e
       logger.error e.response
-      return e.response.code, e.response.body
+      halt e.response.code, e.response.body
     end
 
     return response.code, response.body
@@ -133,9 +145,11 @@ class TnovaManager < Sinatra::Application
 
     begin
       response = RestClient.delete @service.host + ":" + @service.port.to_s + request.fullpath, 'X-Auth-Token' => @client_token, :content_type => :json
+    rescue Errno::ECONNREFUSED
+      halt 500, 'NS Provisioning unreachable'
     rescue => e
       logger.error e.response
-      return e.response.code, e.response.body
+      halt e.response.code, e.response.body
     end
 
     return response.code, response.body
@@ -150,9 +164,11 @@ class TnovaManager < Sinatra::Application
 
     begin
       response = RestClient.post @service.host + ":" + @service.port.to_s + request.fullpath, request.body.read, 'X-Auth-Token' => @client_token, :content_type => :json
+    rescue Errno::ECONNREFUSED
+      halt 500, 'NS Provisioning unreachable'
     rescue => e
       logger.error e.response
-      return e.response.code, e.response.body
+      halt e.response.code, e.response.body
     end
 
     return response.code, response.body
