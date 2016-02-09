@@ -22,4 +22,6 @@ class CustomException
 	class InvalidExtensionError < StandardError; end
 
 	class InvalidTemplateFileFormat < StandardError; end
+
+	class NoFlavorError < StandardError; end
 end
