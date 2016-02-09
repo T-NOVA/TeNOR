@@ -369,7 +369,17 @@ class OrchestratorVnfProvisioning < Sinatra::Application
         auth_token = token_info['access']['token']['id']
         logger.debug 'Token info: ' + token_info.to_json
 
-=begin
+        # Request VIM information about the error
+        begin
+          response = RestClient.get vnfr.stack_url, 'X-Auth-Token' => auth_token, :accept => :json
+        rescue Errno::ECONNREFUSED
+          halt 500, 'VIM unreachable'
+        rescue => e
+          logger.error e.response
+          halt e.response.code, e.response.body
+        end
+        logger.debug 'Response from the VIM about the error: ' + response.to_json
+
         # Request VIM to delete the stack
         begin
           response = RestClient.delete vnfr.stack_url, 'X-Auth-Token' => auth_token, :accept => :json
@@ -380,7 +390,6 @@ class OrchestratorVnfProvisioning < Sinatra::Application
           halt e.response.code, e.response.body
         end
         logger.debug 'Response from VIM to destroy allocated resources: ' + response.to_json
-=end
 
         # Delete the VNFR from mAPI
         begin
