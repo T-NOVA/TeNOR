@@ -19,7 +19,7 @@
 class TnovaManager < Sinatra::Application
 
 	before do
-		logger.debug settings.environment
+
 		if settings.environment == 'development'
 			@client_token = "test-token-client-id"
 			return
