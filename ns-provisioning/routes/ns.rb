@@ -109,58 +109,62 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
     logger.debug @instance
 
-    @instance['vnfs'].each do |vnf|
-      puts vnf
-      event = {:event => "stop"}
-      begin
-        response = RestClient.put settings.vnf_manager + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/config', event.to_json, :content_type => :json
-      rescue Errno::ECONNREFUSED
-        halt 500, 'VNF Manager unreachable'
-      rescue => e
-        logger.error e.response
-        halt e.response.code, e.response.body
-      end
-    end
-
-    @instance['status'] = params['status'].to_s
-    @instance = updateInstance(@instance)
+    popInfo = getPopInfo(@instance['vnf_info']['pop_id'])
+    popUrls = getPopUrls(popInfo['info'][0]['extrainfo'])
 
     if params[:status] === 'terminate'
-      #remove openstack data
-      keystoneUrl = ""
-      neutronUrl = ""
-      popInfo = getPopInfo(@instance['pop_id'])
-      #VIM authentication
-      extra_info = popInfo['info'][0]['extrainfo'].split(" ")
-      for item in extra_info
-        key = item.split('=')[0]
-        if key == 'keystone-endpoint'
-          keystoneUrl = item.split('=')[1]
-        elsif key == 'neutron-endpoint'
-          neutronUrl = item.split('=')[1]
+
+      #destroy vnf instances
+      @instance['vnfs'].each do |vnf|
+        auth = { :tenant => @instance['vnf_info']['tenant_name'], :username => @instance['vnf_info']['username'], :password => @instance['vnf_info']['password'], :url => { :keystone => popUrls[:keystone] } }
+        begin
+          response = RestClient.post settings.vnf_manager + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/destroy', auth.to_json, :content_type => :json
+        rescue Errno::ECONNREFUSED
+          halt 500, 'VNF Manager unreachable'
+        rescue => e
+          logger.error e.response
+          halt e.response.code, e.response.body
         end
+
       end
 
       #terminate VNF
-      token = openstackAuthentication(keystoneUrl, popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
-      deleteRouter(neutronUrl, @instance['vnf_info']['router_id'], token)
-      deleteUser(keystoneUrl, @instance['vnf_info']['user_id'], token)
-      deleteProject(keystoneUrl, @instance['vnf_info']['tenant_id'], token)
-      recoverState(keystoneUrl, neutronUrl, @instance['vnf_info'], @instance['id'].to_s, error, token)
-      removeInstance(@instance)
+      recoverState(extra_info, @instance['vnf_info'], @instance, error, token)
+      #removeInstance(@instance)
     elsif params[:status] === 'stopped'
+
+      @instance['vnfs'].each do |vnf|
+        puts vnf
+        event = {:event => "stop"}
+        begin
+          response = RestClient.put settings.vnf_manager + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/config', event.to_json, :content_type => :json
+        rescue Errno::ECONNREFUSED
+          halt 500, 'VNF Manager unreachable'
+        rescue => e
+          logger.error e.response
+          halt e.response.code, e.response.body
+        end
+      end
+
+      @instance['status'] = params['status'].to_s
+      @instance = updateInstance(@instance)
+
       #terminate VNF
       #halt 400, "Not implemented yet."
       #change status
     end
 
+    halt 200, "Updated correctly."
+
   end
 
+
+  #deprecated
   delete "/ns-instances/:ns_instance_id" do
     begin
       response = RestClient.get settings.ns_instance_repository + '/ns-instances/' + params['ns_instance_id'].to_s, :content_type => :json
     rescue Mongoid::Errors::DocumentNotFound => e
-      logger.error "THis instance id no exists"
+      logger.error "This instance id no exists"
     end
     @instance, errors = parse_json(response)
     logger.debug @instance
@@ -172,16 +176,6 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
 
     popInfo = getPopInfo(vnf['pop_id'])
-    #VIM authentication
-    extra_info = popInfo['info'][0]['extrainfo'].split(" ")
-    for item in extra_info
-      key = item.split('=')[0]
-      if key == 'keystone-endpoint'
-        keystoneUrl = item.split('=')[1]
-      elsif key == 'neutron-endpoint'
-        neutronUrl = item.split('=')[1]
-      end
-    end
 
     #remove openstack data
     @instance['vnfs'].each do |vnf|

@@ -334,4 +334,44 @@ class OrchestratorNsProvisioner < Sinatra::Application
     end
   end
 
+  def deleteNetwork(neutronUrl, networkId, token)
+    begin
+      response = RestClient.delete neutronUrl + '/networks/' + networkId, :content_type => :json, :'X-Auth-Token' => token
+    rescue => e
+      puts e
+      logger.error e
+      if (defined?(e.response)).nil?
+        halt 503, "Keystone not available"
+      end
+      halt e.response.code, e.response.body
+    end
+  end
+
+  def deleteSubnet(neutronUrl, subnetId, token)
+    begin
+      response = RestClient.delete neutronUrl + '/subnets/' + subnetId, :content_type => :json, :'X-Auth-Token' => token
+    rescue => e
+      puts e
+      logger.error e
+      if (defined?(e.response)).nil?
+        halt 503, "Keystone not available"
+      end
+      halt e.response.code, e.response.body
+    end
+  end
+
+  def deleteSecurityGroup(computeUrl, tenant_id, sec_group_id, token)
+
+    begin
+      response = RestClient.delete computeUrl + '/' + tenant_id + '/os-security-groups/' + sec_group_id, :content_type => :json, :'X-Auth-Token' => token
+    rescue => e
+      puts e
+      logger.error e
+      if (defined?(e.response)).nil?
+        #halt 503, "Neutron not available"
+      end
+      #halt e.response.code, e.response.body
+    end
+  end
+
 end

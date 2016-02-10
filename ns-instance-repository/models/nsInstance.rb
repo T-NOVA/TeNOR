@@ -25,11 +25,10 @@ class NsInstance
   include Mongoid::Attributes::Dynamic
   field :vnfs, type: Array
 
-  field :nsr_instance, type: Array
-  field :ns_id, type: String
+#  field :nsr_instance, type: Array
   field :status, type: String
   field :version, type: String
-  field :vnfrs, type: Array
+#  field :vnfrs, type: Array
   field :marketplace_callback, type: String
 
 end
