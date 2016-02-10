@@ -36,7 +36,7 @@ class VnfdToHot
 	# @return [HOT] returns an HOT object
 	def build(vnfd, tnova_flavour, networks_id, security_group_id)
 		# Parse needed outputs
-		parse_outputs(vnfd['vnf_lifecycle_events'].find{|event| event['flavor_id_ref'] == tnova_flavour})
+		parse_outputs(vnfd['vnf_lifecycle_events'].find{|lifecycle| lifecycle['flavor_id_ref'] == tnova_flavour}['events'])
 
 		# Get T-NOVA deployment flavour
 		deployment_information = vnfd['deployment_flavours'].detect{|flavour| flavour['id'] == tnova_flavour}
@@ -69,7 +69,7 @@ class VnfdToHot
 		outputs = []
 		events.each do |event, event_info|
 			unless event_info.nil? || event_info['template_file'].nil?
-				raise CustomException::InvalidTemplateFileFormat, "Template file format not supported" unless event_info['template_file_format'] == 'json'
+				raise CustomException::InvalidTemplateFileFormat, "Template file format not supported" unless event_info['template_file_format'].downcase == 'json'
 				JSON.parse(event_info['template_file']).each do |id, output|
 					unless outputs.include?(output)
 						outputs << output
