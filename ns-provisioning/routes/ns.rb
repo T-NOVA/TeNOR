@@ -129,7 +129,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
       end
 
       #terminate VNF
-      recoverState(extra_info, @instance['vnf_info'], @instance, error, token)
+      recoverState(popInfo, @instance['vnf_info'], @instance, error, token)
       #removeInstance(@instance)
     elsif params[:status] === 'stopped'
 
@@ -188,8 +188,8 @@ class OrchestratorNsProvisioner < Sinatra::Application
     end
 
     #terminate VNF
-    recoverState(extra_info, @instance['vnf_info'], @instance, error, token)
-    
+    recoverState(popInfo, @instance['vnf_info'], @instance, "Removing instance.")
+
     halt 200, "Instance removed correctly"
   end
 

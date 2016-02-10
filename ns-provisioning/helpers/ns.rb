@@ -23,11 +23,15 @@ class OrchestratorNsProvisioner < Sinatra::Application
       response = RestClient.post settings.vnf_manager + '/vnf-provisioning/vnf-instances', instantiation_info.to_json, :content_type => :json
     rescue => e
       logger.error e
-      if (defined?(e.response)).nil?
+      #if (defined?(e.response)).nil?
         #halt 503, "VNF-Manager unavailable"
-      end
+      #end
       #halt e.response.code, e.response.body
     end
+    puts e
+    error = "Instantiation error"
+
+    generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", error))
   end
 
   def generateMarketplaceResponse(marketplaceUrl, message)
@@ -50,9 +54,9 @@ class OrchestratorNsProvisioner < Sinatra::Application
     return message
   end
 
-  def recoverState(extra_info, vnf_info, instance, error)
+  def recoverState(popInfo, vnf_info, instance, error)
 
-    popUrls = getPopUrls(extra_info)
+    popUrls = getPopUrls(popInfo['info'][0]['extrainfo'])
 
     token = openstackAuthentication(popUrls[:keystone], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
 
@@ -82,6 +86,10 @@ class OrchestratorNsProvisioner < Sinatra::Application
   end
 
   def instantiate(instantiation_info)
+    #start instantiation
+    @instance = createInstance({})
+
+
     #nsd = getNSD(ns['ns_id'].to_s)
     callbackUrl = instantiation_info['callbackUrl']
 
@@ -166,7 +174,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
         rescue
           error = {"info" => "Error creating the Openstack credentials."}
           logger.error error
-          recoverState(extra_info, vnf_info, @instance, error)
+          recoverState(popInfo, vnf_info, @instance, error)
         end
       end
 
@@ -191,7 +199,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
           rescue
             error = "Error creating networks or adding interfaces."
             logger.error error
-            recoverState(extra_info, vnf_info, @instance, error)
+            recoverState(popInfo, vnf_info, @instance, error)
           end
         end
       end
