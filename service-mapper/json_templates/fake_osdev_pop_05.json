@@ -1,0 +1,106 @@
+[
+  {
+    "actions": [], 
+    "attributes": {}, 
+    "identifier": "/pop/fcf8ac47-9310-4fd3-9707-29588d2e4f7d/osdev/control_OSDev_em1", 
+    "kind": {
+      "attributes": {
+        "occi.epa.attributes": "immutable", 
+        "occi.epa.category": "immutable", 
+        "occi.epa.hostname": "immutable", 
+        "occi.epa.name": "immutable", 
+        "occi.epa.pop": "immutable", 
+        "occi.epa.pop_id": "immutable", 
+        "occi.epa.resource_type": "immutable", 
+        "occi.epa.timestamp": "immutable"
+      }, 
+      "location": "/osdev/", 
+      "related": [
+        "http://schemas.ogf.org/occi/core#resource"
+      ], 
+      "scheme": "http://schemas.ogf.org/occi/epa#", 
+      "term": "osdev", 
+      "title": "Operating system device"
+    }, 
+    "links": [], 
+    "mixins": []
+  },
+    {
+    "actions": [], 
+    "attributes": {}, 
+    "identifier": "/pop/fcf8ac47-9310-4fd3-9707-29588d2e4f7d/osdev/control_OSDev_em1", 
+    "kind": {
+      "attributes": {
+        "occi.epa.attributes": "immutable", 
+        "occi.epa.category": "immutable", 
+        "occi.epa.hostname": "immutable", 
+        "occi.epa.name": "immutable", 
+        "occi.epa.pop": "immutable", 
+        "occi.epa.pop_id": "immutable", 
+        "occi.epa.resource_type": "immutable", 
+        "occi.epa.timestamp": "immutable"
+      }, 
+      "location": "/osdev/", 
+      "related": [
+        "http://schemas.ogf.org/occi/core#resource"
+      ], 
+      "scheme": "http://schemas.ogf.org/occi/epa#", 
+      "term": "osdev", 
+      "title": "Operating system device"
+    }, 
+    "links": [], 
+    "mixins": []
+  },
+    {
+    "actions": [], 
+    "attributes": {}, 
+    "identifier": "/pop/fcf8ac47-9310-4fd3-9707-29588d2e4f7d/osdev/control_OSDev_em1", 
+    "kind": {
+      "attributes": {
+        "occi.epa.attributes": "immutable", 
+        "occi.epa.category": "immutable", 
+        "occi.epa.hostname": "immutable", 
+        "occi.epa.name": "immutable", 
+        "occi.epa.pop": "immutable", 
+        "occi.epa.pop_id": "immutable", 
+        "occi.epa.resource_type": "immutable", 
+        "occi.epa.timestamp": "immutable"
+      }, 
+      "location": "/osdev/", 
+      "related": [
+        "http://schemas.ogf.org/occi/core#resource"
+      ], 
+      "scheme": "http://schemas.ogf.org/occi/epa#", 
+      "term": "osdev", 
+      "title": "Operating system device"
+    }, 
+    "links": [], 
+    "mixins": []
+  },
+    {
+    "actions": [], 
+    "attributes": {}, 
+    "identifier": "/pop/fcf8ac47-9310-4fd3-9707-29588d2e4f7d/osdev/control_OSDev_em1", 
+    "kind": {
+      "attributes": {
+        "occi.epa.attributes": "immutable", 
+        "occi.epa.category": "immutable", 
+        "occi.epa.hostname": "immutable", 
+        "occi.epa.name": "immutable", 
+        "occi.epa.pop": "immutable", 
+        "occi.epa.pop_id": "immutable", 
+        "occi.epa.resource_type": "immutable", 
+        "occi.epa.timestamp": "immutable"
+      }, 
+      "location": "/osdev/", 
+      "related": [
+        "http://schemas.ogf.org/occi/core#resource"
+      ], 
+      "scheme": "http://schemas.ogf.org/occi/epa#", 
+      "term": "osdev", 
+      "title": "Operating system device"
+    }, 
+    "links": [], 
+    "mixins": []
+  }
+]

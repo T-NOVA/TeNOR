@@ -1,0 +1,96 @@
+[
+  {
+   "actions": [], 
+   "attributes": {}, 
+   "identifier": "/pcidev/compute1_PCIDev_4096", 
+   "kind": {
+     "attributes": {
+       "occi.epa.attributes": "immutable", 
+       "occi.epa.category": "immutable", 
+       "occi.epa.hostname": "immutable", 
+       "occi.epa.name": "immutable", 
+       "occi.epa.pop": "immutable", 
+       "occi.epa.pop_id": "immutable", 
+       "occi.epa.resource_type": "immutable", 
+       "occi.epa.timestamp": "immutable"
+     }, 
+     "location": "/pcidev/", 
+     "related": [
+       "http://schemas.ogf.org/occi/core#resource"
+     ], 
+     "scheme": "http://schemas.ogf.org/occi/epa#", 
+     "term": "pcidev", 
+     "title": "PCI Device"
+   }, 
+   "links": [
+     {
+       "actions": [], 
+       "attributes": {}, 
+       "identifier": "/pcidev/link/compute1_PCIDev_4096->compute1_OSDev_enp1s0f0", 
+       "kind": {
+         "attributes": {
+           "occi.epa.label": "immutable"
+         }, 
+         "location": "/pcidev/link/", 
+         "related": [
+           "http://schemas.ogf.org/occi/core#link"
+         ], 
+         "scheme": "http://schemas.ogf.org/occi/epa#", 
+         "term": "pcidevlink", 
+         "title": "Link between a PCI device and its resources"
+       }, 
+       "mixins": [], 
+       "source": "/pcidev/compute1_PCIDev_4096", 
+       "target": "/osdev/compute1_OSDev_enp1s0f0"
+     }
+   ], 
+   "mixins": []
+ },
+{
+   "actions": [], 
+   "attributes": {}, 
+   "identifier": "/pcidev/compute1_PCIDev_4097", 
+   "kind": {
+     "attributes": {
+       "occi.epa.attributes": "immutable", 
+       "occi.epa.category": "immutable", 
+       "occi.epa.hostname": "immutable", 
+       "occi.epa.name": "immutable", 
+       "occi.epa.pop": "immutable", 
+       "occi.epa.pop_id": "immutable", 
+       "occi.epa.resource_type": "immutable", 
+       "occi.epa.timestamp": "immutable"
+     }, 
+     "location": "/pcidev/", 
+     "related": [
+       "http://schemas.ogf.org/occi/core#resource"
+     ], 
+     "scheme": "http://schemas.ogf.org/occi/epa#", 
+     "term": "pcidev", 
+     "title": "PCI Device"
+   }, 
+   "links": [
+     {
+       "actions": [], 
+       "attributes": {}, 
+       "identifier": "/pcidev/link/compute1_PCIDev_4097->compute1_OSDev_enp1s0f1", 
+       "kind": {
+         "attributes": {
+           "occi.epa.label": "immutable"
+         }, 
+         "location": "/pcidev/link/", 
+         "related": [
+           "http://schemas.ogf.org/occi/core#link"
+         ], 
+         "scheme": "http://schemas.ogf.org/occi/epa#", 
+         "term": "pcidevlink", 
+         "title": "Link between a PCI device and its resources"
+       }, 
+       "mixins": [], 
+       "source": "/pcidev/compute1_PCIDev_4097", 
+       "target": "/osdev/compute1_OSDev_enp1s0f1"
+     }
+   ], 
+   "mixins": []
+ }
+]

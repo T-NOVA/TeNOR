@@ -1,0 +1,143 @@
+[
+ {
+   "actions": [], 
+   "attributes": {}, 
+   "identifier": "/hypervisor/hypervisor-1", 
+   "kind": {
+     "attributes": {
+       "occi.epa.attributes": "immutable", 
+       "occi.epa.category": "immutable", 
+       "occi.epa.hostname": "immutable", 
+       "occi.epa.name": "immutable", 
+       "occi.epa.pop": "immutable", 
+       "occi.epa.pop_id": "immutable", 
+       "occi.epa.resource_type": "immutable", 
+       "occi.epa.timestamp": "immutable"
+     }, 
+     "location": "/hypervisor/", 
+     "related": [
+       "http://schemas.ogf.org/occi/core#resource"
+     ], 
+     "scheme": "http://schemas.ogf.org/occi/epa#", 
+     "term": "hypervisor", 
+     "title": "Hypervisor"
+   }, 
+   "links": [
+     {
+       "actions": [], 
+       "attributes": {}, 
+       "identifier": "/hypervisor/link/hypervisor-1->compute1_Machine_0", 
+       "kind": {
+         "attributes": {
+           "occi.epa.label": "immutable"
+         }, 
+         "location": "/hypervisor/link/", 
+         "related": [
+           "http://schemas.ogf.org/occi/core#link"
+         ], 
+         "scheme": "http://schemas.ogf.org/occi/epa#", 
+         "term": "hypervisorlink", 
+         "title": "Link between an hypervisor and its resources"
+       }, 
+       "mixins": [], 
+       "source": "/hypervisor/hypervisor-1", 
+       "target": "/machine/compute1_Machine_0"
+     }
+   ], 
+   "mixins": []
+ },
+  {
+   "actions": [], 
+   "attributes": {}, 
+   "identifier": "/hypervisor/hypervisor-2", 
+   "kind": {
+     "attributes": {
+       "occi.epa.attributes": "immutable", 
+       "occi.epa.category": "immutable", 
+       "occi.epa.hostname": "immutable", 
+       "occi.epa.name": "immutable", 
+       "occi.epa.pop": "immutable", 
+       "occi.epa.pop_id": "immutable", 
+       "occi.epa.resource_type": "immutable", 
+       "occi.epa.timestamp": "immutable"
+     }, 
+     "location": "/hypervisor/", 
+     "related": [
+       "http://schemas.ogf.org/occi/core#resource"
+     ], 
+     "scheme": "http://schemas.ogf.org/occi/epa#", 
+     "term": "hypervisor", 
+     "title": "Hypervisor"
+   }, 
+   "links": [
+     {
+       "actions": [], 
+       "attributes": {}, 
+       "identifier": "/hypervisor/link/hypervisor-2->compute2_Machine_0", 
+       "kind": {
+         "attributes": {
+           "occi.epa.label": "immutable"
+         }, 
+         "location": "/hypervisor/link/", 
+         "related": [
+           "http://schemas.ogf.org/occi/core#link"
+         ], 
+         "scheme": "http://schemas.ogf.org/occi/epa#", 
+         "term": "hypervisorlink", 
+         "title": "Link between an hypervisor and its resources"
+       }, 
+       "mixins": [], 
+       "source": "/hypervisor/hypervisor-2", 
+       "target": "/machine/compute2_Machine_0"
+     }
+   ], 
+   "mixins": []
+ },
+ {
+   "actions": [], 
+   "attributes": {}, 
+   "identifier": "/hypervisor/hypervisor-3", 
+   "kind": {
+     "attributes": {
+       "occi.epa.attributes": "immutable", 
+       "occi.epa.category": "immutable", 
+       "occi.epa.hostname": "immutable", 
+       "occi.epa.name": "immutable", 
+       "occi.epa.pop": "immutable", 
+       "occi.epa.pop_id": "immutable", 
+       "occi.epa.resource_type": "immutable", 
+       "occi.epa.timestamp": "immutable"
+     }, 
+     "location": "/hypervisor/", 
+     "related": [
+       "http://schemas.ogf.org/occi/core#resource"
+     ], 
+     "scheme": "http://schemas.ogf.org/occi/epa#", 
+     "term": "hypervisor", 
+     "title": "Hypervisor"
+   }, 
+   "links": [
+     {
+       "actions": [], 
+       "attributes": {}, 
+       "identifier": "/hypervisor/link/hypervisor-3->controller_Machine_0", 
+       "kind": {
+         "attributes": {
+           "occi.epa.label": "immutable"
+         }, 
+         "location": "/hypervisor/link/", 
+         "related": [
+           "http://schemas.ogf.org/occi/core#link"
+         ], 
+         "scheme": "http://schemas.ogf.org/occi/epa#", 
+         "term": "hypervisorlink", 
+         "title": "Link between an hypervisor and its resources"
+       }, 
+       "mixins": [], 
+       "source": "/hypervisor/hypervisor-3", 
+       "target": "/machine/controller_Machine_0"
+     }
+   ], 
+   "mixins": []
+ }
+]

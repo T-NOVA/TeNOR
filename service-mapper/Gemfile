@@ -1,0 +1,18 @@
+source 'https://rubygems.org'
+
+gem 'sinatra'
+gem 'thin'
+gem 'json'
+gem 'sinatra-contrib'
+gem 'nokogiri'
+gem 'json-schema'
+gem 'rest-client'
+gem 'rake'
+
+group :development do
+	gem 'rerun'
+end
+
+group :doc do
+	gem 'yard', '~>0.8'
+end
