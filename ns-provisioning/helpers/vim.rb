@@ -19,16 +19,13 @@
 class OrchestratorNsProvisioner < Sinatra::Application
 
   def openstackAdminAuthentication(keystoneUrl, user, password)
-    auth = { :auth => { :tenantName => "t-nova", :passwordCredentials => { :username => user, :password => password } } }
+    auth = {:auth => {:tenantName => "t-nova", :passwordCredentials => {:username => user, :password => password}}}
 
     begin
       response = RestClient.post keystoneUrl + '/tokens', auth.to_json, :content_type => :json
     rescue => e
       logger.error e
-      if (defined?(e.response)).nil?
-        halt 503, "Keystone not available"
-      end
-      halt e.response.code, e.response.body
+      logger.error e.response.body
     end
 
     authentication, errors = parse_json(response)
@@ -37,17 +34,14 @@ class OrchestratorNsProvisioner < Sinatra::Application
     return authentication['access']['token']['id']
   end
 
-  def openstackAuthentication(keystoneUrl, tenantName, user, password)
-    auth = { :auth => { :tenantName => tenantName, :passwordCredentials => { :username => user, :password => password } } }
+  def openstackAuthentication(keystoneUrl, tenantId, user, password)
+    auth = {:auth => {:tenantId => tenantId, :passwordCredentials => {:username => user, :password => password}}}
 
     begin
       response = RestClient.post keystoneUrl + '/tokens', auth.to_json, :content_type => :json
     rescue => e
       logger.error e
-      if (defined?(e.response)).nil?
-        halt 503, "Keystone not available"
-      end
-      halt e.response.code, e.response.body
+      logger.error e.response.body
     end
 
     authentication, errors = parse_json(response)
@@ -57,7 +51,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
   end
 
   def createTenant(keystoneUrl, projectName, token)
-    project = { :tenant => { :description => "Tenant created by TenOr", :enabled => true, :name => projectName }}
+    project = {:tenant => {:description => "Tenant created by TenOr", :enabled => true, :name => projectName}}
 
     begin
       return getTenantId(keystoneUrl, tenantName, token)
@@ -66,10 +60,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
         response = RestClient.post keystoneUrl + '/tenants', project.to_json, :content_type => :json, :'X-Auth-Token' => token
       rescue => e
         logger.error e
-        if (defined?(e.response)).nil?
-          halt 503, "Keystone not available"
-        end
-        halt e.response.code, e.response.body
+        logger.error e.response.body
       end
 
       project, errors = parse_json(response)
@@ -80,7 +71,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
   end
 
   def createUser(keystoneUrl, projectId, userName, password, token)
-    user = { :user => { :email => userName+"@tenor-tnova.eu", :enabled => true, :name => userName, :password => password, :tenantId => projectId}}
+    user = {:user => {:email => userName+"@tenor-tnova.eu", :enabled => true, :name => userName, :password => password, :tenantId => projectId}}
 
     begin
       return getUserId(keystoneUrl, userName, token)
@@ -89,10 +80,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
         response = RestClient.post keystoneUrl + '/users', user.to_json, :content_type => :json, :'X-Auth-Token' => token
       rescue => e
         logger.error e
-        if (defined?(e.response)).nil?
-          halt 503, "Keystone not available"
-        end
-        halt e.response.code, e.response.body
+        logger.error e.response.body
       end
       user, errors = parse_json(response)
       return 400, errors if errors
@@ -106,10 +94,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
       response = RestClient.delete keystoneUrl + '/tenants/'+tenant_id, :content_type => :json, :'X-Auth-Token' => token
     rescue => e
       logger.error e
-      if (defined?(e.response)).nil?
-        halt 503, "Keystone not available"
-      end
-      halt e.response.code, e.response.body
+      logger.error e.response.body
     end
     return
   end
@@ -119,10 +104,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
       response = RestClient.delete keystoneUrl + '/users/'+user_id, :content_type => :json, :'X-Auth-Token' => token
     rescue => e
       logger.error e
-      if (defined?(e.response)).nil?
-        halt 503, "Keystone not available"
-      end
-      halt e.response.code, e.response.body
+      logger.error e.response.body
     end
 
     return
@@ -133,10 +115,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
       response = RestClient.get keystoneUrl + '/tenants', :content_type => :json, :'X-Auth-Token' => token
     rescue => e
       logger.error e
-      if (defined?(e.response)).nil?
-        halt 503, "Keystone not available"
-      end
-      halt e.response.code, e.response.body
+      logger.error e.response.body
     end
 
     tenants = parse_json(response)
@@ -152,10 +131,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
       response = RestClient.get keystoneUrl + '/users', :content_type => :json, :'X-Auth-Token' => token
     rescue => e
       logger.error e
-      if (defined?(e.response)).nil?
-        halt 503, "Keystone not available"
-      end
-      halt e.response.code, e.response.body
+      logger.error e.response.body
     end
 
     users = parse_json(response)
@@ -168,32 +144,26 @@ class OrchestratorNsProvisioner < Sinatra::Application
   end
 
   def createNetwork(neutronUrl, name, token)
-    network = { :network => { :name => name }}
+    network = {:network => {:name => name}}
 
     begin
       response = RestClient.post neutronUrl + '/networks', network.to_json, :content_type => :json, :'X-Auth-Token' => token
     rescue => e
       logger.error e
-      if (defined?(e.response)).nil?
-        halt 503, "Keystone not available"
-      end
-      halt e.response.code, e.response.body
+      logger.error e.response.body
     end
     net, errors = parse_json(response)
     return net['network']['id']
   end
 
   def createSubnetwork(neutronUrl, networkId, index, token)
-    subnetwork = { :subnet => { :network_id => networkId, :ip_version => 4, :cidr => "192.168." + index.to_s + ".0/24"}}
+    subnetwork = {:subnet => {:network_id => networkId, :ip_version => 4, :cidr => "192.168." + index.to_s + ".0/24"}}
 
     begin
       response = RestClient.post neutronUrl + '/subnets', subnetwork.to_json, :content_type => :json, :'X-Auth-Token' => token
     rescue => e
       logger.error e
-      if (defined?(e.response)).nil?
-        halt 503, "Keystone not available"
-      end
-      halt e.response.code, e.response.body
+      logger.error e.response.body
     end
     subnet, errors = parse_json(response)
     return subnet['subnet']['id']
@@ -201,32 +171,26 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
   def getAdminRole(keystoneUrl, token)
     begin
-        response = RestClient.get keystoneUrl + '/OS-KSADM/roles', :content_type => :json, :'X-Auth-Token' => token
+      response = RestClient.get keystoneUrl + '/OS-KSADM/roles', :content_type => :json, :'X-Auth-Token' => token
     rescue => e
-        logger.error e
-        if (defined?(e.response)).nil?
-          halt 503, "Keystone not available"
-        end
-        halt e.response.code, e.response.body
+      logger.error e
+      logger.error e.response.body
     end
     roles, errors = parse_json(response)
     return 400, errors if errors
 
-    role = roles['roles'].find{ |role| role['name'] == 'admin'}
+    role = roles['roles'].find { |role| role['name'] == 'admin' }
     return role['id']
   end
 
   def putRole(keystoneUrl, tenant_id, user_id, role_id, token)
-      begin
-        response = RestClient.put keystoneUrl + '/tenants/'+tenant_id+'/users/'+user_id+'/roles/OS-KSADM/'+role_id, "", :content_type => :json, :'X-Auth-Token' => token
-      rescue => e
-        logger.error e
-        if (defined?(e.response)).nil?
-          halt 503, "Keystone not available"
-        end
-        halt e.response.code, e.response.body
-      end
-      status 200
+    begin
+      response = RestClient.put keystoneUrl + '/tenants/'+tenant_id+'/users/'+user_id+'/roles/OS-KSADM/'+role_id, "", :content_type => :json, :'X-Auth-Token' => token
+    rescue => e
+      logger.error e
+      logger.error e.response.body
+    end
+    status 200
   end
 
   def publicNetworkId(neutronUrl, token)
@@ -234,13 +198,10 @@ class OrchestratorNsProvisioner < Sinatra::Application
       response = RestClient.get neutronUrl + '/networks', :content_type => :json, :'X-Auth-Token' => token
     rescue => e
       logger.error e
-      if (defined?(e.response)).nil?
-        halt 503, "Keystone not available"
-      end
-      halt e.response.code, e.response.body
+      logger.error e.response.body
     end
     networks, errors = parse_json(response)
-    network = networks['networks'].find{ |role| role['name'] == 'public'}
+    network = networks['networks'].find { |role| role['name'] == 'public' }
     return network['id']
   end
 
@@ -251,47 +212,37 @@ class OrchestratorNsProvisioner < Sinatra::Application
       response = RestClient.post neutronUrl + '/routers', router.to_json, :content_type => :json, :'X-Auth-Token' => token
     rescue => e
       logger.error e
-      if (defined?(e.response)).nil?
-        halt 503, "Keystone not available"
-      end
-      halt e.response.code, e.response.body
+      logger.error e.response.body
     end
     router, errors = parse_json(response)
     return router['router']['id']
   end
 
   def addInterfaceToRouter(neutronUrl, router_id, subnet_id, token)
-    router_info = { :subnet_id => subnet_id }
+    router_info = {:subnet_id => subnet_id}
 
     begin
       response = RestClient.put neutronUrl + '/routers/' + router_id + '/add_router_interface', router_info.to_json, :content_type => :json, :'X-Auth-Token' => token
     rescue => e
       logger.error e
-      if (defined?(e.response)).nil?
-        halt 503, "Neutron not available"
-      end
-      halt e.response.code, e.response.body
+      logger.error e.response.body
     end
     status 200
   end
 
   def createSecurityGroup(computeUrl, tenant_id, token)
     securityGroup = {
-        :security_group=> {
-        :name =>  "tenor_security_group_" + tenant_id,
-        :description =>  "A security group created by Tenor"
-      }
+        :security_group => {
+            :name => "tenor_security_group_" + tenant_id,
+            :description => "A security group created by Tenor"
+        }
     }
 
     begin
       response = RestClient.post computeUrl + '/' + tenant_id + '/os-security-groups', securityGroup.to_json, :content_type => :json, :'X-Auth-Token' => token
     rescue => e
-      puts e
       logger.error e
-      if (defined?(e.response)).nil?
-        #halt 503, "Neutron not available"
-      end
-      #halt e.response.code, e.response.body
+      logger.error e.response.body
     end
     sec, error = parse_json(response)
     return sec['security_group']['id']
@@ -300,23 +251,19 @@ class OrchestratorNsProvisioner < Sinatra::Application
   def addRulesToTenant(computeUrl, tenant_id, security_group_id, protocol, token, from, to)
     role = {
         :security_group_rule => {
-        :ip_protocol =>  protocol,
-        :from_port =>  from,
-        :to_port =>  to,
-        :cidr => "0.0.0.0/0",
-        :parent_group_id => security_group_id
-      }
+            :ip_protocol => protocol,
+            :from_port => from,
+            :to_port => to,
+            :cidr => "0.0.0.0/0",
+            :parent_group_id => security_group_id
+        }
     }
 
     begin
       response = RestClient.post computeUrl + '/' + tenant_id + '/os-security-group-rules', role.to_json, :content_type => :json, :'X-Auth-Token' => token
     rescue => e
-      puts e
       logger.error e
-      if (defined?(e.response)).nil?
-        #halt 503, "Neutron not available"
-      end
-      #halt e.response.code, e.response.body
+      logger.error e.response.body
     end
     status 200
   end
@@ -325,12 +272,8 @@ class OrchestratorNsProvisioner < Sinatra::Application
     begin
       response = RestClient.delete neutronUrl + '/routers/' + routerId, :content_type => :json, :'X-Auth-Token' => token
     rescue => e
-      puts e
       logger.error e
-      if (defined?(e.response)).nil?
-        halt 503, "Keystone not available"
-      end
-      halt e.response.code, e.response.body
+      logger.error e.response.body
     end
   end
 
@@ -338,12 +281,8 @@ class OrchestratorNsProvisioner < Sinatra::Application
     begin
       response = RestClient.delete neutronUrl + '/networks/' + networkId, :content_type => :json, :'X-Auth-Token' => token
     rescue => e
-      puts e
       logger.error e
-      if (defined?(e.response)).nil?
-        halt 503, "Keystone not available"
-      end
-      halt e.response.code, e.response.body
+      logger.error e.response.body
     end
   end
 
@@ -351,12 +290,8 @@ class OrchestratorNsProvisioner < Sinatra::Application
     begin
       response = RestClient.delete neutronUrl + '/subnets/' + subnetId, :content_type => :json, :'X-Auth-Token' => token
     rescue => e
-      puts e
       logger.error e
-      if (defined?(e.response)).nil?
-        halt 503, "Keystone not available"
-      end
-      halt e.response.code, e.response.body
+      logger.error e.response.body
     end
   end
 
@@ -365,12 +300,40 @@ class OrchestratorNsProvisioner < Sinatra::Application
     begin
       response = RestClient.delete computeUrl + '/' + tenant_id + '/os-security-groups/' + sec_group_id, :content_type => :json, :'X-Auth-Token' => token
     rescue => e
-      puts e
       logger.error e
-      if (defined?(e.response)).nil?
-        #halt 503, "Neutron not available"
-      end
-      #halt e.response.code, e.response.body
+      logger.error e.response.body
+    end
+  end
+
+  def getRouterPorts(neutronUrl, router_id, token)
+
+    begin
+      response = RestClient.get neutronUrl + '/ports?device_id=' + router_id, :content_type => :json, :'X-Auth-Token' => token
+    rescue => e
+      logger.error e
+      logger.error e.response.body
+    end
+    ports, error = parse_json(response)
+    return ports['ports']
+  end
+
+  def deleteRouterPorts(neutronUrl, port_id, token)
+
+    begin
+      response = RestClient.delete neutronUrl + '/ports/' + port_id, :content_type => :json, :'X-Auth-Token' => token
+    rescue => e
+      logger.error e
+      logger.error e.response.body
+    end
+  end
+
+  def updateRouterPorts(neutronUrl, port_id, token)
+    port = {:port => {:admin_state_up => false, :device_owner => ""}}
+    begin
+      response = RestClient.put neutronUrl + '/ports/' + port_id, port.to_json, :content_type => :json, :'X-Auth-Token' => token
+    rescue => e
+      logger.error e
+      logger.error e.response.body
     end
   end
 

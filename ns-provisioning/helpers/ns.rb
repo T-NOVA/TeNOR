@@ -24,7 +24,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
     rescue => e
       logger.error e
       #if (defined?(e.response)).nil?
-        #halt 503, "VNF-Manager unavailable"
+      #halt 503, "VNF-Manager unavailable"
       #end
       #halt e.response.code, e.response.body
     end
@@ -58,20 +58,36 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
     popUrls = getPopUrls(popInfo['info'][0]['extrainfo'])
 
-    token = openstackAuthentication(popUrls[:keystone], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
+    #token = openstackAdminAuthentication(popUrls[:keystone], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
+    tenant_token = openstackAuthentication(popUrls[:keystone], vnf_info['tenant_id'], vnf_info['username'], vnf_info['password'])
+    token = openstackAdminAuthentication(popUrls[:keystone], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
+
+
+    if (!vnf_info['router_id'].nil?)
+      ports = getRouterPorts(popUrls[:neutron], vnf_info['router_id'], tenant_token)
+      ports.each do |port|
+        puts port
+        if (port['tenant_id'] != "")
+          updateRouterPorts(popUrls[:neutron], port['id'], tenant_token)
+          deleteRouterPorts(popUrls[:neutron], port['id'], tenant_token)
+        end
+      end
+    end
 
     if (!instance['networks'].nil?)
       instance['networks'].each do |network|
-        network['subnet'].each do |subnet|
-          deleteSubnet(popUrls[:neutron], subnet['id'])
-        end
-        deleteNetwork(popUrls[:neutron], network['id'])
+        deleteSubnet(popUrls[:neutron], network['subnet']['id'], tenant_token)
+        #network['subnet'].each do |subnet|
+        #  deleteSubnet(popUrls[:neutron], subnet['id'])
+        #end
+        deleteNetwork(popUrls[:neutron], network['id'], tenant_token)
       end
     end
 
     if (!vnf_info['router_id'].nil?)
-      deleteRouter(popUrls[:neutron], vnf_info['router_id'], token)
+      deleteRouter(popUrls[:neutron], vnf_info['router_id'], tenant_token)
     end
+
 
     if (!vnf_info['security_group_id'].nil?)
       deleteSecurityGroup(popUrls[:compute], vnf_info['tenant_id'], vnf_info['security_group_id'], token)
@@ -162,7 +178,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
           roleAdminId = getAdminRole(popUrls[:keystone], token)
           putRole(popUrls[:keystone], vnf_info['tenant_id'], vnf_info['user_id'], roleAdminId, token)
-          tenant_token = openstackAuthentication(popUrls[:keystone], tenant_name, vnf_info['username'], vnf_info['password'])
+          tenant_token = openstackAuthentication(popUrls[:keystone], vnf_info['tenant_id'], vnf_info['username'], vnf_info['password'])
           secuGroupId = createSecurityGroup(popUrls[:compute], vnf_info['tenant_id'], tenant_token)
           vnf_info['security_group_id'] = secuGroupId
           addRulesToTenant(popUrls[:compute], vnf_info['tenant_id'], secuGroupId, 'TCP', tenant_token, 1, 65535)
@@ -187,7 +203,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
       nsd['vld']['virtual_links'].each_with_index do |vlink, index|
         if vlink['flavor_ref_id'] == flavour
           logger.error vlink['merge']
-          if(vlink['merge'])
+          if (vlink['merge'])
             #TODO
             #use the same network
           end
