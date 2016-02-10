@@ -1,0 +1,117 @@
+{
+    "number_of_endpoints": 0,
+    "virtual_links": [
+      {
+        "vld_id": "vld0",
+        "alias": "management",
+        "flavor_ref_id": "flavor0",
+        "root_requirements": "Unlimeted",
+        "leaf_requirement": "Unlimeted",
+        "qos": {
+          "average": "",
+          "peak": "",
+          "burst": ""
+        },
+        "connections": [
+          "56af5b48b18cfb2ee8000000:ext_management"
+        ],
+        "connectivity_type": "E-LAN",
+        "external_access": true,
+        "merge": true
+      },
+      {
+        "vld_id": "vld1",
+        "alias": "data",
+        "flavor_ref_id": "flavor0",
+        "root_requirements": "Unlimeted",
+        "leaf_requirement": "Unlimeted",
+        "qos": {
+          "average": "",
+          "peak": "",
+          "burst": ""
+        },
+        "connections": [
+          "data_in",
+          "56af5b48b18cfb2ee8000000:ext_data_in"
+        ],
+        "connectivity_type": "E-LINE",
+        "external_access": true,
+        "merge": false
+      },
+      {
+        "vld_id": "vld2",
+        "alias": "management",
+        "flavor_ref_id": "flavor1",
+        "root_requirements": "Unlimeted",
+        "leaf_requirement": "Unlimeted",
+        "qos": {
+          "average": "",
+          "peak": "",
+          "burst": ""
+        },
+        "connections": [
+          "56af5b48b18cfb2ee8000000:ext_management"
+        ],
+        "connectivity_type": "E-LAN",
+        "external_access": true,
+        "merge": true
+      },
+      {
+        "vld_id": "vld3",
+        "alias": "data",
+        "flavor_ref_id": "flavor1",
+        "root_requirements": "Unlimeted",
+        "leaf_requirement": "Unlimeted",
+        "qos": {
+          "average": "",
+          "peak": "",
+          "burst": ""
+        },
+        "connections": [
+        "data_in",
+        "56af5b48b18cfb2ee8000000:ext_data_in"
+        ],
+        "connectivity_type": "E-LINE",
+        "external_access": true,
+        "merge": false
+      },
+      {
+        "vld_id": "vld5",
+        "alias": "data",
+        "flavor_ref_id": "flavor0",
+        "root_requirements": "Unlimeted",
+        "leaf_requirement": "Unlimeted",
+        "qos": {
+          "average": "",
+          "peak": "",
+          "burst": ""
+        },
+        "connections": [
+        "56af5b48b18cfb2ee8000000:ext_data_in",
+        "data_out"
+        ],
+        "connectivity_type": "E-LINE",
+        "external_access": true,
+        "merge": false
+      },
+      {
+        "vld_id": "vld6",
+        "alias": "data",
+        "flavor_ref_id": "flavor1",
+        "root_requirements": "Unlimeted",
+        "leaf_requirement": "Unlimeted",
+        "qos": {
+          "average": "",
+          "peak": "",
+          "burst": ""
+        },
+        "connections": [
+        "56af5b48b18cfb2ee8000000:ext_data_in",
+        "data_out"
+        ],
+        "connectivity_type": "E-LINE",
+        "external_access": true,
+        "merge": false
+      }
+    ]
+  }

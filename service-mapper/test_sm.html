@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<!--
+// Copyright 2014-2016 Universita' degli studi di Milano
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+// -----------------------------------------------------
+//
+// Authors:
+//     Alessandro Petrini (alessandro.petrini@unimi.it)
+//
+// -----------------------------------------------------
+-->
+
+
+<html>
+<head>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+
+	<script type="text/javascript">
+	$(document).ready(function() {
+		$("#sendreq").click(function() {
+			$.ajax({
+				url: "http://localhost:4042/mapper",
+				type: "POST",
+				data: JSON.stringify( {"NS_id": $('#NSid_box').val(),
+									"NS_sla": $('#NSsla_box').val(),
+									"ir_simulation": $('#irsimul_radio:checked').val(),
+									"ns_simulation": $('#nssimul_radio:checked').val(),
+									"alpha": $('#alphaVal_box').val(),
+									"beta": $('#betaVal_box').val(),
+									"gamma": $('#gammaVal_box').val(),
+									"fixVnf01": $('#VNFid01_box').val(),
+									"toPoP01": $('#PoPid01_box').val(),
+								 	"infr_repo_api": $('#irapiVal_box').val(),
+									"tenor_api": $('#tenorapiVal_box').val()} ),
+				dataType: "json",
+				success: function(result) {$("#risult").html( JSON.stringify(result) );
+										   $("#status").html( "Success" );},
+				error:   function(result) {$("#risult").html( JSON.stringify(result) );
+										   $("#status").html( "Error" );},
+			});
+		});
+	});
+	</script>
+
+	<script type="text/javascript">
+	$(document).ready(function() {
+		$("#postreq").click(function() {
+			$.post(	"http://localhost:4042/mapper",
+					JSON.stringify( {"NS_id": $('#NSid_box').val(),
+									"NS_sla": $('#NSsla_box').val(),
+									"ir_simulation": $('#irsimul_radio:checked').val(),
+									"ns_simulation": $('#nssimul_radio:checked').val(),
+									"alpha": $('#alphaVal_box').val(),
+									"beta": $('#betaVal_box').val(),
+									"gamma": $('#gammaVal_box').val(),
+									"fixVnf01": $('#VNFid01_box').val(),
+									"toPoP01": $('#PoPid01_box').val(),
+								 	"infr_repo_api": $('#irapiVal_box').val(),
+									"tenor_api": $('#tenorapiVal_box').val()} ),
+					function(data, status) {$("#risult").html( JSON.stringify(data) );
+											$("#status").html( JSON.stringify(status) );},
+					"json");
+		});
+	});
+	</script>
+
+	<script type="text/javascript">
+	$(document).ready(function() {
+		$("#get_ns").click(function() {
+			$.get(	"http://apis.t-nova.eu/orchestrator/network-services/2",
+					function(data, status) {$("#risult").html( JSON.stringify(data) );
+											$("#status").html( JSON.stringify(status) );},
+					"json");
+		});
+	});
+	</script>
+</head>
+
+<body>
+	<p>
+		I am the Orchestrator
+	</p>
+	<br>
+	<div class="sameline" >
+
+		<form style="display:inline-block" method="POST" action="">
+			Post a request to the Service Mapper:<br>
+			{"NS_id": "<input id="NSid_box" type="text" value="demo1" />"<br>
+			"NS_sla": "<input id="NSsla_box" type="text" value="Gold" />"<br>
+			"Alpha": "<input id="alphaVal_box" type="text" value="" />"<br>
+			"Beta": "<input id="betaVal_box" type="text" value="" />"<br>
+			"Gamma": "<input id="gammaVal_box" type="text" value="" />"<br>
+			Fix a VNF ("FixVnf01"): "<input id="VNFid01_box" type="text" value="" />" into PoP ("PoPid01":) "<input id="PoPid01_box" type="text" value="" />"<br><br>
+			"ns_simulation":<br>
+			<input type="radio" name="nssimulradio" id="nssimul_radio" value="false" checked/>False<br>
+			<input type="radio" name="nssimulradio" id="nssimul_radio" value="true" />True<br>
+			<br>
+			"ir_simulation":<br>
+			<input type="radio" name="simulradio" id="irsimul_radio" value="false" checked/>False<br>
+			<input type="radio" name="simulradio" id="irsimul_radio" value="true" />True <br>
+			"infr_repo_api": "<input id="irapiVal_box" type="text" value="http://10.10.1.68:8888" />"<br>
+			"tenor_api": "<input id="tenorapiVal_box" type="text" value="http://10.10.1.64:4000" />"}<br>
+
+		</form>
+	</div>
+
+	<p>
+		<form method="POST" action="">
+			<input type="button" value="send NS request(ajax)" name="invia NS2" id="sendreq"><br>
+			<input type="button" value="send NS request(post)" name="invia NS3" id="postreq"><BR>
+			<BR>
+			<input type="button" value="GET to NS-catalogue" name="invia NS3" id="get_ns" disabled><BR>
+		</form>
+		<br><br><br>
+		<form>
+			Returned value:<br> <br>
+			STATUS :<div id="status"> -- </div>
+			MAPPER RESPONSE: <div id="risult"> -- </div>
+		</form>
+	</p>
+</body>
+</html>

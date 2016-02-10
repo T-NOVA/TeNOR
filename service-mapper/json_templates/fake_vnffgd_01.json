@@ -1,0 +1,35 @@
+
+{
+  "id": "vnffg0",
+  "vendor": "NCSRD",
+  "version": "1.0",
+  "ns_version": "1.0.0",
+  "manifest_file_md5": "fa8773350c4c236268f0bd7807c8a3b2",
+  "vnffgs": [
+    {
+      "vnffg_id": "vnffg0",
+      "number_of_endpoints": 2,
+      "number_of_virtual_links": 3,
+      "depedent_virtual_links": [
+        "vld1",
+        "vld5"
+      ],
+      "network_forwarding_path": [
+        {
+          "nfp_id": "nfp0",
+          "graph": [
+              "vld1",
+              "vld5"
+          ],
+          "connection_points": [
+              "data_in",
+              "data_out"
+          ],
+          "constituent_vnfs": [
+            "56af5b48b18cfb2ee8000000"
+          ]
+        }
+      ]
+    }
+  ]
+}
