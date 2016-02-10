@@ -36,7 +36,7 @@ class VnfdToHot
 	# @return [HOT] returns an HOT object
 	def build(vnfd, tnova_flavour, networks_id, security_group_id)
 		# Parse needed outputs
-		parse_outputs(vnfd['vnf_lifecycle_events']['events'])
+		parse_outputs(vnfd['vnf_lifecycle_events']['events'].find{|event| event['flavor_id_ref'] == tnova_flavour})
 
 		# Get T-NOVA deployment flavour
 		deployment_information = vnfd['deployment_flavours'].detect{|flavour| flavour['id'] == tnova_flavour}
