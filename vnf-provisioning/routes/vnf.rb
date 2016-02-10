@@ -142,7 +142,8 @@ class OrchestratorVnfProvisioning < Sinatra::Application
     logger.debug 'Created thread to monitor stack'
 
     # Send the VNFR to the mAPI
-    mapi_request = {id: vnfr.id.to_s, vnfd: vnf['vnfd']}
+    lifecycle_event = vnf['vnfd']['vnf_lifecycle_events'].find { |event| event['flavor_id_ref'] == instantiation_info['flavour']}
+    mapi_request = {id: vnfr.id.to_s, vnfd: {vnf_lifecycle_events: lifecycle_event}}
     logger.debug 'mAPI request: ' + mapi_request.to_json
     begin
       response = RestClient.post "#{settings.mapi}/vnf_api/", mapi_request.to_json, :content_type => :json, :accept => :json
