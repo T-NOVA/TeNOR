@@ -131,7 +131,7 @@ class OrchestratorVnfProvisioning < Sinatra::Application
         audit_log: nil,
         stack_url: response['stack']['links'][0]['href'],
         vms_id: nil,
-        lifecycle_events: vnf['vnfd']['vnf_lifecycle_events'].find{|event| event['id'] == instantiation_info['flavour']},
+        lifecycle_events: vnf['vnfd']['vnf_lifecycle_events'].find{|lifecycle| lifecycle['flavor_id_ref'].downcase == instantiation_info['flavour'].downcase}['events'],
         lifecycle_events_values: nil)
     rescue Moped::Errors::OperationFailure => e
       return 400, 'ERROR: Duplicated VNF ID' if e.message.include? 'E11000'
@@ -267,12 +267,12 @@ class OrchestratorVnfProvisioning < Sinatra::Application
     # (mAPI is really confusing with this interface)
     begin
       if mapi_request['event'] == 'start'
-        response = RestClient.post settings.mapi + '/vnf-api/' + params[:vnfr_id] + '/config/', mapi_request.to_json, :content_type => :json, :accept => :json
+        response = RestClient.post settings.mapi + '/vnf_api/' + params[:vnfr_id] + '/config/', mapi_request.to_json, :content_type => :json, :accept => :json
       else
         if mapi_request['event'] == 'stop'
-          response = RestClient.delete settings.mapi + '/vnf-api/' + params[:vnfr_id] + '/config/', mapi_request.to_json, :content_type => :json, :accept => :json
+          response = RestClient.delete settings.mapi + '/vnf_api/' + params[:vnfr_id] + '/config/', mapi_request.to_json, :content_type => :json, :accept => :json
         else
-          response = RestClient.put settings.mapi + '/vnf-api/' + params[:vnfr_id] + '/config/', mapi_request.to_json, :content_type => :json, :accept => :json
+          response = RestClient.put settings.mapi + '/vnf_api/' + params[:vnfr_id] + '/config/', mapi_request.to_json, :content_type => :json, :accept => :json
         end
       end
     rescue Errno::ECONNREFUSED
