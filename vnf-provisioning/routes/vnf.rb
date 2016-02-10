@@ -83,6 +83,7 @@ class OrchestratorVnfProvisioning < Sinatra::Application
     # Validate JSON format
     instantiation_info = parse_json(request.body.read)
     logger.debug 'Instantiation info: ' + instantiation_info.to_json
+    halt 400, 'NS Manager callback URL not found' unless instantiation_info.has_key?('callback_url')
 
     vnf = instantiation_info['vnf']
 
@@ -130,7 +131,7 @@ class OrchestratorVnfProvisioning < Sinatra::Application
         audit_log: nil,
         stack_url: response['stack']['links'][0]['href'],
         vms_id: nil,
-        lifecycle_events: vnf['vnfd']['vnf_lifecycle_events']['events'],
+        lifecycle_events: vnf['vnfd']['vnf_lifecycle_events'].find{|event| event['id'] == instantiation_info['flavour']},
         lifecycle_events_values: nil)
     rescue Moped::Errors::OperationFailure => e
       return 400, 'ERROR: Duplicated VNF ID' if e.message.include? 'E11000'
@@ -142,7 +143,8 @@ class OrchestratorVnfProvisioning < Sinatra::Application
     logger.debug 'Created thread to monitor stack'
 
     # Send the VNFR to the mAPI
-    mapi_request = {id: vnfr.id.to_s, vnfd: vnf['vnfd']}
+    lifecycle_event = vnf['vnfd']['vnf_lifecycle_events'].find { |event| event['flavor_id_ref'] == instantiation_info['flavour']}
+    mapi_request = {id: vnfr.id.to_s, vnfd: {vnf_lifecycle_events: lifecycle_event}}
     logger.debug 'mAPI request: ' + mapi_request.to_json
     begin
       response = RestClient.post "#{settings.mapi}/vnf_api/", mapi_request.to_json, :content_type => :json, :accept => :json
@@ -352,6 +354,7 @@ class OrchestratorVnfProvisioning < Sinatra::Application
       vnfr.vms_id.each {|key, value| vnfi_id << value}
       ns_manager = { vnfd_id: vnfr.vnfd_reference, vnfi_id: vnfi_id, vnfr_id: vnfr.id}
       logger.debug 'NS Manager message: ' + ns_manager.to_json
+      logger.debug 'NS Manager callback: ' + stack_info['ns_manager_callback'].to_json
       begin
         response = RestClient.post "#{stack_info['ns_manager_callback']}", ns_manager.to_json, 'X-Auth-Token' => @client_token, :content_type => :json, :accept => :json
       rescue Errno::ECONNREFUSED
