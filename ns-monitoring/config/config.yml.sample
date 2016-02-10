@@ -7,6 +7,8 @@ max_conns: 1024
 timeout: 30
 max_persistent_conns: 512
 daemonize: false
+logstash_host: 127.0.0.1
+logstash_port: 5228
 
 ns_monitor_db: http://localhost:4012
 vnf_manager: http://localhost:4567
