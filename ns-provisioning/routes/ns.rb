@@ -116,7 +116,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
       #destroy vnf instances
       @instance['vnfs'].each do |vnf|
-        auth = { :tenant => @instance['vnf_info']['tenant_name'], :username => @instance['vnf_info']['username'], :password => @instance['vnf_info']['password'], :url => { :keystone => popUrls[:keystone] } }
+        auth = {:tenant => @instance['vnf_info']['tenant_name'], :username => @instance['vnf_info']['username'], :password => @instance['vnf_info']['password'], :url => {:keystone => popUrls[:keystone]}}
         begin
           response = RestClient.post settings.vnf_manager + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/destroy', auth.to_json, :content_type => :json
         rescue Errno::ECONNREFUSED
@@ -158,8 +158,6 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
   end
 
-
-  #deprecated
   delete "/ns-instances/:ns_instance_id" do
     begin
       response = RestClient.get settings.ns_instance_repository + '/ns-instances/' + params['ns_instance_id'].to_s, :content_type => :json
@@ -169,32 +167,29 @@ class OrchestratorNsProvisioner < Sinatra::Application
     @instance, errors = parse_json(response)
     logger.debug @instance
 
-    #call VNFManger
+    popInfo = getPopInfo(@instance['vnf_info']['pop_id'])
+    popUrls = getPopUrls(popInfo['info'][0]['extrainfo'])
 
-    keystoneUrl = ""
-    neutronUrl = ""
-
-
-    popInfo = getPopInfo(vnf['pop_id'])
-
-    #remove openstack data
+    #destroy vnf instances
     @instance['vnfs'].each do |vnf|
-      puts vnf
 
-      token = openstackAuthentication(keystoneUrl, popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
-      deleteRouter(neutronUrl, vnf['router_id'], token)
-      deleteUser(keystoneUrl, vnf['user_id'], token)
-      deleteProject(keystoneUrl, vnf['tenant_id'], token)
-
-      #delete monitoring data
-
-      #delete monitoring data repository
+      if (!vnf['vnfr_id'].nil?)
+        auth = {:tenant => @instance['vnf_info']['tenant_name'], :username => @instance['vnf_info']['username'], :password => @instance['vnf_info']['password'], :url => {:keystone => popUrls[:keystone]}}
+        begin
+          response = RestClient.post settings.vnf_manager + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/destroy', auth.to_json, :content_type => :json
+        rescue Errno::ECONNREFUSED
+          halt 500, 'VNF Manager unreachable'
+        rescue => e
+          logger.error e.response
+          halt e.response.code, e.response.body
+        end
+      end
 
     end
 
-    #remove instance_id from repository
-    removeInstance(params['ns_instance_id'])
-
+    #terminate VNF
+    recoverState(extra_info, @instance['vnf_info'], @instance, error, token)
+    
     halt 200, "Instance removed correctly"
   end
 
@@ -241,7 +236,8 @@ class OrchestratorNsProvisioner < Sinatra::Application
     #extract vnfi_id from instantatieVNF response
     vnf_info = {}
     vnf_info[:vnfd_id] = callback_response['vnfd_id']
-    vnf_info[:vnfi_id]= callback_response['vnfi_id']
+    vnf_info[:vnfi_id] = callback_response['vnfi_id']
+    vnf_info[:vnfr_id] = callback_response['vnfr_id']
     #@instance['vnfis'] << vnf_info
     @instance['vnfs'] = []
     @instance['vnfs'] << vnf_info
