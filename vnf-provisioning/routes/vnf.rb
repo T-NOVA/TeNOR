@@ -247,7 +247,7 @@ class OrchestratorVnfProvisioning < Sinatra::Application
     config_info = parse_json(request.body.read)
 
     # Return if have an invalid event type
-    halt 400, 'Invalid event type.' unless ['start', 'stop', 'restart', 'scale-in', 'scale-out'].include? config_info['event']
+    halt 400, 'Invalid event type.' unless ['start', 'stop', 'restart', 'scale-in', 'scale-out'].include? config_info['event'].downcase
 
     # Get VNFR stack info
     vnfr = Vnfr.find(params[:vnfr_id])
@@ -264,16 +264,11 @@ class OrchestratorVnfProvisioning < Sinatra::Application
     logger.debug 'mAPI request: ' + mapi_request.to_json
 
     # Send request to the mAPI
-    # (mAPI is really confusing with this interface)
     begin
-      if mapi_request['event'] == 'start'
+      if mapi_request[:event].downcase == 'start'
         response = RestClient.post settings.mapi + '/vnf_api/' + params[:vnfr_id] + '/config/', mapi_request.to_json, :content_type => :json, :accept => :json
       else
-        if mapi_request['event'] == 'stop'
-          response = RestClient.delete settings.mapi + '/vnf_api/' + params[:vnfr_id] + '/config/', mapi_request.to_json, :content_type => :json, :accept => :json
-        else
-          response = RestClient.put settings.mapi + '/vnf_api/' + params[:vnfr_id] + '/config/', mapi_request.to_json, :content_type => :json, :accept => :json
-        end
+        response = RestClient.put settings.mapi + '/vnf_api/' + params[:vnfr_id] + '/config/', mapi_request.to_json, :content_type => :json, :accept => :json
       end
     rescue Errno::ECONNREFUSED
       halt 500, 'mAPI unreachable'
