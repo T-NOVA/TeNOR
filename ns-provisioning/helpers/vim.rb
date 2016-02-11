@@ -303,6 +303,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
       logger.error e
       logger.error e.response.body
     end
+    r
   end
 
   def getRouterPorts(neutronUrl, router_id, token)

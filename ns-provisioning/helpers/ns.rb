@@ -31,7 +31,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
     puts e
     error = "Instantiation error"
 
-    generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", error))
+    #generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", error))
   end
 
   def generateMarketplaceResponse(marketplaceUrl, message)
@@ -66,7 +66,6 @@ class OrchestratorNsProvisioner < Sinatra::Application
     if (!vnf_info['router_id'].nil?)
       ports = getRouterPorts(popUrls[:neutron], vnf_info['router_id'], tenant_token)
       ports.each do |port|
-        puts port
         if (port['tenant_id'] != "")
           updateRouterPorts(popUrls[:neutron], port['id'], tenant_token)
           deleteRouterPorts(popUrls[:neutron], port['id'], tenant_token)
@@ -74,8 +73,8 @@ class OrchestratorNsProvisioner < Sinatra::Application
       end
     end
 
-    if (!instance['networks'].nil?)
-      instance['networks'].each do |network|
+    if (!instance['vlr'].nil?)
+      instance['vlr'].each do |network|
         deleteSubnet(popUrls[:neutron], network['subnet']['id'], tenant_token)
         #network['subnet'].each do |subnet|
         #  deleteSubnet(popUrls[:neutron], subnet['id'])
@@ -90,13 +89,13 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
 
     if (!vnf_info['security_group_id'].nil?)
-      deleteSecurityGroup(popUrls[:compute], vnf_info['tenant_id'], vnf_info['security_group_id'], token)
+      deleteSecurityGroup(popUrls[:compute], vnf_info['tenant_id'], vnf_info['security_group_id'], tenant_token)
     end
 
     deleteUser(popUrls[:keystone], vnf_info['user_id'], token)
     deleteTenant(popUrls[:keystone], vnf_info['tenant_id'], token)
 
-    removeInstance(instance)
+    removeInstance(instance['id'])
 
     generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", error))
   end
@@ -104,14 +103,36 @@ class OrchestratorNsProvisioner < Sinatra::Application
   def instantiate(instantiation_info)
     #start instantiation
     @instance = createInstance({})
+    puts @instance
 
-
-    #nsd = getNSD(ns['ns_id'].to_s)
     callbackUrl = instantiation_info['callbackUrl']
-
     nsd = instantiation_info['nsd']
-
     flavour = instantiation_info['flavour']
+    @instance = @instance.merge(
+        {
+            :nsd_id => nsd['id'],
+            :descriptor_reference => nsd['id'],
+            :auto_scale_policy => nsd['auto_scale_policy'],
+            :connection_points => nsd['connection_points'],
+            :monitoring_parameters => nsd['monitoring_parameters'],
+            :service_deployment_flavour => flavour,
+            :vendor => nsd['vendor'],
+            :version => nsd['version'],
+            #vlr
+            #vnfrs
+            :lifecycle_events => nsd['lifecycle_events'],
+            :vnf_depedency => nsd['vnf_depedency'],
+            :vnffgd => nsd['vnffgd'],
+            #pnfr
+            :resource_reservation => [],
+            :runtime_policy_info => [],
+            :status => "INIT",
+            :notification => "",
+            :lifecycle_event_history => [],
+            :audit_log => [],
+            :marketplace_callback => callbackUrl
+        }
+    )
 
     ms = {
         :NS_id => nsd['id'],
@@ -125,13 +146,22 @@ class OrchestratorNsProvisioner < Sinatra::Application
     #choose select mapping
     mapping = callMapping(ms)
 
+    #DateTime.parse(@instance['mapping_time']).to_time.to_i
+    @instance['mapping_time'] = Time.now
+    updateInstance(@instance)
+    puts "Mapping time: " + (DateTime.parse(@instance['mapping_time']).to_time.to_f*1000 - DateTime.parse(@instance['created_at']).to_time.to_f*1000).to_s
+
+    return
+
     if (!mapping['vnf_mapping'])
       #halt 400, "Mapping: not enough resources."
       generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", "Internal error: Mapping: not enough resources."))
     end
 
     #generate instance ID - Send instantiation to NS Instance repository
-    @instance = createInstance({:nsd_id => nsd['id'], :status => "INIT", :vendor => nsd['vendor'], :version => nsd['version'], :marketplace_callback => callbackUrl})
+    #@instance = createInstance({:nsd_id => nsd['id'], :status => "INIT", :vendor => nsd['vendor'], :version => nsd['version'], :marketplace_callback => callbackUrl})
+    #@instance = {:nsd_id => nsd['id'], :status => "INIT", :vendor => nsd['vendor'], :version => nsd['version'], :marketplace_callback => callbackUrl}
+    #updateInstance(@instance)
     if @instance.nil?
       logger.error "Instance repo not connected"
       generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", "Internal error: instance repository not connected."))
@@ -146,7 +176,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
     #call NS monitoring
     #monitoringData(nsd)
 
-    @instance['vnfs'] = Array.new
+    @instance['vnfrs'] = Array.new
     mapping['vnf_mapping'].each do |vnf|
       puts "Start instatination process of " + vnf.to_s
       pop_id = vnf['maps_to_PoP'].delete('/pop/')
@@ -220,7 +250,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
         end
       end
 
-      @instance['networks'] = networks
+      @instance['vlr'] = networks
       @instance['vnf_info'] = vnf_info
       updateInstance(@instance)
 
@@ -245,6 +275,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
       }
       puts "Instantiation..."
       logger.debug vnf_provisioning_info
+      @instance['instantiation_start_time'] = Time.now
       instantiateVNF(vnf_provisioning_info)
     end
   end

@@ -1,1 +1,1 @@
-require_relative 'nsInstance'
+require_relative 'nsr'

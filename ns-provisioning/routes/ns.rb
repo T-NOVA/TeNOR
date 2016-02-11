@@ -115,25 +115,25 @@ class OrchestratorNsProvisioner < Sinatra::Application
     if params[:status] === 'terminate'
 
       #destroy vnf instances
-      @instance['vnfs'].each do |vnf|
-        auth = {:tenant => @instance['vnf_info']['tenant_name'], :username => @instance['vnf_info']['username'], :password => @instance['vnf_info']['password'], :url => {:keystone => popUrls[:keystone]}}
+      @instance['vnfrs'].each do |vnf|
+        auth = {:auth => { :tenant => @instance['vnf_info']['tenant_name'], :username => @instance['vnf_info']['username'], :password => @instance['vnf_info']['password'], :url => {:keystone => popUrls[:keystone] } } }
         begin
           response = RestClient.post settings.vnf_manager + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/destroy', auth.to_json, :content_type => :json
         rescue Errno::ECONNREFUSED
           halt 500, 'VNF Manager unreachable'
         rescue => e
           logger.error e.response
-          halt e.response.code, e.response.body
+          #halt e.response.code, e.response.body
         end
 
       end
 
       #terminate VNF
-      recoverState(popInfo, @instance['vnf_info'], @instance, error, token)
+      recoverState(popInfo, @instance['vnf_info'], @instance, error)
       #removeInstance(@instance)
     elsif params[:status] === 'stopped'
 
-      @instance['vnfs'].each do |vnf|
+      @instance['vnfrs'].each do |vnf|
         puts vnf
         event = {:event => "stop"}
         begin
@@ -171,17 +171,18 @@ class OrchestratorNsProvisioner < Sinatra::Application
     popUrls = getPopUrls(popInfo['info'][0]['extrainfo'])
 
     #destroy vnf instances
-    @instance['vnfs'].each do |vnf|
+    @instance['vnfrs'].each do |vnf|
 
       if (!vnf['vnfr_id'].nil?)
-        auth = {:tenant => @instance['vnf_info']['tenant_name'], :username => @instance['vnf_info']['username'], :password => @instance['vnf_info']['password'], :url => {:keystone => popUrls[:keystone]}}
+        auth = {:auth => {:tenant => @instance['vnf_info']['tenant_name'], :username => @instance['vnf_info']['username'], :password => @instance['vnf_info']['password'], :url => {:keystone => popUrls[:keystone]}}}
         begin
           response = RestClient.post settings.vnf_manager + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/destroy', auth.to_json, :content_type => :json
         rescue Errno::ECONNREFUSED
           halt 500, 'VNF Manager unreachable'
         rescue => e
           logger.error e.response
-          halt e.response.code, e.response.body
+          puts "Delete method."
+          #halt e.response.code, e.response.body
         end
       end
 
@@ -239,10 +240,11 @@ class OrchestratorNsProvisioner < Sinatra::Application
     vnf_info[:vnfi_id] = callback_response['vnfi_id']
     vnf_info[:vnfr_id] = callback_response['vnfr_id']
     #@instance['vnfis'] << vnf_info
-    @instance['vnfs'] = []
-    @instance['vnfs'] << vnf_info
+    @instance['vnfrs'] = []
+    @instance['vnfrs'] << vnf_info
 
     @instance['status'] = "INSTANTIATED"
+    @instance['instantiation_end_time'] = Time.now
 
     logger.debug @instance
     @instance = updateInstance(@instance)

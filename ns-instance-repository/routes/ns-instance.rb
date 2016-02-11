@@ -36,9 +36,9 @@ class OrchestratorNsInstanceRepository < Sinatra::Application
   # Gets all ns-instances
 	get '/ns-instances' do
     if params[:status]
-      @nsInstances = NsInstance.where(:status => params[:status])
+      @nsInstances = Nsr.where(:status => params[:status])
     else
-      @nsInstances = NsInstance.all
+      @nsInstances = Nsr.all
     end
 
 		return @nsInstances.to_json
@@ -49,7 +49,7 @@ class OrchestratorNsInstanceRepository < Sinatra::Application
   # Get a ns-instance
 	get '/ns-instances/:id' do
 		begin
-			@nsInstance = NsInstance.find(params["id"])
+			@nsInstance = Nsr.find(params["id"])
 		rescue Mongoid::Errors::DocumentNotFound => e
 			halt(404)
 		end
@@ -65,7 +65,7 @@ class OrchestratorNsInstanceRepository < Sinatra::Application
 		instance, errors = parse_json(request.body.read)
 		return 400, errors.to_json if errors
 		
-		instance = NsInstance.new(instance)
+		instance = Nsr.new(instance)
 		instance.save!
 
 		return 200, instance.to_json
@@ -81,7 +81,7 @@ class OrchestratorNsInstanceRepository < Sinatra::Application
 		return 400, errors.to_json if errors
 
 		begin
-			@instance = NsInstance.find(params["id"])
+			@instance = Nsr.find(params["id"])
 		rescue Mongoid::Errors::DocumentNotFound => e
 			logger.error e
 			return 404
@@ -97,7 +97,7 @@ class OrchestratorNsInstanceRepository < Sinatra::Application
   # Delete a ns-instance
 	delete '/ns-instances/:id' do
 		begin
-			@nsInstance = NsInstance.find(params["id"])
+			@nsInstance = Nsr.find(params["id"])
 		rescue Mongoid::Errors::DocumentNotFound => e
 			halt(404)
 		end
