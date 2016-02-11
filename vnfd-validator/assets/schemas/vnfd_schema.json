@@ -488,6 +488,63 @@
                   }
                 },
                 "additionalProperties": false
+              },
+              "restart": {
+                "id": "http://www.t-nova.eu/vnf_lifecycle_events/0/events/stop",
+                "type": "object",
+                "properties": {
+                  "command": {
+                    "id": "http://www.t-nova.eu/vnf_lifecycle_events/0/events/stop/command",
+                    "type": "string"
+                  },
+                  "template_file": {
+                    "id": "http://www.t-nova.eu/vnf_lifecycle_events/0/events/stop/template_file",
+                    "type": "string"
+                  },
+                  "template_file_format": {
+                    "id": "http://www.t-nova.eu/vnf_lifecycle_events/0/events/stop/template_file_format",
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "scale-in": {
+                "id": "http://www.t-nova.eu/vnf_lifecycle_events/0/events/stop",
+                "type": "object",
+                "properties": {
+                  "command": {
+                    "id": "http://www.t-nova.eu/vnf_lifecycle_events/0/events/stop/command",
+                    "type": "string"
+                  },
+                  "template_file": {
+                    "id": "http://www.t-nova.eu/vnf_lifecycle_events/0/events/stop/template_file",
+                    "type": "string"
+                  },
+                  "template_file_format": {
+                    "id": "http://www.t-nova.eu/vnf_lifecycle_events/0/events/stop/template_file_format",
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "scale-out": {
+                "id": "http://www.t-nova.eu/vnf_lifecycle_events/0/events/stop",
+                "type": "object",
+                "properties": {
+                  "command": {
+                    "id": "http://www.t-nova.eu/vnf_lifecycle_events/0/events/stop/command",
+                    "type": "string"
+                  },
+                  "template_file": {
+                    "id": "http://www.t-nova.eu/vnf_lifecycle_events/0/events/stop/template_file",
+                    "type": "string"
+                  },
+                  "template_file_format": {
+                    "id": "http://www.t-nova.eu/vnf_lifecycle_events/0/events/stop/template_file_format",
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
               }
             },
             "additionalProperties": false
