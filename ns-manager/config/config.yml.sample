@@ -8,8 +8,10 @@ max_conns: 1024
 timeout: 30
 max_persistent_conns: 512
 daemonize: false
-logstash_host: 84.88.40.160
+logstash_host: 127.0.0.1
 logstash_port: 5228
+logstash_user: user
+logstash_password: pass
 
 ns_catalogue: http://localhost:4011
 ns_provisioner: http://localhost:4012
