@@ -23,7 +23,7 @@ class TnovaManager < Sinatra::Application
     begin
       @service = ServiceModel.find_by(name: "nsprovisioning")
     rescue Mongoid::Errors::DocumentNotFound => e
-      halt 500, {'Content-Type' => "text/plain"}, "Microservice unrechable."
+      halt 500, {'Content-Type' => "text/plain"}, "NS Provisioning not registred."
     end
 
     return 415 unless request.content_type == 'application/json'
@@ -61,7 +61,7 @@ class TnovaManager < Sinatra::Application
     begin
       @service = ServiceModel.find_by(name: "nsprovisioning")
     rescue Mongoid::Errors::DocumentNotFound => e
-      halt 500, {'Content-Type' => "text/plain"}, "Microservice unrechable."
+      halt 500, {'Content-Type' => "text/plain"}, "NS Provisioning not registred."
     end
 
     begin
@@ -83,7 +83,7 @@ class TnovaManager < Sinatra::Application
     begin
       @service = ServiceModel.find_by(name: "nsprovisioning")
     rescue Mongoid::Errors::DocumentNotFound => e
-      halt 500, {'Content-Type' => "text/plain"}, "Microservice unrechable."
+      halt 500, {'Content-Type' => "text/plain"}, "NS Provisioning not registred."
     end
 
     begin
@@ -102,7 +102,7 @@ class TnovaManager < Sinatra::Application
     begin
       @service = ServiceModel.find_by(name: "nsprovisioning")
     rescue Mongoid::Errors::DocumentNotFound => e
-      halt 500, {'Content-Type' => "text/plain"}, "Microservice unrechable."
+      halt 500, {'Content-Type' => "text/plain"}, "NS Provisioning not registred."
     end
 
     begin
@@ -121,7 +121,7 @@ class TnovaManager < Sinatra::Application
     begin
       @service = ServiceModel.find_by(name: "nsprovisioning")
     rescue Mongoid::Errors::DocumentNotFound => e
-      halt 500, {'Content-Type' => "text/plain"}, "Microservice unrechable."
+      halt 500, {'Content-Type' => "text/plain"}, "NS Provisioning not registred."
     end
 
     begin
@@ -140,7 +140,7 @@ class TnovaManager < Sinatra::Application
     begin
       @service = ServiceModel.find_by(name: "nsprovisioning")
     rescue Mongoid::Errors::DocumentNotFound => e
-      halt 500, {'Content-Type' => "text/plain"}, "Microservice unrechable."
+      halt 500, {'Content-Type' => "text/plain"}, "NS Provisioning not registred."
     end
 
     begin
@@ -152,6 +152,8 @@ class TnovaManager < Sinatra::Application
       halt e.response.code, e.response.body
     end
 
+    updateStatistics('ns_terminated_requests')
+
     return response.code, response.body
   end
 
@@ -159,7 +161,7 @@ class TnovaManager < Sinatra::Application
     begin
       @service = ServiceModel.find_by(name: "nsprovisioning")
     rescue Mongoid::Errors::DocumentNotFound => e
-      halt 500, {'Content-Type' => "text/plain"}, "Microservice unrechable."
+      halt 500, {'Content-Type' => "text/plain"}, "NS Provisioning not registred."
     end
 
     begin
@@ -172,6 +174,26 @@ class TnovaManager < Sinatra::Application
     end
 
     return response.code, response.body
+  end
+
+  get '/vnf-provisioning/vnf-instances' do
+    begin
+      @service = ServiceModel.find_by(name: "vnfmanager")
+    rescue Mongoid::Errors::DocumentNotFound => e
+      halt 500, {'Content-Type' => "text/plain"}, "VNF Manager not registred."
+    end
+
+    begin
+      response = RestClient.get @service.host + ":" + @service.port.to_s + request.fullpath, 'X-Auth-Token' => @client_token, :content_type => :json
+    rescue Errno::ECONNREFUSED
+      halt 500, 'VNF Manager unreachable'
+    rescue => e
+      logger.error e.response
+      halt e.response.code, e.response.body
+    end
+
+    return response.code, response.body
+
   end
 
 end
