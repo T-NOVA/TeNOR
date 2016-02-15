@@ -123,7 +123,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
           halt 500, 'VNF Manager unreachable'
         rescue => e
           logger.error e.response
-          #halt e.response.code, e.response.body
+          halt e.response.code, e.response.body
         end
 
       end
@@ -187,7 +187,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
         rescue => e
           logger.error e.response
           puts "Delete method."
-          #halt e.response.code, e.response.body
+          halt e.response.code, e.response.body
         end
       end
 

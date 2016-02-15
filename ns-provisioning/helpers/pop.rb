@@ -18,23 +18,28 @@
 # @see OrchestratorNsProvisioner
 class OrchestratorNsProvisioner < Sinatra::Application
 
-  def getPopInfo(popId)
+  def getPopList()
 
-    popInfo = {
-        "metadata" => {
-            "source" => "T-Nova-AuthZ-Service"
-        },
-        "info" => [
-            {
-                "msg" => "Datacenter details.",
-                "dcname" => "mypop-x",
-                "adminuser" => "t-nova",
-                "password" => "t-n0v@",
-                "extrainfo" => "pop-ip=10.10.1.2 keystone-endpoint=http://10.10.1.2:35357/v2.0 orch-endpoint=http://10.10.1.2:8004/v1 neutron-endpoint=http://10.10.1.2:9696/v2.0 compute-endpoint=http://10.10.1.2:8774/v2"
-            }
-        ]
-    }
-    return popInfo
+    begin
+      response = RestClient.get "#{settings.gatekeeper}/admin/dc/", 'X-Auth-Token' => settings.token, :content_type => :json
+    rescue => e
+      logger.error e
+      if (defined?(e.response)).nil?
+        error = {:info => "The PoP is not registered in Gatekeeper"}
+        #marketplace URL here´
+        #generateMarketplaceResponse()
+        halt 503, "The PoP is not registered in Gatekeeper"
+      end
+    end
+    popList, errors = parse_json(response.body)
+    return 400, errors if errors
+
+    return popList['dclist']
+  end
+
+  def getPopInfo(popId)
+    popList = getPopList()
+    popId = popList.index(popId)
 
     begin
       popInfo = RestClient.get "#{settings.gatekeeper}/admin/dc/#{pop_id}", 'X-Auth-Token' => settings.token, :content_type => :json

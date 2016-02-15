@@ -32,7 +32,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
         "vnf_mapping" =>
             [
                 {
-                    "maps_to_PoP" => "/pop/55ef7cce-1e9b-4b8f-9839-d40ceeb670f7",
+                    "maps_to_PoP" => "/pop/1dc4dbf7-2fb3-4acb-96fe-330306f78422",
                     "vnf" => "/" + nsd['vnfds'][0].to_s
                 }
             ]
