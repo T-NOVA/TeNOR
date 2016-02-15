@@ -18,25 +18,23 @@
 # @see OrchestratorNsProvisioner
 class OrchestratorNsProvisioner < Sinatra::Application
 
-  def instantiateVNF(instantiation_info)
+  def instantiateVNF(marketplaceUrl, instantiation_info)
     begin
       response = RestClient.post settings.vnf_manager + '/vnf-provisioning/vnf-instances', instantiation_info.to_json, :content_type => :json
     rescue => e
       logger.error e
-      #if (defined?(e.response)).nil?
-      #halt 503, "VNF-Manager unavailable"
-      #end
-      #halt e.response.code, e.response.body
+      if (defined?(e.response)).nil?
+        puts e.response.body
+        error = "Instantiation error. Response from the VNF Manager: " + e.response.body
+        generateMarketplaceResponse(marketplaceUrl, generateError(instantiation_info['ns_id'], "FAILED", error))
+      end
     end
-    puts e
-    error = "Instantiation error"
 
-    #generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", error))
   end
 
   def generateMarketplaceResponse(marketplaceUrl, message)
-    logger.error marketplaceUrl
-    logger.error message.to_json
+    logger.debug marketplaceUrl
+    logger.debug message.to_json
     begin
       response = RestClient.post marketplaceUrl, message.to_json, :content_type => :json
     rescue => e
@@ -149,9 +147,9 @@ class OrchestratorNsProvisioner < Sinatra::Application
     #DateTime.parse(@instance['mapping_time']).to_time.to_i
     @instance['mapping_time'] = Time.now
     updateInstance(@instance)
-    puts "Mapping time: " + (DateTime.parse(@instance['mapping_time']).to_time.to_f*1000 - DateTime.parse(@instance['created_at']).to_time.to_f*1000).to_s
-
-    return
+    puts @instance['mapping_time']
+    puts @instance['created_at']
+    #puts "Mapping time: " + (DateTime.parse(@instance['mapping_time']).to_time.to_f*1000 - DateTime.parse(@instance['created_at']).to_time.to_f*1000).to_s
 
     if (!mapping['vnf_mapping'])
       #halt 400, "Mapping: not enough resources."
@@ -276,7 +274,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
       puts "Instantiation..."
       logger.debug vnf_provisioning_info
       @instance['instantiation_start_time'] = Time.now
-      instantiateVNF(vnf_provisioning_info)
+      instantiateVNF(callbackUrl, vnf_provisioning_info)
     end
   end
 end

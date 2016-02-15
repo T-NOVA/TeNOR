@@ -167,8 +167,13 @@ class OrchestratorNsProvisioner < Sinatra::Application
     @instance, errors = parse_json(response)
     logger.debug @instance
 
-    popInfo = getPopInfo(@instance['vnf_info']['pop_id'])
-    popUrls = getPopUrls(popInfo['info'][0]['extrainfo'])
+    begin
+      popInfo = getPopInfo(@instance['vnf_info']['pop_id'])
+      popUrls = getPopUrls(popInfo['info'][0]['extrainfo'])
+    rescue
+      removeInstance(@instance['id'])
+      halt 200, "Instance removed correctly"
+    end
 
     #destroy vnf instances
     @instance['vnfrs'].each do |vnf|
@@ -248,6 +253,8 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
     logger.debug @instance
     @instance = updateInstance(@instance)
+
+    logger.debug @instance['marketplace_callback']
 
     generateMarketplaceResponse(@instance['marketplace_callback'], @instance)
 
