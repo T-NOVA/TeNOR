@@ -451,6 +451,10 @@
             "id": "http://www.t-nova.eu/vnf_lifecycle_events/1/authentication",
             "type": "string"
           },
+          "vnf_container": {
+            "id": "http://www.t-nova.eu/vnf_lifecycle_events/1/vnf_container",
+            "type": "string"
+          },
           "events": {
             "id": "http://www.t-nova.eu/vnf_lifecycle_events/1/events",
             "type": "object",
