@@ -51,6 +51,8 @@ class TnovaManager < Sinatra::Application
       logger.error e.response
       halt e.response.code, e.response.body
     end
+    logger.error "Instantiation correct."
+    logger.error response.code
 
     updateStatistics('ns_instantiated_requests')
 
