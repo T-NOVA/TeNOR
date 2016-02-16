@@ -466,6 +466,10 @@
                   "template_file": {
                     "id": "http://www.t-nova.eu/vnf_lifecycle_events/1/events/start/template_file",
                     "type": "string"
+                  },
+                  "template_file_format": {
+                    "id": "http://www.t-nova.eu/vnf_lifecycle_events/1/events/start/template_file_format",
+                    "type": "string"
                   }
                 },
                 "additionalProperties": false
