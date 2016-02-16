@@ -15,19 +15,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require_relative 'vnfd_to_hot'
-require_relative 'hot'
-require_relative 'resource'
-require_relative 'port'
-require_relative 'server'
-require_relative 'flavor'
-require_relative 'image'
-require_relative 'custom_exception'
-require_relative 'output'
-require_relative 'floating_ip'
-require_relative 'floating_ip_association'
-require_relative 'nsd_to_network_hot'
-require_relative 'router'
-require_relative 'router_interface'
-require_relative 'network'
-require_relative 'subnet'
+class Router < Resource
+
+  # Initializes Port object
+  #
+  # @param [String] resource_name the Port resource name
+  # @param [String] network Network name this port belongs to
+  # @param [String] security_group_id the ID of the T-NOVA security group
+  def initialize(resource_name, public_net)
+    @type = 'OS::Neutron::Router'
+    @properties = {'external_gateway_info' => { 'network' => public_net }, 'name' => 'Tenor router'}
+    super(resource_name, @type, @properties)
+  end
+end

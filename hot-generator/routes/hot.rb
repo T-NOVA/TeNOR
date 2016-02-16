@@ -62,4 +62,23 @@ class OrchestratorHotGenerator < Sinatra::Application
 		halt 200, hot.to_json
 	end
 
+	# @method post_hot_flavour
+	# @overload post '/hot/:flavour'
+	# 	Convert a VNFD into a HOT
+	# 	@param [String] flavour the T-NOVA flavour to generate the HOT
+	# 	@param [JSON] the VNFD to convert
+	# Convert a VNFD into a HOT
+	post '/networkhot/:public_ip' do
+		# Return if content-type is invalid
+		halt 415 unless request.content_type == 'application/json'
+		# Validate JSON format
+		nsd = parse_json(request.body.read)
+
+		logger.error params[:public_ip]
+		hot = generate_network_hot_template(nsd, params[:public_ip], nsd['flavour'])
+		logger.debug 'HOT: ' + hot.to_json
+
+		halt 200, hot.to_json
+	end
+
 end
