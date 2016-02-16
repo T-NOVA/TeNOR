@@ -46,6 +46,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
     return 400, errors.to_json if errors
 
     #call thread to process instantiation
+    #EM.defer(instantiate(instantiation_info), callback())
     EM.defer do
       instantiate(instantiation_info)
     end
@@ -53,6 +54,10 @@ class OrchestratorNsProvisioner < Sinatra::Application
     return 200
   end
 
+  def callback()
+    puts "callback"
+    return "ERROR CALLBACK"
+  end
 
   #update instance
   put "/ns-instances/:ns_instance_id" do
@@ -249,7 +254,9 @@ class OrchestratorNsProvisioner < Sinatra::Application
     @instance['vnfrs'] << vnf_info
 
     @instance['status'] = "INSTANTIATED"
-    @instance['instantiation_end_time'] = Time.now
+    @instance['instantiation_end_time'] = DateTime.now.iso8601(3)
+
+    puts "Instantiation time: " + (DateTime.parse(@instance['instantiation_end_time']).to_time.to_f*1000 - DateTime.parse(@instance['created_at']).to_time.to_f*1000).to_s
 
     logger.debug @instance
     @instance = updateInstance(@instance)

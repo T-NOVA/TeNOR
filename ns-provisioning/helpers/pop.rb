@@ -18,41 +18,17 @@
 # @see OrchestratorNsProvisioner
 class OrchestratorNsProvisioner < Sinatra::Application
 
-  def getPopList()
+  def getPopInfo(popId)
 
     begin
-      response = RestClient.get "#{settings.gatekeeper}/admin/dc/", 'X-Auth-Token' => settings.token, :content_type => :json
+      response = RestClient.get "#{settings.tenor_api}/gatekeeper/dc/#{pop_id}", 'X-Auth-Token' => settings.token, :content_type => :json
     rescue => e
       logger.error e
-      if (defined?(e.response)).nil?
-        error = {:info => "The PoP is not registered in Gatekeeper"}
-        #marketplace URL here´
-        #generateMarketplaceResponse()
-        halt 503, "The PoP is not registered in Gatekeeper"
-      end
     end
-    popList, errors = parse_json(response.body)
+    popInfo, errors = parse_json(response.body)
     return 400, errors if errors
 
-    return popList['dclist']
-  end
-
-  def getPopInfo(popId)
-    popList = getPopList()
-    popId = popList.index(popId)
-
-    begin
-      popInfo = RestClient.get "#{settings.gatekeeper}/admin/dc/#{pop_id}", 'X-Auth-Token' => settings.token, :content_type => :json
-    rescue => e
-      logger.error e
-      if (defined?(e.response)).nil?
-        error = {:info => "The PoP is not registered in Gatekeeper"}
-        #marketplace URL here´
-        #generateMarketplaceResponse()
-        halt 503, "The PoP is not registered in Gatekeeper"
-      end
-    end
-    halt e.response.code, e.response.body
+    return popInfo
   end
 
   def getPopUrls(extraInfo)
@@ -74,7 +50,6 @@ class OrchestratorNsProvisioner < Sinatra::Application
     end
 
     return popUrls
-
   end
 
 end
