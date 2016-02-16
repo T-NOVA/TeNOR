@@ -46,6 +46,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
     return 400, errors.to_json if errors
 
     #call thread to process instantiation
+    #EM.defer(instantiate(instantiation_info), callback())
     EM.defer do
       instantiate(instantiation_info)
     end
@@ -53,6 +54,10 @@ class OrchestratorNsProvisioner < Sinatra::Application
     return 200
   end
 
+  def callback()
+    puts "callback"
+    return "ERROR CALLBACK"
+  end
 
   #update instance
   put "/ns-instances/:ns_instance_id" do
@@ -123,7 +128,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
           halt 500, 'VNF Manager unreachable'
         rescue => e
           logger.error e.response
-          #halt e.response.code, e.response.body
+          halt e.response.code, e.response.body
         end
 
       end
@@ -167,8 +172,13 @@ class OrchestratorNsProvisioner < Sinatra::Application
     @instance, errors = parse_json(response)
     logger.debug @instance
 
-    popInfo = getPopInfo(@instance['vnf_info']['pop_id'])
-    popUrls = getPopUrls(popInfo['info'][0]['extrainfo'])
+    begin
+      popInfo = getPopInfo(@instance['vnf_info']['pop_id'])
+      popUrls = getPopUrls(popInfo['info'][0]['extrainfo'])
+    rescue
+      removeInstance(@instance['id'])
+      halt 200, "Instance removed correctly"
+    end
 
     #destroy vnf instances
     @instance['vnfrs'].each do |vnf|
@@ -182,7 +192,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
         rescue => e
           logger.error e.response
           puts "Delete method."
-          #halt e.response.code, e.response.body
+          halt e.response.code, e.response.body
         end
       end
 
@@ -244,10 +254,14 @@ class OrchestratorNsProvisioner < Sinatra::Application
     @instance['vnfrs'] << vnf_info
 
     @instance['status'] = "INSTANTIATED"
-    @instance['instantiation_end_time'] = Time.now
+    @instance['instantiation_end_time'] = DateTime.now.iso8601(3)
+
+    puts "Instantiation time: " + (DateTime.parse(@instance['instantiation_end_time']).to_time.to_f*1000 - DateTime.parse(@instance['created_at']).to_time.to_f*1000).to_s
 
     logger.debug @instance
     @instance = updateInstance(@instance)
+
+    logger.debug @instance['marketplace_callback']
 
     generateMarketplaceResponse(@instance['marketplace_callback'], @instance)
 

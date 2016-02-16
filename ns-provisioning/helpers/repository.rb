@@ -21,9 +21,14 @@ class OrchestratorNsProvisioner < Sinatra::Application
   def createInstance(instance)
     begin
       response = RestClient.post settings.ns_instance_repository + '/ns-instances', instance.to_json, :content_type => :json
+    rescue Errno::ECONNREFUSED
+      logger.error 'NS Instance repository unreachable'
+      #  halt 500, 'NS Instance repository unreachable'
+      raise 'NS Instance repository unreachable'
     rescue => e
-      logger.error e
-      return
+      logger.error e.response
+      raise e.response
+      #return { :code => e.response.code, :body => e.response.body}
     end
     instance, error = parse_json(response)
     return instance
@@ -34,13 +39,13 @@ class OrchestratorNsProvisioner < Sinatra::Application
     puts instance['id']
     begin
       response = RestClient.put settings.ns_instance_repository + '/ns-instances/' + instance['id'].to_s, instance.to_json, :content_type => :json
+    rescue Errno::ECONNREFUSED
+      logger.error 'NS Instance repository unreachable'
+      raise 'NS Instance repository unreachable'
     rescue => e
-      logger.error e
-      if (defined?(e.response)).nil?
-        #halt 503, "NS-Instance Repository unavailable"
-      end
-      return
-      #halt e.response.code, e.response.body
+      logger.error e.response
+      raise e.response
+      #return { :code => e.response.code, :body => e.response.body}
     end
     instance, error = parse_json(response)
     return instance
@@ -49,9 +54,13 @@ class OrchestratorNsProvisioner < Sinatra::Application
   def removeInstance(instance_id)
     begin
       response = RestClient.delete settings.ns_instance_repository + '/ns-instances/' + instance_id
+    rescue Errno::ECONNREFUSED
+      logger.error 'NS Instance repository unreachable'
+      raise 'NS Instance repository unreachable'
     rescue => e
-      logger.error "Remove instance error"
-      #halt 400, "Remove instance error"
+      logger.error e.response
+      raise "Remove instance error"
+      #return { :code => e.response.code, :body => e.response.body}
     end
     halt 200, "Removed correctly"
   end

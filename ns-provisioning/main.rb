@@ -18,6 +18,7 @@ require_relative 'helpers/init'
 configure do
 	# Configure logging
 	enable :logging
+	enable :threaded
 	Dir.mkdir("#{settings.root}/log") unless File.exists?("#{settings.root}/log")
 	log_file = File.new("#{settings.root}/log/#{settings.environment}.log", "a+")
 	log_file.sync = true

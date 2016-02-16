@@ -18,25 +18,23 @@
 # @see OrchestratorNsProvisioner
 class OrchestratorNsProvisioner < Sinatra::Application
 
-  def instantiateVNF(instantiation_info)
+  def instantiateVNF(marketplaceUrl, instantiation_info)
     begin
       response = RestClient.post settings.vnf_manager + '/vnf-provisioning/vnf-instances', instantiation_info.to_json, :content_type => :json
     rescue => e
       logger.error e
-      #if (defined?(e.response)).nil?
-      #halt 503, "VNF-Manager unavailable"
-      #end
-      #halt e.response.code, e.response.body
+      if (defined?(e.response)).nil?
+        puts e.response.body
+        error = "Instantiation error. Response from the VNF Manager: " + e.response.body
+        generateMarketplaceResponse(marketplaceUrl, generateError(instantiation_info['ns_id'], "FAILED", error))
+      end
     end
-    puts e
-    error = "Instantiation error"
 
-    #generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", error))
   end
 
   def generateMarketplaceResponse(marketplaceUrl, message)
-    logger.error marketplaceUrl
-    logger.error message.to_json
+    logger.debug marketplaceUrl
+    logger.debug message.to_json
     begin
       response = RestClient.post marketplaceUrl, message.to_json, :content_type => :json
     rescue => e
@@ -101,13 +99,20 @@ class OrchestratorNsProvisioner < Sinatra::Application
   end
 
   def instantiate(instantiation_info)
-    #start instantiation
-    @instance = createInstance({})
-    puts @instance
 
     callbackUrl = instantiation_info['callbackUrl']
     nsd = instantiation_info['nsd']
     flavour = instantiation_info['flavour']
+
+    begin
+      @instance = createInstance({})
+    rescue => e
+      generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FATAL", e))
+      return
+    end
+
+    puts @instance
+
     @instance = @instance.merge(
         {
             :nsd_id => nsd['id'],
@@ -146,16 +151,20 @@ class OrchestratorNsProvisioner < Sinatra::Application
     #choose select mapping
     mapping = callMapping(ms)
 
-    #DateTime.parse(@instance['mapping_time']).to_time.to_i
-    @instance['mapping_time'] = Time.now
-    updateInstance(@instance)
-    puts "Mapping time: " + (DateTime.parse(@instance['mapping_time']).to_time.to_f*1000 - DateTime.parse(@instance['created_at']).to_time.to_f*1000).to_s
+    @instance['mapping_time'] = DateTime.now.iso8601(3)
+    begin
+      updateInstance(@instance)
+    rescue => e
+      generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FATAL", e))
+      return
+    end
 
-    return
+    puts "Mapping time: " + (DateTime.parse(@instance['mapping_time']).to_time.to_f*1000 - DateTime.parse(@instance['created_at']).to_time.to_f*1000).to_s
 
     if (!mapping['vnf_mapping'])
       #halt 400, "Mapping: not enough resources."
       generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", "Internal error: Mapping: not enough resources."))
+      return
     end
 
     #generate instance ID - Send instantiation to NS Instance repository
@@ -165,6 +174,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
     if @instance.nil?
       logger.error "Instance repo not connected"
       generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", "Internal error: instance repository not connected."))
+      return
     end
 
     logger.debug @instance
@@ -183,7 +193,14 @@ class OrchestratorNsProvisioner < Sinatra::Application
       vnf_id = vnf['vnf'].delete('/')
       vnf_info = {}
 
-      popInfo = getPopInfo(pop_id)
+      begin
+        popInfo = getPopInfo(pop_id)
+      rescue => e
+        error = "Internal error: error getting pop information."
+        logger.error error
+        generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", error))
+        return
+      end
       extra_info = popInfo['info'][0]['extrainfo']
       vnf_info['pop_id'] = pop_id
       popUrls = getPopUrls(extra_info)
@@ -194,6 +211,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
       if popUrls[:keystone].nil? || popUrls[:orch].nil? || popUrls[:neutron].nil? || popUrls[:compute].nil?
         logger.error 'Keystone and/or openstack urls missing'
         generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", "Internal error: Keystone and/or openstack urls missing."))
+        return
       end
 
       if @instance['project'].nil?
@@ -221,6 +239,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
           error = {"info" => "Error creating the Openstack credentials."}
           logger.error error
           recoverState(popInfo, vnf_info, @instance, error)
+          return
         end
       end
 
@@ -246,6 +265,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
             error = "Error creating networks or adding interfaces."
             logger.error error
             recoverState(popInfo, vnf_info, @instance, error)
+            return
           end
         end
       end
@@ -275,8 +295,17 @@ class OrchestratorNsProvisioner < Sinatra::Application
       }
       puts "Instantiation..."
       logger.debug vnf_provisioning_info
-      @instance['instantiation_start_time'] = Time.now
-      instantiateVNF(vnf_provisioning_info)
+      @instance['instantiation_start_time'] = DateTime.now.iso8601(3)
+      begin
+        instantiateVNF(callbackUrl, vnf_provisioning_info)
+      rescue => e
+        logger.error e
+        error = {"info" => "Error in the instantiation. (VNF Manager error)"}
+        logger.error error
+        recoverState(popInfo, vnf_info, @instance, error)
+        return
+      end
+
     end
   end
 end

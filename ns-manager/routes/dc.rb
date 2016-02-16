@@ -1,5 +1,5 @@
 #
-# TeNOR - HOT Generator
+# TeNOR - NS Manager
 #
 # Copyright 2014-2016 i2CAT Foundation, Portugal Telecom Inovação
 #
@@ -15,19 +15,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require_relative 'vnfd_to_hot'
-require_relative 'hot'
-require_relative 'resource'
-require_relative 'port'
-require_relative 'server'
-require_relative 'flavor'
-require_relative 'image'
-require_relative 'custom_exception'
-require_relative 'output'
-require_relative 'floating_ip'
-require_relative 'floating_ip_association'
-require_relative 'nsd_to_network_hot'
-require_relative 'router'
-require_relative 'router_interface'
-require_relative 'network'
-require_relative 'subnet'
+# @see TnovaManager
+class TnovaManager < Sinatra::Application
+
+  get '/gatekeeper/dc/:popId' do
+
+    return getPopInfo(params[:popId])
+  end
+
+end

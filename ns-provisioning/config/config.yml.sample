@@ -20,10 +20,6 @@ sla_enforcement: http://localhost:4016
 
 vnf_manager: http://localhost:4567
 
-vim_identity_manager: http://localhost
-vim_user: admin
-vim_pass: nomoresecrete
-
 services_list: http://localhost:4000/config/services
 
 gatekeeper:  http://localhost:8000

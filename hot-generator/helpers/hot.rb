@@ -61,4 +61,24 @@ class OrchestratorHotGenerator < Sinatra::Application
 			halt 400, e.message
 		end
 	end
+
+	def generate_network_hot_template(nsd, public_ip,flavour)
+		hot = NsdToHot.new("name", "test")
+
+		begin
+			hot.build(nsd, public_ip, flavour)
+		rescue CustomException::NoExtensionError => e
+			logger.error e.message
+			halt 400, e.message
+		rescue CustomException::InvalidExtensionError => e
+			logger.error e.message
+			halt 400, e.message
+		rescue CustomException::InvalidTemplateFileFormat => e
+			logger.error e.message
+			halt 400, e.message
+		rescue CustomException::NoFlavorError => e
+			logger.error e.message
+			halt 400, e.message
+		end
+	end
 end
