@@ -157,7 +157,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
   end
 
   def createSubnetwork(neutronUrl, networkId, index, token)
-    subnetwork = {:subnet => {:network_id => networkId, :ip_version => 4, :cidr => "192.168." + index.to_s + ".0/24"}}
+    subnetwork = {:subnet => {:network_id => networkId, :ip_version => 4, :cidr => "192.168." + index.to_s + ".0/24", :dns_nameservers => ["10.30.0.11"]}}
 
     begin
       response = RestClient.post neutronUrl + '/subnets', subnetwork.to_json, :content_type => :json, :'X-Auth-Token' => token

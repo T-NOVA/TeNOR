@@ -21,7 +21,7 @@ class TnovaManager < Sinatra::Application
   def getPopList()
 
     begin
-      response = RestClient.get "#{settings.gatekeeper}/admin/dc/", 'X-Auth-Token' => settings.token, :content_type => :json
+      response = RestClient.get "#{settings.gatekeeper}/admin/dc/", 'X-Auth-Token' => settings.gk_token, :content_type => :json
     rescue => e
       logger.error e
       if (defined?(e.response)).nil?
@@ -36,11 +36,12 @@ class TnovaManager < Sinatra::Application
   end
 
   def getPopInfo(popId)
+    loginGK()
     popList = getPopList()
-    pop_id = popList.index(popId)
+    pop_id = popList.index(popId) + 1
 
     begin
-      response = RestClient.get "#{settings.gatekeeper}/admin/dc/#{pop_id}", 'X-Auth-Token' => settings.token, :content_type => :json
+      response = RestClient.get "#{settings.gatekeeper}/admin/dc/#{pop_id}", 'X-Auth-Token' => settings.gk_token, :content_type => :json
     rescue => e
       logger.error e
       if (defined?(e.response)).nil?

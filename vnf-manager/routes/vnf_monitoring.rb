@@ -25,5 +25,26 @@ class OrchestratorVnfManager < Sinatra::Application
 
                 halt response.code, response.body
         end
+
+        post '/vnf-monitoring/:vnfi_id/readings' do
+          # Return if content-type is invalid
+          halt 415 unless request.content_type == 'application/json'
+
+          # Validate JSON format
+          monitoring_info = parse_json(request.body.read)
+
+          # Forward the request to the VNF Monitoring
+          begin
+            #vnf-monitoring/:vnfi_id/readings
+            response = RestClient.post "#{settings.vnf_monitoring}/vnf-monitoring/#{params[:vnfi_id]}/readings", monitoring_info.to_json, 'X-Auth-Token' => @client_token, :content_type => :json, :accept => :json
+          rescue Errno::ECONNREFUSED
+            halt 500, 'VNF Monitoring unreachable'
+          rescue => e
+            logger.error e.response
+            halt e.response.code, e.response.body
+          end
+
+          halt response.code, response.body
+        end
         
 end
