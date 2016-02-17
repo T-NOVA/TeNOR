@@ -62,8 +62,8 @@ class OrchestratorHotGenerator < Sinatra::Application
 		end
 	end
 
-	def generate_network_hot_template(nsd, public_ip,flavour)
-		hot = NsdToHot.new("name", "test")
+	def generate_network_hot_template(nsd, public_ip, flavour)
+		hot = NsdToHot.new(nsd['id'], nsd['name'])
 
 		begin
 			hot.build(nsd, public_ip, flavour)

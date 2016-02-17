@@ -50,7 +50,7 @@ class NsdToHot
       end
     end
 
-    puts @hot.to_yaml
+    #puts @hot.to_yaml
 
     @hot
   end
@@ -82,7 +82,7 @@ class NsdToHot
   # @return [String] the name of the created resource
   def create_subnet(network_name, index)
     name = get_resource_name
-    @hot.resources_list << Subnet.new(name,  {get_resource: network_id},  index)
+    @hot.resources_list << Subnet.new(name,  {get_resource: network_name},  index)
     name
   end
 
@@ -93,7 +93,7 @@ class NsdToHot
   # @return [String] the name of the created resource
   def create_router_interface(router_name, subnet_name)
     name = get_resource_name
-    @hot.resources_list << RouterInterface.new(name, {get_resource: router_id}, {get_resource: subnet_id})
+    @hot.resources_list << RouterInterface.new(name, {get_resource: router_name}, {get_resource: subnet_name})
     name
   end
 
