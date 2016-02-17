@@ -18,3 +18,5 @@
 require_relative 'config'
 require_relative 'authentication'
 require_relative 'statistics'
+require_relative 'dc'
+require_relative 'utils'
