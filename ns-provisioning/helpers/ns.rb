@@ -91,7 +91,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
     end
 
     deleteUser(popUrls[:keystone], vnf_info['user_id'], token)
-    deleteTenant(popUrls[:keystone], vnf_info['tenant_id'], token)
+#    deleteTenant(popUrls[:keystone], vnf_info['tenant_id'], token)
 
     removeInstance(instance['id'])
 
@@ -167,10 +167,6 @@ class OrchestratorNsProvisioner < Sinatra::Application
       return
     end
 
-    #generate instance ID - Send instantiation to NS Instance repository
-    #@instance = createInstance({:nsd_id => nsd['id'], :status => "INIT", :vendor => nsd['vendor'], :version => nsd['version'], :marketplace_callback => callbackUrl})
-    #@instance = {:nsd_id => nsd['id'], :status => "INIT", :vendor => nsd['vendor'], :version => nsd['version'], :marketplace_callback => callbackUrl}
-    #updateInstance(@instance)
     if @instance.nil?
       logger.error "Instance repo not connected"
       generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", "Internal error: instance repository not connected."))
@@ -217,8 +213,11 @@ class OrchestratorNsProvisioner < Sinatra::Application
       if @instance['project'].nil?
         begin
           tenant_name = "tenor_instance_" + @instance['id'].to_s
+          tenant_name = "VNF_dev"
+          tenant_id = "5ec795bba92e4eaaa9eabd0af44891e3"
           token = openstackAdminAuthentication(popUrls[:keystone], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
-          vnf_info['tenant_id'] = createTenant(popUrls[:keystone], tenant_name, token)
+          #vnf_info['tenant_id'] = createTenant(popUrls[:keystone], tenant_name, token)
+          vnf_info['tenant_id'] = tenant_id
           vnf_info['tenant_name'] = tenant_name
           vnf_info['username'] = "user_" + @instance['id'].to_s
           vnf_info['password'] = "secretsecret"
@@ -227,11 +226,11 @@ class OrchestratorNsProvisioner < Sinatra::Application
           roleAdminId = getAdminRole(popUrls[:keystone], token)
           putRole(popUrls[:keystone], vnf_info['tenant_id'], vnf_info['user_id'], roleAdminId, token)
           tenant_token = openstackAuthentication(popUrls[:keystone], vnf_info['tenant_id'], vnf_info['username'], vnf_info['password'])
-          secuGroupId = createSecurityGroup(popUrls[:compute], vnf_info['tenant_id'], tenant_token)
-          vnf_info['security_group_id'] = secuGroupId
-          addRulesToTenant(popUrls[:compute], vnf_info['tenant_id'], secuGroupId, 'TCP', tenant_token, 1, 65535)
-          addRulesToTenant(popUrls[:compute], vnf_info['tenant_id'], secuGroupId, 'UDP', tenant_token, 1, 65535)
-          addRulesToTenant(popUrls[:compute], vnf_info['tenant_id'], secuGroupId, 'ICMP', tenant_token, -1, -1)
+          #secuGroupId = createSecurityGroup(popUrls[:compute], vnf_info['tenant_id'], tenant_token)
+          #vnf_info['security_group_id'] = secuGroupId
+          #addRulesToTenant(popUrls[:compute], vnf_info['tenant_id'], secuGroupId, 'TCP', tenant_token, 1, 65535)
+          #addRulesToTenant(popUrls[:compute], vnf_info['tenant_id'], secuGroupId, 'UDP', tenant_token, 1, 65535)
+          #addRulesToTenant(popUrls[:compute], vnf_info['tenant_id'], secuGroupId, 'ICMP', tenant_token, -1, -1)
           puts "Tenant_id:" + vnf_info['tenant_id']
           puts "Username: " + vnf_info['username']
 
@@ -245,30 +244,84 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
       logger.debug @instance
 
-      networks = []
       publicNetworkId = publicNetworkId(popUrls[:neutron], tenant_token)
-      vnf_info['router_id'] = createRouter(popUrls[:neutron], publicNetworkId, tenant_token)
-      virtual_links = nsd['vld']['virtual_links']
-      nsd['vld']['virtual_links'].each_with_index do |vlink, index|
-        if vlink['flavor_ref_id'] == flavour
-          logger.error vlink['merge']
-          if (vlink['merge'])
-            #TODO
-            #use the same network
-          end
-          begin
-            networkId = createNetwork(popUrls[:neutron], vlink['alias'], tenant_token)
-            subnetId = createSubnetwork(popUrls[:neutron], networkId, index, tenant_token)
-            addInterfaceToRouter(popUrls[:neutron], vnf_info['router_id'], subnetId, tenant_token)
-            networks.push({:id => networkId, :alias => vlink['alias'], :subnet => {:id => subnetId}})
-          rescue
-            error = "Error creating networks or adding interfaces."
-            logger.error error
-            recoverState(popInfo, vnf_info, @instance, error)
-            return
-          end
-        end
+
+      hot_generator_message = {
+          nsd: nsd,
+          public_ip: publicNetworkId,
+          dns_server: "10.30.0.11"
+      }
+
+      begin
+        response = RestClient.post settings.hot_generator + '/networkhot/' + flavour, hot_generator_message.to_json, :content_type => :json, :accept => :json
+      rescue Errno::ECONNREFUSED
+        halt 500, 'HOT Generator unreachable'
+      rescue => e
+        logger.error e.response
+        halt e.response.code, e.response.body
       end
+      hot, error = parse_json(response)
+
+      template = {:stack_name => "network-" + @instance['id'].to_s, :template => hot}
+      begin
+        response = RestClient.post "#{popUrls[:orch]}/#{vnf_info['tenant_id']}/stacks", template.to_json , 'X-Auth-Token' => tenant_token, :content_type => :json, :accept => :json
+      rescue Errno::ECONNREFUSED
+        error = {"info" => "VIM unrechable."}
+        recoverState(popInfo, vnf_info, @instance, error)
+        return
+      rescue => e
+        logger.error e
+        logger.error e.response
+        error = {"info" => "Error creating the network stack."}
+        recoverState(popInfo, vnf_info, @instance, error)
+        return
+      end
+
+      stack, error = parse_json(response)
+      stack_id = stack['stack']['id']
+
+      #get network info to stack
+      begin
+        response = RestClient.get "#{popUrls[:orch]}/#{vnf_info['tenant_id']}/stacks/#{"network-" + @instance['id'].to_s}/resources", 'X-Auth-Token' => tenant_token
+      rescue Errno::ECONNREFUSED
+        error = {"info" => "VIM unrechable."}
+        recoverState(popInfo, vnf_info, @instance, error)
+        return
+      rescue => e
+        logger.error e
+        logger.error e.response
+        error = {"info" => "Error creating the network stack."}
+        recoverState(popInfo, vnf_info, @instance, error)
+        return
+      end
+      network_resources, error = parse_json(response)
+      stack_networks = network_resources['resources'].find_all { |res| res['resource_type'] == 'OS::Neutron::Net' }
+
+      networks = []
+
+      #for each network, get resource info
+      stack_networks.each do |network|
+        begin
+          response = RestClient.get "#{popUrls[:orch]}/#{vnf_info['tenant_id']}/stacks/#{"network-" + @instance['id'].to_s}/#{stack_id}/resources/#{network['resource_name']}", 'X-Auth-Token' => tenant_token
+        rescue Errno::ECONNREFUSED
+          error = {"info" => "VIM unrechable."}
+          recoverState(popInfo, vnf_info, @instance, error)
+          return
+        rescue => e
+          logger.error e
+          logger.error e.response
+          error = {"info" => "Error creating the network stack."}
+          recoverState(popInfo, vnf_info, @instance, error)
+          return
+        end
+        net, error = parse_json(response)
+        networks.push({:id => net['resource']['attributes']['id'], :alias => net['resource']['attributes']['name']})
+      end
+
+      puts stack
+      puts networks
+
+      @instance['network_stack'] = stack
 
       @instance['vlr'] = networks
       @instance['vnf_info'] = vnf_info
@@ -296,6 +349,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
       puts "Instantiation..."
       logger.debug vnf_provisioning_info
       @instance['instantiation_start_time'] = DateTime.now.iso8601(3)
+      updateInstance(@instance)
       begin
         instantiateVNF(callbackUrl, vnf_provisioning_info)
       rescue => e
