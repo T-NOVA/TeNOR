@@ -34,7 +34,7 @@ class NsdToHot
   # @param [Array] networks_id the IDs of the networks created by NS Manager
   # @param [String] security_group_id the ID of the T-NOVA security group
   # @return [HOT] returns an HOT object
-  def build(nsd, public_net_id, flavour)
+  def build(nsd, public_net_id, dns_server, flavour)
 
     router_name = create_router(public_net_id)
     virtual_links = nsd['vld']['virtual_links']
@@ -45,7 +45,7 @@ class NsdToHot
           #use the same network
         end
         network_name = create_network(vlink['alias'])
-        subnet_name = create_subnet(network_name, index)
+        subnet_name = create_subnet(network_name, dns_server, index)
         create_router_interface(router_name, subnet_name)
       end
     end
@@ -80,9 +80,9 @@ class NsdToHot
   # @param [network_name] network_name the network name
   # @param [index] index the id used for the CIDR
   # @return [String] the name of the created resource
-  def create_subnet(network_name, index)
+  def create_subnet(network_name, dns_server, index)
     name = get_resource_name
-    @hot.resources_list << Subnet.new(name,  {get_resource: network_name},  index)
+    @hot.resources_list << Subnet.new(name,  {get_resource: network_name}, dns_server, index)
     name
   end
 

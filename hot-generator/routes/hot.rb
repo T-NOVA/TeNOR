@@ -75,7 +75,7 @@ class OrchestratorHotGenerator < Sinatra::Application
 		networkInfo = parse_json(request.body.read)
 
 		logger.error params[:public_ip]
-		hot = generate_network_hot_template(networkInfo['nsd'], networkInfo['public_ip'], params[:flavour])
+		hot = generate_network_hot_template(networkInfo['nsd'], networkInfo['public_ip'], networkInfo['dns_server'], params[:flavour])
 		logger.debug 'HOT: ' + hot.to_json
 
 		halt 200, hot.to_json

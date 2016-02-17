@@ -22,9 +22,9 @@ class Subnet < Resource
   # @param [String] resource_name the Port resource name
   # @param [String] network Network name this port belongs to
   # @param [String] security_group_id the ID of the T-NOVA security group
-  def initialize(resource_name, network_id, index)
+  def initialize(resource_name, network_id, dns_server, index)
     @type = 'OS::Neutron::Subnet'
-    @properties = {"network_id" => network_id, "ip_version" => 4, "cidr" => "192.168." + index.to_s + ".0/24"}
+    @properties = {"network_id" => network_id, "ip_version" => 4, "cidr" => "192.168." + index.to_s + ".0/24", :dns_nameservers => dns_server}
     super(resource_name, @type, @properties)
   end
 end
