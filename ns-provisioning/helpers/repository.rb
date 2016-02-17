@@ -35,8 +35,6 @@ class OrchestratorNsProvisioner < Sinatra::Application
   end
 
   def updateInstance(instance)
-    puts instance
-    puts instance['id']
     begin
       response = RestClient.put settings.ns_instance_repository + '/ns-instances/' + instance['id'].to_s, instance.to_json, :content_type => :json
     rescue Errno::ECONNREFUSED

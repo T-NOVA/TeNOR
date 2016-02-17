@@ -18,12 +18,13 @@
 # @see OrchestratorNsProvisioner
 class OrchestratorNsProvisioner < Sinatra::Application
 
-  def getPopInfo(popId)
+  def getPopInfo(pop_id)
 
     begin
-      response = RestClient.get "#{settings.tenor_api}/gatekeeper/dc/#{pop_id}", 'X-Auth-Token' => settings.token, :content_type => :json
+      response = RestClient.get "#{settings.tenor_api}/gatekeeper/dc/#{pop_id}", :content_type => :json
     rescue => e
       logger.error e
+      raise 'Pop id no exists'
     end
     popInfo, errors = parse_json(response.body)
     return 400, errors if errors
