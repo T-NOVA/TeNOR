@@ -140,7 +140,7 @@ class OrchestratorVnfProvisioning < Sinatra::Application
     logger.debug 'Created VNFR: ' + vnfr.to_json
 
     create_thread_to_monitor_stack(vnfr.id, vnfr.stack_url, vim_info, instantiation_info['callback_url'])
-    logger.debug 'Created thread to monitor stack'
+    logger.info 'Created thread to monitor stack'
 
     # Send the VNFR to the mAPI
     lifecycle_event = vnf['vnfd']['vnf_lifecycle_events'].find { |event| event['flavor_id_ref'] == instantiation_info['flavour']}
@@ -376,7 +376,7 @@ class OrchestratorVnfProvisioning < Sinatra::Application
           logger.error e.response
           halt e.response.code, e.response.body
         end
-        logger.debug 'Response from the VIM about the error: ' + response.to_json
+        logger.error 'Response from the VIM about the error: ' + response
 
         # Request VIM to delete the stack
         begin

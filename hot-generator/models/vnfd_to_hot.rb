@@ -49,14 +49,13 @@ class VnfdToHot
 			# Get VDU for deployment
 			vdu = vnfd['vdu'].detect { |vdu| vdu['id'] == vdu_ref }
 
-			#image_name = create_image(vdu)
+			image_name = create_image(vdu)
 			flavor_name = create_flavor(vdu)
 
 			ports = create_ports(vdu['connection_points'], vnfd['vlinks'], networks_id, security_group_id)
 			#ports = create_ports(vdu_ref, vdu['vnfc']['id'], vdu['vnfc']['networking'])
 
-			#create_server(vdu, image_name, flavor_name, ports)
-			create_server(vdu, flavor_name, ports)
+			create_server(vdu, image_name, flavor_name, ports)
 		end
 
 		@hot
@@ -182,13 +181,14 @@ class VnfdToHot
 	# @param [String] image_name the image resource name
 	# @param [String] flavour_name the flavour resource name
 	# @param [Array] ports list of the ports resource
-	#def create_server(vdu, image_name, flavour_name, ports)
-	def create_server(vdu, flavour_name, ports)
+	def create_server(vdu, image_name, flavour_name, ports)
+		user_data = vdu.has_key?('bootstrap_script') ? vdu['bootstrap_script'] : nil
 		@hot.resources_list << Server.new(
 			vdu['id'],
 			{get_resource: flavour_name},
-			'c2495efa-e331-4f49-b4b5-e35415a0aaeb',
-			ports)
+			{get_resource: image_name},
+			ports,
+			user_data)
 		@hot.outputs_list << Output.new("#{vdu['id']}#id", "#{vdu['id']} ID", {get_resource: vdu['id']})
 	end
 
