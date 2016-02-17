@@ -23,9 +23,9 @@ class Server < Resource
 	# @param [String] flavor the ID or name of the flavor to boot onto
 	# @param [String] image the ID or name of the image to boot with
 	# @param [Array] networks a list of ports ID to be added to this server
-	def initialize(resource_name, flavor, image, networks)
+	def initialize(resource_name, flavor, image, networks, user_data)
 		type = 'OS::Nova::Server'
-		properties = {'flavor' => flavor, 'image' => image, 'networks' => networks}
+		properties = {'flavor' => flavor, 'image' => image, 'networks' => networks, 'user_data' => user_data}
 		super(resource_name, type, properties)
 	end
 end
