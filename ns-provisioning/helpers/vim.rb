@@ -337,4 +337,15 @@ class OrchestratorNsProvisioner < Sinatra::Application
     end
   end
 
+  def getSecurityGroups(computeUrl, tenant_id, token)
+    begin
+      response = RestClient.get computeUrl + '/' + tenant_id + '/os-security-groups', :content_type => :json, :'X-Auth-Token' => token
+    rescue => e
+      logger.error e
+      logger.error e.response.body
+    end
+    sec, error = parse_json(response)
+    return sec
+  end
+
 end

@@ -218,11 +218,13 @@ class OrchestratorNsProvisioner < Sinatra::Application
           roleAdminId = getAdminRole(popUrls[:keystone], token)
           putRole(popUrls[:keystone], vnf_info['tenant_id'], vnf_info['user_id'], roleAdminId, token)
           tenant_token = openstackAuthentication(popUrls[:keystone], vnf_info['tenant_id'], vnf_info['username'], vnf_info['password'])
-          #secuGroupId = createSecurityGroup(popUrls[:compute], vnf_info['tenant_id'], tenant_token)
-          #vnf_info['security_group_id'] = secuGroupId
-          #addRulesToTenant(popUrls[:compute], vnf_info['tenant_id'], secuGroupId, 'TCP', tenant_token, 1, 65535)
-          #addRulesToTenant(popUrls[:compute], vnf_info['tenant_id'], secuGroupId, 'UDP', tenant_token, 1, 65535)
-          #addRulesToTenant(popUrls[:compute], vnf_info['tenant_id'], secuGroupId, 'ICMP', tenant_token, -1, -1)
+          security_groups = getSecurityGroups(popUrls[:compute], vnf_info['tenant_id'], tenant_token)
+          puts security_groups['security_groups'][0]
+          secuGroupId = createSecurityGroup(popUrls[:compute], vnf_info['tenant_id'], tenant_token)
+          vnf_info['security_group_id'] = secuGroupId
+          addRulesToTenant(popUrls[:compute], vnf_info['tenant_id'], secuGroupId, 'TCP', tenant_token, 1, 65535)
+          addRulesToTenant(popUrls[:compute], vnf_info['tenant_id'], secuGroupId, 'UDP', tenant_token, 1, 65535)
+          addRulesToTenant(popUrls[:compute], vnf_info['tenant_id'], secuGroupId, 'ICMP', tenant_token, -1, -1)
           puts "Tenant_id:" + vnf_info['tenant_id']
           puts "Username: " + vnf_info['username']
 
