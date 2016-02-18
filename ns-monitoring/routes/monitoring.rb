@@ -87,7 +87,8 @@ class NSMonitoring < Sinatra::Application
         logger.debug parameter
         object = {
             :parameter_id => parameter['id'],
-            :name => parameter['name']
+            :name => parameter['name'],
+            :vnfr_id => @ns_instance['vnfrs'][0]['vnfr_id']
             #,:unit => parameter['unit']
         }
         logger.error object
@@ -127,7 +128,6 @@ class NSMonitoring < Sinatra::Application
     #[{"parameters":[{"id":41,"name":"availability","unit":"%"},{"id":42,"name":"ram-consumption","unit":"MB"}]}]
 
   end
-
 
   #This interface is with the VNF Monitoring micro-service, upon successfully receiving a monitoring parameter reading for a given VNF instance.
   #	{

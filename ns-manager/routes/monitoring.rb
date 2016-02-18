@@ -87,4 +87,26 @@ class TnovaManager < Sinatra::Application
 
   end
 
+  #/ns-monitoring/vnf-instance-readings/087e8897-f82a-4b32-9500-74ec9111e184
+
+  post '/ns-monitoring/vnf-instance-readings/:vnf_instance_id' do
+
+    begin
+      @service = ServiceModel.find_by(name: "nsmonitoring")
+    rescue Mongoid::Errors::DocumentNotFound => e
+      halt 500, {'Content-Type' => "text/plain"}, "NS Provisioning not registred."
+    end
+
+    begin
+      response = RestClient.post @service.host + ":" + @service.port.to_s + request.fullpath, provisioning.to_json, 'X-Auth-Token' => @client_token, :content_type => :json
+    rescue Errno::ECONNREFUSED
+      halt 500, 'NS Monitoring unreachable'
+    rescue => e
+      logger.error e.response
+      halt e.response.code, e.response.body
+    end
+
+    return response.code, response.body
+  end
+
 end

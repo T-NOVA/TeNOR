@@ -43,6 +43,7 @@ class VNFMonitoring < Sinatra::Application
     logger.error @json
 
     @json['vnfi_id'] = params['vnfi_id']
+    @json['vnfr_id'] = @json['vnfr_id']
 
     MonitoringMetric.new(@json).save!
 
@@ -96,7 +97,7 @@ class VNFMonitoring < Sinatra::Application
         monitoringMetric = MonitoringMetric.find_by(:vnfi_id => params[:vnfi_id])
         #store recevied data in Cassandra DB
         metrics = {measurement['type'] => measurement['value'].to_s}
-        RestClient.post settings.vnf_monitor_db + '/vnf-monitoring/' + params[:vnfi_id], metrics.to_json, :content_type => :json, :accept => :json
+        RestClient.post settings.vnf_monitor_db + '/vnf-monitoring/' + monitoringMetric[:vnfr_id], metrics.to_json, :content_type => :json, :accept => :json
 
         #send enriched data to NS-Monitoring
         enriched = {
@@ -104,7 +105,7 @@ class VNFMonitoring < Sinatra::Application
             :value => measurement['value'],
             :timestamp => measurement['timestamp']
         }
-        RestClient.post settings.ns_monitor_db + '/ns-monitoring/vnf-instance-readings/' + params[:vnfi_id], enriched.to_json, :content_type => :json, :accept => :json
+        RestClient.post settings.ns_manager + '/ns-monitoring/vnf-instance-readings/' + monitoringMetric[:vnfr_id], enriched.to_json, :content_type => :json, :accept => :json
       end
     end
   end
