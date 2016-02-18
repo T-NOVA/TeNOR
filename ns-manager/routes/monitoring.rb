@@ -41,7 +41,7 @@ class TnovaManager < Sinatra::Application
 
   #/instances/:instance_id/monitoring-data?instance_type=ns&metric
   #/instances/:ns_instance_id/monitoring-data/?instance_type=ns
-  get '/instances/:ns_instance_id/monitoring-data/' do
+  get '/instances/:instance_id/monitoring-data/' do
     logger.debug params
     logger.debug request.fullpath
     if params['instance_type'] == 'ns'
@@ -50,13 +50,14 @@ class TnovaManager < Sinatra::Application
       rescue Mongoid::Errors::DocumentNotFound => e
         halt 500, {'Content-Type' => "text/plain"}, "Microservice unrechable."
       end
-      composedUrl = "/ns-monitoring/instances/"+params['ns_instance_id'].to_s+"/monitoring-data/?"+request.env['QUERY_STRING']
+      composedUrl = "/ns-monitoring/instances/"+params['instance_id'].to_s+"/monitoring-data/?"+request.env['QUERY_STRING']
     elsif params['instance_type'] == 'vnf'
       begin
         @service = ServiceModel.find_by(name: "vnfmanager")
       rescue Mongoid::Errors::DocumentNotFound => e
         halt 500, {'Content-Type' => "text/plain"}, "Microservice unrechable."
       end
+      composedUrl = "/vnf-monitoring/instances/"+params['instance_id'].to_s+"/monitoring-data/?"+request.env['QUERY_STRING']
     end
     
     if(params["metric"])

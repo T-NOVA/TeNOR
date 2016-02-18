@@ -109,4 +109,17 @@ class VNFMonitoring < Sinatra::Application
       end
     end
   end
+
+  #/ns-monitoring/instances/10/monitoring-data/
+  get '/vnf-monitoring/instances/:instance_id/monitoring-data/' do
+    composedUrl = '/vnf-monitoring/' + params["instance_id"].to_s + "/monitoring-data/?" + request.env['QUERY_STRING']
+    begin
+      response = RestClient.get settings.vnf_monitor_db + composedUrl, :content_type => :json
+    rescue => e
+      logger.error e.response
+      #return e.response.code, e.response.body
+    end
+    return response
+  end
+
 end
