@@ -17,11 +17,10 @@
 #
 class Network < Resource
 
-  # Initializes Port object
+  # Initializes a Network object
   #
-  # @param [String] resource_name the Port resource name
-  # @param [String] network Network name this port belongs to
-  # @param [String] security_group_id the ID of the T-NOVA security group
+  # @param [String] resource_name the Network resource name
+  # @param [String] name the name of the network
   def initialize(resource_name, name)
     @type = 'OS::Neutron::Net'
     @properties = {'name' => name}

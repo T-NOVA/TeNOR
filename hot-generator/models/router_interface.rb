@@ -17,11 +17,11 @@
 #
 class RouterInterface < Resource
 
-  # Initializes Port object
+  # Initializes Router Interface object
   #
-  # @param [String] resource_name the Port resource name
-  # @param [String] network Network name this port belongs to
-  # @param [String] security_group_id the ID of the T-NOVA security group
+  # @param [String] resource_name the Router Interface resource name
+  # @param [String] router_id the ID of the router
+  # @param [String] subnet_id the ID of the subnet
   def initialize(resource_name, router_id, subnet_id)
     @type = 'OS::Neutron::RouterInterface'
     @properties = {"router_id" => router_id, "subnet_id" => subnet_id}

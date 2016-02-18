@@ -37,7 +37,7 @@ class OrchestratorHotGenerator < Sinatra::Application
 
 	# Generate a HOT template
 	#
-	# @param [JSON] vnfd the vnfd
+	# @param [Hash] vnfd the VNFD
 	# @param [String] flavour_key the T-NOVA flavour
 	# @param [Array] networks_id the IDs of the networks created by the NS Manager
 	# @param [String] security_group_id the ID of the T-NOVA security group
@@ -62,23 +62,16 @@ class OrchestratorHotGenerator < Sinatra::Application
 		end
 	end
 
-	def generate_network_hot_template(nsd, public_ip, dns_server, flavour)
+	# Generate a HOT template
+	#
+	# @param [Hash] nsd the NSD
+	# @param [String] public_ip the ID of the public network
+	# @param [String] dns_server the DNS Server to add to the networks
+	# @param [String] flavour the T-NOVA flavour
+	# @return [Hash] the generated hot template
+	def generate_network_hot_template(nsd, public_net_id, dns_server, flavour)
 		hot = NsdToHot.new(nsd['id'], nsd['name'])
 
-		begin
-			hot.build(nsd, public_ip, dns_server, flavour)
-		rescue CustomException::NoExtensionError => e
-			logger.error e.message
-			halt 400, e.message
-		rescue CustomException::InvalidExtensionError => e
-			logger.error e.message
-			halt 400, e.message
-		rescue CustomException::InvalidTemplateFileFormat => e
-			logger.error e.message
-			halt 400, e.message
-		rescue CustomException::NoFlavorError => e
-			logger.error e.message
-			halt 400, e.message
-		end
+		hot.build(nsd, public_net_id, dns_server, flavour)
 	end
 end

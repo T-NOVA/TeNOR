@@ -17,14 +17,13 @@
 #
 class Router < Resource
 
-  # Initializes Port object
+  # Initializes Router object
   #
-  # @param [String] resource_name the Port resource name
-  # @param [String] network Network name this port belongs to
-  # @param [String] security_group_id the ID of the T-NOVA security group
-  def initialize(resource_name, public_net)
+  # @param [String] resource_name the Router resource name
+  # @param [String] public_net_id the ID of the public network
+  def initialize(resource_name, public_net_id)
     @type = 'OS::Neutron::Router'
-    @properties = {'external_gateway_info' => { 'network' => public_net }, 'name' => 'Tenor router'}
+    @properties = {'external_gateway_info' => { 'network' => public_net_id }, 'name' => 'Tenor router'}
     super(resource_name, @type, @properties)
   end
 end
