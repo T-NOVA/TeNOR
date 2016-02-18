@@ -60,34 +60,26 @@ class OrchestratorNsProvisioner < Sinatra::Application
     tenant_token = openstackAuthentication(popUrls[:keystone], vnf_info['tenant_id'], vnf_info['username'], vnf_info['password'])
     token = openstackAdminAuthentication(popUrls[:keystone], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
 
+    #remove network stack
+    stack_name = instance['network_stack']['stack']['stack_name']
+    stack_id = instance['network_stack']['stack']['id']
 
-    if (!vnf_info['router_id'].nil?)
-      ports = getRouterPorts(popUrls[:neutron], vnf_info['router_id'], tenant_token)
-      ports.each do |port|
-        if (port['tenant_id'] != "")
-          updateRouterPorts(popUrls[:neutron], port['id'], tenant_token)
-          deleteRouterPorts(popUrls[:neutron], port['id'], tenant_token)
-        end
-      end
+    begin
+      response = RestClient.delete "#{popUrls[:orch]}/#{vnf_info['tenant_id']}/stacks/#{stack_name}/#{stack_id}", 'X-Auth-Token' => tenant_token, :content_type => :json, :accept => :json
+    rescue Errno::ECONNREFUSED
+      error = {"info" => "VIM unrechable."}
+      recoverState(popInfo, vnf_info, @instance, error)
+      return
+    rescue => e
+      logger.error e
+      logger.error e.response
+      error = {"info" => "Error deleting the network stack."}
+#      recoverState(popInfo, vnf_info, @instance, error)
+      return
     end
-
-    if (!instance['vlr'].nil?)
-      instance['vlr'].each do |network|
-        deleteSubnet(popUrls[:neutron], network['subnet']['id'], tenant_token)
-        #network['subnet'].each do |subnet|
-        #  deleteSubnet(popUrls[:neutron], subnet['id'])
-        #end
-        deleteNetwork(popUrls[:neutron], network['id'], tenant_token)
-      end
-    end
-
-    if (!vnf_info['router_id'].nil?)
-      deleteRouter(popUrls[:neutron], vnf_info['router_id'], tenant_token)
-    end
-
 
     if (!vnf_info['security_group_id'].nil?)
-      deleteSecurityGroup(popUrls[:compute], vnf_info['tenant_id'], vnf_info['security_group_id'], tenant_token)
+#      deleteSecurityGroup(popUrls[:compute], vnf_info['tenant_id'], vnf_info['security_group_id'], tenant_token)
     end
 
     deleteUser(popUrls[:keystone], vnf_info['user_id'], token)
@@ -248,7 +240,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
       hot_generator_message = {
           nsd: nsd,
-          public_ip: publicNetworkId,
+          public_net_id: publicNetworkId,
           dns_server: "10.30.0.11"
       }
 
@@ -279,6 +271,34 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
       stack, error = parse_json(response)
       stack_id = stack['stack']['id']
+
+      #stack_status
+      status = "CREATING"
+      count = 10
+      while(status != "CREATE_COMPLETE" || status != "CREATE_FAILED")
+        sleep(1)
+        begin
+          response = RestClient.get "#{popUrls[:orch]}/#{vnf_info['tenant_id']}/stacks/#{"network-" + @instance['id'].to_s}", 'X-Auth-Token' => tenant_token
+        rescue Errno::ECONNREFUSED
+          error = {"info" => "VIM unrechable."}
+          recoverState(popInfo, vnf_info, @instance, error)
+          return
+        rescue => e
+          logger.error e
+          logger.error e.response
+          error = {"info" => "Error creating the network stack."}
+          recoverState(popInfo, vnf_info, @instance, error)
+          return
+        end
+        stack_info, error = parse_json(response)
+        status = stack_info['stack']['stack_status']
+        count = count +1
+        break if count > 10
+      end
+      if(status == "CREATE_FAILED")
+        recoverState(popInfo, vnf_info, @instance, error)
+        return
+      end
 
       #get network info to stack
       begin
