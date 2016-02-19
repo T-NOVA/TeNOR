@@ -238,6 +238,34 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
       logger.debug @instance
 
+      # Request WICM to create a service
+      wicm_message = {
+        ns_instance_id: nsd['id'],
+        client_mkt_id: '1',
+        nap_mkt_id: '1',
+        nfvi_mkt_id: '1'
+      }
+      begin
+        response = RestClient.post settings.wicm + '/vnf-connectivity', wicm_message.to_json, :content_type => :json, :accept => :json
+      rescue Errno::ECONNREFUSED
+        halt 500, 'WICM unreachable'
+      rescue => e
+        logger.error e.response
+        halt e.response.code, e.response.body
+      end
+      provider_info, error = parse_json(response)
+
+      # Request HOT Generator to build the WICM - SFC integration
+      provider_info['security_group_id'] = vnf_info['security_group_id']
+      begin
+        response = RestClient.post settings.hot_generator + '/wicmhot', provider_info.to_json, :content_type => :json, :accept => :json
+      rescue Errno::ECONNREFUSED
+        halt 500, 'HOT Generator unreachable'
+      rescue => e
+        logger.error e.response
+        halt e.response.code, e.response.body
+      end
+
       publicNetworkId = publicNetworkId(popUrls[:neutron], tenant_token)
 
       hot_generator_message = {
