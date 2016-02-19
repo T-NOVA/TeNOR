@@ -64,6 +64,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
     stack_name = instance['network_stack']['stack']['stack_name']
     stack_id = instance['network_stack']['stack']['id']
 
+    logger.error "Removing network stack"
     begin
       response = RestClient.delete "#{popUrls[:orch]}/#{vnf_info['tenant_id']}/stacks/#{stack_name}/#{stack_id}", 'X-Auth-Token' => tenant_token, :content_type => :json, :accept => :json
     rescue Errno::ECONNREFUSED
@@ -77,17 +78,19 @@ class OrchestratorNsProvisioner < Sinatra::Application
 #      recoverState(popInfo, vnf_info, @instance, error)
       return
     end
+    logger.error "Network stack removed correctly"
 
     if (!vnf_info['security_group_id'].nil?)
 #      deleteSecurityGroup(popUrls[:compute], vnf_info['tenant_id'], vnf_info['security_group_id'], tenant_token)
     end
 
+    puts "Removing user..."
     deleteUser(popUrls[:keystone], vnf_info['user_id'], token)
 #    deleteTenant(popUrls[:keystone], vnf_info['tenant_id'], token)
 
     removeInstance(instance['id'])
 
-    generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", error))
+    generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", "error"))
   end
 
   def instantiate(instantiation_info)
@@ -204,11 +207,17 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
       if @instance['project'].nil?
         begin
-          tenant_name = "tenor_instance_" + @instance['id'].to_s
-          tenant_name = "VNF_dev"
-          tenant_id = "5ec795bba92e4eaaa9eabd0af44891e3"
+
           token = openstackAdminAuthentication(popUrls[:keystone], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
-          #vnf_info['tenant_id'] = createTenant(popUrls[:keystone], tenant_name, token)
+
+          if(settings.default_tenant_name.nil?)
+            tenant_name = settings.default_tenant_name
+            tenant_id = settings.default_tenant_id
+          elsif
+            tenant_name = "tenor_instance_" + @instance['id'].to_s
+            vnf_info['tenant_id'] = createTenant(popUrls[:keystone], tenant_name, token)
+          end
+
           vnf_info['tenant_id'] = tenant_id
           vnf_info['tenant_name'] = tenant_name
           vnf_info['username'] = "user_" + @instance['id'].to_s
@@ -225,7 +234,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
           addRulesToTenant(popUrls[:compute], vnf_info['tenant_id'], secuGroupId, 'TCP', tenant_token, 1, 65535)
           addRulesToTenant(popUrls[:compute], vnf_info['tenant_id'], secuGroupId, 'UDP', tenant_token, 1, 65535)
           addRulesToTenant(popUrls[:compute], vnf_info['tenant_id'], secuGroupId, 'ICMP', tenant_token, -1, -1)
-          puts "Tenant_id:" + vnf_info['tenant_id']
+          puts "Tenant id: " + vnf_info['tenant_id']
           puts "Username: " + vnf_info['username']
 
         rescue
@@ -243,9 +252,10 @@ class OrchestratorNsProvisioner < Sinatra::Application
       hot_generator_message = {
           nsd: nsd,
           public_net_id: publicNetworkId,
-          dns_server: "10.30.0.11"
+          dns_server: settings.dns_server
       }
 
+      puts "Generating network HOT template..."
       begin
         response = RestClient.post settings.hot_generator + '/networkhot/' + flavour, hot_generator_message.to_json, :content_type => :json, :accept => :json
       rescue Errno::ECONNREFUSED
@@ -256,6 +266,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
       end
       hot, error = parse_json(response)
 
+      puts "Send network template to HEAT Orchestration"
       template = {:stack_name => "network-" + @instance['id'].to_s, :template => hot}
       begin
         response = RestClient.post "#{popUrls[:orch]}/#{vnf_info['tenant_id']}/stacks", template.to_json , 'X-Auth-Token' => tenant_token, :content_type => :json, :accept => :json
@@ -270,10 +281,10 @@ class OrchestratorNsProvisioner < Sinatra::Application
         recoverState(popInfo, vnf_info, @instance, error)
         return
       end
-
       stack, error = parse_json(response)
       stack_id = stack['stack']['id']
 
+      puts "Check network stack creation..."
       #stack_status
       status = "CREATING"
       count = 10
@@ -302,6 +313,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
         return
       end
 
+      puts "Network stack CREATE_COMPLETE. Getting network information..."
       #get network info to stack
       begin
         response = RestClient.get "#{popUrls[:orch]}/#{vnf_info['tenant_id']}/stacks/#{"network-" + @instance['id'].to_s}/resources", 'X-Auth-Token' => tenant_token
@@ -319,8 +331,8 @@ class OrchestratorNsProvisioner < Sinatra::Application
       network_resources, error = parse_json(response)
       stack_networks = network_resources['resources'].find_all { |res| res['resource_type'] == 'OS::Neutron::Net' }
 
+      puts "Reading network information from stack..."
       networks = []
-
       #for each network, get resource info
       stack_networks.each do |network|
         begin
@@ -340,16 +352,11 @@ class OrchestratorNsProvisioner < Sinatra::Application
         networks.push({:id => net['resource']['attributes']['id'], :alias => net['resource']['attributes']['name']})
       end
 
-      puts stack
-      puts networks
-
       @instance['network_stack'] = stack
-
       @instance['vlr'] = networks
       @instance['vnf_info'] = vnf_info
       updateInstance(@instance)
 
-      #VIM instantiation
       vnf_provisioning_info = {
           :ns_id => nsd['id'],
           :vnf_id => vnf_id,
@@ -368,7 +375,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
           :security_group_id => vnf_info['security_group_id'],
           :callback_url => settings.tenor_api + "/ns-instances/" + @instance['id'] + "/instantiate"
       }
-      puts "Instantiation..."
+      puts "Instantiation VNF..."
       logger.debug vnf_provisioning_info
       @instance['instantiation_start_time'] = DateTime.now.iso8601(3)
       updateInstance(@instance)
