@@ -92,4 +92,22 @@ class OrchestratorHotGenerator < Sinatra::Application
 		halt 200, hot.to_json
 	end
 
+	# @method post_wicmhot
+	# @overload post '/wicmhot'
+	# 	Build a HOT to create the WICM-SFC integration
+	# Convert a VNFD into a HOT
+	post '/wicmhot' do
+		# Return if content-type is invalid
+		halt 415 unless request.content_type == 'application/json'
+
+		# Validate JSON format
+		provider_info = parse_json(request.body.read)
+
+		# Build a HOT template
+		hot = generate_wicm_hot_template(provider_info)
+		logger.debug 'WICM HOT: ' + hot.to_json
+
+		halt 200, hot.to_json
+	end
+
 end
