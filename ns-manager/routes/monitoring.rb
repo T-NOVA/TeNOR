@@ -64,9 +64,9 @@ class TnovaManager < Sinatra::Application
       #composedUrl = composedUrl + "/" + params["metric"]
     end
     logger.debug composedUrl
-    logger.debug @service.host + ":" + @service.port.to_s + composedUrl
+    logger.debug @service.host.to_s + ":" + @service.port.to_s + composedUrl.to_s
     begin
-      response = RestClient.get  @service.host + ":" + @service.port.to_s + composedUrl, 'X-Auth-Token' => @client_token, :content_type => :json
+      response = RestClient.get @service.host.to_s + ":" + @service.port.to_s + composedUrl.to_s, 'X-Auth-Token' => @client_token, :content_type => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Monitoring unreachable'
     rescue => e
