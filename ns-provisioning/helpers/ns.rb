@@ -215,7 +215,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
             tenant_id = settings.default_tenant_id
           elsif
             tenant_name = "tenor_instance_" + @instance['id'].to_s
-            vnf_info['tenant_id'] = createTenant(popUrls[:keystone], tenant_name, token)
+            tenant_id = createTenant(popUrls[:keystone], tenant_name, token)
           end
 
           vnf_info['tenant_id'] = tenant_id
