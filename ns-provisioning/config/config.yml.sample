@@ -33,3 +33,5 @@ dns_server:
 #optional fields
 default_tenant_id:
 default_tenant_name:
+
+wicm: http://10.30.0.12:12891

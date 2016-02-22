@@ -62,16 +62,26 @@ class OrchestratorHotGenerator < Sinatra::Application
 		end
 	end
 
-	# Generate a HOT template
+	# Generate a Network HOT template
 	#
 	# @param [Hash] nsd the NSD
 	# @param [String] public_ip the ID of the public network
 	# @param [String] dns_server the DNS Server to add to the networks
 	# @param [String] flavour the T-NOVA flavour
-	# @return [Hash] the generated hot template
+	# @return [Hash] the generated networks hot template
 	def generate_network_hot_template(nsd, public_net_id, dns_server, flavour)
 		hot = NsdToHot.new(nsd['id'], nsd['name'])
 
 		hot.build(nsd, public_net_id, dns_server, flavour)
+	end
+
+	# Generate a WICM HOT template
+	#
+	# @param [Hash] provider_info information about the provider networks
+	# @return [Hash] the generated wicm hot template
+	def generate_wicm_hot_template(provider_info)
+		hot = WicmToHot.new('WICM', 'Resources for WICM and SFC integration')
+
+		hot.build(provider_info)
 	end
 end

@@ -174,6 +174,16 @@ class OrchestratorNsProvisioner < Sinatra::Application
     @instance, errors = parse_json(response)
     logger.debug @instance
 
+    # Request WICM to stop redirecting traffic
+    begin
+      response = RestClient.delete settings.wicm + "/vnf-connectivity/#{@instance['nsd_id']}", :content_type => :json, :accept => :json
+    rescue Errno::ECONNREFUSED
+      halt 500, 'WICM unreachable'
+    rescue => e
+      logger.error e.response
+      halt e.response.code, e.response.body
+    end
+
     begin
       popInfo = getPopInfo(@instance['vnf_info']['pop_id'])
       popUrls = getPopUrls(popInfo['info'][0]['extrainfo'])
@@ -289,9 +299,20 @@ class OrchestratorNsProvisioner < Sinatra::Application
     return 200
 
     logger.debug "Call WICM"
+    # Request WICM to redirect traffic
+    begin
+      response = RestClient.put settings.wicm + "/vnf-connectivity/#{@instance['nsd_id']}", nil, :content_type => :json, :accept => :json
+    rescue Errno::ECONNREFUSED
+      halt 500, 'WICM unreachable'
+    rescue => e
+      logger.error e.response
+      halt e.response.code, e.response.body
+    end
+
     #customer ID, location ID (NAP), service descriptor and NFVI-PoP ID
-    wicm_data = {:nsd_id => nsd['id'], :customer_id => instantiation_info['customer_id'], :nap_id => instantiation_info['nap_id'], pop_id => popInfo['popId']}
-    #"/vnf-connectivity"
+    #wicm_data = {:nsd_id => nsd['id'], :customer_id => instantiation_info['customer_id'], :nap_id => instantiation_info['nap_id'], pop_id => popInfo['popId']}
     @instance = updateInstance(@instance)
+
+    return 200
   end
 end
