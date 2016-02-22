@@ -34,8 +34,8 @@ class WicmToHot
 
     # Create the two provider networks
     networks_name = []
-    networks_name << create_provider_network(provider_info['allocated']['ce_transport'])
-    networks_name << create_provider_network(provider_info['allocated']['pe_transport'])
+    networks_name << create_provider_network(provider_info['allocated']['ce_transport'], provider_info['physical_network'])
+    networks_name << create_provider_network(provider_info['allocated']['pe_transport'], provider_info['physical_network'])
 
     # Create the two networks
     2.times {networks_name << create_network}
@@ -96,9 +96,9 @@ class WicmToHot
   # Creates an HEAT provider netowork resource for the WICM
   #
   # @param [Hash] provider_info the provider network info
-  def create_provider_network(provider_info)
+  def create_provider_network(provider_info, physical_network)
     name = get_resource_name
-    @hot.resources_list << ProviderNet.new(name, provider_info['type'], provider_info['physical_network'], provider_info['vlan_id'].to_s)
+    @hot.resources_list << ProviderNet.new(name, provider_info['type'], physical_network, provider_info['vlan_id'].to_s)
     name
   end
 
