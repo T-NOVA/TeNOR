@@ -265,6 +265,51 @@ class OrchestratorNsProvisioner < Sinatra::Application
         logger.error e.response
         halt e.response.code, e.response.body
       end
+      hot_template, error = parse_json(response)
+
+      # Provision the WICM - SFC integration
+      template = {:stack_name => "WICM_SFC-" + @instance['id'].to_s, :template => hot_template}
+      begin
+        response = RestClient.post "#{popUrls[:orch]}/#{vnf_info['tenant_id']}/stacks", template.to_json , 'X-Auth-Token' => tenant_token, :content_type => :json, :accept => :json
+      rescue Errno::ECONNREFUSED
+        error = {"info" => "VIM unrechable."}
+        recoverState(popInfo, vnf_info, @instance, error)
+        return
+      rescue => e
+        logger.error e
+        logger.error e.response
+        error = {"info" => "Error creating the network stack."}
+        recoverState(popInfo, vnf_info, @instance, error)
+        return
+      end
+
+      # Wait for the WICM - SFC provisioning to finish
+      status = "CREATING"
+      count = 10
+      while(status != "CREATE_COMPLETE" || status != "CREATE_FAILED")
+        sleep(1)
+        begin
+          response = RestClient.get "#{popUrls[:orch]}/#{vnf_info['tenant_id']}/stacks/#{"WICM_SFC-" + @instance['id'].to_s}", 'X-Auth-Token' => tenant_token
+        rescue Errno::ECONNREFUSED
+          error = {"info" => "VIM unrechable."}
+          recoverState(popInfo, vnf_info, @instance, error)
+          return
+        rescue => e
+          logger.error e
+          logger.error e.response
+          error = {"info" => "Error creating the network stack."}
+          recoverState(popInfo, vnf_info, @instance, error)
+          return
+        end
+        stack_info, error = parse_json(response)
+        status = stack_info['stack']['stack_status']
+        count = count +1
+        break if count > 10
+      end
+      if(status == "CREATE_FAILED")
+        recoverState(popInfo, vnf_info, @instance, error)
+        return
+      end
 
       publicNetworkId = publicNetworkId(popUrls[:neutron], tenant_token)
 
