@@ -97,10 +97,13 @@ class OrchestratorNsCatalogue < Sinatra::Application
 		# Validate NSD
 		begin
 			RestClient.post settings.nsd_validator + '/nsds', ns.to_json, :content_type => :json
+		rescue Errno::ECONNREFUSED
+			halt 500, 'NSD Validator unreachable'
 		rescue => e
-			halt 500, {'Content-Type' => 'text/plain'}, "Validator mS unrechable."
+			logger.error e.response
+			halt e.response.code, e.response.body
 		end
-		
+
 		#vnfExists(ns['nsd']['vnfds'])
 
 		begin
