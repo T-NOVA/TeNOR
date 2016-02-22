@@ -38,13 +38,13 @@ class OrchestratorVnfMonitoring < Sinatra::Application
 	    t = []
 
 	    if params[:metric] && !params[:start]
-	    	@db.execute("SELECT metricName, date, value FROM vnfmonitoring WHERE instanceid='#{params[:instance_id].to_s}' AND metricname='#{params[:metric].to_s}' LIMIT 100").fetch { |row| t.push(row.to_hash) }
+	    	@db.execute("SELECT metricName, date, unit, value FROM vnfmonitoring WHERE instanceid='#{params[:instance_id].to_s}' AND metricname='#{params[:metric].to_s}' LIMIT 100").fetch { |row| t.push(row.to_hash) }
 	    elsif params[:metric] && params[:start] &&  !params[:end]
-	    	@db.execute("SELECT metricName, date, value FROM vnfmonitoring WHERE instanceid='#{params[:instance_id].to_s}' AND metricname='#{params[:metric].to_s}' AND date >= #{params[:start]} ").fetch { |row| t.push(row.to_hash) }
+	    	@db.execute("SELECT metricName, date, unit, value FROM vnfmonitoring WHERE instanceid='#{params[:instance_id].to_s}' AND metricname='#{params[:metric].to_s}' AND date >= #{params[:start]} ").fetch { |row| t.push(row.to_hash) }
 	    elsif params[:metric] && params[:start] &&  params[:end]
-			@db.execute("SELECT metricName, date, value FROM vnfmonitoring WHERE instanceid='#{params[:instance_id].to_s}' AND metricname='#{params[:metric].to_s}' AND date >= #{params[:start]} AND date <= #{params[:end]}").fetch { |row| t.push(row.to_hash) }
+			@db.execute("SELECT metricName, date, unit, value FROM vnfmonitoring WHERE instanceid='#{params[:instance_id].to_s}' AND metricname='#{params[:metric].to_s}' AND date >= #{params[:start]} AND date <= #{params[:end]}").fetch { |row| t.push(row.to_hash) }
 	    else
-			@db.execute("SELECT metricName, date, value FROM vnfmonitoring WHERE instanceid='#{params[:instance_id].to_s}'").fetch { |row| t.push( row.to_hash ) }
+			@db.execute("SELECT metricName, date, unit, value FROM vnfmonitoring WHERE instanceid='#{params[:instance_id].to_s}'").fetch { |row| t.push( row.to_hash ) }
 	    end
     	return t.to_json
 	end
@@ -54,7 +54,7 @@ class OrchestratorVnfMonitoring < Sinatra::Application
 	# Returns last 10 values
 	get '/vnf-monitoring/:instance_id/?:metric/last10' do
 		t = []
-		@db.execute("SELECT metricName, date, value FROM vnfmonitoring WHERE instanceid='#{params[:instance_id].to_s}' AND metric='#{params[:metric].to_s}' LIMIT 100").fetch { |row| t.push(row.to_hash) }
+		@db.execute("SELECT metricName, date, unit, value FROM vnfmonitoring WHERE instanceid='#{params[:instance_id].to_s}' AND metric='#{params[:metric].to_s}' LIMIT 100").fetch { |row| t.push(row.to_hash) }
 		return t.to_json
 	end
 
@@ -62,9 +62,10 @@ class OrchestratorVnfMonitoring < Sinatra::Application
 	# @overload post '/vnf-monitoring/:instance_id'
 	# Inserts monitoring data
 	post '/vnf-monitoring/:instance_id' do
-		@json = JSON.parse(request.body.read)
-		@json.each do |item|
-			@db.execute("INSERT INTO vnfmonitoring (instanceid, date, metricname, value) VALUES ('#{params[:instance_id].to_s}', #{Time.new.to_i}, '#{item[0].to_s}', '#{item[1].to_s}')")
-		end
+		mData = JSON.parse(request.body.read)
+
+		#@json.each do |item|
+			@db.execute("INSERT INTO vnfmonitoring (instanceid, date, metricname, unit, value) VALUES ('#{params[:instance_id].to_s}', '#{mData['timestamp']}', '#{mData['type']}', '#{mData['unit']}', '#{mData['value']}' )")
+		#end
 	end
 end
