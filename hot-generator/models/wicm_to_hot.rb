@@ -98,7 +98,7 @@ class WicmToHot
   # @param [Hash] provider_info the provider network info
   def create_provider_network(provider_info)
     name = get_resource_name
-    @hot.resources_list << ProviderNet.new(name, provider_info['type'], 'physical_network', provider_info['vlan_id'].to_s)
+    @hot.resources_list << ProviderNet.new(name, provider_info['type'], provider_info['physical_network'], provider_info['vlan_id'].to_s)
     name
   end
 
