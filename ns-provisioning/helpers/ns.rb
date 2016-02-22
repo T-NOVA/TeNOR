@@ -65,8 +65,12 @@ class OrchestratorNsProvisioner < Sinatra::Application
     stack_id = instance['network_stack']['stack']['id']
 
     logger.error "Removing network stack"
+    logger.error stack_name
+    logger.error stack_id
+    url = instance['network_stack']['stack']['links'][0]['href']
     begin
       response = RestClient.delete "#{popUrls[:orch]}/#{vnf_info['tenant_id']}/stacks/#{stack_name}/#{stack_id}", 'X-Auth-Token' => tenant_token, :content_type => :json, :accept => :json
+      response = RestClient.delete url, 'X-Auth-Token' => tenant_token, :content_type => :json, :accept => :json
     rescue Errno::ECONNREFUSED
       error = {"info" => "VIM unrechable."}
       recoverState(popInfo, vnf_info, @instance, error)
@@ -431,6 +435,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
         networks.push({:id => net['resource']['attributes']['id'], :alias => net['resource']['attributes']['name']})
       end
 
+      stack['stack_name'] = "network-" + @instance['id'].to_s
       @instance['network_stack'] = stack
       @instance['vlr'] = networks
       @instance['vnf_info'] = vnf_info

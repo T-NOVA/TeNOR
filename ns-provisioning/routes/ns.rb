@@ -99,6 +99,20 @@ class OrchestratorNsProvisioner < Sinatra::Application
     return response
   end
 
+  get "/ns-instances/:instance" do
+
+    begin
+      response = RestClient.get settings.ns_instance_repository + '/ns-instances/'+params['instance'], :content_type => :json
+    rescue => e
+      logger.error e
+      if (defined?(e.response)).nil?
+        halt 503, "NS-Instance Repository unavailable"
+      end
+      halt e.response.code, e.response.body
+    end
+    return response
+  end
+
   #update instance status
   put "/ns-instances/:ns_instance_id/:status" do
     begin
@@ -135,6 +149,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
       end
 
+      error = "Removing instance"
       #terminate VNF
       recoverState(popInfo, @instance['vnf_info'], @instance, error)
       #removeInstance(@instance)

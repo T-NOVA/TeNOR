@@ -183,8 +183,14 @@ class NSMonitoring < Sinatra::Application
     if monMetrics.vnf_instances.length == 1
       #store value in cassandra
       data = generateMetric(paramInfo['name'], response['value'])
+      metrics = {
+          :type => paramInfo['name'],
+          :value => response['value'],
+          :unit => response['unit'],
+          :timestamp => Time.parse(response['timestamp']).to_i
+      }
       begin
-        RestClient.post settings.ns_monitor_db + '/ns-monitoring/:vnf_instance_id', data.to_json, :content_type => :json, :accept => :json
+        RestClient.post settings.ns_monitor_db + '/ns-monitoring/:vnf_instance_id', metrics.to_json, :content_type => :json, :accept => :json
       rescue => e
         logger.error e.response
         return e.response.code, e.response.body
