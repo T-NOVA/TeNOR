@@ -127,7 +127,22 @@ class TnovaManager < Sinatra::Application
     end
 
     begin
-      response = RestClient.put @service.host + ":" + @service.port.to_s + request.fullpath, request.body.read, 'X-Auth-Token' => @client_token, :content_type => :json
+      response = RestClient.get @service.host + ":" + @service.port.to_s + '/ns-instances/' + params['ns_instance_id'], 'X-Auth-Token' => @client_token, :content_type => :json
+    rescue Errno::ECONNREFUSED
+      halt 500, 'NS Provisioning unreachable'
+    rescue => e
+      logger.error e.response
+      halt e.response.code, e.response.body
+    end
+    @ns_instance, error = parse(response)
+
+    #call popInfo Function
+    getPopInfo(@instance['vnf_info']['pop_id'])
+    popUrls = getPopUrls(popInfo['info'][0]['extrainfo'])
+    info = { :instance => @ns_instance, :popInfo => popInfo }
+
+    begin
+      response = RestClient.put @service.host + ":" + @service.port.to_s + request.fullpath, info.to_json, 'X-Auth-Token' => @client_token, :content_type => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Provisioning unreachable'
     rescue => e
@@ -146,7 +161,22 @@ class TnovaManager < Sinatra::Application
     end
 
     begin
-      response = RestClient.delete @service.host + ":" + @service.port.to_s + request.fullpath, 'X-Auth-Token' => @client_token, :content_type => :json
+      response = RestClient.get @service.host + ":" + @service.port.to_s + '/ns-instances/' + params['ns_instance_id'], 'X-Auth-Token' => @client_token, :content_type => :json
+    rescue Errno::ECONNREFUSED
+      halt 500, 'NS Provisioning unreachable'
+    rescue => e
+      logger.error e.response
+      halt e.response.code, e.response.body
+    end
+    @ns_instance, error = parse(response)
+
+    #call popInfo Function
+    getPopInfo(@instance['vnf_info']['pop_id'])
+    popUrls = getPopUrls(popInfo['info'][0]['extrainfo'])
+    info = { :instance => @ns_instance, :popInfo => popInfo }
+
+    begin
+      response = RestClient.put @service.host + ":" + @service.port.to_s + request.fullpath.to_s + '/terminate', 'X-Auth-Token' => @client_token, :content_type => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Provisioning unreachable'
     rescue => e
