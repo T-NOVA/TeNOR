@@ -257,6 +257,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
       # Request HOT Generator to build the WICM - SFC integration
       provider_info['security_group_id'] = vnf_info['security_group_id']
+      provider_info['physical_network'] = 'sfcvlan'
       begin
         response = RestClient.post settings.hot_generator + '/wicmhot', provider_info.to_json, :content_type => :json, :accept => :json
       rescue Errno::ECONNREFUSED
