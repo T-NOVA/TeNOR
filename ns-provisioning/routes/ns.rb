@@ -110,11 +110,13 @@ class OrchestratorNsProvisioner < Sinatra::Application
       end
       halt e.response.code, e.response.body
     end
-    @instance, errors = parse_json(response)
+    body, errors = parse_json(request.body.read)
+    @instance = body['instance']
+    popInfo = body['popInfo']
 
     logger.debug @instance
 
-    popInfo = getPopInfo(@instance['vnf_info']['pop_id'])
+    #popInfo = getPopInfo(@instance['vnf_info']['pop_id'])
     popUrls = getPopUrls(popInfo['info'][0]['extrainfo'])
 
     if params[:status] === 'terminate'

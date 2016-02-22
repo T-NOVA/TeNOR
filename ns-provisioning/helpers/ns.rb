@@ -210,7 +210,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
           token = openstackAdminAuthentication(popUrls[:keystone], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
 
-          if(settings.default_tenant_name.nil?)
+          if(!settings.default_tenant_name.nil?)
             tenant_name = settings.default_tenant_name
             tenant_id = settings.default_tenant_id
           elsif
@@ -229,11 +229,16 @@ class OrchestratorNsProvisioner < Sinatra::Application
           tenant_token = openstackAuthentication(popUrls[:keystone], vnf_info['tenant_id'], vnf_info['username'], vnf_info['password'])
           security_groups = getSecurityGroups(popUrls[:compute], vnf_info['tenant_id'], tenant_token)
           puts security_groups['security_groups'][0]
-          secuGroupId = createSecurityGroup(popUrls[:compute], vnf_info['tenant_id'], tenant_token)
-          vnf_info['security_group_id'] = secuGroupId
-          addRulesToTenant(popUrls[:compute], vnf_info['tenant_id'], secuGroupId, 'TCP', tenant_token, 1, 65535)
-          addRulesToTenant(popUrls[:compute], vnf_info['tenant_id'], secuGroupId, 'UDP', tenant_token, 1, 65535)
-          addRulesToTenant(popUrls[:compute], vnf_info['tenant_id'], secuGroupId, 'ICMP', tenant_token, -1, -1)
+          if(!settings.default_tenant_name.nil?)
+            vnf_info['security_group_id'] = security_groups['security_groups'][0]['id']
+          elsif
+            secuGroupId = createSecurityGroup(popUrls[:compute], vnf_info['tenant_id'], tenant_token)
+            vnf_info['security_group_id'] = secuGroupId
+            addRulesToTenant(popUrls[:compute], vnf_info['tenant_id'], secuGroupId, 'TCP', tenant_token, 1, 65535)
+            addRulesToTenant(popUrls[:compute], vnf_info['tenant_id'], secuGroupId, 'UDP', tenant_token, 1, 65535)
+            addRulesToTenant(popUrls[:compute], vnf_info['tenant_id'], secuGroupId, 'ICMP', tenant_token, -1, -1)
+          end
+
           puts "Tenant id: " + vnf_info['tenant_id']
           puts "Username: " + vnf_info['username']
 
