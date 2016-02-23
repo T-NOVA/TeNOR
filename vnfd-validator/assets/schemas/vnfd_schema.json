@@ -613,7 +613,7 @@
     },
     "id": {
       "id": "http://www.t-nova.eu/id",
-      "type": "integer"
+      "type": "string"
     },
     "description": {
       "id": "http://www.t-nova.eu/description",
