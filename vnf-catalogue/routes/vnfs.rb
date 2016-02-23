@@ -103,7 +103,7 @@ class OrchestratorVnfCatalogue < Sinatra::Application
 	# Show a VNF
 	get '/vnfs/:vnfd_id' do
 		begin
-			vnf = Vnf.find_by('vnfd.id' => params[:vnfd_id])
+			vnf = Vnf.find_by('vnfd.id' => params[:vnfd_id].to_i)
 		rescue Mongoid::Errors::DocumentNotFound => e
 			halt 404
 		end
@@ -118,7 +118,7 @@ class OrchestratorVnfCatalogue < Sinatra::Application
 	# Delete a VNF
 	delete '/vnfs/:vnfd_id' do
 		begin
-			vnf = Vnf.find_by('vnfd.id' => params[:vnfd_id])
+			vnf = Vnf.find_by('vnfd.id' => params[:vnfd_id].to_i)
 		rescue Mongoid::Errors::DocumentNotFound => e
 			halt 404
 		end
@@ -156,7 +156,7 @@ class OrchestratorVnfCatalogue < Sinatra::Application
 
 		# Retrieve stored version
 		begin
-			vnf = Vnf.find_by('vnfd.id' => params[:vnfd_id])
+			vnf = Vnf.find_by('vnfd.id' => params[:vnfd_id].to_i)
 		rescue Mongoid::Errors::DocumentNotFound => e
 			halt 404
 		end
