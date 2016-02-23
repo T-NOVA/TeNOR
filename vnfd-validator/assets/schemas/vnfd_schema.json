@@ -163,6 +163,11 @@
             "id": "http://www.t-nova.eu/vdu/1/networking_resources",
             "type": "string"
           },
+          "monitoring_parameters_specific": {
+            "id": "http://www.t-nova.eu/vdu/0/monitoring_parameters_specific",
+            "type": "array",
+            "items": {}
+          },
           "id": {
             "id": "http://www.t-nova.eu/vdu/1/id",
             "type": "string"
@@ -613,7 +618,7 @@
     },
     "id": {
       "id": "http://www.t-nova.eu/id",
-      "type": "string"
+      "type": "integer"
     },
     "description": {
       "id": "http://www.t-nova.eu/description",
