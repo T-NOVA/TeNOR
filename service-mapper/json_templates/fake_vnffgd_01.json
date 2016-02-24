@@ -9,7 +9,7 @@
     {
       "vnffg_id": "vnffg0",
       "number_of_endpoints": 2,
-      "number_of_virtual_links": 3,
+      "number_of_virtual_links": 2,
       "depedent_virtual_links": [
         "vld1",
         "vld5"
@@ -22,8 +22,8 @@
               "vld5"
           ],
           "connection_points": [
-              "data_in",
-              "data_out"
+              "ns_ext_ingress",
+              "ns_ext_egress"
           ],
           "constituent_vnfs": [
             "56af5b48b18cfb2ee8000000"
