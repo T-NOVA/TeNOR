@@ -39,7 +39,7 @@ class NsdToHot
     
     virtual_links = nsd['vld']['virtual_links']
     nsd['vld']['virtual_links'].each_with_index do |vlink, index|
-      if vlink['flavor_ref_id'] == flavour
+      if vlink['sla_ref_id'] == flavour
         if (vlink['merge'])
           #TODO
           #use the same network
