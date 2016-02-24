@@ -18,18 +18,17 @@
 # @see TnovaManager
 class TnovaManager < Sinatra::Application
 
-  get '/network-services' do
-
+  get '/vnfs' do
     begin
-      @service = ServiceModel.find_by(name: "nscatalogue")
+      @service = ServiceModel.find_by(name: "vnfmanager")
     rescue Mongoid::Errors::DocumentNotFound => e
       halt 500, {'Content-Type' => "text/plain"}, "Microservice unrechable."
     end
 
     begin
-      response = RestClient.get  @service.host + ":" + @service.port.to_s + request.fullpath, 'X-Auth-Token' => @client_token, :content_type => :json
+      response = RestClient.get @service.host + ":" + @service.port.to_s + request.fullpath, 'X-Auth-Token' => @client_token, :content_type => :json
     rescue Errno::ECONNREFUSED
-      halt 500, 'NS Catalogue unreachable'
+      halt 500, 'VNF Manager unreachable'
     rescue => e
       logger.error e.response
       halt e.response.code, e.response.body
@@ -39,18 +38,17 @@ class TnovaManager < Sinatra::Application
 
   end
 
-  get '/network-services/:id' do
-
+  get '/vnfs/:vnf_id' do
     begin
-      @service = ServiceModel.find_by(name: "nscatalogue")
+      @service = ServiceModel.find_by(name: "vnfmanager")
     rescue Mongoid::Errors::DocumentNotFound => e
       halt 500, {'Content-Type' => "text/plain"}, "Microservice unrechable."
     end
 
     begin
-      response = RestClient.get  @service.host + ":" + @service.port.to_s + request.fullpath, 'X-Auth-Token' => @client_token, :content_type => :json
+      response = RestClient.get @service.host + ":" + @service.port.to_s + request.fullpath, 'X-Auth-Token' => @client_token, :content_type => :json
     rescue Errno::ECONNREFUSED
-      halt 500, 'NS Catalogue unreachable'
+      halt 500, 'VNF Manager unreachable'
     rescue => e
       logger.error e.response
       halt e.response.code, e.response.body
@@ -60,47 +58,46 @@ class TnovaManager < Sinatra::Application
 
   end
 
-  post '/network-services' do
+  post '/vnfs' do
 
     # Return if content-type is invalid
     return 415 unless request.content_type == 'application/json'
 
     begin
-      @service = ServiceModel.find_by(name: "nscatalogue")
+      @service = ServiceModel.find_by(name: "vnfmanager")
     rescue Mongoid::Errors::DocumentNotFound => e
       halt 500, {'Content-Type' => "text/plain"}, "Microservice unrechable."
     end
 
     begin
-      response = RestClient.post  @service.host + ":" + @service.port.to_s + request.fullpath, request.body.read, 'X-Auth-Token' => @client_token, :content_type => :json
+      response = RestClient.post @service.host + ":" + @service.port.to_s + request.fullpath, request.body.read, 'X-Auth-Token' => @client_token, :content_type => :json
     rescue Errno::ECONNREFUSED
-      halt 500, 'NS Catalogue unreachable'
+      halt 500, 'VNF Manager unreachable'
     rescue => e
       logger.error e.response
       halt e.response.code, e.response.body
     end
 
-    updateStatistics('ns_created_requests')
-
+    #updateStatistics('vnfs_created_requests')
     return response.code, response.body
 
   end
 
-  put '/network-services/:external_ns_id' do
+  put '/vnfs/:external_vnf_id' do
 
     # Return if content-type is invalid
     return 415 unless request.content_type == 'application/json'
 
     begin
-      @service = ServiceModel.find_by(name: "nscatalogue")
+      @service = ServiceModel.find_by(name: "vnfmanager")
     rescue Mongoid::Errors::DocumentNotFound => e
       halt 500, {'Content-Type' => "text/plain"}, "Microservice unrechable."
     end
 
     begin
-      response = RestClient.put  @service.host + ":" + @service.port.to_s + request.fullpath, request.body.read, 'X-Auth-Token' => @client_token, :content_type => :json
+      response = RestClient.put @service.host + ":" + @service.port.to_s + request.fullpath, request.body.read, 'X-Auth-Token' => @client_token, :content_type => :json
     rescue Errno::ECONNREFUSED
-      halt 500, 'NS Catalogue unreachable'
+      halt 500, 'VNF Manager unreachable'
     rescue => e
       logger.error e.response
       halt e.response.code, e.response.body
@@ -110,16 +107,16 @@ class TnovaManager < Sinatra::Application
 
   end
 
-  delete '/network-services/:external_ns_id' do
+  delete '/vnfs/:external_ns_id' do
 
     begin
-      @service = ServiceModel.find_by(name: "nscatalogue")
+      @service = ServiceModel.find_by(name: "vnfmanager")
     rescue Mongoid::Errors::DocumentNotFound => e
       halt 500, {'Content-Type' => "text/plain"}, "Microservice unrechable."
     end
 
     begin
-      response = RestClient.delete  @service.host + ":" + @service.port.to_s + request.fullpath, 'X-Auth-Token' => @client_token, :content_type => :json
+      response = RestClient.delete @service.host + ":" + @service.port.to_s + request.fullpath, 'X-Auth-Token' => @client_token, :content_type => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Catalogue unreachable'
     rescue => e

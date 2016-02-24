@@ -55,5 +55,25 @@ class TnovaManager < Sinatra::Application
     return response
   end
 
+  def getPopUrls(extraInfo)
+    urls = extraInfo.split(" ")
+
+    popUrls = {}
+
+    for item in urls
+      key = item.split('=')[0]
+      if key == 'keystone-endpoint'
+        popUrls[:keystone] = item.split('=')[1]
+      elsif key == 'neutron-endpoint'
+        popUrls[:neutron] = item.split('=')[1]
+      elsif key == 'compute-endpoint'
+        popUrls[:compute] = item.split('=')[1]
+      elsif key == 'orch-endpoint'
+        popUrls[:orch] = item.split('=')[1]
+      end
+    end
+
+    return popUrls
+  end
 
 end

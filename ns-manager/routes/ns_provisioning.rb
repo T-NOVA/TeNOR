@@ -137,7 +137,8 @@ class TnovaManager < Sinatra::Application
     @ns_instance, error = parse_json(response)
 
     #call popInfo Function
-    getPopInfo(@instance['vnf_info']['pop_id'])
+    popInfo, errors = parse_json(getPopInfo(@ns_instance['vnf_info']['pop_id']))
+    return 400, errors if errors
     popUrls = getPopUrls(popInfo['info'][0]['extrainfo'])
     info = { :instance => @ns_instance, :popInfo => popInfo }
 
@@ -171,8 +172,16 @@ class TnovaManager < Sinatra::Application
     @ns_instance, error = parse_json(response)
 
     #call popInfo Function
-    popInfo = getPopInfo(@instance['vnf_info']['pop_id'])
-    popUrls = getPopUrls(popInfo['info'][0]['extrainfo'])
+    if(@ns_instance['vnf_info'].nil?)
+      puts "PopInfo is null"
+      popInfo = nil
+    else
+      puts @ns_instance['vnf_info']
+      popInfo, errors = parse_json(getPopInfo(@ns_instance['vnf_info']['pop_id']))
+      return 400, errors if errors
+      popUrls = getPopUrls(popInfo['info'][0]['extrainfo'])
+    end
+
     info = { :instance => @ns_instance, :popInfo => popInfo }
 
     begin
