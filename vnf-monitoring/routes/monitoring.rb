@@ -96,14 +96,19 @@ class VNFMonitoring < Sinatra::Application
       instance['measurements'].each do |measurement|
         monitoringMetric = MonitoringMetric.find_by(:vnfi_id => params[:vnfi_id])
         #store recevied data in Cassandra DB
-        metrics = {measurement['type'] => measurement['value'].to_s}
-        RestClient.post settings.vnf_monitor_db + '/vnf-monitoring/' + monitoringMetric[:vnfr_id], metrics.to_json, :content_type => :json, :accept => :json
 
-        #send enriched data to NS-Monitoring
+        metrics = {
+            :type => measurement['type'],
+            :value => measurement['value'],
+            :unit => measurement['unit'],
+            :timestamp => Time.parse(measurement['timestamp']).to_i
+        }
+        RestClient.post settings.vnf_monitor_db + '/vnf-monitoring/' + monitoringMetric[:vnfr_id], metrics.to_json, :content_type => :json, :accept => :json
         enriched = {
             :parameter_id => monitoringMetric['parameter_id'],
             :value => measurement['value'],
-            :timestamp => measurement['timestamp']
+            :unit => measurement['unit'],
+            :timestamp => Time.parse(measurement['timestamp']).to_i
         }
         RestClient.post settings.ns_manager + '/ns-monitoring/vnf-instance-readings/' + monitoringMetric[:vnfr_id], enriched.to_json, :content_type => :json, :accept => :json
       end

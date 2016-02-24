@@ -49,9 +49,9 @@ class OrchestratorNsProvisioner < Sinatra::Application
     return instance
   end
 
-  def removeInstance(instance_id)
+  def removeInstance(instance)
     begin
-      response = RestClient.delete settings.ns_instance_repository + '/ns-instances/' + instance_id
+      RestClient.delete settings.ns_instance_repository + '/ns-instances/' + instance['id'].to_s
     rescue Errno::ECONNREFUSED
       logger.error 'NS Instance repository unreachable'
       raise 'NS Instance repository unreachable'

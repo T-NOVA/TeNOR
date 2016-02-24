@@ -21,7 +21,7 @@ ENV['RACK_ENV'] ||= 'development'
 require 'sinatra'
 require 'sinatra/config_file'
 require 'yaml'
-require 'sinatra/gk_auth'
+#require 'sinatra/gk_auth'
 require 'logstash-logger'
 
 # Require the bundler gem and then call Bundler.require to load in all gems

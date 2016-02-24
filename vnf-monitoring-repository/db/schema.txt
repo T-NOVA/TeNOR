@@ -2,4 +2,4 @@ CREATE KEYSPACE tnova_monitoring WITH REPLICATION = { 'class' : 'SimpleStrategy'
 
 use tnova_monitoring;
 
-CREATE TABLE vnfmonitoring ( instanceId text, date int, metricName text, value text, primary key(instanceId, metricName, date));
+CREATE TABLE vnfmonitoring ( instanceId text, date int, metricName text, value text, unit text, primary key(instanceId, metricName, date));

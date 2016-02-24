@@ -49,7 +49,7 @@ class OrchestratorVnfManager < Sinatra::Application
 
         get '/vnf-monitoring/instances/:vnfi_id/monitoring-data/' do
 
-          composedUrl = '/ns-monitoring/' + params["vnfi_id"].to_s + "/monitoring-data/?" + request.env['QUERY_STRING']
+          composedUrl = '/vnf-monitoring/instances/' + params["vnfi_id"].to_s + "/monitoring-data/?" + request.env['QUERY_STRING']
           # Forward the request to the VNF Monitoring
           begin
             #vnf-monitoring/:vnfi_id/readings

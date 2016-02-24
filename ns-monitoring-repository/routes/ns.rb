@@ -38,13 +38,13 @@ class OrchestratorNsMonitoring < Sinatra::Application
 	    t = []
 
 	    if params[:metric] && !params[:start]
-	      @db.execute("SELECT metricName, date, value FROM nsmonitoring WHERE instanceid='#{params[:instance_id].to_s}' AND metricname='#{params[:metric].to_s}' LIMIT 100").fetch { |row| t.push(row.to_hash) }
+	      @db.execute("SELECT metricName, date, unit, value FROM nsmonitoring WHERE instanceid='#{params[:instance_id].to_s}' AND metricname='#{params[:metric].to_s}' LIMIT 100").fetch { |row| t.push(row.to_hash) }
 	    elsif params[:metric] && params[:start] &&  !params[:end]
-	        @db.execute("SELECT metricName, date, value FROM nsmonitoring WHERE instanceid='#{params[:instance_id].to_s}' AND metricname='#{params[:metric].to_s}' AND date >= #{params[:start]} ").fetch { |row| t.push(row.to_hash) }
+	        @db.execute("SELECT metricName, date, unit, value FROM nsmonitoring WHERE instanceid='#{params[:instance_id].to_s}' AND metricname='#{params[:metric].to_s}' AND date >= #{params[:start]} ").fetch { |row| t.push(row.to_hash) }
 	    elsif params[:metric] && params[:start] &&  params[:end]
-	      @db.execute("SELECT metricName, date, value FROM nsmonitoring WHERE instanceid='#{params[:instance_id].to_s}' AND metricname='#{params[:metric].to_s}' AND date >= #{params[:start]} AND date <= #{params[:end]}").fetch { |row| t.push(row.to_hash) }
+	      @db.execute("SELECT metricName, date, unit, value FROM nsmonitoring WHERE instanceid='#{params[:instance_id].to_s}' AND metricname='#{params[:metric].to_s}' AND date >= #{params[:start]} AND date <= #{params[:end]}").fetch { |row| t.push(row.to_hash) }
 	    else
-	      @db.execute("SELECT metricName, date, value FROM nsmonitoring WHERE instanceid='#{params[:instance_id].to_s}'").fetch { |row| t.push( row.to_hash ) }
+	      @db.execute("SELECT metricName, date, unit, value FROM nsmonitoring WHERE instanceid='#{params[:instance_id].to_s}'").fetch { |row| t.push( row.to_hash ) }
 	    end
 
 		return t.to_json
@@ -55,7 +55,7 @@ class OrchestratorNsMonitoring < Sinatra::Application
 	# Returns last 10 values
 	get '/ns-monitoring/:instance_id/?:metric/last10' do
 		t = []
-		@db.execute("SELECT metricName, date, value FROM nsmonitoring WHERE instanceid='#{params[:instance_id].to_s}' AND metric='#{params[:metric].to_s}' LIMIT 100").fetch { |row| t.push(row.to_hash) }
+		@db.execute("SELECT metricName, date, unit, value FROM nsmonitoring WHERE instanceid='#{params[:instance_id].to_s}' AND metric='#{params[:metric].to_s}' LIMIT 100").fetch { |row| t.push(row.to_hash) }
 		return t.to_json
 	end
 
@@ -63,9 +63,10 @@ class OrchestratorNsMonitoring < Sinatra::Application
 	# @overload post '/ns-monitoring/:instance_id'
 	# Inserts monitoring data
 	post '/ns-monitoring/:instance_id' do
-		@json = JSON.parse(request.body.read)
-		@json.each do |item|
-			@db.execute("INSERT INTO nsmonitoring (instanceid, date, metricname, value) VALUES ('#{params[:instance_id].to_s}', #{Time.new.to_i}, '#{item[0].to_s}', '#{item[1].to_s}')")
-		end
+		#@json = JSON.parse(request.body.read)
+		mData = JSON.parse(request.body.read)
+		#@json.each do |item|
+			@db.execute("INSERT INTO nsmonitoring (instanceid, date, metricname, unit, value) VALUES ('#{params[:instance_id].to_s}', '#{mData['timestamp']}', '#{mData['type']}', '#{mData['unit']}', '#{mData['value']}' )")
+		#end
 	end
 end

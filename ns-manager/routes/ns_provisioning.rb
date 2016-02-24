@@ -127,7 +127,23 @@ class TnovaManager < Sinatra::Application
     end
 
     begin
-      response = RestClient.put @service.host + ":" + @service.port.to_s + request.fullpath, request.body.read, 'X-Auth-Token' => @client_token, :content_type => :json
+      response = RestClient.get @service.host + ":" + @service.port.to_s + '/ns-instances/' + params['ns_instance_id'], 'X-Auth-Token' => @client_token, :content_type => :json
+    rescue Errno::ECONNREFUSED
+      halt 500, 'NS Provisioning unreachable'
+    rescue => e
+      logger.error e.response
+      halt e.response.code, e.response.body
+    end
+    @ns_instance, error = parse_json(response)
+
+    #call popInfo Function
+    popInfo, errors = parse_json(getPopInfo(@ns_instance['vnf_info']['pop_id']))
+    return 400, errors if errors
+    popUrls = getPopUrls(popInfo['info'][0]['extrainfo'])
+    info = { :instance => @ns_instance, :popInfo => popInfo }
+
+    begin
+      response = RestClient.put @service.host + ":" + @service.port.to_s + request.fullpath, info.to_json, 'X-Auth-Token' => @client_token, :content_type => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Provisioning unreachable'
     rescue => e
@@ -146,7 +162,30 @@ class TnovaManager < Sinatra::Application
     end
 
     begin
-      response = RestClient.delete @service.host + ":" + @service.port.to_s + request.fullpath, 'X-Auth-Token' => @client_token, :content_type => :json
+      response = RestClient.get @service.host + ":" + @service.port.to_s + '/ns-instances/' + params['ns_instance_id'], 'X-Auth-Token' => @client_token, :content_type => :json
+    rescue Errno::ECONNREFUSED
+      halt 500, 'NS Provisioning unreachable'
+    rescue => e
+      logger.error e.response
+      halt e.response.code, e.response.body
+    end
+    @ns_instance, error = parse_json(response)
+
+    #call popInfo Function
+    if(@ns_instance['vnf_info'].nil?)
+      puts "PopInfo is null"
+      popInfo = nil
+    else
+      puts @ns_instance['vnf_info']
+      popInfo, errors = parse_json(getPopInfo(@ns_instance['vnf_info']['pop_id']))
+      return 400, errors if errors
+      popUrls = getPopUrls(popInfo['info'][0]['extrainfo'])
+    end
+
+    info = { :instance => @ns_instance, :popInfo => popInfo }
+
+    begin
+      response = RestClient.put @service.host + ":" + @service.port.to_s + request.fullpath.to_s + '/terminate', info.to_json, 'X-Auth-Token' => @client_token, :content_type => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Provisioning unreachable'
     rescue => e
