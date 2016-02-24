@@ -87,6 +87,10 @@ class OrchestratorVnfProvisioning < Sinatra::Application
 
     vnf = instantiation_info['vnf']
 
+    # Verify if the VDU images are accessible to download
+    logger.debug 'Verifying VDU images'
+    verify_vdu_images(vnf['vnfd']['vdu'])
+
     # Convert VNF to HOT (call HOT Generator)
     halt 400, 'No T-NOVA flavour defined.' unless instantiation_info.has_key?('flavour')
     hot_generator_message = {

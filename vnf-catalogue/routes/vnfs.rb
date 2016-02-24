@@ -81,11 +81,11 @@ class OrchestratorVnfCatalogue < Sinatra::Application
 	# List all VNFs
 	get '/vnfs' do
 		params[:offset] ||= 1
-		params[:limit] ||= 2
+		params[:limit] ||= 20
 
 		# Only accept positive numbers
 		params[:offset] = 1 if params[:offset].to_i < 1
-		params[:limit] = 2 if params[:limit].to_i < 1
+		params[:limit] = 20 if params[:limit].to_i < 1
 
 		# Get paginated list
 		vnfs = Vnf.paginate(:page => params[:offset], :limit => params[:limit])
@@ -96,14 +96,14 @@ class OrchestratorVnfCatalogue < Sinatra::Application
 		halt 200, vnfs.to_json
 	end
 
-	# @method get_vnfs_id
-	# @overload get '/vnfs/:id'
+	# @method get_vnfs_vnfd_id
+	# @overload get '/vnfs/:vnfd_id'
 	#	Show a VNF
-	#	@param [String] id VNF ID
+	#	@param [String] id VNFD ID
 	# Show a VNF
-	get '/vnfs/:id' do
+	get '/vnfs/:vnfd_id' do
 		begin
-			vnf = Vnf.find(params[:id])
+			vnf = Vnf.find_by('vnfd.id' => params[:vnfd_id].to_i)
 		rescue Mongoid::Errors::DocumentNotFound => e
 			halt 404
 		end
@@ -111,14 +111,14 @@ class OrchestratorVnfCatalogue < Sinatra::Application
 		halt 200, vnf.to_json
 	end
 
-	# @method delete_vnfs_id
-	# @overload delete '/vnfs/:id'
-	#	Delete a VNF by its ID
-	#	@param [String] id VNF ID
+	# @method delete_vnfs_vnfd_id
+	# @overload delete '/vnfs/:vnfd_id'
+	#	Delete a VNF by its VNFD ID
+	#	@param [String] id VNFD ID
 	# Delete a VNF
-	delete '/vnfs/:id' do
+	delete '/vnfs/:vnfd_id' do
 		begin
-			vnf = Vnf.find(params[:id])
+			vnf = Vnf.find_by('vnfd.id' => params[:vnfd_id].to_i)
 		rescue Mongoid::Errors::DocumentNotFound => e
 			halt 404
 		end
@@ -128,12 +128,12 @@ class OrchestratorVnfCatalogue < Sinatra::Application
 		halt 200
 	end
 
-	# @method put_vnfs_id
+	# @method put_vnfs_vnfd_id
 	# @overload put '/vnfs/:id'
-	#	Update a VNF by its ID
-	#	@param [String] id VNF ID
+	#	Update a VNF by its VNFD ID
+	#	@param [String] id VNFD ID
 	# Update a VNF
-	put '/vnfs/:id' do
+	put '/vnfs/:vnfd_id' do
 		# Return if content-type is invalid
 		halt 415 unless request.content_type == 'application/json'
 
@@ -156,7 +156,7 @@ class OrchestratorVnfCatalogue < Sinatra::Application
 
 		# Retrieve stored version
 		begin
-			vnf = Vnf.find(params[:id])
+			vnf = Vnf.find_by('vnfd.id' => params[:vnfd_id].to_i)
 		rescue Mongoid::Errors::DocumentNotFound => e
 			halt 404
 		end

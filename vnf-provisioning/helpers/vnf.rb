@@ -151,4 +151,22 @@ class OrchestratorVnfProvisioning < Sinatra::Application
     end
   end
 
+  # Verify if the VDU images are accessible to download
+  #
+  # @param [Array] List of all VDUs of the VNF
+  def verify_vdu_images(vdus)
+    vdus.each do |vdu|
+      logger.debug 'Verifying image: ' + vdu['vm_image'].to_s + ' from ' + vdu['id'].to_s
+      begin
+        unless RestClient.head(vdu['vm_image']).code == 200
+          logger.error "Image #{vdu['vm_image']} from #{vdu['id']} not found."
+          halt 400, "Image #{vdu['vm_image']} from #{vdu['id']} not found."
+        end
+      rescue => e
+        logger.error "Image #{vdu['vm_image']} from #{vdu['id']} not accessible."
+        halt 400, "Image #{vdu['vm_image']} from #{vdu['id']} not accessible."
+      end
+    end
+  end
+
 end

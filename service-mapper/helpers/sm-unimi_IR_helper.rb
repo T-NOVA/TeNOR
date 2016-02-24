@@ -285,6 +285,10 @@ class IR_helper
 			f.puts JSON.pretty_generate( outputHash )
 		end
 
+		return {'status' => 0,
+                'error'=> "Ok"}
+
+
 	end
 
 

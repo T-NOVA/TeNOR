@@ -35,7 +35,7 @@ class Vnf
 	include Mongoid::Versioning
 
 	field :name, type: String
-	field :vnf_manager, type: String
+	field :'vnf-manager', type: String
 	field :vnfd, type: Hash
 
 	validates :name, :vnfd, :presence => true
