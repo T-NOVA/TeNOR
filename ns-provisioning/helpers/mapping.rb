@@ -29,6 +29,13 @@ class OrchestratorNsProvisioner < Sinatra::Application
     nsd, errors = parse_json(response)
     mapping = {
         "created_at" => "Thu Nov  5 10:13:25 2015",
+        "links_mapping" =>
+          [
+              {
+                  "vld_id" => "vld1",
+                  "maps_to_link" => "/pop/link/85b0bc34-dff0-4399-8435-4fb2ed65790a"
+              }
+          ],
         "vnf_mapping" =>
             [
                 {

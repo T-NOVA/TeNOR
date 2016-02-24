@@ -128,6 +128,12 @@ class OrchestratorNsProvisioner < Sinatra::Application
     @instance = body['instance']
     popInfo = body['popInfo']
 
+    if(popInfo.nil?)
+      puts "Pop Info is null"
+      removeInstance(@instance)
+      halt 200, "Removed correctly."
+    end
+
     logger.debug @instance
 
     #popInfo = getPopInfo(@instance['vnf_info']['pop_id'])
@@ -152,7 +158,24 @@ class OrchestratorNsProvisioner < Sinatra::Application
       error = "Removing instance"
       #terminate VNF
       recoverState(popInfo, @instance['vnf_info'], @instance, error)
-      #removeInstance(@instance)
+      removeInstance(@instance)
+    elsif params[:status] === 'start'
+
+      @instance['vnfrs'].each do |vnf|
+        puts vnf
+        event = {:event => "start"}
+        begin
+          response = RestClient.put settings.vnf_manager + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/config', event.to_json, :content_type => :json
+        rescue Errno::ECONNREFUSED
+          halt 500, 'VNF Manager unreachable'
+        rescue => e
+          logger.error e.response
+          halt e.response.code, e.response.body
+        end
+      end
+
+      @instance['status'] = params['status'].to_s.upcase
+      updateInstance(@instance)
     elsif params[:status] === 'stopped'
 
       @instance['vnfrs'].each do |vnf|
@@ -168,12 +191,8 @@ class OrchestratorNsProvisioner < Sinatra::Application
         end
       end
 
-      @instance['status'] = params['status'].to_s
-      @instance = updateInstance(@instance)
-
-      #terminate VNF
-      #halt 400, "Not implemented yet."
-      #change status
+      @instance['status'] = params['status'].to_s.upcase
+      updateInstance(@instance)
     end
 
     halt 200, "Updated correctly."
@@ -286,9 +305,16 @@ class OrchestratorNsProvisioner < Sinatra::Application
     puts "Instantiation time: " + (DateTime.parse(@instance['instantiation_end_time']).to_time.to_f*1000 - DateTime.parse(@instance['created_at']).to_time.to_f*1000).to_s
 
     logger.debug @instance
-    @instance = updateInstance(@instance)
+    updateInstance(@instance)
 
     logger.debug @instance['marketplace_callback']
+
+    begin
+      response = RestClient.post marketplaceUrl, message.to_json, :content_type => :json
+    rescue => e
+      logger.error e
+      #halt e.response.code, e.response.body
+    end
 
     generateMarketplaceResponse(@instance['marketplace_callback'], @instance)
 

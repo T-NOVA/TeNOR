@@ -56,21 +56,16 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
     popUrls = getPopUrls(popInfo['info'][0]['extrainfo'])
 
-    #token = openstackAdminAuthentication(popUrls[:keystone], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
     tenant_token = openstackAuthentication(popUrls[:keystone], vnf_info['tenant_id'], vnf_info['username'], vnf_info['password'])
     token = openstackAdminAuthentication(popUrls[:keystone], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
 
-    #remove network stack
-    stack_name = instance['network_stack']['stack']['stack_name']
-    stack_id = instance['network_stack']['stack']['id']
-
+    #stack_name = instance['network_stack']['stack']['stack_name']
+    #stack_id = instance['network_stack']['stack']['id']
+    stack_url = instance['network_stack']['stack']['links'][0]['href']
     logger.error "Removing network stack"
-    logger.error stack_name
-    logger.error stack_id
-    url = instance['network_stack']['stack']['links'][0]['href']
     begin
-      response = RestClient.delete "#{popUrls[:orch]}/#{vnf_info['tenant_id']}/stacks/#{stack_name}/#{stack_id}", 'X-Auth-Token' => tenant_token, :content_type => :json, :accept => :json
-      response = RestClient.delete url, 'X-Auth-Token' => tenant_token, :content_type => :json, :accept => :json
+      #response = RestClient.delete "#{popUrls[:orch]}/#{vnf_info['tenant_id']}/stacks/#{stack_name}/#{stack_id}", 'X-Auth-Token' => tenant_token, :content_type => :json, :accept => :json
+      response = RestClient.delete stack_url, 'X-Auth-Token' => tenant_token, :content_type => :json, :accept => :json
     rescue Errno::ECONNREFUSED
       error = {"info" => "VIM unrechable."}
       recoverState(popInfo, vnf_info, @instance, error)
@@ -78,10 +73,32 @@ class OrchestratorNsProvisioner < Sinatra::Application
     rescue => e
       logger.error e
       logger.error e.response
-      error = {"info" => "Error deleting the network stack."}
-#      recoverState(popInfo, vnf_info, @instance, error)
       return
     end
+
+    status = "DELETING"
+    count = 10
+    while(status != "DELETED" || status != "DELETE_FAILED")
+      sleep(3)
+      begin
+        response = RestClient.get stack_url, 'X-Auth-Token' => tenant_token, :content_type => :json, :accept => :json
+      rescue Errno::ECONNREFUSED
+        error = {"info" => "VIM unrechable."}
+        recoverState(popInfo, vnf_info, @instance, error)
+        return
+      rescue => e
+        puts "If no exists means that is deleted correctly"
+        status = "DELETED"
+        logger.error e
+        logger.error e.response
+      end
+      stack_info, error = parse_json(response)
+      status = stack_info['stack']['stack_status']
+      puts status
+      count = count +1
+      break if count > 10
+    end
+
     logger.error "Network stack removed correctly"
 
     if (!vnf_info['security_group_id'].nil?)
@@ -92,7 +109,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
     deleteUser(popUrls[:keystone], vnf_info['user_id'], token)
 #    deleteTenant(popUrls[:keystone], vnf_info['tenant_id'], token)
 
-    removeInstance(instance['id'])
+    removeInstance(instance)
 
     generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", "error"))
   end
@@ -256,59 +273,41 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
       logger.debug @instance
 
-      # Request WICM to create a service
-      wicm_message = {
-        ns_instance_id: nsd['id'],
-        client_mkt_id: '1',
-        nap_mkt_id: '1',
-        nfvi_mkt_id: '1'
-      }
-      begin
-        response = RestClient.post settings.wicm + '/vnf-connectivity', wicm_message.to_json, :content_type => :json, :accept => :json
-      rescue Errno::ECONNREFUSED
-        halt 500, 'WICM unreachable'
-      rescue => e
-        logger.error e.response
-        halt e.response.code, e.response.body
-      end
-      provider_info, error = parse_json(response)
-
-      # Request HOT Generator to build the WICM - SFC integration
-      provider_info['security_group_id'] = vnf_info['security_group_id']
-      provider_info['physical_network'] = 'sfcvlan'
-      begin
-        response = RestClient.post settings.hot_generator + '/wicmhot', provider_info.to_json, :content_type => :json, :accept => :json
-      rescue Errno::ECONNREFUSED
-        halt 500, 'HOT Generator unreachable'
-      rescue => e
-        logger.error e.response
-        halt e.response.code, e.response.body
-      end
-      hot_template, error = parse_json(response)
-
-      # Provision the WICM - SFC integration
-      template = {:stack_name => "WICM_SFC-" + @instance['id'].to_s, :template => hot_template}
-      begin
-        response = RestClient.post "#{popUrls[:orch]}/#{vnf_info['tenant_id']}/stacks", template.to_json , 'X-Auth-Token' => tenant_token, :content_type => :json, :accept => :json
-      rescue Errno::ECONNREFUSED
-        error = {"info" => "VIM unrechable."}
-        recoverState(popInfo, vnf_info, @instance, error)
-        return
-      rescue => e
-        logger.error e
-        logger.error e.response
-        error = {"info" => "Error creating the network stack."}
-        recoverState(popInfo, vnf_info, @instance, error)
-        return
-      end
-
-      # Wait for the WICM - SFC provisioning to finish
-      status = "CREATING"
-      count = 10
-      while(status != "CREATE_COMPLETE" || status != "CREATE_FAILED")
-        sleep(1)
+      if false
+        # Request WICM to create a service
+        wicm_message = {
+          ns_instance_id: nsd['id'],
+          client_mkt_id: '1',
+          nap_mkt_id: '1',
+          nfvi_mkt_id: '1'
+        }
         begin
-          response = RestClient.get "#{popUrls[:orch]}/#{vnf_info['tenant_id']}/stacks/#{"WICM_SFC-" + @instance['id'].to_s}", 'X-Auth-Token' => tenant_token
+          response = RestClient.post settings.wicm + '/vnf-connectivity', wicm_message.to_json, :content_type => :json, :accept => :json
+        rescue Errno::ECONNREFUSED
+          halt 500, 'WICM unreachable'
+        rescue => e
+          logger.error e.response
+          halt e.response.code, e.response.body
+        end
+        provider_info, error = parse_json(response)
+
+        # Request HOT Generator to build the WICM - SFC integration
+        provider_info['security_group_id'] = vnf_info['security_group_id']
+        provider_info['physical_network'] = 'sfcvlan'
+        begin
+          response = RestClient.post settings.hot_generator + '/wicmhot', provider_info.to_json, :content_type => :json, :accept => :json
+        rescue Errno::ECONNREFUSED
+          halt 500, 'HOT Generator unreachable'
+        rescue => e
+          logger.error e.response
+          halt e.response.code, e.response.body
+        end
+        hot_template, error = parse_json(response)
+
+        # Provision the WICM - SFC integration
+        template = {:stack_name => "WICM_SFC-" + @instance['id'].to_s, :template => hot_template}
+        begin
+          response = RestClient.post "#{popUrls[:orch]}/#{vnf_info['tenant_id']}/stacks", template.to_json , 'X-Auth-Token' => tenant_token, :content_type => :json, :accept => :json
         rescue Errno::ECONNREFUSED
           error = {"info" => "VIM unrechable."}
           recoverState(popInfo, vnf_info, @instance, error)
@@ -320,14 +319,35 @@ class OrchestratorNsProvisioner < Sinatra::Application
           recoverState(popInfo, vnf_info, @instance, error)
           return
         end
-        stack_info, error = parse_json(response)
-        status = stack_info['stack']['stack_status']
-        count = count +1
-        break if count > 10
-      end
-      if(status == "CREATE_FAILED")
-        recoverState(popInfo, vnf_info, @instance, error)
-        return
+
+        # Wait for the WICM - SFC provisioning to finish
+        status = "CREATING"
+        count = 10
+        while(status != "CREATE_COMPLETE" || status != "CREATE_FAILED")
+          sleep(1)
+          begin
+            response = RestClient.get "#{popUrls[:orch]}/#{vnf_info['tenant_id']}/stacks/#{"WICM_SFC-" + @instance['id'].to_s}", 'X-Auth-Token' => tenant_token
+          rescue Errno::ECONNREFUSED
+            error = {"info" => "VIM unrechable."}
+            recoverState(popInfo, vnf_info, @instance, error)
+            return
+          rescue => e
+            logger.error e
+            logger.error e.response
+            error = {"info" => "Error creating the network stack."}
+            recoverState(popInfo, vnf_info, @instance, error)
+            return
+          end
+          stack_info, error = parse_json(response)
+          status = stack_info['stack']['stack_status']
+          count = count +1
+          break if count > 10
+        end
+        if(status == "CREATE_FAILED")
+          recoverState(popInfo, vnf_info, @instance, error)
+          return
+        end
+
       end
 
       publicNetworkId = publicNetworkId(popUrls[:neutron], tenant_token)
@@ -338,9 +358,13 @@ class OrchestratorNsProvisioner < Sinatra::Application
           dns_server: settings.dns_server
       }
 
+      slaInfo = nsd['sla'].find { |sla| sla['sla_key'] == flavour }
+      nsd_flavour = slaInfo['id']
+      puts nsd_flavour
+
       puts "Generating network HOT template..."
       begin
-        response = RestClient.post settings.hot_generator + '/networkhot/' + flavour, hot_generator_message.to_json, :content_type => :json, :accept => :json
+        response = RestClient.post settings.hot_generator + '/networkhot/' + nsd_flavour, hot_generator_message.to_json, :content_type => :json, :accept => :json
       rescue Errno::ECONNREFUSED
         halt 500, 'HOT Generator unreachable'
       rescue => e
@@ -441,10 +465,19 @@ class OrchestratorNsProvisioner < Sinatra::Application
       @instance['vnf_info'] = vnf_info
       updateInstance(@instance)
 
+      slaInfo = nsd['sla'].find { |sla| sla['sla_key'] == flavour }
+      if slaInfo.nil
+        error = "SLA inconsistency"
+        recoverState(popInfo, vnf_info, @instance, error)
+        return
+      end
+      #vnf_flavour = slaInfo['constituent_vnf'].find { |cvnf| cvnf['vnf_reference'] == vnf_id }['vnf_flavour_id_reference']
+      vnf_flavour = slaInfo['id']
+
       vnf_provisioning_info = {
           :ns_id => nsd['id'],
           :vnf_id => vnf_id,
-          :flavour => flavour,
+          :flavour => vnf_flavour,
           :vim_id => popInfo['info'][0]['dcname'],
           :auth => {
               :url => {
