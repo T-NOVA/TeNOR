@@ -4,7 +4,7 @@
       {
         "vld_id": "vld0",
         "alias": "management",
-        "flavor_ref_id": "flavor0",
+        "sla_ref_id": "flavor0",
         "root_requirements": "Unlimeted",
         "leaf_requirement": "Unlimeted",
         "qos": {
@@ -13,7 +13,7 @@
           "burst": ""
         },
         "connections": [
-          "56af5b48b18cfb2ee8000000:ext_management"
+            "xxx:ext_management"
         ],
         "connectivity_type": "E-LAN",
         "external_access": true,
@@ -21,8 +21,8 @@
       },
       {
         "vld_id": "vld1",
-        "alias": "data",
-        "flavor_ref_id": "flavor0",
+        "alias": "ingress",
+        "sla_ref_id": "flavor0",
         "root_requirements": "Unlimeted",
         "leaf_requirement": "Unlimeted",
         "qos": {
@@ -31,8 +31,8 @@
           "burst": ""
         },
         "connections": [
-          "data_in",
-          "56af5b48b18cfb2ee8000000:ext_data_in"
+            "ns_ext_ingress",
+            "xxx:ext_data_in"
         ],
         "connectivity_type": "E-LINE",
         "external_access": true,
@@ -41,7 +41,7 @@
       {
         "vld_id": "vld2",
         "alias": "management",
-        "flavor_ref_id": "flavor1",
+        "sla_ref_id": "flavor1",
         "root_requirements": "Unlimeted",
         "leaf_requirement": "Unlimeted",
         "qos": {
@@ -50,7 +50,7 @@
           "burst": ""
         },
         "connections": [
-          "56af5b48b18cfb2ee8000000:ext_management"
+            "xxx:ext_management"
         ],
         "connectivity_type": "E-LAN",
         "external_access": true,
@@ -58,8 +58,8 @@
       },
       {
         "vld_id": "vld3",
-        "alias": "data",
-        "flavor_ref_id": "flavor1",
+        "alias": "ingress",
+        "sla_ref_id": "flavor1",
         "root_requirements": "Unlimeted",
         "leaf_requirement": "Unlimeted",
         "qos": {
@@ -68,8 +68,8 @@
           "burst": ""
         },
         "connections": [
-        "data_in",
-        "56af5b48b18cfb2ee8000000:ext_data_in"
+            "ns_ext_ingress",
+            "xxx:ext_data_in"
         ],
         "connectivity_type": "E-LINE",
         "external_access": true,
@@ -77,8 +77,8 @@
       },
       {
         "vld_id": "vld5",
-        "alias": "data",
-        "flavor_ref_id": "flavor0",
+        "alias": "egress",
+        "sla_ref_id": "flavor0",
         "root_requirements": "Unlimeted",
         "leaf_requirement": "Unlimeted",
         "qos": {
@@ -87,8 +87,8 @@
           "burst": ""
         },
         "connections": [
-        "56af5b48b18cfb2ee8000000:ext_data_in",
-        "data_out"
+            "xxx:ext_data_out",
+            "ns_ext_egress"
         ],
         "connectivity_type": "E-LINE",
         "external_access": true,
@@ -96,8 +96,8 @@
       },
       {
         "vld_id": "vld6",
-        "alias": "data",
-        "flavor_ref_id": "flavor1",
+        "alias": "egress",
+        "sla_ref_id": "flavor1",
         "root_requirements": "Unlimeted",
         "leaf_requirement": "Unlimeted",
         "qos": {
@@ -106,8 +106,8 @@
           "burst": ""
         },
         "connections": [
-        "56af5b48b18cfb2ee8000000:ext_data_in",
-        "data_out"
+            "xxx:ext_data_out",
+            "ns_ext_egress"
         ],
         "connectivity_type": "E-LINE",
         "external_access": true,
