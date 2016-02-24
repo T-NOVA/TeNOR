@@ -281,6 +281,9 @@ class OrchestratorVnfProvisioning < Sinatra::Application
       halt e.response.code, e.response.body
     end
 
+    # Update the VNFR event history
+    vnfr.push(lifecycle_event_history: "Executed a #{mapi_request[:event]}")
+
     halt response.code, response.body
   end
 
