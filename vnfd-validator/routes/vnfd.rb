@@ -82,9 +82,6 @@ class OrchestratorVnfdValidator < Sinatra::Application
 			vnfd = validate_xml_vnfd(vnfd)
 		end
 
-		logger.debug 'Verifying VDU images'
-		verify_vdu_images(vnfd['vdu'])
-
 		halt 200
 	end
 end
