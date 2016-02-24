@@ -81,11 +81,11 @@ class OrchestratorVnfCatalogue < Sinatra::Application
 	# List all VNFs
 	get '/vnfs' do
 		params[:offset] ||= 1
-		params[:limit] ||= 2
+		params[:limit] ||= 20
 
 		# Only accept positive numbers
 		params[:offset] = 1 if params[:offset].to_i < 1
-		params[:limit] = 2 if params[:limit].to_i < 1
+		params[:limit] = 20 if params[:limit].to_i < 1
 
 		# Get paginated list
 		vnfs = Vnf.paginate(:page => params[:offset], :limit => params[:limit])
