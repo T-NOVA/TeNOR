@@ -41,10 +41,10 @@ class WicmToHot
     2.times {networks_name << create_network}
 
     # Create the subnets for all networks
-    networks_name.each_with_index {|name, index| create_subnet(name, 250 + index, nil)}
+    networks_name.each_with_index {|name, index| create_subnet(name, 250 + index, '8.8.8.8')}
   
     # Create the Service Function Forwarder machine
-    create_server('image_name', create_flavor, create_ports(networks_name, provider_info['security_group_id']))
+    create_server('image_name', create_flavor, create_ports(networks_name))
 
     #puts @hot.to_yaml
 
@@ -54,15 +54,14 @@ class WicmToHot
   # Creates an HEAT port resource
   #
   # @param [Array] networks_name the name of the networks
-  # @param [String] security_group_id the ID of the T-NOVA security group
   # @return [Array] a list of ports
-  def create_ports(networks_name, security_group_id)
+  def create_ports(networks_name)
     ports = []
 
     networks_name.each do |network_name|
       port_name = get_resource_name
       ports << { port: {get_resource: port_name} }
-      @hot.resources_list << Port.new(port_name, network_name, security_group_id)
+      @hot.resources_list << Port.new(port_name, {get_resource: network_name}, nil)
     end
 
     ports
@@ -98,7 +97,7 @@ class WicmToHot
   # @param [Hash] provider_info the provider network info
   def create_provider_network(provider_info, physical_network)
     name = get_resource_name
-    @hot.resources_list << ProviderNet.new(name, provider_info['type'], physical_network, provider_info['vlan_id'].to_s)
+    @hot.resources_list << ProviderNet.new(name, provider_info['type'], physical_network, provider_info['vlan_id'])
     name
   end
 
