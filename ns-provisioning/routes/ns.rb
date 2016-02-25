@@ -309,13 +309,6 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
     logger.debug @instance['marketplace_callback']
 
-    begin
-      response = RestClient.post marketplaceUrl, message.to_json, :content_type => :json
-    rescue => e
-      logger.error e
-      #halt e.response.code, e.response.body
-    end
-
     generateMarketplaceResponse(@instance['marketplace_callback'], @instance)
 
     begin
