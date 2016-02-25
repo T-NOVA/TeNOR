@@ -318,7 +318,6 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
     generateMarketplaceResponse(@instance['marketplace_callback'], @instance)
 
-
     begin
       response = RestClient.post settings.tenor_api + '/performance-stats', @instance, :content_type => :json
     rescue => e
@@ -328,7 +327,6 @@ class OrchestratorNsProvisioner < Sinatra::Application
       end
       halt e.response.code, e.response.body
     end
-
 
     #get NSD
     begin

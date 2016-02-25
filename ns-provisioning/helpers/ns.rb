@@ -120,6 +120,11 @@ class OrchestratorNsProvisioner < Sinatra::Application
     nsd = instantiation_info['nsd']
     flavour = instantiation_info['flavour']
 
+    if flavour.nil?
+      error = "Flavour is null"
+      generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", error))
+    end
+
     begin
       @instance = createInstance({})
     rescue => e
