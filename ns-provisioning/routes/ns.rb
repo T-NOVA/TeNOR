@@ -318,6 +318,18 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
     generateMarketplaceResponse(@instance['marketplace_callback'], @instance)
 
+
+    begin
+      response = RestClient.post settings.tenor_api + '/performance-stats', @instance, :content_type => :json
+    rescue => e
+      logger.error e
+      if (defined?(e.response)).nil?
+        halt 400, "NS-Instance Repository unavailable"
+      end
+      halt e.response.code, e.response.body
+    end
+
+
     #get NSD
     begin
       response = RestClient.get settings.ns_catalogue + '/network-services/' + @instance['nsd_id'].to_s, :content_type => :json

@@ -29,5 +29,22 @@ class TnovaManager < Sinatra::Application
 
   end
 
+  def savePerformance(instance)
+puts instance
+    mapping_time = (DateTime.parse(instance['mapping_time']).to_time.to_f*1000 - DateTime.parse(instance['created_at']).to_time.to_f*1000).to_s
+    instantiation_time = (DateTime.parse(instance['instantiation_end_time']).to_time.to_f*1000 - DateTime.parse(instance['instantiation_start_time']).to_time.to_f*1000).to_s
+    final_time = (DateTime.parse(instance['instantiation_end_time']).to_time.to_f*1000 - DateTime.parse(instance['created_at']).to_time.to_f*1000).to_s
+
+    @stats = {
+        :instance_id => instance['id'],
+        :created_at => DateTime.parse(instance['created_at']).to_time.to_f*1000,
+        :mapping => mapping_time,
+        :instantiation => instantiation_time,
+        :total => final_time
+    }
+
+      @statistic = PerformanceStatisticModel.new(@stats).save!
+
+  end
 
 end
