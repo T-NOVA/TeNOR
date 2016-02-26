@@ -301,7 +301,14 @@ class OrchestratorNsProvisioner < Sinatra::Application
     @instance['vnfrs'] = []
     @instance['vnfrs'] << vnf_info
 
-    @instance['status'] = "INSTANTIATED"
+    if callback_response['status'] == 'ERROR_CREATING'
+      @instance['status'] = "ERROR_CREATING"
+      generateMarketplaceResponse(@instance['marketplace_callback'], @instance)
+      return 200
+    else
+      @instance['status'] = "INSTANTIATED"
+    end
+
     @instance['instantiation_end_time'] = DateTime.now.iso8601(3)
 
     puts "Instantiation time: " + (DateTime.parse(@instance['instantiation_end_time']).to_time.to_f*1000 - DateTime.parse(@instance['created_at']).to_time.to_f*1000).to_s
@@ -315,13 +322,13 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
     EM.defer do
       begin
-        response = RestClient.post settings.tenor_api + '/performance-stats', @instance, :content_type => :json
+        response = RestClient.post settings.tenor_api + '/performance-stats', @instance.to_json, :content_type => :json
       rescue => e
         logger.error e
         if (defined?(e.response)).nil?
-          halt 400, "NS-Instance Repository unavailable"
+          #halt 400, "NS-Instance Repository unavailable"
         end
-        halt e.response.code, e.response.body
+        #halt e.response.code, e.response.body
       end
     end
     #get NSD
