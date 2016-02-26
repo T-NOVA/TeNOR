@@ -143,32 +143,6 @@ class OrchestratorNsProvisioner < Sinatra::Application
     end
   end
 
-  def createNetwork(neutronUrl, name, token)
-    network = {:network => {:name => name}}
-
-    begin
-      response = RestClient.post neutronUrl + '/networks', network.to_json, :content_type => :json, :'X-Auth-Token' => token
-    rescue => e
-      logger.error e
-      logger.error e.response.body
-    end
-    net, errors = parse_json(response)
-    return net['network']['id']
-  end
-
-  def createSubnetwork(neutronUrl, networkId, index, token)
-    subnetwork = {:subnet => {:network_id => networkId, :ip_version => 4, :cidr => "192.168." + index.to_s + ".0/24", :dns_nameservers => ["10.30.0.11"]}}
-
-    begin
-      response = RestClient.post neutronUrl + '/subnets', subnetwork.to_json, :content_type => :json, :'X-Auth-Token' => token
-    rescue => e
-      logger.error e
-      logger.error e.response.body
-    end
-    subnet, errors = parse_json(response)
-    return subnet['subnet']['id']
-  end
-
   def getAdminRole(keystoneUrl, token)
     begin
       response = RestClient.get keystoneUrl + '/OS-KSADM/roles', :content_type => :json, :'X-Auth-Token' => token
@@ -203,31 +177,6 @@ class OrchestratorNsProvisioner < Sinatra::Application
     networks, errors = parse_json(response)
     network = networks['networks'].find { |role| role['name'] == 'public' }
     return network['id']
-  end
-
-  def createRouter(neutronUrl, networkId, token)
-    router = {:router => {:external_gateway_info => {:network_id => networkId}, :name => "Tenor router"}}
-
-    begin
-      response = RestClient.post neutronUrl + '/routers', router.to_json, :content_type => :json, :'X-Auth-Token' => token
-    rescue => e
-      logger.error e
-      logger.error e.response.body
-    end
-    router, errors = parse_json(response)
-    return router['router']['id']
-  end
-
-  def addInterfaceToRouter(neutronUrl, router_id, subnet_id, token)
-    router_info = {:subnet_id => subnet_id}
-
-    begin
-      response = RestClient.put neutronUrl + '/routers/' + router_id + '/add_router_interface', router_info.to_json, :content_type => :json, :'X-Auth-Token' => token
-    rescue => e
-      logger.error e
-      logger.error e.response.body
-    end
-    status 200
   end
 
   def createSecurityGroup(computeUrl, tenant_id, token)
@@ -268,69 +217,10 @@ class OrchestratorNsProvisioner < Sinatra::Application
     status 200
   end
 
-  def deleteRouter(neutronUrl, routerId, token)
-    begin
-      response = RestClient.delete neutronUrl + '/routers/' + routerId, :content_type => :json, :'X-Auth-Token' => token
-    rescue => e
-      logger.error e
-      logger.error e.response.body
-    end
-  end
-
-  def deleteNetwork(neutronUrl, networkId, token)
-    begin
-      response = RestClient.delete neutronUrl + '/networks/' + networkId, :content_type => :json, :'X-Auth-Token' => token
-    rescue => e
-      logger.error e
-      logger.error e.response.body
-    end
-  end
-
-  def deleteSubnet(neutronUrl, subnetId, token)
-    begin
-      response = RestClient.delete neutronUrl + '/subnets/' + subnetId, :content_type => :json, :'X-Auth-Token' => token
-    rescue => e
-      logger.error e
-      logger.error e.response.body
-    end
-  end
-
   def deleteSecurityGroup(computeUrl, tenant_id, sec_group_id, token)
 
     begin
       response = RestClient.delete computeUrl + '/' + tenant_id + '/os-security-groups/' + sec_group_id, :content_type => :json, :'X-Auth-Token' => token
-    rescue => e
-      logger.error e
-      logger.error e.response.body
-    end
-  end
-
-  def getRouterPorts(neutronUrl, router_id, token)
-
-    begin
-      response = RestClient.get neutronUrl + '/ports?device_id=' + router_id, :content_type => :json, :'X-Auth-Token' => token
-    rescue => e
-      logger.error e
-      logger.error e.response.body
-    end
-    ports, error = parse_json(response)
-    return ports['ports']
-  end
-
-  def deleteRouterPorts(neutronUrl, port_id, token)
-
-    begin
-      response = RestClient.delete neutronUrl + '/ports/' + port_id, :content_type => :json, :'X-Auth-Token' => token
-    rescue => e
-      logger.error e
-      logger.error e.response.body
-    end
-  end
-
-  def updateRouterPorts(neutronUrl, port_id, token)
-    port = {:port => {:admin_state_up => false, :device_owner => ""}}
-    begin
-      response = RestClient.put neutronUrl + '/ports/' + port_id, port.to_json, :content_type => :json, :'X-Auth-Token' => token
     rescue => e
       logger.error e
       logger.error e.response.body

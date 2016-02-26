@@ -406,6 +406,18 @@ class OrchestratorVnfProvisioning < Sinatra::Application
           halt e.response.code, e.response.body
         end
 
+        ns_manager = { status: "ERROR_CREATING", vnfd_id: vnfr.vnfd_reference, vnfr_id: vnfr.id}
+        logger.debug 'NS Manager message: ' + ns_manager.to_json
+        logger.debug 'NS Manager callback: ' + stack_info['ns_manager_callback'].to_json
+        begin
+          response = RestClient.post "#{stack_info['ns_manager_callback']}", ns_manager.to_json, 'X-Auth-Token' => @client_token, :content_type => :json, :accept => :json
+        rescue Errno::ECONNREFUSED
+          halt 500, 'NS Manager callback'
+        rescue => e
+          logger.error e.response
+          halt e.response.code, e.response.body
+        end
+
         # Delete the VNFR from the database
         vnfr.destroy
       end
