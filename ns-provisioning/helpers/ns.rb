@@ -65,22 +65,11 @@ class OrchestratorNsProvisioner < Sinatra::Application
     #stack_id = instance['network_stack']['stack']['id']
     stack_url = instance['network_stack']['stack']['links'][0]['href']
     logger.error "Removing network stack"
-    begin
-      #response = RestClient.delete "#{popUrls[:orch]}/#{vnf_info['tenant_id']}/stacks/#{stack_name}/#{stack_id}", 'X-Auth-Token' => tenant_token, :content_type => :json, :accept => :json
-      response = RestClient.delete stack_url, 'X-Auth-Token' => tenant_token, :content_type => :json, :accept => :json
-    rescue Errno::ECONNREFUSED
-      error = {"info" => "VIM unrechable."}
-      recoverState(popInfo, vnf_info, @instance, error)
-      return
-    rescue => e
-      logger.error e
-      logger.error e.response
-      return
-    end
+    deleteStack(stack_url, tenant_token)
 
     status = "DELETING"
     count = 0
-    while(status != "DELETED" || status != "DELETE_FAILED")
+    while(status != "DELETED" && status != "DELETE_FAILED")
       sleep(3)
       begin
         response = RestClient.get stack_url, 'X-Auth-Token' => tenant_token, :content_type => :json, :accept => :json
@@ -97,9 +86,14 @@ class OrchestratorNsProvisioner < Sinatra::Application
       stack_info, error = parse_json(response)
       status = stack_info['stack']['stack_status']
       puts status
+      if( status == "DELETE_FAILED" )
+        deleteStack(stack_url, tenant_token)
+      end
       count = count +1
       break if count > 10
     end
+
+
 
     logger.error "Network stack removed correctly"
 
@@ -366,6 +360,12 @@ class OrchestratorNsProvisioner < Sinatra::Application
       }
 
       slaInfo = nsd['sla'].find { |sla| sla['sla_key'] == flavour }
+      if slaInfo.nil?
+        error = "SLA inconsistency"
+        recoverState(popInfo, vnf_info, @instance, error)
+        return
+      end
+
       nsd_flavour = slaInfo['id']
       puts nsd_flavour
 

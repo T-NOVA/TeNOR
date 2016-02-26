@@ -60,7 +60,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
       raise "Remove instance error"
       #return { :code => e.response.code, :body => e.response.body}
     end
-    halt 200, "Removed correctly"
+    return 200, "Removed correctly"
   end
 
 end
