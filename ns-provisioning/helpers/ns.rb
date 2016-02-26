@@ -63,40 +63,39 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
     #stack_name = instance['network_stack']['stack']['stack_name']
     #stack_id = instance['network_stack']['stack']['id']
-    stack_url = instance['network_stack']['stack']['links'][0]['href']
-    logger.error "Removing network stack"
-    deleteStack(stack_url, tenant_token)
+    if(instance['network_stack'])
+      stack_url = instance['network_stack']['stack']['links'][0]['href']
+      logger.error "Removing network stack"
+      deleteStack(stack_url, tenant_token)
 
-    status = "DELETING"
-    count = 0
-    while(status != "DELETED" && status != "DELETE_FAILED")
-      sleep(3)
-      begin
-        response = RestClient.get stack_url, 'X-Auth-Token' => tenant_token, :content_type => :json, :accept => :json
-      rescue Errno::ECONNREFUSED
-        error = {"info" => "VIM unrechable."}
-        #recoverState(popInfo, vnf_info, @instance, error)
-        return
-      rescue => e
-        puts "If no exists means that is deleted correctly"
-        status = "DELETED"
-        logger.error e
-        logger.error e.response
+      status = "DELETING"
+      count = 0
+      while(status != "DELETE_COMPLETE" && status != "DELETE_FAILED")
+        sleep(3)
+        begin
+          response = RestClient.get stack_url, 'X-Auth-Token' => tenant_token, :content_type => :json, :accept => :json
+        rescue Errno::ECONNREFUSED
+          error = {"info" => "VIM unrechable."}
+          #recoverState(popInfo, vnf_info, @instance, error)
+          return
+        rescue => e
+          puts "If no exists means that is deleted correctly"
+          status = "DELETE_COMPLETE"
+          logger.error e
+          logger.error e.response
+        end
+        stack_info, error = parse_json(response)
+        status = stack_info['stack']['stack_status']
+        puts status
+        if( status == "DELETE_FAILED" )
+          deleteStack(stack_url, tenant_token)
+        end
+        count = count +1
+        break if count > 10
       end
-      stack_info, error = parse_json(response)
-      status = stack_info['stack']['stack_status']
-      puts status
-      if( status == "DELETE_FAILED" )
-        deleteStack(stack_url, tenant_token)
-      end
-      count = count +1
-      break if count > 10
+
+      logger.error "Network stack removed correctly"
     end
-
-
-
-    logger.error "Network stack removed correctly"
-
     if (!vnf_info['security_group_id'].nil?)
 #      deleteSecurityGroup(popUrls[:compute], vnf_info['tenant_id'], vnf_info['security_group_id'], tenant_token)
     end
