@@ -203,8 +203,23 @@
             "id": "http://www.t-nova.eu/vdu/1/monitoring_parameters",
             "type": "array",
             "items": {
-              "id": "http://www.t-nova.eu/vdu/1/monitoring_parameters/4",
-              "type": "string"
+              "id": "http://www.t-nova.eu/vdu/1/monitoring_parameters/8",
+              "type": "object",
+              "properties": {
+                "metric": {
+                  "id": "http://www.t-nova.eu/vdu/1/monitoring_parameters/8/metric",
+                  "type": "string"
+                },
+                "unit": {
+                  "id": "http://www.t-nova.eu/vdu/1/monitoring_parameters/8/unit",
+                  "type": "string"
+                },
+                "desc": {
+                  "id": "http://www.t-nova.eu/vdu/1/monitoring_parameters/8/desc",
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
             }
           },
           "vm_image_md5": {
