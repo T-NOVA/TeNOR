@@ -406,7 +406,7 @@ class OrchestratorVnfProvisioning < Sinatra::Application
           halt e.response.code, e.response.body
         end
 
-        ns_manager = { status: "ERROR_CREATING", vnfd_id: vnfr.vnfd_reference, vnfi_id: vnfi_id}
+        ns_manager = { status: "ERROR_CREATING", vnfd_id: vnfr.vnfd_reference, vnfr_id: vnfr.id}
         logger.debug 'NS Manager message: ' + ns_manager.to_json
         logger.debug 'NS Manager callback: ' + stack_info['ns_manager_callback'].to_json
         begin
