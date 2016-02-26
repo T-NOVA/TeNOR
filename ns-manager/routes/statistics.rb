@@ -33,10 +33,9 @@ class TnovaManager < Sinatra::Application
   post "/performance-stats" do
 
     body, errors = parse_json(request.body.read)
-    @instance = body
 
     #save instance metrics
-    savePerformance(@instance)
+    savePerformance(body)
 
   end
 
