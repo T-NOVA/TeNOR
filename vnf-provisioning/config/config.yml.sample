@@ -11,7 +11,7 @@ daemonize: false
 logstash_host: 84.88.40.160
 logstash_port: 5228
 
-vnf_manager: 'http://localhost:4567'
+vnf_manager: http://localhost:4567
 hot_generator: http://localhost:4571
 mapi: http://admin:changeme@10.10.1.67:1234
 gk: http://localhost:8000
