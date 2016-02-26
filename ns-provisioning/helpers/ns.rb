@@ -55,6 +55,8 @@ class OrchestratorNsProvisioner < Sinatra::Application
   def recoverState(popInfo, vnf_info, instance, error)
 
     popUrls = getPopUrls(popInfo['info'][0]['extrainfo'])
+    callbackUrl = instance['marketplace_callback']
+    ns_id = instance['nsd_id']
 
     tenant_token = openstackAuthentication(popUrls[:keystone], vnf_info['tenant_id'], vnf_info['username'], vnf_info['password'])
     token = openstackAdminAuthentication(popUrls[:keystone], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
@@ -77,14 +79,14 @@ class OrchestratorNsProvisioner < Sinatra::Application
     end
 
     status = "DELETING"
-    count = 10
+    count = 0
     while(status != "DELETED" || status != "DELETE_FAILED")
       sleep(3)
       begin
         response = RestClient.get stack_url, 'X-Auth-Token' => tenant_token, :content_type => :json, :accept => :json
       rescue Errno::ECONNREFUSED
         error = {"info" => "VIM unrechable."}
-        recoverState(popInfo, vnf_info, @instance, error)
+        #recoverState(popInfo, vnf_info, @instance, error)
         return
       rescue => e
         puts "If no exists means that is deleted correctly"
@@ -111,7 +113,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
     removeInstance(instance)
 
-    generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", "error"))
+    generateMarketplaceResponse(callbackUrl, generateError(ns_id, "INFO", "Removed correctly"))
   end
 
   def instantiate(instantiation_info)
@@ -327,7 +329,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
         # Wait for the WICM - SFC provisioning to finish
         status = "CREATING"
-        count = 10
+        count = 0
         while(status != "CREATE_COMPLETE" || status != "CREATE_FAILED")
           sleep(1)
           begin
@@ -399,7 +401,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
       puts "Check network stack creation..."
       #stack_status
       status = "CREATING"
-      count = 10
+      count = 0
       while(status != "CREATE_COMPLETE" || status != "CREATE_FAILED")
         sleep(1)
         begin
@@ -471,7 +473,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
       updateInstance(@instance)
 
       slaInfo = nsd['sla'].find { |sla| sla['sla_key'] == flavour }
-      if slaInfo.nil
+      if slaInfo.nil?
         error = "SLA inconsistency"
         recoverState(popInfo, vnf_info, @instance, error)
         return
