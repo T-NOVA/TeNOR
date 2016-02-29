@@ -87,6 +87,9 @@ class OrchestratorVnfProvisioning < Sinatra::Application
 
     vnf = instantiation_info['vnf']
 
+    vnf_flavour = vnf['vnfd']['deployment_flavours'].find { |dF| dF['flavour_key'] == instantiation_info['flavour'] }['id']
+    puts "Flavour: " + vnf_flavour
+
     # Verify if the VDU images are accessible to download
     logger.debug 'Verifying VDU images'
     verify_vdu_images(vnf['vnfd']['vdu'])
@@ -99,7 +102,7 @@ class OrchestratorVnfProvisioning < Sinatra::Application
       security_group_id: instantiation_info['security_group_id']
     }
     begin
-      hot = parse_json(RestClient.post settings.hot_generator + '/hot/' + instantiation_info['flavour'], hot_generator_message.to_json, :content_type => :json, :accept => :json)
+      hot = parse_json(RestClient.post settings.hot_generator + '/hot/' + vnf_flavour, hot_generator_message.to_json, :content_type => :json, :accept => :json)
     rescue Errno::ECONNREFUSED
       halt 500, 'HOT Generator unreachable'
     rescue => e
