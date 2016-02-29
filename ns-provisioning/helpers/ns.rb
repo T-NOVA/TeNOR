@@ -71,7 +71,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
       status = "DELETING"
       count = 0
       while(status != "DELETE_COMPLETE" && status != "DELETE_FAILED")
-        sleep(3)
+        sleep(5)
         begin
           response = RestClient.get stack_url, 'X-Auth-Token' => tenant_token, :content_type => :json, :accept => :json
         rescue Errno::ECONNREFUSED
@@ -89,6 +89,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
         puts status
         if( status == "DELETE_FAILED" )
           deleteStack(stack_url, tenant_token)
+          status = "DELETING"
         end
         count = count +1
         break if count > 10
@@ -396,6 +397,8 @@ class OrchestratorNsProvisioner < Sinatra::Application
       end
       stack, error = parse_json(response)
       stack_id = stack['stack']['id']
+      @instance['network_stack'] = stack
+      updateInstance(@instance)
 
       puts "Check network stack creation..."
       #stack_status
@@ -466,7 +469,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
       end
 
       stack['stack_name'] = "network-" + @instance['id'].to_s
-      @instance['network_stack'] = stack
+
       @instance['vlr'] = networks
       @instance['vnf_info'] = vnf_info
       updateInstance(@instance)
@@ -477,9 +480,9 @@ class OrchestratorNsProvisioner < Sinatra::Application
         recoverState(popInfo, vnf_info, @instance, error)
         return
       end
-      #vnf_flavour = slaInfo['constituent_vnf'].find { |cvnf| cvnf['vnf_reference'] == vnf_id }['vnf_flavour_id_reference']
-      vnf_flavour = slaInfo['id']
-
+      vnf_flavour = slaInfo['constituent_vnf'].find { |cvnf| cvnf['vnf_reference'] == vnf_id }['vnf_flavour_id_reference']
+      #vnf_flavour = slaInfo['id']
+puts vnf_flavour
       vnf_provisioning_info = {
           :ns_id => nsd['id'],
           :vnf_id => vnf_id,
