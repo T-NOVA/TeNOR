@@ -613,17 +613,7 @@
         },
         "period": {
           "id": "http://www.t-nova.eu/billing_model/period",
-          "type": "object",
-          "properties": {
-            "value": {
-              "id": "http://www.t-nova.eu/billing_model/period/value",
-              "type": "integer"
-            },
-            "period": {
-              "id": "http://www.t-nova.eu/billing_model/period/period",
-              "type": "string"
-            }
-          }
+          "type": "string"
         },
         "price": {
           "id": "http://www.t-nova.eu/billing_model/price",
