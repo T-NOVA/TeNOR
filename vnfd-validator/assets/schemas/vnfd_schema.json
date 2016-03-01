@@ -164,9 +164,27 @@
             "type": "string"
           },
           "monitoring_parameters_specific": {
-            "id": "http://www.t-nova.eu/vdu/0/monitoring_parameters_specific",
+            "id": "http://www.t-nova.eu/vdus/1/monitoring_parameters_specific",
             "type": "array",
-            "items": {}
+            "items": {
+              "id": "http://www.t-nova.eu/vdus/1/monitoring_parameters_specific/6",
+              "type": "object",
+              "properties": {
+                "metric": {
+                  "id": "http://www.t-nova.eu/vdus/1/monitoring_parameters_specific/6/metric",
+                  "type": "string"
+                },
+                "desc": {
+                  "id": "http://www.t-nova.eu/vdus/1/monitoring_parameters_specific/6/desc",
+                  "type": "string"
+                },
+                "unit": {
+                  "id": "http://www.t-nova.eu/vdus/1/monitoring_parameters_specific/6/unit",
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
           },
           "id": {
             "id": "http://www.t-nova.eu/vdu/1/id",
@@ -592,6 +610,20 @@
         "model": {
           "id": "http://www.t-nova.eu/billing_model/model",
           "type": "string"
+        },
+        "period": {
+          "id": "http://www.t-nova.eu/billing_model/period",
+          "type": "object",
+          "properties": {
+            "value": {
+              "id": "http://www.t-nova.eu/billing_model/period/value",
+              "type": "integer"
+            },
+            "period": {
+              "id": "http://www.t-nova.eu/billing_model/period/period",
+              "type": "string"
+            }
+          }
         },
         "price": {
           "id": "http://www.t-nova.eu/billing_model/price",
