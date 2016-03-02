@@ -24,7 +24,7 @@ class Image < Resource
 	# @param [String] location URL where the data for this image resides
 	def initialize(resource_name, disk_format, location)
 		@type = 'OS::Glance::Image'
-		@properties = {'container_format' => 'bare', 'disk_format' => disk_format, 'location' => location}
+		@properties = {'container_format' => 'bare', 'disk_format' => disk_format, 'location' => location, 'name' => resource_name}
 		super(resource_name, @type, @properties)
 	end
 end
