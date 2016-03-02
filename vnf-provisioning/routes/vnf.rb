@@ -121,7 +121,7 @@ class OrchestratorVnfProvisioning < Sinatra::Application
     logger.debug 'VIM info: ' + vim_info.to_json
 
     # Request VIM to provision a VNF
-    response = provision_vnf(vim_info, vnf['name'], hot)
+    response = provision_vnf(vim_info, vnf['name'] + SecureRandom.hex, hot)
     logger.debug 'Provision response: ' + response.to_json
 
     # Build the VNFR and store it
