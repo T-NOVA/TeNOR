@@ -44,9 +44,12 @@ class NsdToHot
           #TODO
           #use the same network
         end
-        network_name = create_network(vlink['alias'])
-        subnet_name = create_subnet(network_name, dns_server, index)
-        create_router_interface(router_name, subnet_name)
+        #network_name = create_network(vlink['alias'])
+        vlink['connections'].each do |link|
+          network_name = create_network(link.split(":ext_")[1])
+          subnet_name = create_subnet(network_name, dns_server, index)
+          create_router_interface(router_name, subnet_name)
+        end
       end
     end
 
