@@ -66,7 +66,7 @@ class OrchestratorNsMonitoring < Sinatra::Application
 		#@json = JSON.parse(request.body.read)
 		mData = JSON.parse(request.body.read)
 		#@json.each do |item|
-			@db.execute("INSERT INTO nsmonitoring (instanceid, date, metricname, unit, value) VALUES ('#{params[:instance_id].to_s}', '#{mData['timestamp']}', '#{mData['type']}', '#{mData['unit']}', '#{mData['value']}' )")
+			@db.execute("INSERT INTO nsmonitoring (instanceid, date, metricname, unit, value) VALUES ('#{params[:instance_id].to_s}', #{mData['timestamp']}, '#{mData['type']}', '#{mData['unit']}', '#{mData['value']}' )")
 		#end
 	end
 end
