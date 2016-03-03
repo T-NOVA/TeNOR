@@ -23,7 +23,7 @@ class Resource
 	# @param [String] name the resource name
 	# @param [String] type the type of HEAT resource
 	# @param [String] properties the properties of HEAT resource
-	def initialize(name, type, properties)
+	def initialize(name, type, properties={})
 		@name = name
 		@type = type
 		@properties = properties
