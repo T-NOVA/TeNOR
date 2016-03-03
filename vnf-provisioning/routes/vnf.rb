@@ -128,7 +128,7 @@ class OrchestratorVnfProvisioning < Sinatra::Application
     begin
       vnfr = Vnfr.create!(
         nsr_instance: Array(instantiation_info['ns_id']),
-        vnfd_reference: vnf['_id'],
+        vnfd_reference: vnf['vnfd']['id'],
         vim_id: instantiation_info['vim_id'],
         vlr_instances: nil,
         vnf_addresses: nil,
