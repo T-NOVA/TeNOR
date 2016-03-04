@@ -91,8 +91,8 @@ class OrchestratorVnfProvisioning < Sinatra::Application
     puts "Flavour: " + vnf_flavour
 
     # Verify if the VDU images are accessible to download
-    logger.debug 'Verifying VDU images'
-    verify_vdu_images(vnf['vnfd']['vdu'])
+    #logger.debug 'Verifying VDU images'
+    #verify_vdu_images(vnf['vnfd']['vdu'])
 
     # Convert VNF to HOT (call HOT Generator)
     halt 400, 'No T-NOVA flavour defined.' unless instantiation_info.has_key?('flavour')
@@ -138,7 +138,7 @@ class OrchestratorVnfProvisioning < Sinatra::Application
         audit_log: nil,
         stack_url: response['stack']['links'][0]['href'],
         vms_id: nil,
-        lifecycle_events: vnf['vnfd']['vnf_lifecycle_events'].find{|lifecycle| lifecycle['flavor_id_ref'].downcase == instantiation_info['flavour'].downcase}['events'],
+        lifecycle_events: vnf['vnfd']['vnf_lifecycle_events'].find{|lifecycle| lifecycle['flavor_id_ref'].downcase == vnf_flavour.downcase}['events'],
         lifecycle_events_values: nil)
     rescue Moped::Errors::OperationFailure => e
       return 400, 'ERROR: Duplicated VNF ID' if e.message.include? 'E11000'
@@ -150,7 +150,7 @@ class OrchestratorVnfProvisioning < Sinatra::Application
     logger.info 'Created thread to monitor stack'
 
     # Send the VNFR to the mAPI
-    lifecycle_event = vnf['vnfd']['vnf_lifecycle_events'].find { |event| event['flavor_id_ref'] == instantiation_info['flavour']}
+    lifecycle_event = vnf['vnfd']['vnf_lifecycle_events'].find { |event| event['flavor_id_ref'].downcase == vnf_flavour.downcase}
     mapi_request = {id: vnfr.id.to_s, vnfd: {vnf_lifecycle_events: lifecycle_event}}
     logger.debug 'mAPI request: ' + mapi_request.to_json
     begin
