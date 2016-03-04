@@ -25,7 +25,7 @@ class Server < Resource
 	# @param [Array] networks a list of ports ID to be added to this server
 	def initialize(resource_name, flavor, image, networks, user_data)
 		type = 'OS::Nova::Server'
-		properties = {'flavor' => flavor, 'image' => image, 'networks' => networks, 'user_data' => user_data}
+		properties = {'flavor' => flavor, 'image' => image, 'networks' => networks, 'user_data_format' => 'RAW', 'user_data' => user_data}
 		super(resource_name, type, properties)
 	end
 end
