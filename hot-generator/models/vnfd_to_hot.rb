@@ -182,14 +182,34 @@ class VnfdToHot
 	# @param [String] flavour_name the flavour resource name
 	# @param [Array] ports list of the ports resource
 	def create_server(vdu, image_name, flavour_name, ports)
-		user_data = vdu.has_key?('bootstrap_script') ? vdu['bootstrap_script'] : nil
 		@hot.resources_list << Server.new(
 			vdu['id'],
 			{get_resource: flavour_name},
 			{get_resource: image_name},
 			ports,
-			user_data)
+			add_wait_condition(vdu))
 		@hot.outputs_list << Output.new("#{vdu['id']}#id", "#{vdu['id']} ID", {get_resource: vdu['id']})
+	end
+
+	# Adds a Wait Condition resource to the VDU
+	#
+	# @param [Hash] vdu the VDU from the VNFD
+	# @return [Hash] the user_data script with the Wait Condition
+	def add_wait_condition(vdu)
+		wc_handle_name = get_resource_name
+		@hot.resources_list << WaitConditionHandle.new(wc_handle_name)
+		@hot.resources_list << WaitCondition.new(get_resource_name, wc_handle_name, 600)
+		bootstrap_script = vdu.has_key?('bootstrap_script') ? vdu['bootstrap_script'] : "#!/bin/bash"
+		{
+			str_replace: {
+				params: {
+					wc_notify: {
+						get_attr: [wc_handle_name, 'curl_cli']
+					}
+				},
+				template: bootstrap_script + "\nwc_notify --data-binary '{\"status\": \"SUCCESS\"}'\n"
+			}
+		}
 	end
 
 	# Generates a new resource name

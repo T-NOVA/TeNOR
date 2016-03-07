@@ -489,6 +489,10 @@
             "id": "http://www.t-nova.eu/vnf_lifecycle_events/1/authentication",
             "type": "string"
           },
+          "authentication_port": {
+            "id": "http://www.t-nova.eu/vnf_lifecycle_events/1/authentication_port",
+            "type": "integer"
+          },
           "vnf_container": {
             "id": "http://www.t-nova.eu/vnf_lifecycle_events/1/vnf_container",
             "type": "string"
