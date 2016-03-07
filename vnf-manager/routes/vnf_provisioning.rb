@@ -55,6 +55,24 @@ class OrchestratorVnfManager < Sinatra::Application
                 halt response.code, response.body
         end
 
+        # @method get_vnf-provisioning_vnf-instances
+        # @overload get '/vnf-provisioning/vnf-instances'
+        #       Return all VNF Instances
+        # Return all VNF Instances
+        get '/vnf-provisioning/vnf-instances/:vnfr_id' do
+                # Send request to VNF Provisioning
+                begin
+                        response = RestClient.get settings.vnf_provisioning + '/vnf-provisioning/vnf-instances/' + params['vnfr_id'], 'X-Auth-Token' => @client_token
+                rescue Errno::ECONNREFUSED
+                        halt 500, 'VNF Provisioning unreachable'
+                rescue => e
+                        logger.error e.response
+                        halt e.response.code, e.response.body
+                end
+
+                halt response.code, response.body
+        end
+
         # @method post_vnf-provisioning_vnf-instances
         # @overload post '/vnf-provisioning/vnf-instances'
         #       Request the instantiation of a VNF
