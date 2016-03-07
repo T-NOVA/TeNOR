@@ -518,6 +518,11 @@
                     "type": "string"
                   }
                 },
+                "required": [
+                  "command",
+                  "template_file",
+                  "template_file_format"
+                ],
                 "additionalProperties": false
               },
               "stop": {
@@ -537,6 +542,11 @@
                     "type": "string"
                   }
                 },
+                "required": [
+                  "command",
+                  "template_file",
+                  "template_file_format"
+                ],
                 "additionalProperties": false
               },
               "restart": {
@@ -597,6 +607,10 @@
                 "additionalProperties": false
               }
             },
+            "required": [
+              "start",
+              "stop"
+            ],
             "additionalProperties": false
           },
           "flavor_id_ref": {
