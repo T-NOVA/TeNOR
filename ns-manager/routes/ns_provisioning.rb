@@ -237,4 +237,26 @@ class TnovaManager < Sinatra::Application
 
   end
 
+
+
+  get '/vnf-provisioning/vnf-instances/:vnfr_id' do
+    begin
+      @service = ServiceModel.find_by(name: "vnfmanager")
+    rescue Mongoid::Errors::DocumentNotFound => e
+      halt 500, {'Content-Type' => "text/plain"}, "VNF Manager not registred."
+    end
+
+    begin
+      response = RestClient.get @service.host + ":" + @service.port.to_s + request.fullpath, 'X-Auth-Token' => @client_token, :content_type => :json
+    rescue Errno::ECONNREFUSED
+      halt 500, 'VNF Manager unreachable'
+    rescue => e
+      logger.error e.response
+      halt e.response.code, e.response.body
+    end
+
+    return response.code, response.body
+
+  end
+
 end

@@ -35,7 +35,7 @@ class TnovaManager < Sinatra::Application
 		rescue Errno::ECONNREFUSED
 			halt 500, 'ElasticSerch/Logstash unreachable'
 		rescue => e
-			logger.error e.response
+			puts e
 			halt e.response.code, e.response.body
 		end
 

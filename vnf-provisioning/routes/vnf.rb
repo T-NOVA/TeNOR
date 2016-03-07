@@ -87,12 +87,13 @@ class OrchestratorVnfProvisioning < Sinatra::Application
 
     vnf = instantiation_info['vnf']
 
+    puts instantiation_info['flavour']
     vnf_flavour = vnf['vnfd']['deployment_flavours'].find { |dF| dF['flavour_key'] == instantiation_info['flavour'] }['id']
     puts "Flavour: " + vnf_flavour
 
     # Verify if the VDU images are accessible to download
-    #logger.debug 'Verifying VDU images'
-    #verify_vdu_images(vnf['vnfd']['vdu'])
+    logger.debug 'Verifying VDU images'
+    verify_vdu_images(vnf['vnfd']['vdu'])
 
     # Convert VNF to HOT (call HOT Generator)
     halt 400, 'No T-NOVA flavour defined.' unless instantiation_info.has_key?('flavour')
