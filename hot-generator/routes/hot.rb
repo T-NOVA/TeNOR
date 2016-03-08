@@ -50,14 +50,14 @@ class OrchestratorHotGenerator < Sinatra::Application
 		security_group_id = provision_info['security_group_id']
 		halt 400, 'Security group ID not found' if security_group_id.nil?
 		
-		logger.debug 'VNF: ' + vnf.to_json
+		puts 'VNF: ' + vnf.to_json
 		logger.debug 'Networks IDs: ' + networks_id.to_json
 		logger.debug 'Security Group ID: ' + security_group_id.to_json
 
 		# Build a HOT template
 		logger.debug 'T-NOVA flavour: ' + params[:flavour]
 		hot = generate_hot_template(vnf['vnfd'], params[:flavour], networks_id, security_group_id)
-		logger.debug 'HOT: ' + hot.to_json
+		puts 'HOT: ' + hot.to_json
 
 		halt 200, hot.to_json
 	end
@@ -87,7 +87,7 @@ class OrchestratorHotGenerator < Sinatra::Application
 		# Build a HOT template
 		logger.debug 'T-NOVA flavour: ' + params[:flavour]
 		hot = generate_network_hot_template(nsd, public_net_id, dns_server, params[:flavour])
-		logger.debug 'Network HOT: ' + hot.to_json
+		puts 'Network HOT: ' + hot.to_json
 
 		halt 200, hot.to_json
 	end
@@ -105,7 +105,7 @@ class OrchestratorHotGenerator < Sinatra::Application
 
 		# Build a HOT template
 		hot = generate_wicm_hot_template(provider_info)
-		logger.debug 'WICM HOT: ' + hot.to_json
+		puts 'WICM HOT: ' + hot.to_json
 
 		halt 200, hot.to_json
 	end
