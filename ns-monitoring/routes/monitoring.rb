@@ -55,13 +55,13 @@ class NSMonitoring < Sinatra::Application
     return 415 unless request.content_type == 'application/json'
 
     # Validate JSON format
-    json, errors = parse_json(request.body.read)
+    monitoring, errors = parse_json(request.body.read)
     return 400, errors.to_json if errors
 
     logger.debug json
 
     begin
-      response = RestClient.get settings.ns_instance_repository + '/ns-instances/' + json['nsi_id'].to_s, :content_type => :json
+      response = RestClient.get settings.ns_instance_repository + '/ns-instances/' + monitoring['nsi_id'].to_s, :content_type => :json
     rescue => e
       logger.error e
       if (defined?(e.response)).nil?
@@ -72,30 +72,25 @@ class NSMonitoring < Sinatra::Application
     @ns_instance, errors = parse_json(response)
     return 400, errors.to_json if errors
 
-    #read instance info from nsi_id
-    logger.debug @ns_instance
-    @ns_instance['vnfrs'].each do |vnf|
-      logger.debug vnf
-      logger.debug vnf['vnfi_id'][0]
-
-
-      #read the vnfi_id from there
-      @monitoring_metrics = create_monitoring_metric_object(json)
+    monitoring['vnf_instances'].each do |vnf_instance|
+      puts vnf_instance['id'] #vnf_id
+      puts vnf_instance['vnfr_id']
+      @monitoring_metrics = create_monitoring_metric_object(monitoring)
       @monitoring_metrics.save!
 
       @monitoring_metrics.parameters.each do |parameter|
         logger.debug parameter
         object = {
             :parameter_id => parameter['id'],
-            :name => parameter['name'],
-            :vnfr_id => @ns_instance['vnfrs'][0]['vnfr_id']
+            :name => parameter['name']
+            #:vnfr_id => @ns_instance['vnfrs'][0]['vnfr_id']
             #,:unit => parameter['unit']
         }
         logger.error object
 
         #send to VNF-Monitoring the metrics to monitor
         begin
-          response = RestClient.post settings.vnf_manager + '/vnf-monitoring/' + @ns_instance['vnfrs'][0]['vnfi_id'][0] + '/monitoring-parameters', object.to_json, :content_type => :json, :accept => :json
+          response = RestClient.post settings.vnf_manager + '/vnf-monitoring/' + vnf_instance['vnfr_id'] + '/monitoring-parameters', object.to_json, :content_type => :json, :accept => :json
         rescue
           puts "ERROR"
           halt 400, "VNF Manager not available"
@@ -106,26 +101,10 @@ class NSMonitoring < Sinatra::Application
 
         logger.error subscription_response
 
-        #save subcription id into ns_instance info
-
       end
     end
 
-    return 200
-
-    #	{
-    #	 "parameter_id": "uuid",
-    #  "name": "avaliability",
-    #  "unit": "percentage"
-    #}
-
-    #	{
-    #"parameters": [
-    #{ "id": "1", "name": "availability", "unit": "percentage"},
-    #{ "id": "2", "name": "num_sessions", "unit": "integer"}
-    #]
-    #}
-    #[{"parameters":[{"id":41,"name":"availability","unit":"%"},{"id":42,"name":"ram-consumption","unit":"MB"}]}]
+    return 200, "Subscription correct."
 
   end
 
@@ -135,62 +114,40 @@ class NSMonitoring < Sinatra::Application
   #  "value": "99.99",
   #  "timestamp": "2015-06-18T09:42:10Z"
   #}
-  post '/ns-monitoring/vnf-instance-readings/:vnf_instance_id' do
+  post '/ns-monitoring/vnf-instance-readings/:vnfr_id' do
     return 415 unless request.content_type == 'application/json'
 
     # Validate JSON format
-    response, errors = parse_json(request.body.read)
+    measurement, errors = parse_json(request.body.read)
     return 400, errors.to_json if errors
 
-    logger.error response
+    logger.error measurement
 
-    #NsMonitoringParameter.find_by()
-
-    #@vnf_monitoring_data = VNFMonitoringData.new json
-    #logger.error @vnf_monitoring_data.to_json
-
-    #given the vnf_instance_id, search in which ns_id belongs to
     begin
-      vnfInstance = VnfInstance.find_by(:vnf_id => params['vnf_instance_id'])
-    rescue Mongoid::Errors::DocumentNotFound => e
-      #halt 400, "VNF instance no exists"
-    end
-
-    logger.debug vnfInstance
-    begin
-      #monMetrics = NsMonitoringParameter.find_by(:nsi_id => vnfInstance['ns_monitoring_parameter_id'].to_s)
-      monMetrics = NsMonitoringParameter.find_by("vnf_instances.id" => params['vnf_instance_id'])
+      monMetrics = NsMonitoringParameter.find_by("vnf_instances.vnfr_id" => params['vnfr_id'])
       logger.error monMetrics
     rescue Mongoid::Errors::DocumentNotFound => e
       halt 400, "Monitoring Metric instance no exists"
     end
 
-    begin
-      #parameter = Parameter.find_by(:id => response['parameter_id'])
-    rescue Mongoid::Errors::DocumentNotFound => e
-      #halt 400, "VNF instance no exists"
-    end
-
-    #logger.error parameter['name']
     logger.error monMetrics
 
-    #given the parameter_id of this request, search the paramter info of that vnf_id
-
-    #paramInfo = Parameter.find_by(:ns_monitoring_parameter_id => monMetrics['id'], :id => response['parameter_id'] )
+    parameter_name = monMetrics['parameters'].find {|p| p['id'] == measurement['parameter_id']}['name']
+    puts "Parameter name:"
+    puts parameter_name
 
     #logger.error paramInfo
 
     if monMetrics.vnf_instances.length == 1
       #store value in cassandra
-      data = generateMetric(paramInfo['name'], response['value'])
       metrics = {
-          :type => paramInfo['name'],
-          :value => response['value'],
-          :unit => response['unit'],
-          :timestamp => Time.parse(response['timestamp']).to_i
+          :type => parameter_name,
+          :value => measurement['value'],
+          :unit => measurement['unit'],
+          :timestamp => measurement['timestamp']
       }
       begin
-        RestClient.post settings.ns_monitor_db + '/ns-monitoring/:vnf_instance_id', metrics.to_json, :content_type => :json, :accept => :json
+        RestClient.post settings.ns_monitor_db + '/ns-monitoring/' + monMetrics['nsi_id'], metrics.to_json, :content_type => :json, :accept => :json
       rescue => e
         logger.error e.response
         return e.response.code, e.response.body
@@ -198,6 +155,8 @@ class NSMonitoring < Sinatra::Application
       return
     end
 
+    puts "TODO"
+    return
     parametersSize = 0
 
     #enrich data, wait response from each vnf-parameter and vnfs

@@ -64,8 +64,9 @@ class OrchestratorVnfMonitoring < Sinatra::Application
 	post '/vnf-monitoring/:instance_id' do
 		mData = JSON.parse(request.body.read)
 
-		#@json.each do |item|
-			@db.execute("INSERT INTO vnfmonitoring (instanceid, date, metricname, unit, value) VALUES ('#{params[:instance_id].to_s}', #{mData['timestamp']}, '#{mData['type']}', '#{mData['unit']}', '#{mData['value']}' )")
-		#end
+		mData.each do |item|
+			db.execute("INSERT INTO vnfmonitoring (instanceid, date, metricname, unit, value) VALUES (?, ?, ?, ?, ?)", params[:instance_id].to_s, item['timestamp'], item['type'], item['unit'], item['value'])
+			@db.execute("INSERT INTO vnfmonitoring (instanceid, date, metricname, unit, value) VALUES ('#{params[:instance_id].to_s}', #{item['timestamp']}, '#{item['type']}', '#{item['unit']}', '#{item['value']}' )")
+		end
 	end
 end
