@@ -88,7 +88,11 @@ class OrchestratorVnfProvisioning < Sinatra::Application
     vnf = instantiation_info['vnf']
 
     puts instantiation_info['flavour']
-    vnf_flavour = vnf['vnfd']['deployment_flavours'].find { |dF| dF['flavour_key'] == instantiation_info['flavour'] }['id']
+    begin
+      vnf_flavour = vnf['vnfd']['deployment_flavours'].find { |dF| dF['flavour_key'] == instantiation_info['flavour'] }['id']
+    rescue NoMethodError => e
+      halt 400, "Deployment flavour #{instantiation_info['flavour']} not found"
+    end
     puts "Flavour: " + vnf_flavour
 
     # Verify if the VDU images are accessible to download
@@ -139,7 +143,7 @@ class OrchestratorVnfProvisioning < Sinatra::Application
         audit_log: nil,
         stack_url: response['stack']['links'][0]['href'],
         vms_id: nil,
-        lifecycle_events: vnf['vnfd']['vnf_lifecycle_events'].find{|lifecycle| lifecycle['flavor_id_ref'].downcase == vnf_flavour.downcase}['events'],
+        lifecycle_info: vnf['vnfd']['vnf_lifecycle_events'].find{|lifecycle| lifecycle['flavor_id_ref'].downcase == vnf_flavour.downcase},
         lifecycle_events_values: nil)
     rescue Moped::Errors::OperationFailure => e
       return 400, 'ERROR: Duplicated VNF ID' if e.message.include? 'E11000'
@@ -149,19 +153,6 @@ class OrchestratorVnfProvisioning < Sinatra::Application
 
     create_thread_to_monitor_stack(vnfr.id, vnfr.stack_url, vim_info, instantiation_info['callback_url'])
     logger.info 'Created thread to monitor stack'
-
-    # Send the VNFR to the mAPI
-    lifecycle_event = vnf['vnfd']['vnf_lifecycle_events'].find { |event| event['flavor_id_ref'].downcase == vnf_flavour.downcase}
-    mapi_request = {id: vnfr.id.to_s, vnfd: {vnf_lifecycle_events: lifecycle_event}}
-    logger.debug 'mAPI request: ' + mapi_request.to_json
-    begin
-      response = RestClient.post "#{settings.mapi}/vnf_api/", mapi_request.to_json, :content_type => :json, :accept => :json
-    rescue Errno::ECONNREFUSED
-      halt 500, 'mAPI unreachable'
-    rescue => e
-      logger.error e.response
-      halt e.response.code, e.response.body
-    end
 
     halt 201, vnfr.to_json
   end
@@ -314,6 +305,18 @@ class OrchestratorVnfProvisioning < Sinatra::Application
     if params[:status] == 'create_complete'
       logger.debug 'Create complete'
 
+      # Send the VNFR to the mAPI
+      mapi_request = {id: vnfr.id.to_s, vnfd: {vnf_lifecycle_events: vnfr.lifecycle_info}}
+      logger.debug 'mAPI request: ' + mapi_request.to_json
+      begin
+        response = RestClient.post "#{settings.mapi}/vnf_api/", mapi_request.to_json, :content_type => :json, :accept => :json
+      rescue Errno::ECONNREFUSED
+        halt 500, 'mAPI unreachable'
+      rescue => e
+        logger.error e.response
+        halt e.response.code, e.response.body
+      end
+
       # Read from VIM outputs and map with parameters
       vms_id = {}
       lifecycle_events_values = {}
@@ -327,7 +330,7 @@ class OrchestratorVnfProvisioning < Sinatra::Application
           if output['output_key'] =~ /^.*#floating_ip$/i
             vnf_addresses['controller'] = output['output_value']
           else # Else look for the output on the lifecycle events
-            vnfr.lifecycle_events.each do |event, event_info|
+            vnfr.lifecycle_info['events'].each do |event, event_info|
               unless event_info.nil?
                 JSON.parse(event_info['template_file']).each do |id, parameter|
                   parameter_match = parameter.match(/^get_attr\[(.*), *(.*)\]$/i).to_a
@@ -399,16 +402,6 @@ class OrchestratorVnfProvisioning < Sinatra::Application
           halt e.response.code, e.response.body
         end
         logger.debug 'Response from VIM to destroy allocated resources: ' + response.to_json
-
-        # Delete the VNFR from mAPI
-        begin
-          response = RestClient.delete "#{settings.mapi}/vnf_api/#{vnfr.id}/", 'X-Auth-Token' => @client_token
-        rescue Errno::ECONNREFUSED
-          halt 500, 'mAPI unreachable'
-        rescue => e
-          logger.error e.response
-          halt e.response.code, e.response.body
-        end
 
         ns_manager = { status: "ERROR_CREATING", vnfd_id: vnfr.vnfd_reference, vnfr_id: vnfr.id}
         logger.debug 'NS Manager message: ' + ns_manager.to_json

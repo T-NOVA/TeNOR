@@ -43,6 +43,6 @@ class Vnfr
 	field :audit_log, type: Array
 	field :stack_url, type: String
 	field :vms_id, type: Hash
-	field :lifecycle_events, type: Hash
+	field :lifecycle_info, type: Hash
 	field :lifecycle_events_values, type: Hash
 end
