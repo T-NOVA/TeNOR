@@ -58,7 +58,7 @@ class NSMonitoring < Sinatra::Application
     monitoring, errors = parse_json(request.body.read)
     return 400, errors.to_json if errors
 
-    logger.debug json
+    logger.debug monitoring
 
     begin
       response = RestClient.get settings.ns_instance_repository + '/ns-instances/' + monitoring['nsi_id'].to_s, :content_type => :json
