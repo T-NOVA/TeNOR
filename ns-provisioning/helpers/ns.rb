@@ -22,11 +22,13 @@ class OrchestratorNsProvisioner < Sinatra::Application
     begin
       response = RestClient.post settings.vnf_manager + '/vnf-provisioning/vnf-instances', instantiation_info.to_json, :content_type => :json
     rescue => e
+      puts "Rescue instatiation"
       logger.error e
       if (defined?(e.response)).nil?
         puts e.response.body
         error = "Instantiation error. Response from the VNF Manager: " + e.response.body
         generateMarketplaceResponse(marketplaceUrl, generateError(instantiation_info['ns_id'], "FAILED", error))
+        return
       end
     end
 
@@ -63,14 +65,14 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
     #stack_name = instance['network_stack']['stack']['stack_name']
     #stack_id = instance['network_stack']['stack']['id']
-    if(instance['network_stack'])
+    if (instance['network_stack'])
       stack_url = instance['network_stack']['stack']['links'][0]['href']
       logger.error "Removing network stack"
       deleteStack(stack_url, tenant_token)
 
       status = "DELETING"
       count = 0
-      while(status != "DELETE_COMPLETE" && status != "DELETE_FAILED")
+      while (status != "DELETE_COMPLETE" && status != "DELETE_FAILED")
         sleep(5)
         begin
           response = RestClient.get stack_url, 'X-Auth-Token' => tenant_token, :content_type => :json, :accept => :json
@@ -87,7 +89,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
         stack_info, error = parse_json(response)
         status = stack_info['stack']['stack_status']
         puts status
-        if( status == "DELETE_FAILED" )
+        if (status == "DELETE_FAILED")
           deleteStack(stack_url, tenant_token)
           status = "DELETING"
         end
@@ -103,58 +105,28 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
     puts "Removing user..."
     deleteUser(popUrls[:keystone], vnf_info['user_id'], token)
-#    deleteTenant(popUrls[:keystone], vnf_info['tenant_id'], token)
+    #    deleteTenant(popUrls[:keystone], vnf_info['tenant_id'], token)
 
     removeInstance(instance)
 
     generateMarketplaceResponse(callbackUrl, generateError(ns_id, "INFO", "Removed correctly"))
   end
 
-  def instantiate(instantiation_info)
+  def instantiate(instance, nsd)
 
-    callbackUrl = instantiation_info['callbackUrl']
-    nsd = instantiation_info['nsd']
-    flavour = instantiation_info['flavour']
-
-    if flavour.nil?
-      error = "Flavour is null"
-      generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", error))
-    end
-
-    begin
-      @instance = createInstance({})
-    rescue => e
-      generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FATAL", e))
-      return
-    end
+    @instance = instance
 
     puts @instance
-
-    @instance = @instance.merge(
-        {
-            :nsd_id => nsd['id'],
-            :descriptor_reference => nsd['id'],
-            :auto_scale_policy => nsd['auto_scale_policy'],
-            :connection_points => nsd['connection_points'],
-            :monitoring_parameters => nsd['monitoring_parameters'],
-            :service_deployment_flavour => flavour,
-            :vendor => nsd['vendor'],
-            :version => nsd['version'],
-            #vlr
-            #vnfrs
-            :lifecycle_events => nsd['lifecycle_events'],
-            :vnf_depedency => nsd['vnf_depedency'],
-            :vnffgd => nsd['vnffgd'],
-            #pnfr
-            :resource_reservation => [],
-            :runtime_policy_info => [],
-            :status => "INIT",
-            :notification => "",
-            :lifecycle_event_history => [],
-            :audit_log => [],
-            :marketplace_callback => callbackUrl
-        }
-    )
+    callbackUrl = @instance['marketplace_callback']
+    flavour = @instance['service_deployment_flavour']
+    slaInfo = nsd['sla'].find { |sla| sla['sla_key'] == flavour }
+    if slaInfo.nil?
+      error = "SLA inconsistency"
+      recoverState(popInfo, vnf_info, @instance, error)
+      return
+    end
+    sla_id = nsd['sla'].find { |sla| sla['sla_key'] == flavour }['id']
+    puts sla_id
 
     ms = {
         :NS_id => nsd['id'],
@@ -163,7 +135,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
         :ir_simulation => "true",
         :ns_simulation => "true",
         :development => true,
-        :NS_sla => flavour
+        :NS_sla => sla_id
     }
     #choose select mapping
     mapping = callMapping(ms)
@@ -232,11 +204,10 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
           token = openstackAdminAuthentication(popUrls[:keystone], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
 
-          if(!settings.default_tenant_name.nil?)
+          if (!settings.default_tenant_name.nil?)
             tenant_name = settings.default_tenant_name
             tenant_id = settings.default_tenant_id
-          elsif
-            tenant_name = "tenor_instance_" + @instance['id'].to_s
+          elsif tenant_name = "tenor_instance_" + @instance['id'].to_s
             tenant_id = createTenant(popUrls[:keystone], tenant_name, token)
           end
 
@@ -251,10 +222,9 @@ class OrchestratorNsProvisioner < Sinatra::Application
           tenant_token = openstackAuthentication(popUrls[:keystone], vnf_info['tenant_id'], vnf_info['username'], vnf_info['password'])
           security_groups = getSecurityGroups(popUrls[:compute], vnf_info['tenant_id'], tenant_token)
           puts security_groups['security_groups'][0]
-          if(!settings.default_tenant_name.nil?)
+          if (!settings.default_tenant_name.nil?)
             vnf_info['security_group_id'] = security_groups['security_groups'][0]['id']
-          elsif
-            secuGroupId = createSecurityGroup(popUrls[:compute], vnf_info['tenant_id'], tenant_token)
+          elsif secuGroupId = createSecurityGroup(popUrls[:compute], vnf_info['tenant_id'], tenant_token)
             vnf_info['security_group_id'] = secuGroupId
             addRulesToTenant(popUrls[:compute], vnf_info['tenant_id'], secuGroupId, 'TCP', tenant_token, 1, 65535)
             addRulesToTenant(popUrls[:compute], vnf_info['tenant_id'], secuGroupId, 'UDP', tenant_token, 1, 65535)
@@ -277,18 +247,23 @@ class OrchestratorNsProvisioner < Sinatra::Application
       if false
         # Request WICM to create a service
         wicm_message = {
-          ns_instance_id: nsd['id'],
-          client_mkt_id: '1',
-          nap_mkt_id: '1',
-          nfvi_mkt_id: '1'
+            ns_instance_id: nsd['id'],
+            client_mkt_id: '1',
+            nap_mkt_id: '1',
+            nfvi_mkt_id: '1'
         }
         begin
           response = RestClient.post settings.wicm + '/vnf-connectivity', wicm_message.to_json, :content_type => :json, :accept => :json
         rescue Errno::ECONNREFUSED
-          halt 500, 'WICM unreachable'
+          error = {"info" => "WICM unreachable."}
+          recoverState(popInfo, vnf_info, @instance, error)
+          return
         rescue => e
+          logger.error e
           logger.error e.response
-          halt e.response.code, e.response.body
+          error = {"info" => "Error with the WICM module."}
+          recoverState(popInfo, vnf_info, @instance, error)
+          return
         end
         provider_info, error = parse_json(response)
 
@@ -297,17 +272,22 @@ class OrchestratorNsProvisioner < Sinatra::Application
         begin
           response = RestClient.post settings.hot_generator + '/wicmhot', provider_info.to_json, :content_type => :json, :accept => :json
         rescue Errno::ECONNREFUSED
-          halt 500, 'HOT Generator unreachable'
+          error = {"info" => "HOT Generator unreachable."}
+          recoverState(popInfo, vnf_info, @instance, error)
+          return
         rescue => e
+          logger.error e
           logger.error e.response
-          halt e.response.code, e.response.body
+          error = {"info" => "Error creating the network stack."}
+          recoverState(popInfo, vnf_info, @instance, error)
+          return
         end
         hot_template, error = parse_json(response)
 
         # Provision the WICM - SFC integration
         template = {:stack_name => "WICM_SFC-" + @instance['id'].to_s, :template => hot_template}
         begin
-          response = RestClient.post "#{popUrls[:orch]}/#{vnf_info['tenant_id']}/stacks", template.to_json , 'X-Auth-Token' => tenant_token, :content_type => :json, :accept => :json
+          response = RestClient.post "#{popUrls[:orch]}/#{vnf_info['tenant_id']}/stacks", template.to_json, 'X-Auth-Token' => tenant_token, :content_type => :json, :accept => :json
         rescue Errno::ECONNREFUSED
           error = {"info" => "VIM unrechable."}
           recoverState(popInfo, vnf_info, @instance, error)
@@ -323,8 +303,8 @@ class OrchestratorNsProvisioner < Sinatra::Application
         # Wait for the WICM - SFC provisioning to finish
         status = "CREATING"
         count = 0
-        while(status != "CREATE_COMPLETE" || status != "CREATE_FAILED")
-          sleep(1)
+        while (status != "CREATE_COMPLETE" && status != "CREATE_FAILED")
+          sleep(5)
           begin
             response = RestClient.get "#{popUrls[:orch]}/#{vnf_info['tenant_id']}/stacks/#{"WICM_SFC-" + @instance['id'].to_s}", 'X-Auth-Token' => tenant_token
           rescue Errno::ECONNREFUSED
@@ -343,11 +323,10 @@ class OrchestratorNsProvisioner < Sinatra::Application
           count = count +1
           break if count > 10
         end
-        if(status == "CREATE_FAILED")
+        if (status == "CREATE_FAILED")
           recoverState(popInfo, vnf_info, @instance, error)
           return
         end
-
       end
 
       publicNetworkId = publicNetworkId(popUrls[:neutron], tenant_token)
@@ -358,31 +337,24 @@ class OrchestratorNsProvisioner < Sinatra::Application
           dns_server: settings.dns_server
       }
 
-      slaInfo = nsd['sla'].find { |sla| sla['sla_key'] == flavour }
-      if slaInfo.nil?
-        error = "SLA inconsistency"
-        recoverState(popInfo, vnf_info, @instance, error)
-        return
-      end
-
-      nsd_flavour = slaInfo['id']
-      puts nsd_flavour
-
       puts "Generating network HOT template..."
       begin
-        response = RestClient.post settings.hot_generator + '/networkhot/' + nsd_flavour, hot_generator_message.to_json, :content_type => :json, :accept => :json
+        response = RestClient.post settings.hot_generator + '/networkhot/' + sla_id, hot_generator_message.to_json, :content_type => :json, :accept => :json
       rescue Errno::ECONNREFUSED
-        halt 500, 'HOT Generator unreachable'
+        recoverState(popInfo, vnf_info, @instance, "HOT Generator unreachable")
+        return
+          #halt 500, 'HOT Generator unreachable'
       rescue => e
         logger.error e.response
-        halt e.response.code, e.response.body
+        recoverState(popInfo, vnf_info, @instance, e.response)
+        return
       end
       hot, error = parse_json(response)
 
       puts "Send network template to HEAT Orchestration"
       template = {:stack_name => "network-" + @instance['id'].to_s, :template => hot}
       begin
-        response = RestClient.post "#{popUrls[:orch]}/#{vnf_info['tenant_id']}/stacks", template.to_json , 'X-Auth-Token' => tenant_token, :content_type => :json, :accept => :json
+        response = RestClient.post "#{popUrls[:orch]}/#{vnf_info['tenant_id']}/stacks", template.to_json, 'X-Auth-Token' => tenant_token, :content_type => :json, :accept => :json
       rescue Errno::ECONNREFUSED
         error = {"info" => "VIM unrechable."}
         recoverState(popInfo, vnf_info, @instance, error)
@@ -403,8 +375,8 @@ class OrchestratorNsProvisioner < Sinatra::Application
       #stack_status
       status = "CREATING"
       count = 0
-      while(status != "CREATE_COMPLETE" || status != "CREATE_FAILED")
-        sleep(1)
+      while (status != "CREATE_COMPLETE" && status != "CREATE_FAILED")
+        sleep(5)
         begin
           response = RestClient.get "#{popUrls[:orch]}/#{vnf_info['tenant_id']}/stacks/#{"network-" + @instance['id'].to_s}", 'X-Auth-Token' => tenant_token
         rescue Errno::ECONNREFUSED
@@ -423,13 +395,14 @@ class OrchestratorNsProvisioner < Sinatra::Application
         count = count +1
         break if count > 10
       end
-      if(status == "CREATE_FAILED")
+      if (status == "CREATE_FAILED")
         recoverState(popInfo, vnf_info, @instance, error)
         return
       end
 
       puts "Network stack CREATE_COMPLETE. Getting network information..."
       #get network info to stack
+      sleep(3)
       begin
         response = RestClient.get "#{popUrls[:orch]}/#{vnf_info['tenant_id']}/stacks/#{"network-" + @instance['id'].to_s}/resources", 'X-Auth-Token' => tenant_token
       rescue Errno::ECONNREFUSED
@@ -473,15 +446,9 @@ class OrchestratorNsProvisioner < Sinatra::Application
       @instance['vnf_info'] = vnf_info
       updateInstance(@instance)
 
-      slaInfo = nsd['sla'].find { |sla| sla['sla_key'] == flavour }
-      if slaInfo.nil?
-        error = "SLA inconsistency"
-        recoverState(popInfo, vnf_info, @instance, error)
-        return
-      end
       vnf_flavour = slaInfo['constituent_vnf'].find { |cvnf| cvnf['vnf_reference'] == vnf_id }['vnf_flavour_id_reference']
-      #vnf_flavour = slaInfo['id']
-puts vnf_flavour
+      puts vnf_flavour
+
       vnf_provisioning_info = {
           :ns_id => nsd['id'],
           :vnf_id => vnf_id,
@@ -500,6 +467,7 @@ puts vnf_flavour
           :security_group_id => vnf_info['security_group_id'],
           :callback_url => settings.tenor_api + "/ns-instances/" + @instance['id'] + "/instantiate"
       }
+
       puts "Instantiation VNF..."
       logger.debug vnf_provisioning_info
       @instance['instantiation_start_time'] = DateTime.now.iso8601(3)

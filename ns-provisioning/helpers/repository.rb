@@ -57,8 +57,8 @@ class OrchestratorNsProvisioner < Sinatra::Application
       raise 'NS Instance repository unreachable'
     rescue => e
       logger.error e.response
-      raise "Remove instance error"
-      #return { :code => e.response.code, :body => e.response.body}
+      #raise "Remove instance error"
+      return { :code => e.response.code, :body => e.response.body}
     end
     return 200, "Removed correctly"
   end

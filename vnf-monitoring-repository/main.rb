@@ -39,11 +39,11 @@ configure do
 	log_file = File.new("#{settings.root}/log/#{settings.environment}.log", "a+")
 	log_file.sync = true
 	use Rack::CommonLogger, log_file
+	BASEDIR = File.join(File.dirname(__FILE__), '.')
 
 end
 
 before do
-	BASEDIR = File.join(File.dirname(__FILE__), '.')
 	cassandra_config_file = File.join(BASEDIR, 'config', 'database.yml')
 	cassandra_config = YAML::load_file(cassandra_config_file)[env]
 	@db = CassandraCQL::Database.new("#{cassandra_config['host']}:9160", {username: cassandra_config['username'], password: cassandra_config['password']})
