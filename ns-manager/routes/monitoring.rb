@@ -31,7 +31,8 @@ class TnovaManager < Sinatra::Application
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Provisioning unreachable'
     rescue => e
-      logger.error e.response
+      puts e.response
+      #logger.error e.response
       halt e.response.code, e.response.body
     end
 
@@ -103,8 +104,9 @@ class TnovaManager < Sinatra::Application
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Monitoring unreachable'
     rescue => e
-      logger.error e.response
-      halt e.response.code, e.response.body
+      puts e
+      #logger.error e.response
+      #halt e.response.code, e.response.body
     end
 
     return response.code, response.body

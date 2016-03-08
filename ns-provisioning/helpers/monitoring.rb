@@ -18,7 +18,7 @@
 # @see OrchestratorNsProvisioner
 class OrchestratorNsProvisioner < Sinatra::Application
 
-  def monitoringData(nsd, nsi_id)
+  def monitoringData(nsd, nsi_id, vnf_info)
 
     monitoring = {:nsi_id => nsi_id}
 
@@ -41,7 +41,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
     vnf_instances = []
     vnfs.each {|x|
       puts x
-      vnf_instances << {:id => x, :parameters => paramsVnf}
+      vnf_instances << {:id => x, :parameters => paramsVnf, :vnfr_id => vnf_info['vnfr_id']}
     }
     monitoring[:vnf_instances] = vnf_instances
 

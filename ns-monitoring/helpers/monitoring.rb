@@ -42,6 +42,7 @@ class NSMonitoring < Sinatra::Application
 		return monitoring_metrics
 	end
 
+	#to remove
 	def create_monitoring_metric_object2(json)
 
     object = {:nsi_id => json['nsi_id']}
