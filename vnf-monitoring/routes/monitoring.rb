@@ -142,7 +142,7 @@ puts monitoringMetric
       end
 
       begin
-        respone = RestClient.post settings.vnf_monitor_db + '/vnf-monitoring/' + vnfr_id, metrics.to_json, :content_type => :json, :accept => :json
+        respone = RestClient.post settings.vnf_instance_repository + '/vnf-monitoring/' + vnfr_id, metrics.to_json, :content_type => :json, :accept => :json
       rescue => e
         puts e
         puts "Error with the subscription."
@@ -161,9 +161,9 @@ puts monitoringMetric
   get '/vnf-monitoring/instances/:instance_id/monitoring-data/' do
     puts "GET VNF MONITORING.............................."
     composedUrl = '/vnf-monitoring/' + params["instance_id"].to_s + "/monitoring-data/?" + request.env['QUERY_STRING']
-    puts settings.vnf_monitor_db + composedUrl
+    puts settings.vnf_instance_repository + composedUrl
     begin
-      response = RestClient.get settings.vnf_monitor_db + composedUrl, :content_type => :json
+      response = RestClient.get settings.vnf_instance_repository + composedUrl, :content_type => :json
     rescue => e
       logger.error e.response
       #return e.response.code, e.response.body
