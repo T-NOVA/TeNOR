@@ -64,7 +64,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
             :vendor => nsd['vendor'],
             :version => nsd['version'],
             #vlr
-            #vnfrs
+            vnfrs => [],
             :lifecycle_events => nsd['lifecycle_events'],
             :vnf_depedency => nsd['vnf_depedency'],
             :vnffgd => nsd['vnffgd'],
@@ -154,15 +154,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
   #update instance status
   put "/ns-instances/:ns_instance_id/:status" do
-    begin
-      response = RestClient.get settings.ns_instance_repository + '/ns-instances/' + params['ns_instance_id'].to_s, :content_type => :json
-    rescue => e
-      logger.error e
-      if (defined?(e.response)).nil?
-        halt 400, "NS-Instance Repository unavailable"
-      end
-      halt e.response.code, e.response.body
-    end
+
     body, errors = parse_json(request.body.read)
     @instance = body['instance']
     popInfo = body['popInfo']
@@ -240,6 +232,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
   end
 
+  #remove
   delete "/ns-instances/:ns_instance_id" do
     begin
       response = RestClient.get settings.ns_instance_repository + '/ns-instances/' + params['ns_instance_id'].to_s, :content_type => :json
@@ -308,27 +301,19 @@ class OrchestratorNsProvisioner < Sinatra::Application
   # Response from VNF-Manager, send a message to marketplace
   #/ns-instances/:ns_instance_id/instantiate
   post "/ns-instances/:nsr_id/instantiate" do
-    logger.debug "Response about " + params['id']
+    logger.debug "Response about " + params['nsr_id'].to_s
     # Return if content-type is invalid
     return 415 unless request.content_type == 'application/json'
     # Validate JSON format
-    callback_response, errors = parse_json(request.body.read)
+    response, errors = parse_json(request.body.read)
     return 400, errors.to_json if errors
 
-    logger.debug callback_response
-    puts callback_response.to_json
+    callback_response = response['callback_response']
+    @instance = response['instance']
+    popInfo = response['popInfo']
 
-    #find instance id, update data
-    begin
-      response = RestClient.get settings.ns_instance_repository + '/ns-instances/' + params['nsr_id'].to_s, :content_type => :json
-    rescue => e
-      logger.error e
-      if (defined?(e.response)).nil?
-        halt 400, "NS-Instance Repository unavailable"
-      end
-      halt e.response.code, e.response.body
-    end
-    @instance, errors = parse_json(response)
+    puts callback_response.to_json
+    puts @instance.to_json
 
     #vnf = {:vnf_id => vnf_id, :pop_id => pop_id}
     #extract vnfi_id from instantatieVNF response
@@ -337,11 +322,12 @@ class OrchestratorNsProvisioner < Sinatra::Application
     vnf_info[:vnfi_id] = callback_response['vnfi_id']
     vnf_info[:vnfr_id] = callback_response['vnfr_id']
     #@instance['vnfis'] << vnf_info
-    @instance['vnfrs'] = []
+    #@instance['vnfrs'] = []
     @instance['vnfrs'] << vnf_info
 
     if callback_response['status'] == 'ERROR_CREATING'
       @instance['status'] = "ERROR_CREATING"
+      recoverState(popInfo, @instance['vnf_info'], @instance, error)
       updateInstance(@instance)
       generateMarketplaceResponse(@instance['marketplace_callback'], "Error creating VNF")
       return 200

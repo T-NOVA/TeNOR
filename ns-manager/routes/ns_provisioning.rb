@@ -139,7 +139,6 @@ class TnovaManager < Sinatra::Application
     #call popInfo Function
     popInfo, errors = parse_json(getPopInfo(@ns_instance['vnf_info']['pop_id']))
     return 400, errors if errors
-    popUrls = getPopUrls(popInfo['info'][0]['extrainfo'])
     info = { :instance => @ns_instance, :popInfo => popInfo }
 
     begin
@@ -179,7 +178,6 @@ class TnovaManager < Sinatra::Application
       puts @ns_instance['vnf_info']
       popInfo, errors = parse_json(getPopInfo(@ns_instance['vnf_info']['pop_id']))
       return 400, errors if errors
-      popUrls = getPopUrls(popInfo['info'][0]['extrainfo'])
     end
 
     info = { :instance => @ns_instance, :popInfo => popInfo }
@@ -206,7 +204,21 @@ class TnovaManager < Sinatra::Application
     end
 
     begin
-      response = RestClient.post @service.host + ":" + @service.port.to_s + request.fullpath, request.body.read, 'X-Auth-Token' => @client_token, :content_type => :json
+      response = RestClient.get @service.host + ":" + @service.port.to_s + '/ns-instances/' + params['ns_instance_id'], 'X-Auth-Token' => @client_token, :content_type => :json
+    rescue Errno::ECONNREFUSED
+      halt 500, 'NS Provisioning unreachable'
+    rescue => e
+      logger.error e.response
+      halt e.response.code, e.response.body
+    end
+    @ns_instance, error = parse_json(response)
+
+    popInfo, errors = parse_json(getPopInfo(@ns_instance['vnf_info']['pop_id']))
+    return 400, errors if errors
+    info = { callback_response: request.body.read, :instance => @ns_instance, :popInfo => popInfo }
+
+    begin
+      response = RestClient.post @service.host + ":" + @service.port.to_s + request.fullpath, info.to_json, 'X-Auth-Token' => @client_token, :content_type => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Provisioning unreachable'
     rescue => e
@@ -236,8 +248,6 @@ class TnovaManager < Sinatra::Application
     return response.code, response.body
 
   end
-
-
 
   get '/vnf-provisioning/vnf-instances/:vnfr_id' do
     begin
