@@ -45,13 +45,52 @@ class OrchestratorNsProvisioner < Sinatra::Application
     instantiation_info, errors = parse_json(request.body.read)
     return 400, errors.to_json if errors
 
+    callbackUrl =
+    nsd = instantiation_info['nsd']
+
+    if instantiation_info['flavour'].nil?
+      error = "Flavour is null"
+      halt 400, "Failed creating instance. Flavour is null"
+      #generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", error))
+    end
+
+    instance = {
+            :nsd_id => nsd['id'],
+            :descriptor_reference => nsd['id'],
+            :auto_scale_policy => nsd['auto_scale_policy'],
+            :connection_points => nsd['connection_points'],
+            :monitoring_parameters => nsd['monitoring_parameters'],
+            :service_deployment_flavour => instantiation_info['flavour'],
+            :vendor => nsd['vendor'],
+            :version => nsd['version'],
+            #vlr
+            #vnfrs
+            :lifecycle_events => nsd['lifecycle_events'],
+            :vnf_depedency => nsd['vnf_depedency'],
+            :vnffgd => nsd['vnffgd'],
+            #pnfr
+            :resource_reservation => [],
+            :runtime_policy_info => [],
+            :status => "INIT",
+            :notification => "",
+            :lifecycle_event_history => [],
+            :audit_log => [],
+            :marketplace_callback => instantiation_info['callbackUrl']
+        }
+
+    begin
+      @instance = createInstance(instance)
+    rescue => e
+      halt 400, "Failed creating instance. Instance repository fails creating the instance"
+    end
+
     #call thread to process instantiation
     #EM.defer(instantiate(instantiation_info), callback())
     EM.defer do
-      instantiate(instantiation_info)
+      instantiate(@instance, nsd)
     end
 
-    return 200
+    return 200, instance.to_json
   end
 
   def callback()
@@ -268,7 +307,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
   # @overload post '/ns-instances/:id/instantiate'
   # Response from VNF-Manager, send a message to marketplace
   #/ns-instances/:ns_instance_id/instantiate
-  post "/ns-instances/:id/instantiate" do
+  post "/ns-instances/:nsr_id/instantiate" do
     logger.debug "Response about " + params['id']
     # Return if content-type is invalid
     return 415 unless request.content_type == 'application/json'
@@ -281,7 +320,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
     #find instance id, update data
     begin
-      response = RestClient.get settings.ns_instance_repository + '/ns-instances/' + params['id'].to_s, :content_type => :json
+      response = RestClient.get settings.ns_instance_repository + '/ns-instances/' + params['nsr_id'].to_s, :content_type => :json
     rescue => e
       logger.error e
       if (defined?(e.response)).nil?
@@ -303,35 +342,31 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
     if callback_response['status'] == 'ERROR_CREATING'
       @instance['status'] = "ERROR_CREATING"
-      generateMarketplaceResponse(@instance['marketplace_callback'], @instance)
+      updateInstance(@instance)
+      generateMarketplaceResponse(@instance['marketplace_callback'], "Error creating VNF")
       return 200
     else
       @instance['status'] = "INSTANTIATED"
     end
 
     @instance['instantiation_end_time'] = DateTime.now.iso8601(3)
+    updateInstance(@instance)
 
     puts "Instantiation time: " + (DateTime.parse(@instance['instantiation_end_time']).to_time.to_f*1000 - DateTime.parse(@instance['created_at']).to_time.to_f*1000).to_s
 
     logger.debug @instance
-    updateInstance(@instance)
-
-    logger.debug @instance['marketplace_callback']
-
     generateMarketplaceResponse(@instance['marketplace_callback'], @instance)
 
+    #insert statistic information to NS Manager
     EM.defer do
       begin
         response = RestClient.post settings.tenor_api + '/performance-stats', @instance.to_json, :content_type => :json
       rescue => e
         logger.error e
-        if (defined?(e.response)).nil?
-          #halt 400, "NS-Instance Repository unavailable"
-        end
-        #halt e.response.code, e.response.body
       end
     end
-    #get NSD
+
+    #get NSD, for monitoring parameters
     begin
       response = RestClient.get settings.ns_catalogue + '/network-services/' + @instance['nsd_id'].to_s, :content_type => :json
     rescue => e
@@ -344,28 +379,13 @@ class OrchestratorNsProvisioner < Sinatra::Application
     nsd, errors = parse_json(response)
 
     #start monitoring
-    monitoringData(nsd, params['id'])
+    EM.defer do
+      monitoringData(nsd, params['nsr_id'], vnf_info)
+    end
 
     #if done, send mapping information to marketplace
     logger.debug @instance['marketplace_callback']
     #generateMarketplaceResponse(@instance['marketplace_callback'], @instance)
-
-    return 200
-
-    logger.debug "Call WICM"
-    # Request WICM to redirect traffic
-    begin
-      response = RestClient.put settings.wicm + "/vnf-connectivity/#{@instance['nsd_id']}", nil, :content_type => :json, :accept => :json
-    rescue Errno::ECONNREFUSED
-      halt 500, 'WICM unreachable'
-    rescue => e
-      logger.error e.response
-      halt e.response.code, e.response.body
-    end
-
-    #customer ID, location ID (NAP), service descriptor and NFVI-PoP ID
-    #wicm_data = {:nsd_id => nsd['id'], :customer_id => instantiation_info['customer_id'], :nap_id => instantiation_info['nap_id'], pop_id => popInfo['popId']}
-    @instance = updateInstance(@instance)
 
     return 200
   end

@@ -57,7 +57,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
       halt 500, 'NS Monitoring unreachable'
     rescue => e
       logger.error e.response
-      halt e.response.code, e.response.body
+      #halt e.response.code, e.response.body
     end
 
     #return monitoring
