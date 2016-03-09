@@ -42,9 +42,9 @@ class OrchestratorVnfManager < Sinatra::Application
     return 400, errors.to_json if errors
 
     begin
-      response = RestClient.get settings.vnf_catalogue + "/vnfs/" + vnfr['id'], :content_type => :json, :accept => :json
+      response = RestClient.get settings.vnf_catalogue + "/vnfs/" + vnfr['vnfd_refrence'], :content_type => :json, :accept => :json
     rescue
-      halt 400, "VIM Monitoring Module not available"
+      halt 400, "VNF Catalogue not available"
     end
     vnfd, errors = parse_json(response)
     return 400, errors.to_json if errors
