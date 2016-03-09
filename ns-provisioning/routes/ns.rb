@@ -64,7 +64,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
             :vendor => nsd['vendor'],
             :version => nsd['version'],
             #vlr
-            vnfrs => [],
+            :vnfrs => [],
             :lifecycle_events => nsd['lifecycle_events'],
             :vnf_depedency => nsd['vnf_depedency'],
             :vnffgd => nsd['vnffgd'],
@@ -311,6 +311,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
     callback_response = response['callback_response']
     @instance = response['instance']
     popInfo = response['popInfo']
+    nsr_id = params['nsr_id']
 
     puts callback_response.to_json
     puts @instance.to_json
@@ -327,8 +328,8 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
     if callback_response['status'] == 'ERROR_CREATING'
       @instance['status'] = "ERROR_CREATING"
-      recoverState(popInfo, @instance['vnf_info'], @instance, error)
       updateInstance(@instance)
+      #recoverState(popInfo, @instance['vnf_info'], @instance, error)
       generateMarketplaceResponse(@instance['marketplace_callback'], "Error creating VNF")
       return 200
     else
@@ -366,7 +367,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
     #start monitoring
     EM.defer do
-      monitoringData(nsd, params['nsr_id'], vnf_info)
+      monitoringData(nsd, nsr_id, vnf_info)
     end
 
     #if done, send mapping information to marketplace
