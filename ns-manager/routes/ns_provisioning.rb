@@ -197,6 +197,9 @@ class TnovaManager < Sinatra::Application
   end
 
   post '/ns-instances/:ns_instance_id/instantiate' do
+
+    callback_response, errors = parse_json(request.body.read)
+
     begin
       @service = ServiceModel.find_by(name: "nsprovisioning")
     rescue Mongoid::Errors::DocumentNotFound => e
@@ -215,7 +218,7 @@ class TnovaManager < Sinatra::Application
 
     popInfo, errors = parse_json(getPopInfo(@ns_instance['vnf_info']['pop_id']))
     return 400, errors if errors
-    info = { callback_response: request.body.read, :instance => @ns_instance, :popInfo => popInfo }
+    info = { :callback_response => callback_response, :instance => @ns_instance, :popInfo => popInfo }
 
     begin
       response = RestClient.post @service.host + ":" + @service.port.to_s + request.fullpath, info.to_json, 'X-Auth-Token' => @client_token, :content_type => :json

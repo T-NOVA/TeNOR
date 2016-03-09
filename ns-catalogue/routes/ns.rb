@@ -37,7 +37,7 @@ class OrchestratorNsCatalogue < Sinatra::Application
 	# List all NSs
 	get '/network-services' do
 		params[:offset] ||= 1
-		params[:limit] ||= 10
+		params[:limit] ||= 20
 
 		# Only accept positive numbers
 		params[:offset] = 1 if params[:offset].to_i < 1

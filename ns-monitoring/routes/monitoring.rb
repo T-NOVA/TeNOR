@@ -147,7 +147,7 @@ class NSMonitoring < Sinatra::Application
           :timestamp => measurement['timestamp']
       }
       begin
-        RestClient.post settings.ns_monitor_db + '/ns-monitoring/' + monMetrics['nsi_id'], metrics.to_json, :content_type => :json, :accept => :json
+        RestClient.post settings.ns_instance_monitoring + '/ns-monitoring/' + monMetrics['nsi_id'], metrics.to_json, :content_type => :json, :accept => :json
       rescue => e
         logger.error e.response
         return e.response.code, e.response.body
@@ -220,7 +220,7 @@ class NSMonitoring < Sinatra::Application
   get '/ns-monitoring/instances/:instance_id/monitoring-data/' do
     composedUrl = '/ns-monitoring/' + params["instance_id"].to_s + "/monitoring-data/?" + request.env['QUERY_STRING']
     begin
-      response = RestClient.get settings.ns_monitor_db + composedUrl, :content_type => :json
+      response = RestClient.get settings.ns_instance_monitoring + composedUrl, :content_type => :json
     rescue => e
       logger.error e.response
       #return e.response.code, e.response.body
