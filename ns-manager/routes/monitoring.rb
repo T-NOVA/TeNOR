@@ -108,7 +108,9 @@ class TnovaManager < Sinatra::Application
       #logger.error e.response
       #halt e.response.code, e.response.body
     end
-
+puts "NS-Monitor response:"
+    puts response
+    return 200
     return response.code, response.body
   end
 
