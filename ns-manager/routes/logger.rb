@@ -36,6 +36,7 @@ class TnovaManager < Sinatra::Application
 			halt 500, 'ElasticSerch/Logstash unreachable'
 		rescue => e
 			puts e
+			halt 400, 'Error'
 			halt e.response.code, e.response.body
 		end
 
