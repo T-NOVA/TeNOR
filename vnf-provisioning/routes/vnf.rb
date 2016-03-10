@@ -252,7 +252,7 @@ class OrchestratorVnfProvisioning < Sinatra::Application
     vnfr = Vnfr.find(params[:vnfr_id])
 
     # Return if event doesn't have information
-    halt 400, 'Event has no information' if vnfr.lifecycle_events[config_info['event']].nil?
+    halt 400, 'Event has no information' if vnfr.lifecycle_info['events'][config_info['event']].nil?
 
     # Build mAPI request
     mapi_request = {
