@@ -210,6 +210,8 @@ class OrchestratorVnfProvisioning < Sinatra::Application
       response = RestClient.delete vnfr.stack_url, 'X-Auth-Token' => auth_token, :accept => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'VIM unreachable'
+    rescue RestClient::ResourceNotFound
+      puts "Already removed from the VIM."
     rescue => e
       logger.error e.response
       halt e.response.code, e.response.body
@@ -221,6 +223,8 @@ class OrchestratorVnfProvisioning < Sinatra::Application
       response = RestClient.delete "#{settings.mapi}/vnf_api/#{vnfr.id}/", 'X-Auth-Token' => @client_token
     rescue Errno::ECONNREFUSED
       halt 500, 'mAPI unreachable'
+    rescue RestClient::ResourceNotFound
+      puts "Already removed from the mAPI."
     rescue => e
       logger.error e.response
       halt e.response.code, e.response.body
