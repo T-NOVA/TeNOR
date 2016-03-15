@@ -118,41 +118,48 @@ class NSMonitoring < Sinatra::Application
     return 415 unless request.content_type == 'application/json'
 
     # Validate JSON format
-    measurement, errors = parse_json(request.body.read)
+    measurements, errors = parse_json(request.body.read)
     return 400, errors.to_json if errors
 
-    logger.error measurement
+    logger.error measurements
 
     begin
       monMetrics = NsMonitoringParameter.find_by("vnf_instances.vnfr_id" => params['vnfr_id'])
-      logger.error monMetrics
     rescue Mongoid::Errors::DocumentNotFound => e
       halt 400, "Monitoring Metric instance no exists"
     end
 
     logger.error monMetrics
 
-    parameter_name = monMetrics['parameters'].find {|p| p['id'] == measurement['parameter_id']}['name']
-    puts "Parameter name:"
-    puts parameter_name
+    measurements['parameters'].each do |measurement|
+      #parameter_name = monMetrics['parameters'].find {|p| p['id'] == parameters['id']}['name']
+      parameter_info = monMetrics['parameters'].find { |p| p['name'] == measurement['type'] }
+      puts parameter_info
+      puts measurement['type']
+      if !parameter_info.nil?
+        puts "no null"
+        puts "Parameter name:"
+        puts parameter_name
 
-    #logger.error paramInfo
+        #logger.error paramInfo
 
-    if monMetrics.vnf_instances.length == 1
-      #store value in cassandra
-      metrics = {
-          :type => parameter_name,
-          :value => measurement['value'],
-          :unit => measurement['unit'],
-          :timestamp => measurement['timestamp']
-      }
-      begin
-        RestClient.post settings.ns_instance_monitoring + '/ns-monitoring/' + monMetrics['nsi_id'], metrics.to_json, :content_type => :json, :accept => :json
-      rescue => e
-        logger.error e.response
-        return e.response.code, e.response.body
+        if monMetrics.vnf_instances.length == 1
+          #store value in cassandra
+          metrics = {
+              :type => parameter_name,
+              :value => measurement['value'],
+              :unit => measurement['unit'],
+              :timestamp => measurement['timestamp']
+          }
+          begin
+            RestClient.post settings.ns_instance_monitoring + '/ns-monitoring/' + monMetrics['nsi_id'], metrics.to_json, :content_type => :json, :accept => :json
+          rescue => e
+            logger.error e.response
+            return e.response.code, e.response.body
+          end
+        end
       end
-      return
+
     end
 
     puts "TODO"
@@ -217,10 +224,20 @@ class NSMonitoring < Sinatra::Application
   end
 
   #/ns-monitoring/instances/10/monitoring-data/
-  get '/ns-monitoring/instances/:instance_id/monitoring-data/' do
+  get '/ns-monitoring/:instance_id/monitoring-data/' do
     composedUrl = '/ns-monitoring/' + params["instance_id"].to_s + "/monitoring-data/?" + request.env['QUERY_STRING']
     begin
-      response = RestClient.get settings.ns_instance_monitoring + composedUrl, :content_type => :json
+      response = RestClient.get settings.ns_instance_monitoring + request.fullpath, :content_type => :json
+    rescue => e
+      logger.error e.response
+      #return e.response.code, e.response.body
+    end
+    return response
+  end
+
+  get '/ns-monitoring/:instance_id/monitoring-data/last100/' do
+    begin
+      response = RestClient.get settings.ns_instance_monitoring + request.fullpath, :content_type => :json
     rescue => e
       logger.error e.response
       #return e.response.code, e.response.body

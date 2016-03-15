@@ -42,7 +42,7 @@ class OrchestratorVnfManager < Sinatra::Application
     return 400, errors.to_json if errors
 
     begin
-      response = RestClient.get settings.vnf_catalogue + "/vnfs/" + vnfr['vnfd_refrence'], :content_type => :json, :accept => :json
+      response = RestClient.get settings.vnf_catalogue + "/vnfs/" + vnfr['vnfd_reference'], :content_type => :json, :accept => :json
     rescue
       halt 400, "VNF Catalogue not available"
     end
@@ -87,13 +87,23 @@ class OrchestratorVnfManager < Sinatra::Application
     halt response.code, response.body
   end
 
-  get '/vnf-monitoring/instances/:vnfi_id/monitoring-data/' do
-
-    composedUrl = '/vnf-monitoring/instances/' + params["vnfi_id"].to_s + "/monitoring-data/?" + request.env['QUERY_STRING']
+  get '/vnf-monitoring/:vnfi_id/monitoring-data/' do
     # Forward the request to the VNF Monitoring
     begin
-      #vnf-monitoring/:vnfi_id/readings
-      response = RestClient.get "#{settings.vnf_monitoring}" + composedUrl, 'X-Auth-Token' => @client_token, :content_type => :json, :accept => :json
+      response = RestClient.get "#{settings.vnf_monitoring}" + request.fullpath, 'X-Auth-Token' => @client_token, :content_type => :json, :accept => :json
+    rescue Errno::ECONNREFUSED
+      halt 500, 'VNF Monitoring unreachable'
+    rescue => e
+      logger.error e.response
+      halt e.response.code, e.response.body
+    end
+
+    halt response.code, response.body
+  end
+
+  get '/vnf-monitoring/:vnfi_id/monitoring-data/last100/' do
+    begin
+      response = RestClient.get "#{settings.vnf_monitoring}" + request.fullpath, 'X-Auth-Token' => @client_token, :content_type => :json, :accept => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'VNF Monitoring unreachable'
     rescue => e

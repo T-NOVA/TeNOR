@@ -27,7 +27,7 @@ class TnovaManager < Sinatra::Application
     end
 
     begin
-      response = RestClient.put  @service.host + ":" + @service.port.to_s + request.fullpath, request.body.read, 'X-Auth-Token' => @client_token, :content_type => :json
+      response = RestClient.put @service.host + ":" + @service.port.to_s + request.fullpath, request.body.read, 'X-Auth-Token' => @client_token, :content_type => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Provisioning unreachable'
     rescue => e
@@ -51,17 +51,17 @@ class TnovaManager < Sinatra::Application
       rescue Mongoid::Errors::DocumentNotFound => e
         halt 500, {'Content-Type' => "text/plain"}, "Microservice unrechable."
       end
-      composedUrl = "/ns-monitoring/instances/"+params['instance_id'].to_s+"/monitoring-data/?"+request.env['QUERY_STRING']
+      composedUrl = "/ns-monitoring/"+params['instance_id'].to_s+"/monitoring-data/?"+request.env['QUERY_STRING']
     elsif params['instance_type'] == 'vnf'
       begin
         @service = ServiceModel.find_by(name: "vnfmanager")
       rescue Mongoid::Errors::DocumentNotFound => e
         halt 500, {'Content-Type' => "text/plain"}, "Microservice unrechable."
       end
-      composedUrl = "/vnf-monitoring/instances/"+params['instance_id'].to_s+"/monitoring-data/?"+request.env['QUERY_STRING']
+      composedUrl = "/vnf-monitoring/"+params['instance_id'].to_s+"/monitoring-data/?"+request.env['QUERY_STRING']
     end
-    
-    if(params["metric"])
+
+    if (params["metric"])
       #composedUrl = composedUrl + "/" + params["metric"]
     end
     logger.debug composedUrl
@@ -77,7 +77,7 @@ class TnovaManager < Sinatra::Application
     return response.code, response.body
   end
 
-#/instances/:instance_id/monitoring-data/?instance_type=ns&metric
+  #/instances/:instance_id/monitoring-data/?instance_type=ns&metric
 =begin
   {
       "nsi_id": "123",
@@ -108,10 +108,43 @@ class TnovaManager < Sinatra::Application
       #logger.error e.response
       #halt e.response.code, e.response.body
     end
-puts "NS-Monitor response:"
+    puts "NS-Monitor response:"
     puts response
     return 200
     return response.code, response.body
   end
+
+  get '/instances/:instance_id/monitoring-data/last100/' do
+
+    if params['instance_type'] == 'ns'
+      begin
+        @service = ServiceModel.find_by(name: "nsmonitoring")
+      rescue Mongoid::Errors::DocumentNotFound => e
+        halt 500, {'Content-Type' => "text/plain"}, "Microservice unrechable."
+      end
+      composedUrl = "/ns-monitoring/"+params['instance_id'].to_s+"/monitoring-data/last100/?"+request.env['QUERY_STRING']
+    elsif params['instance_type'] == 'vnf'
+      begin
+        @service = ServiceModel.find_by(name: "vnfmanager")
+      rescue Mongoid::Errors::DocumentNotFound => e
+        halt 500, {'Content-Type' => "text/plain"}, "Microservice unrechable."
+      end
+      composedUrl = "/vnf-monitoring/"+params['instance_id'].to_s+"/monitoring-data/last100/?"+request.env['QUERY_STRING']
+    end
+
+    logger.debug composedUrl
+    logger.debug @service.host.to_s + ":" + @service.port.to_s + composedUrl.to_s
+    begin
+      response = RestClient.get @service.host.to_s + ":" + @service.port.to_s + composedUrl.to_s, 'X-Auth-Token' => @client_token, :content_type => :json
+    rescue Errno::ECONNREFUSED
+      halt 500, 'NS Monitoring unreachable'
+    rescue => e
+      logger.error e.response
+      halt e.response.code, e.response.body
+    end
+
+    return response
+  end
+
 
 end
