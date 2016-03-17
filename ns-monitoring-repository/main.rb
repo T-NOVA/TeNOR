@@ -31,27 +31,17 @@ Bundler.require :default, ENV['RACK_ENV'].to_sym
 require_relative 'routes/init'
 require_relative 'helpers/init'
 
+register Sinatra::ConfigFile
+# Load configurations
+config_file 'config/config.yml'
+
 configure do
 	# Configure logging
-	enable :logging
-	Dir.mkdir("#{settings.root}/log") unless File.exists?("#{settings.root}/log")
-	log_file = File.new("#{settings.root}/log/#{settings.environment}.log", "a+")
-	log_file.sync = true
-	use Rack::CommonLogger, log_file
-
-end
-
-before do
-	BASEDIR = File.join(File.dirname(__FILE__), '.')
-	cassandra_config_file = File.join(BASEDIR, 'config', 'database.yml')
-	cassandra_config = YAML::load_file(cassandra_config_file)[env]
-	@db = CassandraCQL::Database.new("#{cassandra_config['host']}:9160", {username: cassandra_config['username'], password: cassandra_config['password']})
-	@db.execute("USE #{cassandra_config['keyspace']}")
-
 	logger = LogStashLogger.new(
 			type: :multi_logger,
 			outputs: [
 					{ type: :stdout, formatter: ::Logger::Formatter },
+					{ type: :file, path: "log/#{settings.environment}.log", sync: true},
 					{ host: settings.logstash_host, port: settings.logstash_port }
 			])
 	LogStashLogger.configure do |config|
@@ -59,14 +49,21 @@ before do
 			event["module"] = settings.servicename
 		end
 	end
-	logger.level = Logger::DEBUG
+	set :logger, logger
+
+	BASEDIR = File.join(File.dirname(__FILE__), '.')
+end
+
+before do
+
+	cassandra_config_file = File.join(BASEDIR, 'config', 'database.yml')
+	cassandra_config = YAML::load_file(cassandra_config_file)[env]
+	@db = CassandraCQL::Database.new("#{cassandra_config['host']}:9160", {username: cassandra_config['username'], password: cassandra_config['password']})
+	@db.execute("USE #{cassandra_config['keyspace']}")
+
 	env['rack.logger'] = logger
 end
 
 class OrchestratorNsMonitoring < Sinatra::Application
-	register Sinatra::ConfigFile
-	# Load configurations
-	config_file 'config/config.yml'
-
 end
 
