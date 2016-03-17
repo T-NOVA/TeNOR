@@ -59,6 +59,25 @@ class TnovaManager < Sinatra::Application
     return response.code, response.body
   end
 
+  get "/ns-instances/:ns_instance_id" do
+    begin
+      @service = ServiceModel.find_by(name: "nsprovisioning")
+    rescue Mongoid::Errors::DocumentNotFound => e
+      halt 500, {'Content-Type' => "text/plain"}, "NS Provisioning not registred."
+    end
+
+    begin
+      response = RestClient.get @service.host + ":" + @service.port.to_s + request.fullpath, 'X-Auth-Token' => @client_token, :content_type => :json
+    rescue Errno::ECONNREFUSED
+      halt 500, 'NS Provisioning unreachable'
+    rescue => e
+      logger.error e.response
+      halt e.response.code, e.response.body
+    end
+
+    return response.code, response.body
+  end
+
   put '/ns-instances/:ns_instance_id' do
     begin
       @service = ServiceModel.find_by(name: "nsprovisioning")
@@ -228,6 +247,8 @@ class TnovaManager < Sinatra::Application
       logger.error e.response
       halt e.response.code, e.response.body
     end
+
+    updateStatistics('ns_instantiated_requests_ok')
 
     return response.code, response.body
   end

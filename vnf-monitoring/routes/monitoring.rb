@@ -43,9 +43,13 @@ class VNFMonitoring < Sinatra::Application
     logger.error @json
 
     @json['vnfr_id'] = params['vnfr_id']
-    @json['vnfr'] = params['vnfr']
-    @json['vnfi_id'] = @json['vnfi_id']
+    #@json['vnfr'] = params['vnfr']
+    #@json['vnfi_id'] = @json['vnfi_id']
     vnfd = @json['vnfd']
+    vnfr = @json['vnfr']
+
+    puts "VNFR:"
+    puts @json['vnfr']
 
     MonitoringMetric.new(@json).save!
 
@@ -55,24 +59,26 @@ class VNFMonitoring < Sinatra::Application
       vdu['monitoring_parameters'].each do |mP|
         types.push(mP['metric'])
       end
+      vdu['monitoring_parameters_specific'].each do |mP|
+        types.push(mP['metric'])
+      end
+
       @json['vnfr'].vms_id.each { |key, value| instances << value }
     end
 
-    vnfd['vnfd']['vdu'][0]['monitoring_parameters'].each do |mP|
-
-    end
-
+    puts "Creating subcription message"
     #subscribe
     subscribe = {
         :types => types,
         :instances => instances,
-        :interval => 2,
+        :interval => 1,
         :callbackUrl => settings.vnf_manager + "/vnf-monitoring/" + params['vnfr_id'] + "/readings"
     }
     logger.debug subscribe.to_json
     begin
       response = RestClient.post settings.vim_monitoring + "/api/subscriptions", subscribe.to_json, :content_type => :json, :accept => :json
-    rescue
+    rescue => e
+      puts e
       halt 400, "VIM Monitoring Module not available"
     end
     #if(response.status == 200)
@@ -122,7 +128,7 @@ class VNFMonitoring < Sinatra::Application
       instance['measurements'].each do |measurement|
         monitoringMetric = MonitoringMetric.find_by(:vnfr_id => params[:vnfr_id])
         #store recevied data in Cassandra DB
-puts monitoringMetric
+        puts monitoringMetric.to_json
         metric = {
             :type => measurement['type'],
             :value => measurement['value'],
@@ -133,7 +139,8 @@ puts monitoringMetric
 
         #if the param is not in the monitoringMetric, not send anything
         enriched = {
-            :parameter_id => monitoringMetric['parameter_id'],
+            #:parameter_id => monitoringMetric['parameter_id'],
+            :type => measurement['type'],
             :value => measurement['value'],
             :unit => measurement['unit'],
             :timestamp => Time.parse(measurement['timestamp']).to_i
@@ -155,6 +162,7 @@ puts monitoringMetric
         puts "Error with sending the values to the NS Monitoring."
       end
     end
+    return 200
   end
 
   #/vnf-monitoring/instances/10/monitoring-data/
@@ -164,6 +172,16 @@ puts monitoringMetric
     puts settings.vnf_instance_repository + composedUrl
     begin
       response = RestClient.get settings.vnf_instance_repository + composedUrl, :content_type => :json
+    rescue => e
+      logger.error e.response
+      #return e.response.code, e.response.body
+    end
+    return response
+  end
+
+  get '/vnf-monitoring/:instance_id/monitoring-data/last100/' do
+    begin
+      response = RestClient.get settings.vnf_instance_repository + request.fullpath, :content_type => :json
     rescue => e
       logger.error e.response
       #return e.response.code, e.response.body

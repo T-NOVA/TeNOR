@@ -50,11 +50,11 @@ class OrchestratorVnfMonitoring < Sinatra::Application
 	end
 
 	# @method get_vnf-monitoring
-	# @overload get '/vnf-monitoring/:instance_id/?:metric/last10/'
-	# Returns last 10 values
-	get '/vnf-monitoring/:instance_id/?:metric/last10' do
+	# @overload get '/vnf-monitoring/:instance_id/?:metric/last100/'
+	# Returns last 100 values
+	get '/vnf-monitoring/:instance_id/monitoring-data/last100/' do
 		t = []
-		@db.execute("SELECT metricName, date, unit, value FROM vnfmonitoring WHERE instanceid='#{params[:instance_id].to_s}' AND metric='#{params[:metric].to_s}' LIMIT 100").fetch { |row| t.push(row.to_hash) }
+		@db.execute("SELECT metricName, date, unit, value FROM vnfmonitoring WHERE instanceid='#{params[:instance_id].to_s}' AND metricname='#{params[:metric].to_s}' ORDER BY metricname DESC LIMIT 100").fetch { |row| t.push(row.to_hash) }
 		return t.to_json
 	end
 
