@@ -7,7 +7,7 @@ max_conns: 1024
 timeout: 30
 max_persistent_conns: 512
 daemonize: false
-
+threaded: true
 logstash_host: 84.88.40.160
 logstash_port: 5228
 
