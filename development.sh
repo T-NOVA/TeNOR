@@ -37,34 +37,34 @@ byobu-tmux send-keys "rake start" C-m
 byobu-tmux new-window -t $SESSION:7 -n 'M-Mon'
 byobu-tmux send-keys "cd ns-manager/default/monitoring" C-m
 byobu-tmux send-keys "rake start" C-m
-exit
+
 byobu-tmux -2 new-session -d -s $SESSION2
 
-byobu-tmux new-window -t $SESSION2:3 -n 'VNFMan'
+byobu-tmux new-window -t $SESSION2:0 -n 'VNFMan'
 byobu-tmux send-keys "cd vnf-manager" C-m
 byobu-tmux send-keys "rake start" C-m
 
-byobu-tmux new-window -t $SESSION2:4 -n 'VNFCat'
+byobu-tmux new-window -t $SESSION2:1 -n 'VNFCat'
 byobu-tmux send-keys "cd vnf-catalogue" C-m
 byobu-tmux send-keys "rake start" C-m
 
-byobu-tmux new-window -t $SESSION2:6 -n 'VNFDVal'
+byobu-tmux new-window -t $SESSION2:2 -n 'VNFDVal'
 byobu-tmux send-keys "cd vnfd-validator" C-m
 byobu-tmux send-keys "rake start" C-m
 
-byobu-tmux new-window -t $SESSION2:5 -n 'VNFProv'
+byobu-tmux new-window -t $SESSION2:3 -n 'VNFProv'
 byobu-tmux send-keys "cd vnf-provisioning" C-m
 byobu-tmux send-keys "rake start" C-m
 
-byobu-tmux new-window -t $SESSION2:0 -n 'VNFMon'
+byobu-tmux new-window -t $SESSION2:4 -n 'VNFMon'
 byobu-tmux send-keys "cd vnf-monitoring" C-m
 byobu-tmux send-keys "rake start" C-m
 
-byobu-tmux new-window -t $SESSION2:1 -n 'VNFMon.Repo'
+byobu-tmux new-window -t $SESSION2:5 -n 'VNFMon.Repo'
 byobu-tmux send-keys "cd vnf-monitoring-repository" C-m
 byobu-tmux send-keys "rake start" C-m
 
-byobu-tmux new-window -t $SESSION2:2 -n 'HOTGen'
+byobu-tmux new-window -t $SESSION2:6 -n 'HOTGen'
 byobu-tmux send-keys "cd hot-generator" C-m
 byobu-tmux send-keys "rake start" C-m
 
