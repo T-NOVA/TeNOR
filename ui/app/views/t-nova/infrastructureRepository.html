@@ -1,0 +1,106 @@
+<h3>Infrastructure Repository</h3>
+
+<div class="row">
+    <div class="col-lg-3 col-md-1">
+        <div dw-loading="pops" dw-loading-options="options"></div>
+        <div class="panel-group" ng-model="panels.activePanel" role="tablist" aria-multiselectable="true" bs-collapse>
+            <div class="panel panel-default" ng-repeat="pop in infrModel track by $index">
+                <div class="panel-heading" role="tab">
+                    <h4 class="panel-title">
+                                <a bs-collapse-toggle>
+                                    <button ng-click="getPoP($index)" class="btn btn-info btn-xs">{{pop['occi.epa.pop.name']}}</button>
+                                </a>
+                            </h4>
+                </div>
+                <div class="panel-collapse" role="tabpanel" bs-collapse-target>
+                    <div class="panel-body">
+                        <div dw-loading="key" dw-loading-options="options"></div>
+                        <ul>
+                            <li ng-repeat="(key, value) in pop" ng-if="key !== 'resources' && key !== 'occi.epa.pop.odl_name' && key !== 'occi.epa.pop.odl_password' && key !== 'occi.epa.pop.graph_db_url' && key !== 'occi.epa.pop.odl_url'">
+                                <b>{{key.replace("occi.epa.","") }}:</b> {{value}}
+                        </ul>
+                        <button ng-click="showResources('phy') " class="btn btn-success btn-xs ">Physical resources</button>
+                        <button ng-click="showResources('virt') " class="btn btn-warning btn-xs ">Virtual resources</button>
+                        <button ng-click="generateGraph()" class="btn btn-info btn-xs">Display entire graph</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class=" col-lg-9 col-md-1 ">
+        <div ng-show="showInitalTopology ">
+            <!--topology-simple class="col-md-10 col-lg-offset-1 " topology-data="topologyData"></topology-simple-->
+        </div>
+        <div ng-show="showTopology">
+            <!--{{showTopology}} Drawing layer: {{drawing_layer}} Drawing element: {{drawing_resources}}
+            <!--div class="btn-group" ng-repeat="layer in selectedLayer">
+                <label class="btn btn-default" ng-click="filter('virtual')">
+                    <input type="checkbox" ng-model="layer.isChecked" />
+                    <span>{{layer.name}}</span>
+                </label>
+            </div-->
+            <div dw-loading="topology" dw-loading-options="options"></div>
+            <!--topology-complete class="col-md-10 col-lg-offset-1 " complete-topology-data="completeTopologyData "></topology-complete-->
+            <topology-complete class="col-md-10 col-lg-offset-1" complete-topology-data="completeTopologyData"></topology-complete>
+        </div>
+        <div ng-show="showTables">
+            <ol class="breadcrumb" ng-show="physicalResources">
+                <li class="active"><i class="fa fa-dashboard"></i> Types:</li>
+                <li ng-repeat="(key, value) in pop.resources.physical_resource" style="content:'/'; padding: 0;">
+                    <a ng-click="getResourcesByType(pop.id, key)" class="pointer">{{key}}</a>
+                </li>
+            </ol>
+            <ol class="breadcrumb" ng-show="virtualResources">
+                <li class="active"><i class="fa fa-dashboard"></i> Types:</li>
+                <li ng-repeat="(key, value) in pop.resources.virtual_resource" style="content:'/'; padding: 0;">
+                    <a ng-click="getResourcesByType(pop.id, key)" class="pointer">{{key}}</a>
+                </li>
+            </ol>
+            <table st-table="displayedCollection" st-safe-src="dataCollection" class="table table-striped">
+                <thead>
+                    <tr>
+                        <th st-sort="name" class="col-sm-1 col-md-1 col-lg-1">Name</th>
+                        <th data-title="'name'" class="col-sm-1 col-md-1 col-lg-1">Type</th>
+                        <th data-title="'VI List'" class="col-sm-2 col-md-2 col-lg-2">Timestamp</th>
+                        <th data-title="'Add VI'" class="col-sm-1 col-md-1 col-lg-1">Category</th>
+                        <th data-title="'Remove VI'" class="col-sm-2 col-md-2 col-lg-2">Attributes</th>
+                    </tr>
+                    <tr>
+                        <th colspan="2">
+                            <input st-search="" class="form-control" placeholder="global search ..." type="text" />
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="row in displayedCollection">
+                        <div dw-loading="table" dw-loading-options="options"></div>
+                        <td>
+                            <span if="row['occi.epa.resource_type'] === 'physical'">{{row['occi.epa.physical_name']}}</span>
+                            <span if="row['occi.epa.resource_type'] === 'virtual'"> {{row['occi.epa.name']}}</span>
+                        </td>
+                        <td>{{row['occi.epa.resource_type']}}</td>
+                        <td>{{row['occi.epa.timestamp']*1000| date:'yyyy-MM-dd HH:mm:ss'}}</td>
+                        <td>{{row['occi.epa.category']}}</td>
+                        <td><a ng-click="showDescriptor(row['occi.epa.attributes'])" class="pointer">View attributes</a></td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td class="text-center" st-pagination="" st-items-by-page="5" colspan="6">
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="row" ng-show="showPop">
+    <div class="col-lg-3 col-md-1">
+
+    </div>
+    <div class="col-lg-9 col-md-9">
+        <!--vis-network ng-model="network_data" options="network_options" id="previewNetwork"></vis-network-->
+        <!--topology-simple class="col-md-10 col-lg-offset-1" topology-data="network_data"></topology-simple-->
+
+    </div>
+</div>

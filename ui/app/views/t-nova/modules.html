@@ -1,0 +1,144 @@
+<h3>Configuration</h3>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="content-box-large">
+            <div class="panel-heading">
+                <div class="panel-title">Modules</div>
+            </div>
+            <div class="panel-body">
+                List of connected services in the orchestrator. table with status. Should be able to edit ip/port.
+                <br/>
+                <table st-table="displayedCollection" st-safe-src="modulesCollection" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th st-sort="name" class="col-sm-2 col-md-2 col-lg-2">Name</th>
+                            <th data-title="'ip'" class="col-sm-1 col-md-1 col-lg-1">IP</th>
+                            <th data-title="'port'" class="col-sm-1 col-md-1 col-lg-1">Port</th>
+                            <!--th data-title="'port'" class="col-sm-1 col-md-1 col-lg-1">Service key</th-->
+                            <th data-title="'status'" class="col-sm-1 col-md-1 col-lg-1">Status</th>
+                            <th data-title="'action'" class="col-sm-1 col-md-1 col-lg-1">Actions</th>
+                        </tr>
+                        <tr>
+                            <th colspan="2">
+                                <input st-search="" class="form-control" placeholder="global search ..." type="text" />
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="row in displayedCollection">
+                            <td>{{row.name}}</td>
+                            <td>{{row.host}}</td>
+                            <td>{{row.port}}</td>
+                            <!--td>{{row.service_key}}</td-->
+                            <td ng-style="row.status === 'up' && {'color': 'green'}">{{row.status}}</td>
+                            <td>
+                                <button ng-click="deleteDialog(mS.service_name)" class="btn btn-danger btn-xs">Delete</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td class="text-center" st-pagination="" st-items-by-page="10" colspan="4">
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="content-box-large">
+            <div class="panel-heading">
+                <div class="panel-title">Register new service</div>
+            </div>
+            <div class="panel-body">
+                <form action="">
+                    <fieldset>
+                        <div class="form-group">
+                            <label>Service name</label>
+                            <input ng-model="service.service_name" class="form-control" placeholder="name" type="text">
+                        </div>
+                        <div class="form-group">
+                            <label>Path</label>
+                            <input ng-model="service.service_path" class="form-control" placeholder="/path" type="text" value="mypassword">
+                        </div>
+                        <div class="form-group">
+                            <label>Ip</label>
+                            <input ng-model="service.service_host" class="form-control" placeholder="IP" type="text" value="">
+                        </div>
+                        <div class="form-group">
+                            <label>Port</label>
+                            <input ng-model="service.service_port" class="form-control" placeholder="Port" type="text" value="">
+                        </div>
+                    </fieldset>
+                    <div>
+                        <button type="submit" class="btn btn-primary" ng-click="registerService(service)">Register</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <div class="content-box-large">
+            <div class="panel-heading">
+                <div class="panel-title">Timeline</div>
+                <div class="pull-right">
+                    <button type="button" class="btn btn-default" ng-model="selectedSeverity" data-html="1" bs-options="severity as severity for severity in severities" bs-select ng-change="selectSeverity()">
+                        Select <span class="caret"></span>
+                    </button>
+                </div>
+            </div>
+            <div class="panel-body">
+                <time-line data="data" options="options"></time-line>
+
+                <div class="panel-group " ng-model="panels.activePanel " role="tablist " aria-multiselectable="true " bs-collapse>
+                    <div class="panel panel-default">
+                        <div class="panel-heading " role="tab ">
+                            <h4 class="panel-title ">
+                                <a bs-collapse-toggle>Logs</a>
+                            </h4>
+                        </div>
+                        <div class="panel-collapse " role="tabpanel " bs-collapse-target>
+                            <div class="panel-body ">
+                                <table st-table="logCollection" st-safe-src="log" class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th data-title="'date'" class="col-sm-2 col-md-2 col-lg-2">Date</th>
+                                            <th data-title="'status'" class="col-sm-1 col-md-1 col-lg-1">Type</th>
+                                            <th data-title="'content'" class="col-sm-9 col-md-9 col-lg-9">Content</th>
+                                        </tr>
+                                        <tr>
+                                            <th colspan="1">
+                                                <input st-search="created_at" class="form-control" placeholder="data search ..." type="text" />
+                                            </th>
+                                            <th colspan="1">
+                                                <input st-search="_source.severity" class="form-control" placeholder="search ..." type="text" />
+                                            </th>
+                                            <th colspan="1">
+                                                <input st-search="content" class="form-control" placeholder="content search ..." type="text" />
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="row in logCollection">
+                                            <td>{{row._source['@timestamp'] | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+                                            <td>{{row._source.severity}}</td>
+                                            <td>{{row._source.message}}</td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td class="text-center" st-pagination="" st-items-by-page="20" colspan="3">
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

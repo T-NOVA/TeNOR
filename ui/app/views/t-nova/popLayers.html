@@ -1,0 +1,78 @@
+<div ng-controller="popLayer">
+    <div class="row">
+        <div class="col-md-12 panel-info">
+            <div class="content-box-header">
+                <div class="panel-title">Virtual layer</div>
+            </div>
+            <div class="content-box-large box-with-header">
+                <div class="row">
+                    <div ng-repeat="(key, value) in rootElement.virtual" class="mod-col-lg-1 col-md-1">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <div class="row">
+                                    <div style="text-align:center">
+                                        <i class="fa fa-mod-{{key}} fa-mod fa-3x"></i>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div style="text-align:center">
+                                        <button ng-click="showTable('virtual', key)" class="btn btn-warning btn-xs">{{key}}</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" ng-show="tableDisplay">
+        <div class="col-md-12 panel-info">
+            <table ng-table="tableParams" class="table table-striped ng-table-responsive">
+                <thead>
+                    <tr>
+                        <th ng-repeat="(key, value) in $data[0]" ng-if="key !== 'type' && key !== 'pop' && key !== 'layer'">
+                            {{key}}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="resource in $data">
+                        <td ng-repeat="(key, value) in $data[0]" ng-if="key !== 'type' && key !== 'pop' && key !== 'layer'">
+                            <span ng-if="key !== 'attributes'">{{ resource[key] }}</span>
+                            <span ng-if="key === 'attributes'"><a href="" ng-click="showDescriptor(resource[key])">Open dialog</a></span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 panel-warning">
+            <div class="content-box-header panel-heading">
+                <div class="panel-title ">Physical layer</div>
+            </div>
+            <div class="content-box-large box-with-header">
+                <div class="row">
+                    <div ng-repeat="(key, value) in rootElement.physical" class="mod-col-lg-1 col-md-1">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <div class="row">
+                                    <div style="text-align:center">
+                                        <i class="fa fa-mod-{{key}} fa-mod fa-3x"></i>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div style="text-align:center">
+                                        <button ng-click="showTable('physical', key)" class="btn btn-info btn-xs">{{key}}</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br/>
+            </div>
+        </div>
+    </div>
+</div>

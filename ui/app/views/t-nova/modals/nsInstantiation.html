@@ -1,0 +1,48 @@
+<div class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" ng-show="title">
+                <button type="button" class="close" ng-click="$hide()">&times;</button>
+                <h4 class="modal-title" ng-bind="title"></h4>
+            </div>
+            <div class="modal-body">
+                <form name="editForm">
+                    <div class="box-body">
+                        <div class="form-group">
+                            <label for="tenantName">NS id</label>
+                            <input ng-model="object.ns_id" type="text" class="form-control" id="tenantName" readonly>
+                        </div>
+                    </div>
+                    <div class="box-body">
+                        <div class="form-group">
+                            <label for="tenantName">Callback url</label>
+                            <input ng-model="object.callbackUrl" type="text" class="form-control" id="tenantName" value="https://httpbin.org/post">
+                        </div>
+                    </div>
+                    <div class="box-body">
+                        <div class="form-group">
+                            <label for="tenantName">Select Flavour</label>
+                            <button type="button" class="btn btn-default" ng-model="object.flavour" data-html="1" bs-options="sla.sla_key as sla.sla_key for sla in nsd.sla" bs-select>
+                                Action <span class="caret"></span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="box-body">
+                        <div class="form-group">
+                            <button ng-click="instantiate(object)" type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </div>
+                    <div class="box-body">
+
+                    </div>
+                    <div class="box-body">
+
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="$hide()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
