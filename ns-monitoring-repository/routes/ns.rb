@@ -50,10 +50,13 @@ class OrchestratorNsMonitoring < Sinatra::Application
 	# @overload post '/ns-monitoring/:instance_id'
 	# Inserts monitoring data
 	post '/ns-monitoring/:instance_id' do
-		#@json = JSON.parse(request.body.read)
-		mData = JSON.parse(request.body.read)
-		#@json.each do |item|
-			@db.execute("INSERT INTO nsmonitoring (instanceid, date, metricname, unit, value) VALUES ('#{params[:instance_id].to_s}', #{mData['timestamp']}, '#{mData['type']}', '#{mData['unit']}', '#{mData['value']}' )")
+    return 415 unless request.content_type == 'application/json'
+    json, errors = parse_json(request.body.read)
+    return 400, errors.to_json if errors
+
+    #@json.each do |item|
+			@db.execute("INSERT INTO nsmonitoring (instanceid, date, metricname, unit, value) VALUES ('#{params[:instance_id].to_s}', #{json['timestamp']}, '#{json['type']}', '#{json['unit']}', '#{json['value']}' )")
 		#end
+    halt 200
 	end
 end

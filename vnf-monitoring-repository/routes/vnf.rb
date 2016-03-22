@@ -49,10 +49,14 @@ class OrchestratorVnfMonitoring < Sinatra::Application
 	# @overload post '/vnf-monitoring/:instance_id'
 	# Inserts monitoring data
 	post '/vnf-monitoring/:instance_id' do
-		mData = JSON.parse(request.body.read)
+    return 415 unless request.content_type == 'application/json'
+    json, errors = parse_json(request.body.read)
+    return 400, errors.to_json if errors
 
-		mData.each do |item|
+		json.each do |item|
 			@db.execute("INSERT INTO vnfmonitoring (instanceid, date, metricname, unit, value) VALUES ('#{params[:instance_id].to_s}', #{item['timestamp']}, '#{item['type']}', '#{item['unit']}', '#{item['value']}' )")
 		end
+		halt 200
 	end
+
 end
