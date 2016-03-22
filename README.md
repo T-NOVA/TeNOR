@@ -7,7 +7,7 @@ This is TeNOR's, the [T-NOVA](http://www.t-nova.eu) Orchestrator repository.
 - Infrastructure Repository (https://github.com/T-NOVA/infrastructure-repository). Used by the UI and the Service Mapping algorithm.
 - Service Mapping (https://github.com/T-NOVA/TeNOR/tree/master/service-mapper). Used when more than 1 PoP is available.
 - Middleware API (optional). Required for start/stop VMs.
-- VIM Monnitoring (https://github.com/T-NOVA/vim-monitoring) (optional)
+- VIM Monitoring (https://github.com/T-NOVA/vim-monitoring) (optional)
 
 ## Requirements
 - Ruby >= 1.9
