@@ -18,19 +18,6 @@
 # @see OrchestratorVnfMonitoring
 class OrchestratorVnfMonitoring < Sinatra::Application
 
-	before do
-
-		if request.path_info == '/gk_credentials'
-			return
-		end
-
-		if settings.environment == 'development'
-			return
-		end
-
-		authorized?
-	end
-
 	# @method get_ns-monitoring
 	# @overload get '/vnf-monitoring/:instance_id/monitoring-data/'
 	#	Returns all monitored data

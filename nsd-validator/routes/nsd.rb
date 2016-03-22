@@ -18,19 +18,6 @@
 # @see OrchestratorNsdValidator
 class OrchestratorNsdValidator < Sinatra::Application
 
-	before do
-
-		if request.path_info == '/gk_credentials'
-			return
-		end
-
-		if settings.environment == 'development'
-			return
-		end
-
-		authorized?
-	end
-
 	# @method post_nsds
 	# @note You have to specify the correct Content-Type
 	# @overload post '/nsds'

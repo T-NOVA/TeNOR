@@ -18,19 +18,6 @@
 # @see NSMonitoring
 class NSMonitoring < Sinatra::Application
 
-  before do
-
-    if request.path_info == '/gk_credentials'
-      return
-    end
-
-    if settings.environment == 'development'
-      return
-    end
-
-    authorized?
-  end
-
   #definition metric should be monitoring, received from NSProvisioning
 =begin
 		{
@@ -225,7 +212,6 @@ class NSMonitoring < Sinatra::Application
 
   #/ns-monitoring/instances/10/monitoring-data/
   get '/ns-monitoring/:instance_id/monitoring-data/' do
-    composedUrl = '/ns-monitoring/' + params["instance_id"].to_s + "/monitoring-data/?" + request.env['QUERY_STRING']
     begin
       response = RestClient.get settings.ns_instance_monitoring + request.fullpath, :content_type => :json
     rescue => e

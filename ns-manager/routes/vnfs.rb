@@ -20,7 +20,7 @@ class TnovaManager < Sinatra::Application
 
   get '/vnfs' do
     begin
-      @service = ServiceModel.find_by(name: "vnfmanager")
+      @service = ServiceModel.find_by(name: "vnf_manager")
     rescue Mongoid::Errors::DocumentNotFound => e
       halt 500, {'Content-Type' => "text/plain"}, "Microservice unrechable."
     end
@@ -40,7 +40,7 @@ class TnovaManager < Sinatra::Application
 
   get '/vnfs/:vnf_id' do
     begin
-      @service = ServiceModel.find_by(name: "vnfmanager")
+      @service = ServiceModel.find_by(name: "vnf_manager")
     rescue Mongoid::Errors::DocumentNotFound => e
       halt 500, {'Content-Type' => "text/plain"}, "Microservice unrechable."
     end
@@ -64,7 +64,7 @@ class TnovaManager < Sinatra::Application
     return 415 unless request.content_type == 'application/json'
 
     begin
-      @service = ServiceModel.find_by(name: "vnfmanager")
+      @service = ServiceModel.find_by(name: "vnf_manager")
     rescue Mongoid::Errors::DocumentNotFound => e
       halt 500, {'Content-Type' => "text/plain"}, "Microservice unrechable."
     end
@@ -89,7 +89,7 @@ class TnovaManager < Sinatra::Application
     return 415 unless request.content_type == 'application/json'
 
     begin
-      @service = ServiceModel.find_by(name: "vnfmanager")
+      @service = ServiceModel.find_by(name: "vnf_manager")
     rescue Mongoid::Errors::DocumentNotFound => e
       halt 500, {'Content-Type' => "text/plain"}, "Microservice unrechable."
     end
@@ -110,7 +110,7 @@ class TnovaManager < Sinatra::Application
   delete '/vnfs/:external_ns_id' do
 
     begin
-      @service = ServiceModel.find_by(name: "vnfmanager")
+      @service = ServiceModel.find_by(name: "vnf_manager")
     rescue Mongoid::Errors::DocumentNotFound => e
       halt 500, {'Content-Type' => "text/plain"}, "Microservice unrechable."
     end

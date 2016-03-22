@@ -37,7 +37,7 @@ class TnovaManager < Sinatra::Application
 		rescue => e
 			puts e
 			halt 400, 'Error'
-			halt e.response.code, e.response.body
+			#halt e.response.code, e.response.body
 		end
 
     return response

@@ -19,15 +19,7 @@
 class OrchestratorVnfdValidator < Sinatra::Application
 
 	before do
-    	if request.path_info == '/gk_credentials'
-      		return
-    	end
 
-    	if settings.environment == 'development'
-      		return
-    	end
-
-    	authorized?
   end
 
 	# @method get_root

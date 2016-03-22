@@ -7,6 +7,7 @@ max_conns: 1024
 timeout: 30
 max_persistent_conns: 512
 daemonize: false
+threaded: true
 logstash_host: 127.0.0.1
 logstash_port: 5228
 
@@ -14,3 +15,6 @@ vnf_manager: http://10.10.1.61:4567
 vim_monitoring: http://10.10.1.62:8080
 vnf_instance_repository: http://10.10.1.61:4018
 ns_manager: http://10.10.1.61:4000
+
+gk:
+service_key:

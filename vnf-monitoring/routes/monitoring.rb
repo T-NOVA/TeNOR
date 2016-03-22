@@ -18,19 +18,6 @@
 # @see VNFMonitoring
 class VNFMonitoring < Sinatra::Application
 
-  before do
-
-    if request.path_info == '/gk_credentials'
-      return
-    end
-
-    if settings.environment == 'development'
-      return
-    end
-
-    authorized?
-  end
-
   # @method post_vnf-monitoring
   # @overload post '/vnf-monitoring/:vnfi_id/monitoring-parameters'
   # Recevie the parameters to monitor given a vnfi_id

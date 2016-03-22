@@ -7,13 +7,13 @@ max_conns: 1024
 timeout: 30
 max_persistent_conns: 512
 daemonize: false
-
+threaded: true
 logstash_host: 84.88.40.160
 logstash_port: 5228
 
 vnf_manager: http://localhost:4567
 hot_generator: http://localhost:4571
 mapi: http://admin:changeme@10.10.1.67:1234
-gk: http://localhost:8000
 
-service_key: 2e98c7b5-18f5-4b12-b704-ed3d3c1ff065
+gk:
+service_key:

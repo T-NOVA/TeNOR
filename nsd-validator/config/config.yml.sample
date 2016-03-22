@@ -7,8 +7,12 @@ max_conns: 1024
 timeout: 30
 max_persistent_conns: 512
 daemonize: false
+threaded: true
 logstash_host: 127.0.0.1
 logstash_port: 5228
 
 xml_schema: assets/schemas/nsd.xsd
 json_schema: assets/schemas/nsd_schema.json
+
+gk:
+service_key:

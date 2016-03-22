@@ -21,7 +21,7 @@ class TnovaManager < Sinatra::Application
   put '/accounting/servicestatus/:ns_instance_id/:status' do
 
     begin
-      @service = ServiceModel.find_by(name: "nsprovisioning")
+      @service = ServiceModel.find_by(name: "ns_provisioning")
     rescue Mongoid::Errors::DocumentNotFound => e
       halt 500, {'Content-Type' => "text/plain"}, "Microservice unrechable."
     end
@@ -47,14 +47,14 @@ class TnovaManager < Sinatra::Application
     logger.debug request.fullpath
     if params['instance_type'] == 'ns'
       begin
-        @service = ServiceModel.find_by(name: "nsmonitoring")
+        @service = ServiceModel.find_by(name: "ns_monitoring")
       rescue Mongoid::Errors::DocumentNotFound => e
         halt 500, {'Content-Type' => "text/plain"}, "Microservice unrechable."
       end
       composedUrl = "/ns-monitoring/"+params['instance_id'].to_s+"/monitoring-data/?"+request.env['QUERY_STRING']
     elsif params['instance_type'] == 'vnf'
       begin
-        @service = ServiceModel.find_by(name: "vnfmanager")
+        @service = ServiceModel.find_by(name: "vnf_manager")
       rescue Mongoid::Errors::DocumentNotFound => e
         halt 500, {'Content-Type' => "text/plain"}, "Microservice unrechable."
       end
@@ -74,7 +74,8 @@ class TnovaManager < Sinatra::Application
       logger.error e.response
       halt e.response.code, e.response.body
     end
-    return response.code, response.body
+    #return response.code, response.body
+    return 200
   end
 
   #/instances/:instance_id/monitoring-data/?instance_type=ns&metric
@@ -94,7 +95,7 @@ class TnovaManager < Sinatra::Application
   post '/ns-monitoring/vnf-instance-readings/:vnf_instance_id' do
 
     begin
-      @service = ServiceModel.find_by(name: "nsmonitoring")
+      @service = ServiceModel.find_by(name: "ns_monitoring")
     rescue Mongoid::Errors::DocumentNotFound => e
       halt 500, {'Content-Type' => "text/plain"}, "NS Provisioning not registred."
     end
@@ -118,14 +119,14 @@ class TnovaManager < Sinatra::Application
 
     if params['instance_type'] == 'ns'
       begin
-        @service = ServiceModel.find_by(name: "nsmonitoring")
+        @service = ServiceModel.find_by(name: "ns_monitoring")
       rescue Mongoid::Errors::DocumentNotFound => e
         halt 500, {'Content-Type' => "text/plain"}, "Microservice unrechable."
       end
       composedUrl = "/ns-monitoring/"+params['instance_id'].to_s+"/monitoring-data/last100/?"+request.env['QUERY_STRING']
     elsif params['instance_type'] == 'vnf'
       begin
-        @service = ServiceModel.find_by(name: "vnfmanager")
+        @service = ServiceModel.find_by(name: "vnf_manager")
       rescue Mongoid::Errors::DocumentNotFound => e
         halt 500, {'Content-Type' => "text/plain"}, "Microservice unrechable."
       end

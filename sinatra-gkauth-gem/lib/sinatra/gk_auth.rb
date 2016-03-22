@@ -10,11 +10,11 @@ module Sinatra
           halt 401, {'Content-Type' => 'text/plain'}, 'Token invalid.'
         end
 
-        if settings.gk.empty?
+        if settings.gk.nil?
           halt 401, {'Content-Type' => 'text/plain'}, 'No gatekeeper url defined.'
         end
 
-        if settings.service_key.empty?
+        if settings.service_key.nil?
           halt 401, {'Content-Type' => 'text/plain'}, 'No service key defined.'
         end
 
@@ -47,6 +47,17 @@ module Sinatra
     def self.registered(app)
 
       app.helpers Gk_Auth::Helpers
+
+      app.before do
+        if request.path_info == '/gk_credentials'
+          return
+        end
+
+        if settings.environment == 'development'
+          return
+        end
+        authorized?
+      end
 
       app.post '/gk_credentials' do
 
