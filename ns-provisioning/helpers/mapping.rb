@@ -21,8 +21,11 @@ class OrchestratorNsProvisioner < Sinatra::Application
   def callMapping(ms)
 
     begin
-      response = RestClient.get settings.tenor_api + '/network-services/' + ms[:NS_id], :content_type => :json
+      response = RestClient.get settings.manager + '/network-services/' + ms[:NS_id], :content_type => :json
+    rescue Errno::ECONNREFUSED
+      return "Connection refused"
     rescue => e
+      return "Error"
       return e.response.code, e.response.body
     end
 

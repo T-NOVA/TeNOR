@@ -40,7 +40,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
       #generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", error))
     end
 
-    if services.all? { |x| tenor_modules.detect{|el| el['name'] == x} }
+    if settings.dependencies.all? { |x| @tenor_modules.detect{|el| el['name'] == x} }
       halt 400, "The orchestrator has not the correct dependencies"
     end
 
