@@ -18,19 +18,6 @@
 # @see OrchestratorNsInstanceRepository
 class OrchestratorNsInstanceRepository < Sinatra::Application
 
-	before do
-
-		if request.path_info == '/gk_credentials'
-			return
-		end
-
-		if settings.environment == 'development'
-			return
-		end
-
-		authorized?
-	end
-
   # @method get_ns-instances
   # @overload get "/ns-instances"
   # Gets all ns-instances

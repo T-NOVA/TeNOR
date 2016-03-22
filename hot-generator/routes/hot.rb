@@ -18,18 +18,6 @@
 # @see OrchestratorHotGenerator
 class OrchestratorHotGenerator < Sinatra::Application
 
-	before do
-    	if request.path_info == '/gk_credentials'
-      		return
-    	end
-
-    	if settings.environment == 'development'
-      		return
-    	end
-
-    	authorized?
-  end
-	
 	# @method post_hot_flavour
 	# @overload post '/hot/:flavour'
 	# 	Convert a VNFD into a HOT

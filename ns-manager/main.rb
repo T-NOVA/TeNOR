@@ -55,6 +55,23 @@ end
 
 before do
 	env['rack.logger'] = settings.logger
+
+	if settings.environment == 'development'
+		@client_token = "test-token-client-id"
+		return
+	end
+
+	pass if request.path_info == '/'
+	# Validate every request with Gatekeeper
+	@client_token = request.env['HTTP_X_AUTH_TOKEN']
+	begin
+		response = RestClient.get "#{settings.gatekeeper}/token/validate/#{@client_token}", 'X-Auth-Service-Key' => settings.service_key, :content_type => :json
+	rescue Errno::ECONNREFUSED
+		halt 500, 'Gatekeeper unreachable'
+	rescue => e
+		logger.error e.response
+		halt e.response.code, e.response.body
+	end
 end
 
 class TnovaManager < Sinatra::Application

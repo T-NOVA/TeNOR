@@ -18,19 +18,6 @@
 # @see OrchestratorNsCatalogue
 class OrchestratorNsCatalogue < Sinatra::Application
 
-	before do
-
-		if request.path_info == '/gk_credentials'
-			return
-		end
-
-		if settings.environment == 'development'
-			return
-		end
-
-		authorized?
-	end
-
 	# @method get_nss
 	# @overload get '/network-services'
 	#	Returns a list of NSs

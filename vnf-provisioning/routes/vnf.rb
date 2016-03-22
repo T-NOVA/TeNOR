@@ -18,18 +18,6 @@
 # @see OrchestratorVnfProvisioning
 class OrchestratorVnfProvisioning < Sinatra::Application
 
-  before do
-    if request.path_info == '/gk_credentials'
-      return
-    end
-
-    if settings.environment == 'development'
-      return
-    end
-
-    authorized?
-  end
-
   # @method get_root
   # @overload get '/'
   #   Get all available interfaces
@@ -227,7 +215,7 @@ class OrchestratorVnfProvisioning < Sinatra::Application
       puts "Already removed from the mAPI."
     rescue => e
       logger.error e.response
-      halt e.response.code, e.response.body
+      #halt e.response.code, e.response.body
     end  
 
     # Delete the VNFR from the database

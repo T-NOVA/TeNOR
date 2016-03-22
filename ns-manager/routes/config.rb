@@ -18,26 +18,6 @@
 # @see TnovaManager
 class TnovaManager < Sinatra::Application
 
-	before do
-
-		if settings.environment == 'development'
-			@client_token = "test-token-client-id"
-			return
-		end
-
-		pass if request.path_info == '/'
-		# Validate every request with Gatekeeper
-		@client_token = request.env['HTTP_X_AUTH_TOKEN']
-		begin
-			response = RestClient.get "#{settings.gatekeeper}/token/validate/#{@client_token}", 'X-Auth-Service-Key' => settings.service_key, :content_type => :json
-		rescue Errno::ECONNREFUSED
-			halt 500, 'Gatekeeper unreachable'
-		rescue => e
-			logger.error e.response
-			halt e.response.code, e.response.body
-		end
-	end
-
 	# @method get_root
 	# @overload get '/'
 	# 	Get all available interfaces
@@ -48,6 +28,10 @@ class TnovaManager < Sinatra::Application
 
 	post '/configs/registerService' do
 		return registerService(request.body.read)
+	end
+
+	post '/configs/registerExternalService' do
+		return registerExternalService(request.body.read)
 	end
 
 	post '/configs/unRegisterService/:microservice' do
@@ -62,11 +46,9 @@ class TnovaManager < Sinatra::Application
 
 	get '/configs/services' do
 	    if params['name']
-			return ServiceModel.find_by(name: params["name"]).to_json
-			#return settings.services[params['name']].to_json
+			  return ServiceModel.find_by(name: params["name"]).to_json
 	    else
-			return ServiceModel.all.to_json
-			#return settings.services.to_json
+			  return ServiceModel.all.to_json
 	    end
 	end
 
