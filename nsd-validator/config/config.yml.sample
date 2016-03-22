@@ -13,3 +13,6 @@ logstash_port: 5228
 
 xml_schema: assets/schemas/nsd.xsd
 json_schema: assets/schemas/nsd_schema.json
+
+gk:
+service_key:

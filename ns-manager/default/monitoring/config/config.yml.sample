@@ -12,8 +12,8 @@ logstash_host: 84.88.40.160
 logstash_port: 5228
 
 #monitoring settings:
-stat_interval: 5
-test_interval: 10
+stat_interval: 120
+test_interval: 600
 
 #source settings:
 api_source: http://127.0.0.1:4000/configs/services

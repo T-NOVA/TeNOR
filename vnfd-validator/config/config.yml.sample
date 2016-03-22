@@ -14,6 +14,5 @@ logstash_port: 5228
 xml_schema: assets/schemas/vnfd.xsd
 json_schema: assets/schemas/vnfd_schema.json
 
-gk: http://192.168.2.19:8000
-
-service_key: 211f26ba-a410-44d9-9730-0a19ffb9ce44
+gk:
+service_key:

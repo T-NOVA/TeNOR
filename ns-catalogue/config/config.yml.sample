@@ -11,3 +11,6 @@ threaded: true
 logstash_host: logstash_ip
 logstash_port: 5229
 nsd_validator: http://localhost:4015
+
+gk:
+service_key:

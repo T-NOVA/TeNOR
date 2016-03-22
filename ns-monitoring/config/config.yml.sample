@@ -11,7 +11,9 @@ threaded: true
 logstash_host: 127.0.0.1
 logstash_port: 5228
 
-ns_monitor_db: http://localhost:4012
 vnf_manager: http://localhost:4567
 ns_instance_repository: http://localhost:4013
 ns_instance_monitoring: http://localhost:4017
+
+gk:
+service_key:

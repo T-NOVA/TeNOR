@@ -15,7 +15,7 @@ vnf_catalogue: http://localhost:4569
 vnf_provisioning: http://localhost:4572
 vnf_monitoring: http://localhost:4573
 ns_manager: http://apis.t-nova.eu/orchestrator
-gk: http://localhost:8000
 wicm: http://193.136.92.173:12891
 
-service_key: 40add159-6e28-486d-9a81-ab5422d90529
+gk:
+service_key:
