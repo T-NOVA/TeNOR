@@ -20,7 +20,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
   def instantiateVNF(marketplaceUrl, instantiation_info)
     begin
-      response = RestClient.post settings.vnf_manager + '/vnf-provisioning/vnf-instances', instantiation_info.to_json, :content_type => :json
+      response = RestClient.post @tenor_modules.select {|service| service["name"] == "vnf_manager" } + '/vnf-provisioning/vnf-instances', instantiation_info.to_json, :content_type => :json
     rescue => e
       puts "Rescue instatiation"
       logger.error e
@@ -39,6 +39,8 @@ class OrchestratorNsProvisioner < Sinatra::Application
     logger.debug message.to_json
     begin
       response = RestClient.post marketplaceUrl, message.to_json, :content_type => :json
+    rescue RestClient::ResourceNotFound
+      puts "No exists in the Marketplace."
     rescue => e
       logger.error e
       #halt e.response.code, e.response.body
@@ -63,8 +65,6 @@ class OrchestratorNsProvisioner < Sinatra::Application
     tenant_token = openstackAuthentication(popUrls[:keystone], vnf_info['tenant_id'], vnf_info['username'], vnf_info['password'])
     token = openstackAdminAuthentication(popUrls[:keystone], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
 
-    #stack_name = instance['network_stack']['stack']['stack_name']
-    #stack_id = instance['network_stack']['stack']['id']
     if (instance['network_stack'])
       stack_url = instance['network_stack']['stack']['links'][0]['href']
       logger.error "Removing network stack"
@@ -76,18 +76,22 @@ class OrchestratorNsProvisioner < Sinatra::Application
         sleep(5)
         begin
           response = RestClient.get stack_url, 'X-Auth-Token' => tenant_token, :content_type => :json, :accept => :json
+          stack_info, error = parse_json(response)
+          status = stack_info['stack']['stack_status']
         rescue Errno::ECONNREFUSED
           error = {"info" => "VIM unrechable."}
           #recoverState(popInfo, vnf_info, @instance, error)
           return
+        rescue RestClient::ResourceNotFound
+          logger.info "Network already removed."
+          status = "DELETE_COMPLETE"
         rescue => e
           puts "If no exists means that is deleted correctly"
           status = "DELETE_COMPLETE"
           logger.error e
           logger.error e.response
         end
-        stack_info, error = parse_json(response)
-        status = stack_info['stack']['stack_status']
+
         puts status
         if (status == "DELETE_FAILED")
           deleteStack(stack_url, tenant_token)
@@ -97,7 +101,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
         break if count > 10
       end
 
-      logger.error "Network stack removed correctly"
+      logger.info "Network stack removed correctly"
     end
     if (!vnf_info['security_group_id'].nil?)
 #      deleteSecurityGroup(popUrls[:compute], vnf_info['tenant_id'], vnf_info['security_group_id'], tenant_token)
@@ -130,8 +134,8 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
     ms = {
         :NS_id => nsd['id'],
-        :tenor_api => settings.tenor_api,
-        :infr_repo_api => settings.infr_repo_api,
+        :tenor_api => settings.manager,
+        :infr_repo_api => @tenor_modules.select {|service| service["name"] == "infr_repository" },
         :ir_simulation => "true",
         :ns_simulation => "true",
         :development => true,
@@ -253,7 +257,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
             nfvi_mkt_id: '1'
         }
         begin
-          response = RestClient.post settings.wicm + '/vnf-connectivity', wicm_message.to_json, :content_type => :json, :accept => :json
+          response = RestClient.post @tenor_modules.select {|service| service["name"] == "wicm" } + '/vnf-connectivity', wicm_message.to_json, :content_type => :json, :accept => :json
         rescue Errno::ECONNREFUSED
           error = {"info" => "WICM unreachable."}
           recoverState(popInfo, vnf_info, @instance, error)
@@ -270,7 +274,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
         # Request HOT Generator to build the WICM - SFC integration
         provider_info['physical_network'] = 'sfcvlan'
         begin
-          response = RestClient.post settings.hot_generator + '/wicmhot', provider_info.to_json, :content_type => :json, :accept => :json
+          response = RestClient.post @tenor_modules.select {|service| service["name"] == "hotgenerator" } + '/wicmhot', provider_info.to_json, :content_type => :json, :accept => :json
         rescue Errno::ECONNREFUSED
           error = {"info" => "HOT Generator unreachable."}
           recoverState(popInfo, vnf_info, @instance, error)
@@ -339,7 +343,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
       puts "Generating network HOT template..."
       begin
-        response = RestClient.post settings.hot_generator + '/networkhot/' + sla_id, hot_generator_message.to_json, :content_type => :json, :accept => :json
+        response = RestClient.post @tenor_modules.select {|service| service["name"] == "hot_generator" } + '/networkhot/' + sla_id, hot_generator_message.to_json, :content_type => :json, :accept => :json
       rescue Errno::ECONNREFUSED
         recoverState(popInfo, vnf_info, @instance, "HOT Generator unreachable")
         return
@@ -465,7 +469,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
           },
           :networks => networks,
           :security_group_id => vnf_info['security_group_id'],
-          :callback_url => settings.tenor_api + "/ns-instances/" + @instance['id'] + "/instantiate"
+          :callback_url => settings.manager + "/ns-instances/" + @instance['id'] + "/instantiate"
       }
 
       puts "Instantiation VNF..."

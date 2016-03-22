@@ -24,6 +24,7 @@ require 'yaml'
 require 'logstash-logger'
 require 'eventmachine'
 
+
 # Require the bundler gem and then call Bundler.require to load in all gems
 # listed in Gemfile.
 require 'bundler'
@@ -43,7 +44,7 @@ configure do
 			outputs: [
 					{ type: :stdout, formatter: ::Logger::Formatter },
 					{ type: :file, path: "log/#{settings.environment}.log", sync: true},
-					{ host: settings.logstash_host, port: settings.logstash_port }
+					{ host: settings.logstash_host, port: settings.logstash_port, sync: false}
 			])
 	LogStashLogger.configure do |config|
 		config.customize_event do |event|
@@ -54,9 +55,19 @@ configure do
 end
 
 before do
+
 	env['rack.logger'] = settings.logger
+  begin
+    response = RestClient.get settings.manager + '/configs/services'
+  rescue => e
+    puts "\e[31mNS Manager is down. Services no updated.\e[0m"
+    halt 500, "NS Manager down"
+  end
+  @tenor_modules = JSON.parse(response).to_set
+
 end
 
 
 class OrchestratorNsProvisioner < Sinatra::Application
+  services = settings.dependencies
 end

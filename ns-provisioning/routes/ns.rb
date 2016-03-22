@@ -18,19 +18,6 @@
 # @see OrchestratorNsProvisioner
 class OrchestratorNsProvisioner < Sinatra::Application
 
-  before do
-    if request.path_info == '/gk_credentials'
-      return
-    end
-
-    if settings.environment == 'development'
-      return
-    end
-
-    authorized?
-
-  end
-
   # @method post_ns
   # @overload post '/ns'
   #   Post a NS in JSON format
@@ -45,13 +32,16 @@ class OrchestratorNsProvisioner < Sinatra::Application
     instantiation_info, errors = parse_json(request.body.read)
     return 400, errors.to_json if errors
 
-    callbackUrl =
     nsd = instantiation_info['nsd']
 
     if instantiation_info['flavour'].nil?
       error = "Flavour is null"
       halt 400, "Failed creating instance. Flavour is null"
       #generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", error))
+    end
+
+    if services.all? { |x| tenor_modules.detect{|el| el['name'] == x} }
+      halt 400, "The orchestrator has not the correct dependencies"
     end
 
     instance = {
@@ -105,8 +95,9 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
   #get instance status
   get "/ns-instances/:ns_instance_id/status" do
+    url = @tenor_modules.select {|service| service["name"] == "ns_instance_repository" }[0]
     begin
-      response = RestClient.get settings.ns_instance_repository + '/ns-instances/' + params['ns_instance_id'].to_s, :content_type => :json
+      response = RestClient.get url['host'].to_s + ":" + url['port'].to_s + '/ns-instances/' + params['ns_instance_id'].to_s, :content_type => :json
     rescue => e
       logger.error e
       if (defined?(e.response)).nil?
@@ -120,10 +111,11 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
   #get instances given status
   get "/ns-instances" do
+    url = @tenor_modules.select {|service| service["name"] == "ns_instance_repository" }[0]
     if params[:status]
-      url = settings.ns_instance_repository + '/ns-instances?status=' + params[:status]
+      url = url['host'].to_s + ":" + url['port'].to_s + '/ns-instances?status=' + params[:status]
     else
-      url = settings.ns_instance_repository + '/ns-instances'
+      url = url['host'].to_s + ":" + url['port'].to_s + '/ns-instances'
     end
 
     begin
@@ -139,9 +131,9 @@ class OrchestratorNsProvisioner < Sinatra::Application
   end
 
   get "/ns-instances/:instance" do
-
+    url = @tenor_modules.select {|service| service["name"] == "ns_instance_repository" }[0]
     begin
-      response = RestClient.get settings.ns_instance_repository + '/ns-instances/'+params['instance'], :content_type => :json
+      response = RestClient.get url['host'].to_s + ":" + url['port'].to_s  + '/ns-instances/'+params['instance'], :content_type => :json
     rescue => e
       logger.error e
       if (defined?(e.response)).nil?
@@ -169,6 +161,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
     #popInfo = getPopInfo(@instance['vnf_info']['pop_id'])
     popUrls = getPopUrls(popInfo['info'][0]['extrainfo'])
+    vnf_manager = @tenor_modules.select {|service| service["name"] == "ns_instance_repository" }[0]
 
     if params[:status] === 'terminate'
 
@@ -176,9 +169,11 @@ class OrchestratorNsProvisioner < Sinatra::Application
       @instance['vnfrs'].each do |vnf|
         auth = {:auth => { :tenant => @instance['vnf_info']['tenant_name'], :username => @instance['vnf_info']['username'], :password => @instance['vnf_info']['password'], :url => {:keystone => popUrls[:keystone] } } }
         begin
-          response = RestClient.post settings.vnf_manager + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/destroy', auth.to_json, :content_type => :json
+          response = RestClient.post vnf_manager['host'].to_s + ":" + vnf_manager['port'].to_s  + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/destroy', auth.to_json, :content_type => :json
         rescue Errno::ECONNREFUSED
           halt 500, 'VNF Manager unreachable'
+        rescue RestClient::ResourceNotFound
+          puts "Already removed from the VIM."
         rescue => e
           logger.error e.response
           halt e.response.code, e.response.body
@@ -192,13 +187,14 @@ class OrchestratorNsProvisioner < Sinatra::Application
       EM.defer do
         removeInstance(@instance)
       end
+      halt 200, "Removed correctly"
     elsif params[:status] === 'start'
 
       @instance['vnfrs'].each do |vnf|
         puts vnf
         event = {:event => "start"}
         begin
-          response = RestClient.put settings.vnf_manager + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/config', event.to_json, :content_type => :json
+          response = RestClient.put vnf_manager['host'].to_s + ":" + vnf_manager['port'].to_s  + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/config', event.to_json, :content_type => :json
         rescue Errno::ECONNREFUSED
           halt 500, 'VNF Manager unreachable'
         rescue => e
@@ -215,7 +211,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
         puts vnf
         event = {:event => "stop"}
         begin
-          response = RestClient.put settings.vnf_manager + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/config', event.to_json, :content_type => :json
+          response = RestClient.put vnf_manager['host'].to_s + ":" + vnf_manager['port'].to_s  + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/config', event.to_json, :content_type => :json
         rescue Errno::ECONNREFUSED
           halt 500, 'VNF Manager unreachable'
         rescue => e
@@ -234,8 +230,11 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
   #remove
   delete "/ns-instances/:ns_instance_id" do
+    url = @tenor_modules.select {|service| service["name"] == "ns_instance_repository" }[0]
+    vnf_manager = @tenor_modules.select {|service| service["name"] == "vnf_manager" }[0]
+    wicm = @tenor_modules.select {|service| service["name"] == "wicm" }[0]
     begin
-      response = RestClient.get settings.ns_instance_repository + '/ns-instances/' + params['ns_instance_id'].to_s, :content_type => :json
+      response = RestClient.get url['host'].to_s + ":" + url['port'].to_s + '/ns-instances/' + params['ns_instance_id'].to_s, :content_type => :json
     rescue Mongoid::Errors::DocumentNotFound => e
       logger.error "This instance id no exists"
     end
@@ -244,7 +243,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
     # Request WICM to stop redirecting traffic
     begin
-      response = RestClient.delete settings.wicm + "/vnf-connectivity/#{@instance['nsd_id']}", :content_type => :json, :accept => :json
+      response = RestClient.delete wicm['host'].to_s + ":" + wicm['port'].to_s + "/vnf-connectivity/#{@instance['nsd_id']}", :content_type => :json, :accept => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'WICM unreachable'
     rescue => e
@@ -266,7 +265,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
       if (!vnf['vnfr_id'].nil?)
         auth = {:auth => {:tenant => @instance['vnf_info']['tenant_name'], :username => @instance['vnf_info']['username'], :password => @instance['vnf_info']['password'], :url => {:keystone => popUrls[:keystone]}}}
         begin
-          response = RestClient.post settings.vnf_manager + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/destroy', auth.to_json, :content_type => :json
+          response = RestClient.post vnf_manager['host'].to_s + ":" + vnf_manager['port'].to_s + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/destroy', auth.to_json, :content_type => :json
         rescue Errno::ECONNREFUSED
           halt 500, 'VNF Manager unreachable'
         rescue => e
@@ -347,15 +346,16 @@ class OrchestratorNsProvisioner < Sinatra::Application
     #insert statistic information to NS Manager
     EM.defer do
       begin
-        response = RestClient.post settings.tenor_api + '/performance-stats', @instance.to_json, :content_type => :json
+        response = RestClient.post settings.manager + '/performance-stats', @instance.to_json, :content_type => :json
       rescue => e
         logger.error e
       end
     end
 
     #get NSD, for monitoring parameters
+    ns_catalogue = @tenor_modules.select {|service| service["name"] == "ns_catalogue" }[0]
     begin
-      response = RestClient.get settings.ns_catalogue + '/network-services/' + @instance['nsd_id'].to_s, :content_type => :json
+      response = RestClient.get ns_catalogue['host'].to_s + ":" + ns_catalogue['port'].to_s  + '/network-services/' + @instance['nsd_id'].to_s, :content_type => :json
     rescue => e
       logger.error e
       if (defined?(e.response)).nil?
