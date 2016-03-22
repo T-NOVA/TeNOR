@@ -139,7 +139,7 @@ class VNFMonitoring < Sinatra::Application
         respone = RestClient.post settings.vnf_instance_repository + '/vnf-monitoring/' + vnfr_id, metrics.to_json, :content_type => :json, :accept => :json
       rescue => e
         puts e
-        puts "Error with the subscription."
+        puts "Error saving values to Cassandra."
       end
 
       begin
