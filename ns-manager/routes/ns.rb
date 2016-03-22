@@ -21,7 +21,7 @@ class TnovaManager < Sinatra::Application
   get '/network-services' do
 
     begin
-      @service = ServiceModel.find_by(name: "nscatalogue")
+      @service = ServiceModel.find_by(name: "ns_catalogue")
     rescue Mongoid::Errors::DocumentNotFound => e
       halt 500, {'Content-Type' => "text/plain"}, "Microservice unrechable."
     end
@@ -42,7 +42,7 @@ class TnovaManager < Sinatra::Application
   get '/network-services/:id' do
 
     begin
-      @service = ServiceModel.find_by(name: "nscatalogue")
+      @service = ServiceModel.find_by(name: "ns_catalogue")
     rescue Mongoid::Errors::DocumentNotFound => e
       halt 500, {'Content-Type' => "text/plain"}, "Microservice unrechable."
     end
@@ -66,7 +66,7 @@ class TnovaManager < Sinatra::Application
     return 415 unless request.content_type == 'application/json'
 
     begin
-      @service = ServiceModel.find_by(name: "nscatalogue")
+      @service = ServiceModel.find_by(name: "ns_catalogue")
     rescue Mongoid::Errors::DocumentNotFound => e
       halt 500, {'Content-Type' => "text/plain"}, "Microservice unrechable."
     end
@@ -92,7 +92,7 @@ class TnovaManager < Sinatra::Application
     return 415 unless request.content_type == 'application/json'
 
     begin
-      @service = ServiceModel.find_by(name: "nscatalogue")
+      @service = ServiceModel.find_by(name: "ns_catalogue")
     rescue Mongoid::Errors::DocumentNotFound => e
       halt 500, {'Content-Type' => "text/plain"}, "Microservice unrechable."
     end
@@ -113,7 +113,7 @@ class TnovaManager < Sinatra::Application
   delete '/network-services/:external_ns_id' do
 
     begin
-      @service = ServiceModel.find_by(name: "nscatalogue")
+      @service = ServiceModel.find_by(name: "ns_catalogue")
     rescue Mongoid::Errors::DocumentNotFound => e
       halt 500, {'Content-Type' => "text/plain"}, "Microservice unrechable."
     end

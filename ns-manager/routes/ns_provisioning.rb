@@ -21,7 +21,7 @@ class TnovaManager < Sinatra::Application
   post '/ns-instances' do
 
     begin
-      @service = ServiceModel.find_by(name: "nsprovisioning")
+      @service = ServiceModel.find_by(name: "ns_provisioning")
     rescue Mongoid::Errors::DocumentNotFound => e
       halt 500, {'Content-Type' => "text/plain"}, "NS Provisioning not registred."
     end
@@ -61,7 +61,7 @@ class TnovaManager < Sinatra::Application
 
   get "/ns-instances/:ns_instance_id" do
     begin
-      @service = ServiceModel.find_by(name: "nsprovisioning")
+      @service = ServiceModel.find_by(name: "ns_provisioning")
     rescue Mongoid::Errors::DocumentNotFound => e
       halt 500, {'Content-Type' => "text/plain"}, "NS Provisioning not registred."
     end
@@ -80,7 +80,7 @@ class TnovaManager < Sinatra::Application
 
   put '/ns-instances/:ns_instance_id' do
     begin
-      @service = ServiceModel.find_by(name: "nsprovisioning")
+      @service = ServiceModel.find_by(name: "ns_provisioning")
     rescue Mongoid::Errors::DocumentNotFound => e
       halt 500, {'Content-Type' => "text/plain"}, "NS Provisioning not registred."
     end
@@ -102,7 +102,7 @@ class TnovaManager < Sinatra::Application
 
   get "/ns-instances/:ns_instance_id/status" do
     begin
-      @service = ServiceModel.find_by(name: "nsprovisioning")
+      @service = ServiceModel.find_by(name: "ns_provisioning")
     rescue Mongoid::Errors::DocumentNotFound => e
       halt 500, {'Content-Type' => "text/plain"}, "NS Provisioning not registred."
     end
@@ -121,7 +121,7 @@ class TnovaManager < Sinatra::Application
 
   get "/ns-instances" do
     begin
-      @service = ServiceModel.find_by(name: "nsprovisioning")
+      @service = ServiceModel.find_by(name: "ns_provisioning")
     rescue Mongoid::Errors::DocumentNotFound => e
       halt 500, {'Content-Type' => "text/plain"}, "NS Provisioning not registred."
     end
@@ -140,7 +140,7 @@ class TnovaManager < Sinatra::Application
 
   put '/ns-instances/:ns_instance_id/:status' do
     begin
-      @service = ServiceModel.find_by(name: "nsprovisioning")
+      @service = ServiceModel.find_by(name: "ns_provisioning")
     rescue Mongoid::Errors::DocumentNotFound => e
       halt 500, {'Content-Type' => "text/plain"}, "NS Provisioning not registred."
     end
@@ -174,7 +174,7 @@ class TnovaManager < Sinatra::Application
 
   delete '/ns-instances/:ns_instance_id' do
     begin
-      @service = ServiceModel.find_by(name: "nsprovisioning")
+      @service = ServiceModel.find_by(name: "ns_provisioning")
     rescue Mongoid::Errors::DocumentNotFound => e
       halt 500, {'Content-Type' => "text/plain"}, "NS Provisioning not registred."
     end
@@ -220,7 +220,7 @@ class TnovaManager < Sinatra::Application
     callback_response, errors = parse_json(request.body.read)
 
     begin
-      @service = ServiceModel.find_by(name: "nsprovisioning")
+      @service = ServiceModel.find_by(name: "ns_provisioning")
     rescue Mongoid::Errors::DocumentNotFound => e
       halt 500, {'Content-Type' => "text/plain"}, "NS Provisioning not registred."
     end
@@ -255,7 +255,7 @@ class TnovaManager < Sinatra::Application
 
   get '/vnf-provisioning/vnf-instances' do
     begin
-      @service = ServiceModel.find_by(name: "vnfmanager")
+      @service = ServiceModel.find_by(name: "vnf_manager")
     rescue Mongoid::Errors::DocumentNotFound => e
       halt 500, {'Content-Type' => "text/plain"}, "VNF Manager not registred."
     end
@@ -275,7 +275,7 @@ class TnovaManager < Sinatra::Application
 
   get '/vnf-provisioning/vnf-instances/:vnfr_id' do
     begin
-      @service = ServiceModel.find_by(name: "vnfmanager")
+      @service = ServiceModel.find_by(name: "vnf_manager")
     rescue Mongoid::Errors::DocumentNotFound => e
       halt 500, {'Content-Type' => "text/plain"}, "VNF Manager not registred."
     end

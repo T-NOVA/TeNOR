@@ -72,6 +72,23 @@ class TnovaManager < Sinatra::Application
     end
   end
 
+  def registerExternalService()
+    @json = JSON.parse(json)
+    begin
+      @service = ServiceModel.find_by(:name => @json['name'])
+      @service.update_attributes(@json)
+      return "Service updated"
+    rescue Mongoid::Errors::DocumentNotFound => e
+      begin
+        @service = ServiceModel.create!(@json)
+        return "Service registered"
+      rescue => e
+        logger.error e
+        halt 500, {'Content-Type' => 'text/plain'}, "Error registering the service"
+      end
+    end
+  end
+
   def unregisterService(name)
     settings.services[name] = nil
     ServiceModel.find_by(name: params["microservice"]).delete
