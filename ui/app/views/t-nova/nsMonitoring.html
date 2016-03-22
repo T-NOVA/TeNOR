@@ -1,0 +1,66 @@
+<h3>Network Service Monitoring</h3>
+<ol class="breadcrumb">
+    <li class="active"><i class="fa fa-tasks"></i> <a ui-sref="root.nsInstances">Ns instances</a></li>
+    <li><i class="fa fa-tasks"></i> <a ui-sref="root.vnfInstances">VNF instances</a></li>
+</ol>
+<div class="row">
+    <div class="col-md-12">
+        <div class="content-box-large">
+            <div class="panel-heading">
+                <div class="panel-title">Instance {{instanceId}}</div>
+                <div class="panel-options">
+                    <button ng-click="removeSP()" class="btn btn-primary btn-xs"><i class="glyphicon glyphicon-refresh"></i> Generate report</button>
+                    <a href="" data-rel="collapse"><i class="glyphicon glyphicon-refresh"></i></a>
+                    <a href="" data-rel="reload"><i class="glyphicon glyphicon-cog"></i></a>
+                </div>
+            </div>
+            <div class="panel-body">
+                <table ng-table="tableParams" class="table ng-table-responsive">
+                    <tr ng-repeat="row in tableData">
+                        <td data-title="'Statistic'" class="col-sm-2 col-md-2 col-lg-2">{{row.type}}</td>
+                        <td data-title="'Current value'" class="col-sm-2 col-md-2 col-lg-2">{{row.valueType}}</td>
+                        <td data-title="'Action'" class="col-sm-2 col-md-2 col-lg-2">
+                            <button ng-click="reloadGraph(row.valueType)" class="btn btn-primary btn-xs">Show graph</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!--div class="col-md-4">
+        <div class="content-box-large">
+            <div class="panel-heading">
+                <div class="panel-title">Infrastructure as a Service KPIs</div>
+            </div>
+            <div class="panel-body">
+                <div style="float:left; text-align: center; font-size: 15px;">
+                    CPU Use
+                    <br/>
+                    <div class="chart" easypiechart options="options" percent="cpu_percent"><span class="percent" ng-bind="cpu_percent"></span></div>
+                </div>
+                <div style="float:left; text-align: center; font-size: 15px;">
+                    Memory use
+                    <br/>
+                    <div class="chart" easypiechart options="options" percent="mem_percent"><span class="percent" ng-bind="mem_percent"></span></div>
+                </div>
+            </div>
+        </div>
+    </div-->
+</div>
+<div class="row" ng-if="graph_name">
+    <div class="col-md-12">
+        <div class="content-box-large">
+            <div class="panel-heading">
+                <div class="panel-title">{{graph_name}}</div>
+                <div class="panel-options">
+                    <a href="" data-rel="collapse"><i class="glyphicon glyphicon-refresh"></i></a>
+                    <a href="" data-rel="reload"><i class="glyphicon glyphicon-cog"></i></a>
+                </div>
+            </div>
+            <div id="graphChart" class="panel-body">
+                <div id="visualization"></div>
+                <div stream-chart chart-data="monitoringData"></div>
+            </div>
+        </div>
+    </div>
+</div>

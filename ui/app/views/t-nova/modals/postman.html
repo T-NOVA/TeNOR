@@ -1,0 +1,74 @@
+<div class="modal" tabindex="-1" role="dialog" ng-controller="postmanController">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" ng-show="title">
+                <button type="button" class="close" ng-click="$hide()">&times;</button>
+                <h4 class="modal-title" ng-bind="title"></h4>
+            </div>
+            <div class="col-md-12">
+                <div class="">
+                    <div class="panel-body">
+                        <form class="form-horizontal" role="form" method="post">
+                            <div class="form-group">
+                                <label for="inputMethod" class="col-sm-2 control-label">Method</label>
+                                <div class="col-sm-10">
+                                    <p>
+                                        <select disabled>
+                                            <option value="post">POST</option>
+                                        </select>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="inputUrl" class="col-sm-2 control-label">Url</label>
+                                <div class="col-sm-10">
+                                    <input type="url" ng-model="post.url" class="form-control" id="url" placeholder="">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Upload json file</label>
+                                <div class="col-sm-10">
+                                    <div class="col-sm-2">
+                                        <button placeholder="Type" type="button" class="btn btn-default" ng-options="type as type for type in selectType"
+                                                ng-model="selectedType" ng-change="updateType()" template="partials/t-nova/select.tpl.html" bs-select>Type</button>
+                                    </div>
+                                    <div class="col-sm-8">
+                                     <input type="file" ng-model="post.file" class="form-control" id="file" onchange="angular.element(this).scope().loadFile(this)"></select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="inputMethod" class="col-sm-2 control-label">Templates</label>
+                                <div class="col-sm-10">
+                                    <button placeholder="Template" type="button" class="btn btn-default" ng-options="template as template.type for template in selectTemplates"
+                                            ng-model="selectedItem" ng-change="update()" template="partials/t-nova/select.tpl.html" bs-select>Template</button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Body</label>
+                                <div class="col-sm-10">
+                                    <pre ng-model="post.jsonTemplate" pretty-json="post.jsonTemplate" edition="true"/>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="col-sm-2 control-label">Response</label>
+                                <div class="col-sm-10">
+                                  <textarea class="form-control" ng-model="post.response" rows="1" readonly></textarea>
+                                </div>
+                            </div>
+                            <br/>
+                            <div class="form-group">
+                                <div class="col-sm-offset-2 col-sm-10">
+                                    <button type="submit" class="btn btn-primary" ng-click="sendPOST(post)">Send</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" ng-click="$hide()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

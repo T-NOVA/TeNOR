@@ -1,0 +1,118 @@
+<div class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" style="width: 800px">
+        <div class="modal-content">
+            <div class="modal-header" ng-show="title">
+                <button type="button" class="close" ng-click="$hide()">&times;</button>
+                <h4 class="modal-title" ng-bind="title"></h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6 col-xs-6">
+                        <div class="form-group">
+                            <label for="node_fog_agent">Id:</label>
+                            <input type="text" readonly class="form-control" id="node_fog_agent" value="{{d.id}}">
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-xs-6">
+                        <div class="form-group">
+                            <label for="node_os">NSD Id:</label>
+                            <input type="text" readonly class="form-control" id="node_os" value="{{d.descriptor_reference}}">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 col-xs-6">
+                        <div class="form-group">
+                            <label for="node_os_version">Status:</label>
+                            <input type="text" readonly class="form-control" id="status" value="{{d.status}}">
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-xs-6">
+                        <div class="form-group">
+                            <label for="node_fog_agent_version">Created at:</label>
+                            <input type="text" readonly class="form-control" id="node_fog_agent_version" value="{{d.created_at}}">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 col-xs-4">
+                        <div class="form-group">
+                            <label for="node_platform">Vendor:</label>
+                            <input type="text" readonly class="form-control" id="node_platform" value="{{d.vendor}}">
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-xs-4">
+                        <div class="form-group">
+                            <label for="node_state">Version:</label>
+                            <input type="text" readonly class="form-control" id="node_state" value="{{d.version}}">
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-xs-4">
+                        <div class="form-group">
+                            <label for="node_state">Service Deployment Flavour:</label>
+                            <input type="text" readonly class="form-control" id="flavour" value="{{d.service_deployment_flavour}}">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 col-xs-6">
+                        <div class="form-group">
+                            <label for="node_fog_agent">Mapping time (ms):</label>
+                            <input type="text" readonly class="form-control" id="node_fog_agent" value="{{d.mapping_total_time}}">
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-xs-6">
+                        <div class="form-group">
+                            <label for="node_fog_agent_version">Instantiation time (ms):</label>
+                            <input type="text" readonly class="form-control" id="node_fog_agent_version" value="{{d.instantiation_total_time}}">
+                        </div>
+                    </div>
+                </div>
+                <div class="row" ng-show="resource.control_ip">
+                    <div class="col-md-6 col-xs-6">
+                        <div class="form-group">
+                            <label for="node_fog_agent">Address:</label>
+                            <input type="text" readonly class="form-control" id="node_fog_agent" value="{{resource.control_ip.address}}">
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-xs-6">
+                        <div class="form-group">
+                            <label for="node_fog_agent_version">Netmask:</label>
+                            <input type="text" readonly class="form-control" id="node_fog_agent_version" value="{{resource.control_ip.netmask}}">
+                        </div>
+                    </div>
+                </div>
+                <div ng-show="resource.e_node_bs">
+                    Nodes:
+                    <div class="row" ng-repeat="e_node in resource.e_node_bs">
+                        <div class="col-md-6 col-xs-6">
+                            <div class="form-group">
+                                <label for="node_fog_agent">Name:</label>
+                                <input type="text" readonly class="form-control" id="node_fog_agent" value="{{e_node.name}}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-group" ng-model="panels.activePanel" role="tablist" aria-multiselectable="true" bs-collapse>
+                    <div class="panel panel-default" ng-repeat="panel in panels">
+                        <div class="panel-heading" role="tab">
+                            <h4 class="panel-title">
+                                <a bs-collapse-toggle style="cursor: pointer;">JSON format</a>
+                            </h4>
+                        </div>
+                        <div class="panel-collapse" role="tabpanel" bs-collapse-target>
+                            <div class="panel-body" style="overflow-y: scroll; height: 400px;">
+                                <pre class="beautify" ng-bind-html="jsonObj | prettify"></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- /.box-body -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="$hide()">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

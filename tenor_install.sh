@@ -57,7 +57,7 @@ printf "\nBundle install of each NS/VNF Module\n"
 declare -a tenor_ns_url=("ns_manager" "ns_provisioner" "nsd_validator" "ns_monitoring" "ns_catalogue" "ns_instance_repository" "sla_enforcement" )
 declare -a tenor_vnf_url=("vnf_manager" "vnf_provisioner" "vnfd_validator" "vnf_monitoring" "vnf_instance_repository" "vnf_catalogue" )
 
-bundle install
+bundle install --quiet
 
 for folder in $(find . -type d \( -name "ns*" -o -name "vnf*" -o -name "hot*" \) ); do
 	printf "$folder\n"
@@ -71,13 +71,13 @@ printf "\nConfigure NS/VNF modules\n"
 for folder in $(find . -type d  \( -name "ns*" -o -name "vnf*" -o -name "hot*" \) ); do
 	printf "$folder\n"
 	cd $folder
-	if [ "$folder" = "ns-manager" ]; then
+	if [ "$folder" = "./ns-manager" ]; then
 	    cd default/monitoring
 	    if [ ! -f config/config.yml ]; then
 	        cp config/config.yml.sample config/config.yml
 	    fi
 	    bundle install --quiet
-	    cd ../
+	    cd ../../
 	fi
 
 	if [ ! -f config/config.yml ]; then

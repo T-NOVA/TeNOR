@@ -21,7 +21,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
   def getPopInfo(pop_id)
 
     begin
-      response = RestClient.get "#{settings.tenor_api}/gatekeeper/dc/#{pop_id}", :content_type => :json
+      response = RestClient.get "#{settings.manager}/gatekeeper/dc/#{pop_id}", :content_type => :json
     rescue => e
       logger.error e
       raise 'Pop id no exists'

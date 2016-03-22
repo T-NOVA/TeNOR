@@ -19,8 +19,9 @@
 class OrchestratorNsProvisioner < Sinatra::Application
 
   def instantiateVNF(marketplaceUrl, instantiation_info)
+    url = @tenor_modules.select {|service| service["name"] == "vnf_manager" }[0]
     begin
-      response = RestClient.post @tenor_modules.select {|service| service["name"] == "vnf_manager" } + '/vnf-provisioning/vnf-instances', instantiation_info.to_json, :content_type => :json
+      response = RestClient.post url['host'].to_s + ":" + url['port'].to_s + '/vnf-provisioning/vnf-instances', instantiation_info.to_json, :content_type => :json
     rescue => e
       puts "Rescue instatiation"
       logger.error e
@@ -132,10 +133,12 @@ class OrchestratorNsProvisioner < Sinatra::Application
     sla_id = nsd['sla'].find { |sla| sla['sla_key'] == flavour }['id']
     puts sla_id
 
+    infr_repo_url = @tenor_modules.select {|service| service["name"] == "infr_repository" }[0]
+
     ms = {
         :NS_id => nsd['id'],
         :tenor_api => settings.manager,
-        :infr_repo_api => @tenor_modules.select {|service| service["name"] == "infr_repository" },
+        :infr_repo_api => infr_repo_url['host'].to_s + ":" + infr_repo_url['port'].to_s,
         :ir_simulation => "true",
         :ns_simulation => "true",
         :development => true,
@@ -248,6 +251,8 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
       logger.debug @instance
 
+      hot_url = @tenor_modules.select {|service| service["name"] == "hot_generator" }[0]
+
       if false
         # Request WICM to create a service
         wicm_message = {
@@ -256,8 +261,10 @@ class OrchestratorNsProvisioner < Sinatra::Application
             nap_mkt_id: '1',
             nfvi_mkt_id: '1'
         }
+        wicm_url = @tenor_modules.select {|service| service["name"] == "wicm" }[0]
+
         begin
-          response = RestClient.post @tenor_modules.select {|service| service["name"] == "wicm" } + '/vnf-connectivity', wicm_message.to_json, :content_type => :json, :accept => :json
+          response = RestClient.post wicm_url['host'].to_s + ":" + wicm_url['port'].to_s + '/vnf-connectivity', wicm_message.to_json, :content_type => :json, :accept => :json
         rescue Errno::ECONNREFUSED
           error = {"info" => "WICM unreachable."}
           recoverState(popInfo, vnf_info, @instance, error)
@@ -274,7 +281,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
         # Request HOT Generator to build the WICM - SFC integration
         provider_info['physical_network'] = 'sfcvlan'
         begin
-          response = RestClient.post @tenor_modules.select {|service| service["name"] == "hotgenerator" } + '/wicmhot', provider_info.to_json, :content_type => :json, :accept => :json
+          response = RestClient.post hot_url['host'].to_s + ":" + hot_url['port'].to_s + '/wicmhot', provider_info.to_json, :content_type => :json, :accept => :json
         rescue Errno::ECONNREFUSED
           error = {"info" => "HOT Generator unreachable."}
           recoverState(popInfo, vnf_info, @instance, error)
@@ -343,7 +350,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
       puts "Generating network HOT template..."
       begin
-        response = RestClient.post @tenor_modules.select {|service| service["name"] == "hot_generator" } + '/networkhot/' + sla_id, hot_generator_message.to_json, :content_type => :json, :accept => :json
+        response = RestClient.post hot_url['host'].to_s + ":" + hot_url['port'].to_s + '/networkhot/' + sla_id, hot_generator_message.to_json, :content_type => :json, :accept => :json
       rescue Errno::ECONNREFUSED
         recoverState(popInfo, vnf_info, @instance, "HOT Generator unreachable")
         return

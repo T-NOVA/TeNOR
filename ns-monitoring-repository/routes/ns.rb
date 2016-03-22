@@ -18,42 +18,45 @@
 # @see OrchestratorNsMonitoring
 class OrchestratorNsMonitoring < Sinatra::Application
 
-	# @method get_ns-monitoring
-	# @overload get '/ns-monitoring/:instance_id/monitoring-data/'
-	#	Returns all monitored data
-	get '/ns-monitoring/:instance_id/monitoring-data/' do
-	    t = []
+  # @method get_ns-monitoring
+  # @overload get '/ns-monitoring/:instance_id/monitoring-data/'
+  #	Returns all monitored data
+  get '/ns-monitoring/:instance_id/monitoring-data/' do
+    t = []
 
-	    if params[:metric] && !params[:start]
-	      @db.execute("SELECT metricName, date, unit, value FROM nsmonitoring WHERE instanceid='#{params[:instance_id].to_s}' AND metricname='#{params[:metric].to_s}' LIMIT 100").fetch { |row| t.push(row.to_hash) }
-	    elsif params[:metric] && params[:start] &&  !params[:end]
-	        @db.execute("SELECT metricName, date, unit, value FROM nsmonitoring WHERE instanceid='#{params[:instance_id].to_s}' AND metricname='#{params[:metric].to_s}' AND date >= #{params[:start]} ").fetch { |row| t.push(row.to_hash) }
-	    elsif params[:metric] && params[:start] &&  params[:end]
-	      @db.execute("SELECT metricName, date, unit, value FROM nsmonitoring WHERE instanceid='#{params[:instance_id].to_s}' AND metricname='#{params[:metric].to_s}' AND date >= #{params[:start]} AND date <= #{params[:end]}").fetch { |row| t.push(row.to_hash) }
-	    else
-	      @db.execute("SELECT metricName, date, unit, value FROM nsmonitoring WHERE instanceid='#{params[:instance_id].to_s}'").fetch { |row| t.push( row.to_hash ) }
-	    end
+    if params[:metric] && !params[:start]
+      @db.execute("SELECT metricName, date, unit, value FROM nsmonitoring WHERE instanceid='#{params[:instance_id].to_s}' AND metricname='#{params[:metric].to_s}' LIMIT 100").fetch { |row| t.push(row.to_hash) }
+    elsif params[:metric] && params[:start] && !params[:end]
+      @db.execute("SELECT metricName, date, unit, value FROM nsmonitoring WHERE instanceid='#{params[:instance_id].to_s}' AND metricname='#{params[:metric].to_s}' AND date >= #{params[:start]} ").fetch { |row| t.push(row.to_hash) }
+    elsif params[:metric] && params[:start] && params[:end]
+      @db.execute("SELECT metricName, date, unit, value FROM nsmonitoring WHERE instanceid='#{params[:instance_id].to_s}' AND metricname='#{params[:metric].to_s}' AND date >= #{params[:start]} AND date <= #{params[:end]}").fetch { |row| t.push(row.to_hash) }
+    else
+      @db.execute("SELECT metricName, date, unit, value FROM nsmonitoring WHERE instanceid='#{params[:instance_id].to_s}'").fetch { |row| t.push(row.to_hash) }
+    end
 
-		return t.to_json
-	end
+    return t.to_json
+  end
 
-	# @method get_ns-monitoring
-	# @overload get '/ns-monitoring/:instance_id/?:metric/last100/'
-	# Returns last 100 values
-	get '/ns-monitoring/:instance_id/monitoring-data/last100/' do
-		t = []
-		@db.execute("SELECT metricName, date, unit, value FROM nsmonitoring WHERE instanceid='#{params[:instance_id].to_s}' AND metricname='#{params[:metric].to_s}' ORDER BY metricname DESC LIMIT 100").fetch { |row| t.push(row.to_hash) }
-		return t.to_json
-	end
+  # @method get_ns-monitoring
+  # @overload get '/ns-monitoring/:instance_id/?:metric/last100/'
+  # Returns last 100 values
+  get '/ns-monitoring/:instance_id/monitoring-data/last100/' do
+    t = []
+    @db.execute("SELECT metricName, date, unit, value FROM nsmonitoring WHERE instanceid='#{params[:instance_id].to_s}' AND metricname='#{params[:metric].to_s}' ORDER BY metricname DESC LIMIT 100").fetch { |row| t.push(row.to_hash) }
+    return t.to_json
+  end
 
-	# @method post_ns-monitoring
-	# @overload post '/ns-monitoring/:instance_id'
-	# Inserts monitoring data
-	post '/ns-monitoring/:instance_id' do
-		#@json = JSON.parse(request.body.read)
-		mData = JSON.parse(request.body.read)
-		#@json.each do |item|
-			@db.execute("INSERT INTO nsmonitoring (instanceid, date, metricname, unit, value) VALUES ('#{params[:instance_id].to_s}', #{mData['timestamp']}, '#{mData['type']}', '#{mData['unit']}', '#{mData['value']}' )")
-		#end
-	end
+  # @method post_ns-monitoring
+  # @overload post '/ns-monitoring/:instance_id'
+  # Inserts monitoring data
+  post '/ns-monitoring/:instance_id' do
+    return 415 unless request.content_type == 'application/json'
+    json, errors = parse_json(request.body.read)
+    return 400, errors.to_json if errors
+
+    #@json.each do |item|
+    @db.execute("INSERT INTO nsmonitoring (instanceid, date, metricname, unit, value) VALUES ('#{params[:instance_id].to_s}', #{json['timestamp']}, '#{json['type']}', '#{json['unit']}', '#{json['value']}' )")
+    #end
+    halt 200
+  end
 end

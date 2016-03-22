@@ -1,0 +1,19 @@
+<div class="page-header">
+    <h1>Users</h1>
+</div>
+{{user}}
+<div><table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>LastName</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="u in users">
+                <td>{{u.name}}</td>
+                <td>{{u.lastName}}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

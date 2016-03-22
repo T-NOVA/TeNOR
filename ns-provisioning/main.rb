@@ -69,5 +69,4 @@ end
 
 
 class OrchestratorNsProvisioner < Sinatra::Application
-  services = settings.dependencies
 end
