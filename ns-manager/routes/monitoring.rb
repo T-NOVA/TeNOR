@@ -74,7 +74,7 @@ class TnovaManager < Sinatra::Application
       halt e.response.code, e.response.body
     end
     #return response.code, response.body
-    return 200
+    return 200, response.body
   end
 
   #/instances/:instance_id/monitoring-data/?instance_type=ns&metric

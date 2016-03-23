@@ -25,13 +25,13 @@ class OrchestratorVnfMonitoring < Sinatra::Application
     t = []
 
     if params[:metric] && !params[:start]
-      @db.execute("SELECT metricName, date, unit, value FROM vnfmonitoring WHERE instanceid='#{params[:instance_id].to_s}' AND metricname='#{params[:metric].to_s}' LIMIT 100").fetch { |row| t.push(row.to_hash) }
+      @db.execute("SELECT metricName, date, unit, value FROM vnfmonitoring WHERE instanceid='#{params[:instance_id].to_s}' AND metricname='#{params[:metric].to_s}' LIMIT 2000").fetch { |row| t.push(row.to_hash) }
     elsif params[:metric] && params[:start] && !params[:end]
-      @db.execute("SELECT metricName, date, unit, value FROM vnfmonitoring WHERE instanceid='#{params[:instance_id].to_s}' AND metricname='#{params[:metric].to_s}' AND date >= #{params[:start]} ").fetch { |row| t.push(row.to_hash) }
+      @db.execute("SELECT metricName, date, unit, value FROM vnfmonitoring WHERE instanceid='#{params[:instance_id].to_s}' AND metricname='#{params[:metric].to_s}' AND date >= #{params[:start]} LIMIT 2000").fetch { |row| t.push(row.to_hash) }
     elsif params[:metric] && params[:start] && params[:end]
-      @db.execute("SELECT metricName, date, unit, value FROM vnfmonitoring WHERE instanceid='#{params[:instance_id].to_s}' AND metricname='#{params[:metric].to_s}' AND date >= #{params[:start]} AND date <= #{params[:end]}").fetch { |row| t.push(row.to_hash) }
+      @db.execute("SELECT metricName, date, unit, value FROM vnfmonitoring WHERE instanceid='#{params[:instance_id].to_s}' AND metricname='#{params[:metric].to_s}' AND date >= #{params[:start]} AND date <= #{params[:end]} LIMIT 2000").fetch { |row| t.push(row.to_hash) }
     else
-      @db.execute("SELECT metricName, date, unit, value FROM vnfmonitoring WHERE instanceid='#{params[:instance_id].to_s}'").fetch { |row| t.push(row.to_hash) }
+      @db.execute("SELECT metricName, date, unit, value FROM vnfmonitoring WHERE instanceid='#{params[:instance_id].to_s}' LIMIT 2000").fetch { |row| t.push(row.to_hash) }
     end
     return t.to_json
   end
