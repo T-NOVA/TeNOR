@@ -105,8 +105,6 @@ class VNFMonitoring < Sinatra::Application
     json, errors = parse_json(request.body.read)
     return 400, errors.to_json if errors
 
-    logger.debug json.to_json
-
     vnfr_id = params['vnfr_id']
 
     json.each do |instance|
@@ -153,12 +151,9 @@ class VNFMonitoring < Sinatra::Application
   end
 
   #/vnf-monitoring/instances/10/monitoring-data/
-  get '/vnf-monitoring/instances/:instance_id/monitoring-data/' do
-    puts "GET VNF MONITORING.............................."
-    composedUrl = '/vnf-monitoring/' + params["instance_id"].to_s + "/monitoring-data/?" + request.env['QUERY_STRING']
-    puts settings.vnf_instance_repository + composedUrl
+  get '/vnf-monitoring/:instance_id/monitoring-data/' do
     begin
-      response = RestClient.get settings.vnf_instance_repository + composedUrl, :content_type => :json
+      response = RestClient.get settings.vnf_instance_repository + request.fullpath, :content_type => :json
     rescue => e
       logger.error e.response
       #return e.response.code, e.response.body
