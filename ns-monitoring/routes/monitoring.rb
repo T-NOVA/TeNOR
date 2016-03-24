@@ -121,15 +121,7 @@ class NSMonitoring < Sinatra::Application
     measurements.each do |measurement|
       #parameter_name = monMetrics['parameters'].find {|p| p['id'] == parameters['id']}['name']
       parameter_info = monMetrics['parameters'].find { |p| p['name'] == measurement['type'] }
-      puts parameter_info
-      puts measurement['type']
       if !parameter_info.nil?
-        puts "no null"
-        puts "Parameter name:"
-        #puts parameter_name
-
-        #logger.error paramInfo
-
         if monMetrics.vnf_instances.length == 1
           #store value in cassandra
           metrics = {
