@@ -5,7 +5,6 @@ angular.module('tNovaApp')
 
         $scope.getVnfList = function () {
             tenorService.get('vnfs').then(function (data) {
-                //$scope.data = data;
                 $scope.dataCollection = data;
             });
         };
@@ -97,7 +96,7 @@ angular.module('tNovaApp')
             });
         };
     })
-    .controller('vnfMonitoringController', function ($scope, $stateParams, $filter, mDataService, $interval, tenorService) {
+    .controller('vnfMonitoringController', function ($scope, $stateParams, $filter, mDataService, $interval, tenorService, $timeout) {
         var promise;
         $scope.instanceId = $stateParams.id;
         if ($stateParams.id) {
@@ -121,111 +120,114 @@ angular.module('tNovaApp')
             });
         };
 
-        $scope.metric;
-
+        $scope.oldType = "";
         $scope.reloadGraph = function (type) {
-            //$stateParams.id = "a0c9e9a1-9fa7-481f-8023-64a51e19cfb4";
-
-            $interval.cancel(promise);
-            $scope.graph_name = type;
+            $interval.cancel(promise1);
+            $interval.cancel(promise2);
             $scope.monitoringData.clear();
+            $scope.newType = type;
+            if ($scope.oldType !== type) {
+                $scope.oldType = type;
+            }
+            $scope.showGraphWithHistoric(type);
+        }
 
-            console.log($scope.monitoringData);
+        $scope.showGraphWithHistoric = function (type) {
+            $scope.graph_name = type;
+            var historicInterval = 1000; //seconds
+            var realTimeInterval = 61000; //seconds
+            var lastStartDate = Math.floor(new Date().getTime() / 1000);
+            var lastEndDate = Math.floor(new Date().getTime() / 1000);
             var url;
-            if ($scope.monitoringData.length === 0) url = "instances/" + $stateParams.id + "/monitoring-data/?instance_type=vnf&metric=" + type;
-            else url = "instances/" + $stateParams.id + "/monitoring-data/?instance_type=vnf&metric=" + type + "&start=" + $scope.monitoringData.get($scope.monitoringData.length - 1).date;
-
-            tenorService.get(url).then(function (data) {
-                console.log(data);
-                angular.forEach(data, function (t) {
-                    t.id = $scope.monitoringData.length;
-                    t.x = t.date * 1000;
-                    t.y = Math.floor(t.value);
-                    $scope.monitoringData.add(t);
-                })
-            });
-
-            promise = $interval(function () {
-
-                console.log($scope.monitoringData);
-                var url;
-                if ($scope.monitoringData.length === 0) url = "instances/" + $stateParams.id + "/monitoring-data/?instance_type=vnf&metric=" + type;
-                else url = "instances/" + $stateParams.id + "/monitoring-data/?instance_type=vnf&metric=" + type + "&start=" + $scope.monitoringData.get($scope.monitoringData.length - 1).date;
-
+            var promise1 = $interval(function () {
+                url = "instances/" + $stateParams.id + "/monitoring-data/?instance_type=vnf&metric=" + type + "&end=" + lastEndDate;
                 tenorService.get(url).then(function (data) {
-                    console.log(data);
-                    angular.forEach(data, function (t) {
-                        t.id = $scope.monitoringData.length;
-                        t.x = t.date * 1000;
-                        t.y = Math.floor(t.value);
-                        $scope.monitoringData.add(t);
-                    })
+                    if (data.length == 0) {
+                        $interval.cancel(promise1);
+                        return
+                    }
+                    _.each(data, function (t) {
+                        t['x'] = t.date * 1000;
+                        t['y'] = Math.floor(t.value);
+                    });
+                    $scope.monitoringData.add(data);
+                    lastEndDate = data[data.length - 1].date - 1;
                 });
-            }, 60000);
+            }, historicInterval);
+            var promise2 = $interval(function () {
+                url = "instances/" + $stateParams.id + "/monitoring-data/?instance_type=vnf&metric=" + type + "&start=" + lastStartDate;
+                tenorService.get(url).then(function (data) {
+                    if (data.length == 0) return
+                    _.each(data, function (t) {
+                        t['x'] = t.date * 1000;
+                        t['y'] = Math.floor(t.value);
+                    });
+                    $scope.monitoringData.add(data);
+                    lastStartDate = data[data.length - 1].date;
+                });
+            }, realTimeInterval);
         };
 
+        //unused
+        $scope.reloadGraph2 = function (type) {
+            $interval.cancel(promise);
+            $scope.graph_name = type;
+            //$scope.monitoringData.clear();
+            var interval = 1000; //seconds
+            var lastDate = null;
+            console.log($scope.monitoringData);
+
+            var loop = function () {
+                console.log("Interval");
+                var url;
+                if ($scope.monitoringData.length === 0) url = "instances/" + $stateParams.id + "/monitoring-data/?instance_type=vnf&metric=" + type;
+                else {
+                    url = "instances/" + $stateParams.id + "/monitoring-data/?instance_type=vnf&metric=" + type + "&start=" + $scope.monitoringData.get($scope.monitoringData.length - 1).date;
+                    if (lastDate == null) lastDate = $scope.monitoringData.get($scope.monitoringData.length - 1).date;
+                    else {
+                        if (lastDate == $scope.monitoringData.get($scope.monitoringData.length - 1).date)
+                            interval = 61000;
+                        else lastDate = $scope.monitoringData.get($scope.monitoringData.length - 1).date
+                        console.log(interval);
+                        console.log($scope.monitoringData);
+                    }
+                }
+
+                tenorService.get(url).then(function (data) {
+                    var i = $scope.monitoringData.length;
+                    _.each(data, function (t) {
+                        //console.log(t);
+                        t['id'] = i;
+                        t['x'] = t.date * 1000;
+                        t['y'] = Math.floor(t.value);
+                        i++;
+                    });
+                    $scope.monitoringData.add(data);
+
+                });
+                if ($scope.newType == type) {
+                    $scope.reload = $timeout(loop, interval);
+                }
+            };
+            loop();
+        };
+
+        $scope.graph_name = "";
         $scope.monitoringData = new vis.DataSet();
 
-        $scope.reloadGraph("memfree");
-
-        $scope.rtt_metric = [];
-        $scope.packet_loss = [];
-        $scope.response_time = [];
-        $scope.rtt_metric.push();
-
-        mDataService.get($stateParams.id).then(function (data) {
-            $scope.mData = data;
-        });
-        $scope.mem_percent = 40;
-        var promise_table = $interval(function () {
-            $scope.cpu_percent = Math.floor((Math.random() * $scope.cpu_percent) + 20);
-            var init = Math.floor((Math.random() * 2));
-            init *= Math.floor(Math.random() * 2) == 1 ? 1 : -1;
-            $scope.mem_percent = $scope.mem_percent + init;
-            var rtt = Math.floor((Math.random() * 100) + 1); //ms
-
-            var second; // = $scope.rtt_metric[$scope.rtt_metric.length-1].second +1;
-            second = vis.moment();
-            $scope.rtt_metric.push({
-                x: second,
-                y: Math.floor((Math.random() * 100) + 1)
-            });
-            $scope.packet_loss.push({
-                x: second,
-                y: Math.floor((Math.random() * 100) + 1)
-            });
-            $scope.response_time.push({
-                x: second,
-                y: Math.floor((Math.random() * 100) + 1)
-            });
-            var packet_loss = Math.floor((Math.random() * 100) + 1); //%
-            var response_time = Math.floor((Math.random() * 100) + 1); //ms
-
-        }, 2000);
         $scope.options = {
 
         };
 
-        $scope.showGraph = function (type) {
-            $interval.cancel(promise);
-            $scope.graph_name = type;
-            $scope.monitoringData.clear();
-            promise = $interval(function () {
-                if (type == "Round Trip Time") $scope.data = $scope.rtt_metric;
-                if (type == "Packet loss") $scope.data = $scope.packet_loss;
-                if (type == "Response time") $scope.data = $scope.response_time;
-                var second = $scope.monitoringData.length + 1;
-                var metric1 = Math.round(Math.random() * 100);
-                $scope.monitoringData.add($scope.data[$scope.data.length - 1]);
-            }, 2000);
-        };
-
-        $scope.graph_name = "";
-        $scope.monitoringData = new vis.DataSet()
-
         $scope.$on("$destroy", function () {
             if (promise) {
                 $interval.cancel(promise);
+            }
+            if (promise1) {
+                $interval.cancel(promise1);
+            }
+            if (promise2) {
+                $interval.cancel(promise2);
             }
             if (promise_table) {
                 $interval.cancel(promise_table);

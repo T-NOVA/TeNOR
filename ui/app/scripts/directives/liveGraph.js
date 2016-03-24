@@ -108,7 +108,7 @@ angular.module('tNovaApp')
                 var dataset = new vis.DataSet();
 
                 var options = {
-                    start: vis.moment().add(-30, 'seconds'), // changed so its faster
+                    start: vis.moment().add(-30, 'hours'), // changed so its faster
                     end: vis.moment(),
                     dataAxis: {
                         customRange: {
@@ -134,9 +134,9 @@ angular.module('tNovaApp')
                     var range = graph2d.getWindow();
                     var interval = range.end - range.start;
 
-                    graph2d.setWindow(now - interval, now, {
+                    /*graph2d.setWindow(now - interval, now, {
                         animate: false
-                    });
+                    });*/
                     setTimeout(renderStep, DELAY);
                 }
             }
