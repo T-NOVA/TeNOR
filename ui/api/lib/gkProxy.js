@@ -13,9 +13,12 @@ module.exports = function (app) {
         res.removeHeader('x-host');
         var r = null;
         if (req.method === 'POST') {
+            if (!req.rawBody) {
+                req.rawBody = "";
+            }
             r = request.post({
                 uri: url,
-                body: req.body,
+                body: req.rawBody,
                 headers: req.headers
             }).pipe(res);
         } else if (req.method === 'PUT') {

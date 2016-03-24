@@ -73,6 +73,48 @@ angular.module('tNovaApp')
             return deferred.promise;
         };
 
+        var get = function (token, path) {
+            var deferred = $q.defer();
+            var url = 'rest/gk/api/' + path;
+            $http.get(url, {
+                headers: {
+                    'X-Auth-Token': token,
+                    'X-host': AUTHENTICATION
+                }
+            }).then(
+                function (response) {
+                    console.log(response);
+                    deferred.resolve(response.data);
+                },
+                function (response) {
+                    console.log(response);
+                    deferred.resolve(response.data);
+                }
+            );
+            return deferred.promise;
+        };
+
+        var post = function (token, path, object) {
+            var deferred = $q.defer();
+            var url = 'rest/gk/api/' + path;
+            $http.post(url, object, {
+                headers: {
+                    'X-Auth-Token': token,
+                    'X-host': AUTHENTICATION
+                }
+            }).then(
+                function (response) {
+                    console.log(response);
+                    deferred.resolve(response.data);
+                },
+                function (response) {
+                    console.log(response);
+                    deferred.resolve(response.data);
+                }
+            );
+            return deferred.promise;
+        };
+
         return {
             logout: function (token_id) {
                 return logout(token_id);
@@ -82,6 +124,12 @@ angular.module('tNovaApp')
             },
             profileGK: function (user_id, token) {
                 return profileGK(user_id, token);
+            },
+            get: function (token, path) {
+                return get(token, path);
+            },
+            post: function (token, path, object) {
+                return post(token, path, object);
             }
         };
 
