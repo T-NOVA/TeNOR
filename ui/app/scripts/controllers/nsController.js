@@ -141,7 +141,7 @@ angular.module('tNovaApp')
         };
     })
     .controller('nsMonitoringController', function ($scope, $stateParams, $filter, mDataService, $interval, tenorService) {
-        var promise;
+        var promise, promise1, promise2;
         $scope.monitoringData = new vis.DataSet()
         $scope.instanceId = $stateParams.id;
         if ($stateParams.id) {
@@ -170,9 +170,57 @@ angular.module('tNovaApp')
             });
         };
 
-        $scope.metric;
-
+        $scope.oldType = "";
         $scope.reloadGraph = function (type) {
+            $interval.cancel(promise1);
+            $interval.cancel(promise2);
+            $scope.monitoringData.clear();
+            $scope.newType = type;
+            if ($scope.oldType !== type) {
+                $scope.oldType = type;
+            }
+            $scope.showGraphWithHistoric(type);
+        }
+
+        $scope.showGraphWithHistoric = function (type) {
+            $scope.graph_name = type;
+            var historicInterval = 1000; //seconds
+            var realTimeInterval = 61000; //seconds
+            var lastStartDate = Math.floor(new Date().getTime() / 1000);
+            var lastEndDate = Math.floor(new Date().getTime() / 1000);
+            var url;
+            var promise1 = $interval(function () {
+                url = "instances/" + $stateParams.id + "/monitoring-data/?instance_type=ns&metric=" + type + "&end=" + lastEndDate;
+                tenorService.get(url).then(function (data) {
+                    if (data.length == 0) {
+                        $interval.cancel(promise1);
+                        return
+                    }
+                    _.each(data, function (t) {
+                        t['x'] = t.date * 1000;
+                        t['y'] = Math.floor(t.value);
+                    });
+                    $scope.monitoringData.add(data);
+                    lastEndDate = data[data.length - 1].date - 1;
+                });
+            }, historicInterval);
+            var promise2 = $interval(function () {
+                url = "instances/" + $stateParams.id + "/monitoring-data/?instance_type=ns&metric=" + type + "&start=" + lastStartDate;
+                tenorService.get(url).then(function (data) {
+                    if (data.length == 0) return
+                    _.each(data, function (t) {
+                        t['x'] = t.date * 1000;
+                        t['y'] = Math.floor(t.value);
+                    });
+                    $scope.monitoringData.add(data);
+                    lastStartDate = data[data.length - 1].date;
+                });
+            }, realTimeInterval);
+        };
+
+
+
+        $scope.reloadGraph2 = function (type) {
             //$stateParams.id = "a0c9e9a1-9fa7-481f-8023-64a51e19cfb4";
 
             $interval.cancel(promise);
@@ -184,13 +232,15 @@ angular.module('tNovaApp')
             else url = "instances/" + $stateParams.id + "/monitoring-data/?instance_type=ns&metric=" + type + "&start=" + $scope.monitoringData.get($scope.monitoringData.length - 1).date;
 
             tenorService.get(url).then(function (data) {
-                console.log(data);
-                angular.forEach(data, function (t) {
-                    t.id = $scope.monitoringData.length;
-                    t.x = t.date * 1000;
-                    t.y = Math.floor(t.value);
-                    $scope.monitoringData.add(t);
-                })
+                var i = $scope.monitoringData.length;
+                _.each(data, function (t) {
+                    //console.log(t);
+                    t['id'] = i;
+                    t['x'] = t.date * 1000;
+                    t['y'] = Math.floor(t.value);
+                    i++;
+                });
+                $scope.monitoringData.add(data);
             });
 
             promise = $interval(function () {
@@ -201,16 +251,19 @@ angular.module('tNovaApp')
                 else url = "instances/" + $stateParams.id + "/monitoring-data/?instance_type=ns&metric=" + type + "&start=" + $scope.monitoringData.get($scope.monitoringData.length - 1).date;
 
                 tenorService.get(url).then(function (data) {
-                    console.log(data);
-                    angular.forEach(data, function (t) {
-                        t.id = $scope.monitoringData.length;
-                        t.x = t.date * 1000;
-                        t.y = Math.floor(t.value);
-                        $scope.monitoringData.add(t);
-                    })
+                    var i = $scope.monitoringData.length;
+                    _.each(data, function (t) {
+                        //console.log(t);
+                        t['id'] = i;
+                        t['x'] = t.date * 1000;
+                        t['y'] = Math.floor(t.value);
+                        i++;
+                    });
+                    $scope.monitoringData.add(data);
                 });
             }, 60000);
         };
+
         $scope.$on("$destroy", function () {
             if (promise) {
                 $interval.cancel(promise);
