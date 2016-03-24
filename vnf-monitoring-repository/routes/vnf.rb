@@ -24,12 +24,14 @@ class OrchestratorVnfMonitoring < Sinatra::Application
   get '/vnf-monitoring/:instance_id/monitoring-data/' do
     t = []
 
-    if params[:metric] && !params[:start]
-      @db.execute("SELECT metricName, date, unit, value FROM vnfmonitoring WHERE instanceid='#{params[:instance_id].to_s}' AND metricname='#{params[:metric].to_s}' LIMIT 2000").fetch { |row| t.push(row.to_hash) }
-    elsif params[:metric] && params[:start] && !params[:end]
-      @db.execute("SELECT metricName, date, unit, value FROM vnfmonitoring WHERE instanceid='#{params[:instance_id].to_s}' AND metricname='#{params[:metric].to_s}' AND date >= #{params[:start]} LIMIT 2000").fetch { |row| t.push(row.to_hash) }
+    if params[:metric] && params[:start] && !params[:end]
+      @db.execute("SELECT metricName, date, unit, value FROM vnfmonitoring WHERE instanceid='#{params[:instance_id].to_s}' AND metricname='#{params[:metric].to_s}' AND date >= #{params[:start]} ORDER BY metricname DESC LIMIT 2000").fetch { |row| t.push(row.to_hash) }
     elsif params[:metric] && params[:start] && params[:end]
       @db.execute("SELECT metricName, date, unit, value FROM vnfmonitoring WHERE instanceid='#{params[:instance_id].to_s}' AND metricname='#{params[:metric].to_s}' AND date >= #{params[:start]} AND date <= #{params[:end]} LIMIT 2000").fetch { |row| t.push(row.to_hash) }
+    elsif params[:metric] && params[:end]
+      @db.execute("SELECT metricName, date, unit, value FROM vnfmonitoring WHERE instanceid='#{params[:instance_id].to_s}' AND metricname='#{params[:metric].to_s}' AND date <= #{params[:end]} ORDER BY metricname DESC LIMIT 2000").fetch { |row| t.push(row.to_hash) }
+    elsif params[:metric] && !params[:start]
+      @db.execute("SELECT metricName, date, unit, value FROM vnfmonitoring WHERE instanceid='#{params[:instance_id].to_s}' AND metricname='#{params[:metric].to_s}' LIMIT 2000").fetch { |row| t.push(row.to_hash) }
     else
       @db.execute("SELECT metricName, date, unit, value FROM vnfmonitoring WHERE instanceid='#{params[:instance_id].to_s}' LIMIT 2000").fetch { |row| t.push(row.to_hash) }
     end
