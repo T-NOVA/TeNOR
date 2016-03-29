@@ -1,0 +1,52 @@
+<div class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" ng-show="title">
+                <button type="button" class="close" ng-click="$hide()">&times;</button>
+                <h4 class="modal-title" ng-bind="title"></h4>
+            </div>
+            <div class="modal-body">
+                <form name="editForm">
+                    <div class="box-body">
+                        <div class="form-group">
+                            <label for="tenantName">Pop id</label>
+                            <input ng-model="object.id" type="text" class="form-control" id="pop_id" readonly>
+                        </div>
+                    </div>
+                    <div class="box-body">
+                        <div class="form-group">
+                            <label for="tenantName">Description</label>
+                            <input ng-model="object.msg" type="text" class="form-control" id="message" value="">
+                        </div>
+                    </div>
+                    <div class="box-body">
+                        <div class="form-group">
+                            <label for="tenantName">Admin user</label>
+                            <input ng-model="object.adminName" type="text" class="form-control" id="adminuser" value="admin">
+                        </div>
+                    </div>
+                    <div class="box-body">
+                        <div class="form-group">
+                            <label for="tenantName">Admin pass</label>
+                            <input ng-model="object.adminPass" type="password" class="form-control" id="adminpass" value="">
+                        </div>
+                    </div>
+                    <div class="box-body">
+                        <div class="form-group">
+                            <label for="tenantName">Openstack IP</label>
+                            <input ng-model="object.openstack_ip" type="text" class="form-control" id="openstack_ip" value="8.8.8.8">
+                        </div>
+                    </div>
+                    <div class="box-body">
+                        <div class="form-group">
+                            <button ng-click="registerDc(object)" type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="$hide()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

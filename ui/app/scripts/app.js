@@ -190,6 +190,16 @@ angular.module('tNovaApp', ['ui.router', 'ngSanitize', 'tNovaApp.config', 'tNova
                                 controller: 'HomeController'
                             }
                         }
+                    })
+                    // PoP Information
+                    .state('root.pops', {
+                        url: '/pops',
+                        views: {
+                            'master@root': {
+                                templateUrl: 'views/t-nova/pop.html',
+                                controller: 'PoPController'
+                            }
+                        }
                     });
 
                 $urlRouterProvider.otherwise('/login');
