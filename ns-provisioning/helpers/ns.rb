@@ -22,6 +22,8 @@ class OrchestratorNsProvisioner < Sinatra::Application
     url = @tenor_modules.select {|service| service["name"] == "vnf_manager" }[0]
     begin
       response = RestClient.post url['host'].to_s + ":" + url['port'].to_s + '/vnf-provisioning/vnf-instances', instantiation_info.to_json, :content_type => :json
+    rescue RestClient::ResourceNotFound
+      puts "No exists in the Marketplace."
     rescue => e
       puts "Rescue instatiation"
       logger.error e
@@ -60,7 +62,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
   def recoverState(popInfo, vnf_info, instance, error)
 
     popUrls = getPopUrls(popInfo['info'][0]['extrainfo'])
-    callbackUrl = instance['marketplace_callback']
+    callbackUrl = instance['notification']
     ns_id = instance['nsd_id']
 
     tenant_token = openstackAuthentication(popUrls[:keystone], vnf_info['tenant_id'], vnf_info['username'], vnf_info['password'])
@@ -122,7 +124,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
     @instance = instance
 
     puts @instance
-    callbackUrl = @instance['marketplace_callback']
+    callbackUrl = @instance['notification']
     flavour = @instance['service_deployment_flavour']
     slaInfo = nsd['sla'].find { |sla| sla['sla_key'] == flavour }
     if slaInfo.nil?
@@ -139,10 +141,9 @@ class OrchestratorNsProvisioner < Sinatra::Application
         :NS_id => nsd['id'],
         :tenor_api => settings.manager,
         :infr_repo_api => infr_repo_url['host'].to_s + ":" + infr_repo_url['port'].to_s,
-        :ir_simulation => "true",
-        :ns_simulation => "true",
         :development => true,
-        :NS_sla => sla_id
+        :NS_sla => sla_id,
+        :overcommitting => "true"
     }
     #choose select mapping
     mapping = callMapping(ms)
