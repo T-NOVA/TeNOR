@@ -97,7 +97,7 @@ angular.module('tNovaApp')
         };
     })
     .controller('vnfMonitoringController', function ($scope, $stateParams, $filter, mDataService, $interval, tenorService, $timeout) {
-        var promise;
+        var promise, promise1, promise2;
         $scope.instanceId = $stateParams.id;
         if ($stateParams.id) {
             tenorService.get("vnf-provisioning/vnf-instances/" + $stateParams.id).then(function (instance) {
