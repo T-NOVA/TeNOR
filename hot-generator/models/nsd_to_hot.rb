@@ -44,9 +44,9 @@ class NsdToHot
           #TODO
           #use the same network
         end
-        vlink['connections'].each do |link|
+        vlink['connections'].each do |link, index2|
           network_name = create_network(link.split(":ext_")[1])
-          subnet_name = create_subnet(network_name, dns_server, index)
+          subnet_name = create_subnet(network_name, dns_server, index, index2)
           create_router_interface(router_name, subnet_name)
         end
       end
@@ -83,9 +83,9 @@ class NsdToHot
   # @param [String] dns_server the DNS server to use
   # @param [Integer] index the id used for the CIDR
   # @return [String] the name of the created resource
-  def create_subnet(network_name, dns_server, index)
+  def create_subnet(network_name, dns_server, index, index2)
     name = get_resource_name
-    @hot.resources_list << Subnet.new(name,  {get_resource: network_name}, dns_server, index)
+    @hot.resources_list << Subnet.new(name,  {get_resource: network_name}, dns_server, index, index2)
     name
   end
 

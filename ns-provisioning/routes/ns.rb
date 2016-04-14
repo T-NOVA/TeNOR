@@ -62,7 +62,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
             :resource_reservation => [],
             :runtime_policy_info => [],
             :status => "INIT",
-            :notification => "",
+            :notification => instantiation_info['callbackUrl'],
             :lifecycle_event_history => [],
             :audit_log => [],
             :marketplace_callback => instantiation_info['callbackUrl']
@@ -81,11 +81,6 @@ class OrchestratorNsProvisioner < Sinatra::Application
     end
 
     return 200, instance.to_json
-  end
-
-  def callback()
-    puts "callback"
-    return "ERROR CALLBACK"
   end
 
   #update instance
@@ -329,7 +324,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
       @instance['status'] = "ERROR_CREATING"
       updateInstance(@instance)
       #recoverState(popInfo, @instance['vnf_info'], @instance, error)
-      generateMarketplaceResponse(@instance['marketplace_callback'], "Error creating VNF")
+      generateMarketplaceResponse(@instance['notification'], "Error creating VNF")
       return 200
     else
       @instance['status'] = "INSTANTIATED"
@@ -341,7 +336,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
     puts "Instantiation time: " + (DateTime.parse(@instance['instantiation_end_time']).to_time.to_f*1000 - DateTime.parse(@instance['created_at']).to_time.to_f*1000).to_s
 
     logger.debug @instance
-    generateMarketplaceResponse(@instance['marketplace_callback'], @instance)
+    generateMarketplaceResponse(@instance['notification'], @instance)
 
     #insert statistic information to NS Manager
     EM.defer do
@@ -371,8 +366,8 @@ class OrchestratorNsProvisioner < Sinatra::Application
     end
 
     #if done, send mapping information to marketplace
-    logger.debug @instance['marketplace_callback']
-    #generateMarketplaceResponse(@instance['marketplace_callback'], @instance)
+    logger.debug @instance['notification']
+    #generateMarketplaceResponse(@instance['notification'], @instance)
 
     return 200
   end
