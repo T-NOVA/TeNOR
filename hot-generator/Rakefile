@@ -1,6 +1,12 @@
 require 'yard'
 require 'yaml'
 
+RSpec::Core::RakeTask.new :specs do |task|
+	task.pattern = Dir['spec/*_spec.rb']
+end
+
+task :default => ['specs']
+
 desc 'Start the service'
 task :start do
 	conf = File.expand_path('config.ru', File.dirname(__FILE__))
