@@ -111,24 +111,29 @@ class VnfdToHot
 
 		connection_points.each do |connection_point|
 			vlink = vlinks.find {|vlink| vlink['id'] == connection_point['vlink_ref']}
-			network_id = networks_id.find{ |network| network['alias'] == vlink['alias'] }['id']
-			port_name = "#{connection_point['id']}"
-			ports << { port: {get_resource: port_name} }
-			@hot.resources_list << Port.new(port_name, network_id, security_group_id)
+			#detect, and return error if not.
+      network = networks_id.detect{ |network| network['alias'] == vlink['alias'] }
+      if network != nil
+        network_id = network['id']
+        port_name = "#{connection_point['id']}"
+        ports << { port: {get_resource: port_name} }
+        @hot.resources_list << Port.new(port_name, network_id, security_group_id)
 
-			# Check if it's necessary to create an output for this resource
-			if @outputs.has_key?('ip') && @outputs['ip'].include?(port_name)
-				@hot.outputs_list << Output.new("#{port_name}#ip", "#{port_name} IP address", {get_attr: [port_name, 'fixed_ips', 0, 'ip_address']})
-			end
+        # Check if it's necessary to create an output for this resource
+        if @outputs.has_key?('ip') && @outputs['ip'].include?(port_name)
+          @hot.outputs_list << Output.new("#{port_name}#ip", "#{port_name} IP address", {get_attr: [port_name, 'fixed_ips', 0, 'ip_address']})
+        end
 
-			# Check if the port has a Floating IP
-			if vlink['access']
-				floating_ip_name = get_resource_name
-				# TODO: Receive the floating ip pool name?
-				@hot.resources_list << FloatingIp.new(floating_ip_name, 'public')
-				@hot.resources_list << FloatingIpAssociation.new(get_resource_name, {get_resource: floating_ip_name}, {get_resource: port_name})
-				@hot.outputs_list << Output.new("#{port_name}#floating_ip", "#{port_name} Floating IP", {get_attr: [floating_ip_name, 'floating_ip_address']})
-			end
+        # Check if the port has a Floating IP
+        if vlink['access']
+          floating_ip_name = get_resource_name
+          # TODO: Receive the floating ip pool name?
+          @hot.resources_list << FloatingIp.new(floating_ip_name, 'public')
+          @hot.resources_list << FloatingIpAssociation.new(get_resource_name, {get_resource: floating_ip_name}, {get_resource: port_name})
+          @hot.outputs_list << Output.new("#{port_name}#floating_ip", "#{port_name} Floating IP", {get_attr: [floating_ip_name, 'floating_ip_address']})
+        end
+      end
+
 		end
 
 		ports
