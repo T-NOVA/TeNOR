@@ -38,8 +38,6 @@ class OrchestratorVnfProvisioning < Sinatra::Application
       logger.error e.response
       halt e.response.code, e.response.body
     end
-    logger.debug 'List of VNFRs: ' + vnfrs.to_json
-
     halt 200, vnfrs.to_json
   end
 
@@ -54,8 +52,6 @@ class OrchestratorVnfProvisioning < Sinatra::Application
       logger.error e.response
       halt e.response.code, e.response.body
     end
-    logger.debug 'List of all VNFRs: ' + vnfrs.to_json
-
     halt 200, vnfrs.to_json
   end
 
@@ -75,7 +71,6 @@ class OrchestratorVnfProvisioning < Sinatra::Application
 
     vnf = instantiation_info['vnf']
 
-    puts instantiation_info['flavour']
     begin
       vnf_flavour = vnf['vnfd']['deployment_flavours'].find { |dF| dF['flavour_key'] == instantiation_info['flavour'] }['id']
     rescue NoMethodError => e
@@ -102,7 +97,6 @@ class OrchestratorVnfProvisioning < Sinatra::Application
       logger.error e.response
       halt e.response.code, e.response.body
     end
-    logger.debug 'HOT: ' + hot.to_json
 
     vim_info = {
       'keystone' => instantiation_info['auth']['url']['keystone'],
@@ -137,7 +131,6 @@ class OrchestratorVnfProvisioning < Sinatra::Application
       return 400, 'ERROR: Duplicated VNF ID' if e.message.include? 'E11000'
       return 400, e.message
     end
-    logger.debug 'Created VNFR: ' + vnfr.to_json
 
     create_thread_to_monitor_stack(vnfr.id, vnfr.stack_url, vim_info, instantiation_info['callback_url'])
     logger.info 'Created thread to monitor stack'
@@ -155,8 +148,6 @@ class OrchestratorVnfProvisioning < Sinatra::Application
     rescue Mongoid::Errors::DocumentNotFound => e
       halt 404
     end
-    logger.debug 'VNFR: ' + vnfr.to_json
-
     halt 200, vnfr.to_json
   end
 
@@ -191,7 +182,6 @@ class OrchestratorVnfProvisioning < Sinatra::Application
     rescue Mongoid::Errors::DocumentNotFound => e
       halt 404
     end
-    logger.debug 'VNFR: ' + vnfr.to_json
 
     # Requests the VIM to delete the stack
     begin
@@ -291,7 +281,6 @@ class OrchestratorVnfProvisioning < Sinatra::Application
       logger.error 'VNFR record not found'
       halt 404
     end
-    logger.debug 'VNFR: ' + vnfr.to_json
 
     # If stack is in create complete state
     if params[:status] == 'create_complete'
@@ -348,7 +337,6 @@ class OrchestratorVnfProvisioning < Sinatra::Application
         vnf_status: 1,
         vms_id: vms_id,
         lifecycle_events_values: lifecycle_events_values)
-      logger.debug 'Updated VNFR: ' + vnfr.to_json
 
       # Build message to send to the NS Manager callback
       vnfi_id = []
