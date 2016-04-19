@@ -15,24 +15,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require_relative 'vnfd_to_hot'
-require_relative 'hot'
-require_relative 'resource'
-require_relative 'port'
-require_relative 'server'
-require_relative 'flavor'
-require_relative 'image'
-require_relative 'custom_exception'
-require_relative 'output'
-require_relative 'floating_ip'
-require_relative 'floating_ip_association'
-require_relative 'nsd_to_hot'
-require_relative 'router'
-require_relative 'router_interface'
-require_relative 'network'
-require_relative 'subnet'
-require_relative 'wicm_to_hot'
-require_relative 'provider_net'
-require_relative 'wait_condition'
-require_relative 'wait_condition_handle'
-require_relative 'key_pair'
+class KeyPair < Resource
+
+  # Initializes a Network object
+  #
+  # @param [String] resource_name the Network resource name
+  # @param [String] name the name of the network
+  def initialize(resource_name, name)
+    @type = 'OS::Nova::KeyPair'
+    @properties = {'name' => name, save_private_key: true}
+    super(resource_name, @type, @properties)
+  end
+end
