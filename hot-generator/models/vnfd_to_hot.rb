@@ -42,8 +42,10 @@ class VnfdToHot
 		deployment_information = vnfd['deployment_flavours'].detect{|flavour| flavour['id'] == tnova_flavour}
 		raise CustomException::NoFlavorError, "Flavor #{tnova_flavour} not found" if deployment_information.nil?
 
-		# Get the vlinks references for the deployment flavour
+    # Get the vlinks references for the deployment flavour
 		vlinks = deployment_information['vlink_reference']
+
+    key = create_key_pair(SecureRandom.urlsafe_base64(9))
 
 		deployment_information['vdu_reference'].each do |vdu_ref|
 			# Get VDU for deployment
@@ -55,10 +57,18 @@ class VnfdToHot
 			ports = create_ports(vdu['connection_points'], vnfd['vlinks'], networks_id, security_group_id)
 			#ports = create_ports(vdu_ref, vdu['vnfc']['id'], vdu['vnfc']['networking'])
 
-			create_server(vdu, image_name, flavor_name, ports)
+			create_server(vdu, image_name, flavor_name, ports, key)
 		end
 
 		@hot
+	end
+
+	def create_key_pair(keypair_name)
+		name = get_resource_name
+
+		@hot.resources_list << KeyPair.new(name, keypair_name)
+    @hot.outputs_list << Output.new("private_key", "Private key", {get_resource: keypair_name})
+		name
 	end
 
 	# Parse the outputs from the VNFD and builds an outputs hash
@@ -90,7 +100,7 @@ class VnfdToHot
 	# @return [String] the name of the created resource
 	def create_image(vdu)
 		name = get_resource_name
-		
+
 		raise CustomException::NoExtensionError, "#{vdu['vm_image']} does not have a file extension" if vdu['vm_image_format'].empty?
 		raise CustomException::InvalidExtensionError, "#{vdu['vm_image']} has an invalid extension. Allowed extensions: ami, ari, aki, vhd, vmdk, raw, qcow2, vdi and iso" unless ['ami', 'ari', 'aki', 'vhd', 'vmdk', 'raw', 'qcow2', 'vdi', 'iso'].include? vdu['vm_image_format']
 
@@ -186,13 +196,14 @@ class VnfdToHot
 	# @param [String] image_name the image resource name
 	# @param [String] flavour_name the flavour resource name
 	# @param [Array] ports list of the ports resource
-	def create_server(vdu, image_name, flavour_name, ports)
+	def create_server(vdu, image_name, flavour_name, ports, key_name)
 		@hot.resources_list << Server.new(
 			vdu['id'],
 			{get_resource: flavour_name},
 			{get_resource: image_name},
 			ports,
-			add_wait_condition(vdu))
+			add_wait_condition(vdu),
+      {get_resource: key_name})
 		@hot.outputs_list << Output.new("#{vdu['id']}#id", "#{vdu['id']} ID", {get_resource: vdu['id']})
 	end
 
