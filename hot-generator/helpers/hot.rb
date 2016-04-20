@@ -32,7 +32,7 @@ class OrchestratorHotGenerator < Sinatra::Application
 			halt 400, e.to_s + "\n"
 		end
 
-		return parsed_message
+		return parsed_message, nil
 	end
 
 	# Generate a HOT template

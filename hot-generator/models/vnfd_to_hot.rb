@@ -71,7 +71,11 @@ class VnfdToHot
 		events.each do |event, event_info|
 			unless event_info.nil? || event_info['template_file'].nil?
 				raise CustomException::InvalidTemplateFileFormat, "Template file format not supported" unless event_info['template_file_format'].downcase == 'json'
-				JSON.parse(event_info['template_file']).each do |id, output|
+
+        parsed_event, error = parse_json(event_info['template_file'])
+        return 400, errors.to_json if errors
+
+        parsed_event.each do |id, output|
 					unless outputs.include?(output)
 						outputs << output
 						match = output.match(/^get_attr\[(.*), *(.*)\]$/i).to_a
