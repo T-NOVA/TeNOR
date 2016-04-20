@@ -1,19 +1,6 @@
 # @see OrchestratorMonitoring
 class OrchestratorMonitoring < Sinatra::Application
 
-  def parse_json(message)
-    # Check JSON message format
-    begin
-      parsed_message = JSON.parse(message) # parse json message
-    rescue JSON::ParserError => e
-      # If JSON not valid, return with errors
-      logger.error "JSON parsing: #{e.to_s}"
-      return message, e.to_s + "\n"
-    end
-
-    return parsed_message, nil
-  end
-
 	# Checks if a Port is open
 	#
 	# @param [ip] ip of service
@@ -35,18 +22,18 @@ class OrchestratorMonitoring < Sinatra::Application
 	  return false
   end
 
-
   def getServiceList
     puts settings.api_source
     begin
       response = RestClient.get settings.api_source
       return JSON.parse(response)
     rescue => e
-      logger.error e.response
+      if (defined?(e.response)).nil?
+        return nil
+      end
       return e.response.code, e.response.body
     end
   end
-
 
   def list_inactive_services
     services = getServiceList
@@ -63,7 +50,9 @@ class OrchestratorMonitoring < Sinatra::Application
   def service_checker(on=false, off=false)
     puts "Service checker function"
     services = getServiceList
-
+    if services == nil
+      return
+    end
     elements_on = []
     elements_off = []
 
@@ -75,11 +64,11 @@ class OrchestratorMonitoring < Sinatra::Application
 
       status = is_port_open?(ip, port)
       if status # true == is connected aka service is "up"
-        puts "Service: #{name}, Path:#{path}, IP: #{ip}, Port: #{port} is " + "connected".color(Colors::GREEN)
+        puts "Service: #{name}, IP: #{ip}, Port: #{port}: " + "Connected".color(Colors::GREEN)
         elements_on.push(service)
         service_status_pusher(name, "up")
       else
-        puts "Service: #{name}, Path:#{path}, IP: #{ip}, Port: #{port} is " + "disconnected".color(Colors::RED)
+        puts "Service: #{name}, IP: #{ip}, Port: #{port}: " + "Disconnected".color(Colors::RED)
         elements_off.push(service)
         service_status_pusher(name, "down")
       end
