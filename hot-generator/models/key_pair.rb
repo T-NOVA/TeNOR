@@ -23,7 +23,7 @@ class KeyPair < Resource
   # @param [String] name the name of the network
   def initialize(resource_name, name)
     @type = 'OS::Nova::KeyPair'
-    @properties = {'name' => name, save_private_key: true}
+    @properties = {'name' => name, 'save_private_key' => true}
     super(resource_name, @type, @properties)
   end
 end

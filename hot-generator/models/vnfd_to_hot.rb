@@ -67,7 +67,7 @@ class VnfdToHot
 		name = get_resource_name
 
 		@hot.resources_list << KeyPair.new(name, keypair_name)
-    @hot.outputs_list << Output.new("private_key", "Private key", {get_resource: keypair_name})
+    @hot.outputs_list << Output.new("private_key", "Private key", {get_arr: [name, 'private_key']})
 		name
 	end
 
