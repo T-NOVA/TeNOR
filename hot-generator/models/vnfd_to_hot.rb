@@ -63,14 +63,6 @@ class VnfdToHot
 		@hot
 	end
 
-	def create_key_pair(keypair_name)
-		name = get_resource_name
-
-		@hot.resources_list << KeyPair.new(name, keypair_name)
-    @hot.outputs_list << Output.new("private_key", "Private key", {get_arr: [name, 'private_key']})
-		name
-	end
-
 	# Parse the outputs from the VNFD and builds an outputs hash
 	#
 	# @param [Hash] events the VNF lifecycle events
@@ -92,7 +84,19 @@ class VnfdToHot
 				end
 			end
 		end
-	end
+  end
+
+  # Creates an HEAT key pair resource
+  #
+  # @param [Hash] keypair_name the Name of the KeyPair
+  # @return [String] the name of the created resource
+  def create_key_pair(keypair_name)
+    name = get_resource_name
+
+    @hot.resources_list << KeyPair.new(name, keypair_name)
+    @hot.outputs_list << Output.new("private_key", "Private key", {get_arr: [name, 'private_key']})
+    name
+  end
 
 	# Creates an HEAT image resource from the VNFD
 	#
