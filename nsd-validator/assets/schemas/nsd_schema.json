@@ -110,38 +110,18 @@
                         },
                         "graph": {
                           "id": "/nsd/vnffgd/vnffgs/0/network_forwarding_path/0/graph",
-                          "type": "array",
-                          "items": [
-                            {
-                              "id": "/nsd/vnffgd/vnffgs/0/network_forwarding_path/0/graph/0",
-                              "type": "string"
-                            },
-                            {
-                              "id": "/nsd/vnffgd/vnffgs/0/network_forwarding_path/0/graph/1",
-                              "type": "string"
-                            }
-                          ]
+                          "type": "array"
                         },
                         "connection_points": {
                           "id": "/nsd/vnffgd/vnffgs/0/network_forwarding_path/0/connection_points",
-                          "type": "array",
-                          "items": [
-                            {
-                              "id": "/nsd/vnffgd/vnffgs/0/network_forwarding_path/0/connection_points/0",
-                              "type": "string"
-                            },
-                            {
-                              "id": "/nsd/vnffgd/vnffgs/0/network_forwarding_path/0/connection_points/1",
-                              "type": "string"
-                            }
-                          ]
+                          "type": "array"
                         },
                         "constituent_vnfs": {
                           "id": "/nsd/vnffgd/vnffgs/0/network_forwarding_path/0/constituent_vnfs",
                           "type": "array",
                           "items": {
                             "id": "/nsd/vnffgd/vnffgs/0/network_forwarding_path/0/constituent_vnfs/0",
-                            "type": "string"
+                            "type": "Object"
                           }
                         }
                       }
@@ -218,7 +198,7 @@
           "items": {
             "type": "string"
           },
-          "minItems": 1,
+          "minItems": 0,
           "uniqueItems": true
         },
         "monitoring_parameters": {
@@ -287,61 +267,61 @@
               "id": "/nsd/vld/number_of_endpoints",
               "type": "integer"
             },
-            "vitual_links": {
-              "id": "/nsd/vld/vitual_links",
+            "virtual_links": {
+              "id": "/nsd/vld/virtual_links",
               "type": "array",
-              "items": [
+              "items":
                 {
-                  "id": "/nsd/vld/vitual_links/0",
+                  "id": "/nsd/vld/virtual_links/0",
                   "type": "object",
                   "properties": {
                     "vld_id": {
-                      "id": "/nsd/vld/vitual_links/0/vld_id",
+                      "id": "/nsd/vld/virtual_links/0/vld_id",
                       "type": "string"
                     },
                     "root_requirements": {
-                      "id": "/nsd/vld/vitual_links/0/root_requirements",
+                      "id": "/nsd/vld/virtual_links/0/root_requirements",
                       "type": "string"
                     },
                     "leaf_requirements": {
-                      "id": "/nsd/vld/vitual_links/0/leaf_requirements",
+                      "id": "/nsd/vld/virtual_links/0/leaf_requirements",
                       "type": "string"
                     },
                     "qos": {
-                      "id": "/nsd/vld/vitual_links/0/qos",
+                      "id": "/nsd/vld/virtual_links/0/qos",
                       "type": "object",
                       "properties": {
                         "none": {
-                          "id": "/nsd/vld/vitual_links/0/qos/none",
+                          "id": "/nsd/vld/virtual_links/0/qos/none",
                           "type": "string"
                         }
                       }
                     },
                     "test_access": {
-                      "id": "/nsd/vld/vitual_links/0/test_access",
+                      "id": "/nsd/vld/virtual_links/0/test_access",
                       "type": "string"
                     },
                     "connections": {
-                      "id": "/nsd/vld/vitual_links/0/connections",
+                      "id": "/nsd/vld/virtual_links/0/connections",
                       "type": "array",
                       "items": [
                         {
-                          "id": "/nsd/vld/vitual_links/0/connections/0",
+                          "id": "/nsd/vld/virtual_links/0/connections/0",
                           "type": "string"
                         },
                         {
-                          "id": "/nsd/vld/vitual_links/0/connections/1",
+                          "id": "/nsd/vld/virtual_links/0/connections/1",
                           "type": "string"
                         }
                       ]
                     },
                     "connectivity_type": {
-                      "id": "/nsd/vld/vitual_links/0/connectivity_type",
+                      "id": "/nsd/vld/virtual_links/0/connectivity_type",
                       "type": "string"
                     }
                   }
-                }
-              ]
+                },
+              "minItems": 1
             }
           }
         },
@@ -479,13 +459,17 @@
                     },
                     "vnf_reference": {
                       "id": "/nsd/sla/0/constituent_vnf/0/vnf_reference",
-                      "type": "integer"
+                      "type": "string"
                     }
                   }
                 }
               }
-            }
-          }
+            },
+            "required": [
+              "sla_key"
+            ]
+          },
+          "minItems": 1
         },
         "auto_scale_policy": {
           "id": "/nsd/auto_scale_policy",
@@ -493,29 +477,7 @@
           "properties": {
             "criteria": {
               "id": "/nsd/auto_scale_policy/criteria",
-              "type": "array",
-              "items": [
-                {
-                  "id": "/nsd/auto_scale_policy/criteria/0",
-                  "type": "object",
-                  "properties": {
-                    "end-to-end bandwidth": {
-                      "id": "/nsd/auto_scale_policy/criteria/0/end-to-end bandwidth",
-                      "type": "string"
-                    }
-                  }
-                },
-                {
-                  "id": "/nsd/auto_scale_policy/criteria/1",
-                  "type": "object",
-                  "properties": {
-                    "test": {
-                      "id": "/nsd/auto_scale_policy/criteria/1/test",
-                      "type": "string"
-                    }
-                  }
-                }
-              ]
+              "type": "array"
             },
             "action": {
               "id": "/nsd/auto_scale_policy/action",
@@ -525,67 +487,20 @@
         },
         "connection_points": {
           "id": "/nsd/connection_points",
-          "type": "array",
-          "items": [
-            {
-              "id": "/nsd/connection_points/0",
-              "type": "object",
-              "properties": {
-                "connection_point_id": {
-                  "id": "/nsd/connection_points/0/connection_point_id",
-                  "type": "string"
-                },
-                "type": {
-                  "id": "/nsd/connection_points/0/type",
-                  "type": "string"
-                }
-              }
-            },
-            {
-              "id": "/nsd/connection_points/1",
-              "type": "object",
-              "properties": {
-                "connection_point_id": {
-                  "id": "/nsd/connection_points/1/connection_point_id",
-                  "type": "string"
-                },
-                "type": {
-                  "id": "/nsd/connection_points/1/type",
-                  "type": "string"
-                }
-              }
-            },
-            {
-              "id": "/nsd/connection_points/2",
-              "type": "object",
-              "properties": {
-                "connection_point_id": {
-                  "id": "/nsd/connection_points/2/connection_point_id",
-                  "type": "string"
-                },
-                "type": {
-                  "id": "/nsd/connection_points/2/type",
-                  "type": "string"
-                }
-              }
-            }
-          ]
+          "type": "array"
         }
       },
       "required": [
         "id",
         "name",
-        "vendor",
         "version",
         "vnfds",
         "vnffgd",
         "lifecycle_events",
-        "vnf_depedency",
         "monitoring_parameters",
         "vld",
         "sla",
-        "auto_scale_policy",
-        "connection_points"
+        "auto_scale_policy"
       ]
     }
   },
