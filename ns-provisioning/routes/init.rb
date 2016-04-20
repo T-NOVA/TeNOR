@@ -16,3 +16,5 @@
 # limitations under the License.
 #
 require_relative 'ns'
+require_relative 'repository'
+require_relative 'scaling'

@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 # @see OrchestratorNsProvisioner
-class OrchestratorNsProvisioner < Sinatra::Application
+class NsProvisioner < Sinatra::Application
 
   def instantiateVNF(marketplaceUrl, instantiation_info)
     url = @tenor_modules.select {|service| service["name"] == "vnf_manager" }[0]
@@ -150,11 +150,12 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
     @instance['mapping_time'] = DateTime.now.iso8601(3)
     begin
-      updateInstance(@instance)
-    rescue => e
+      instance = Nsr.find(@instance["id"])
+    rescue Mongoid::Errors::DocumentNotFound => e
       generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FATAL", e))
       return
     end
+    instance.update_attributes(@instance)
 
     puts "Mapping time: " + (DateTime.parse(@instance['mapping_time']).to_time.to_f*1000 - DateTime.parse(@instance['created_at']).to_time.to_f*1000).to_s
 
@@ -165,8 +166,8 @@ class OrchestratorNsProvisioner < Sinatra::Application
     end
 
     if @instance.nil?
-      logger.error "Instance repo not connected"
-      generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", "Internal error: instance repository not connected."))
+      logger.error "Instance is null"
+      generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", "Internal error: instance is null."))
       return
     end
 
@@ -381,7 +382,13 @@ class OrchestratorNsProvisioner < Sinatra::Application
       stack, error = parse_json(response)
       stack_id = stack['stack']['id']
       @instance['network_stack'] = stack
-      updateInstance(@instance)
+      begin
+        instance = Nsr.find(@instance["id"])
+      rescue Mongoid::Errors::DocumentNotFound => e
+        generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FATAL", e))
+        return
+      end
+      instance.update_attributes(@instance)
 
       puts "Check network stack creation..."
       #stack_status
@@ -456,8 +463,15 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
       @instance['vlr'] = networks
       @instance['vnf_info'] = vnf_info
-      updateInstance(@instance)
+      begin
+        instance = Nsr.find(@instance["id"])
+      rescue Mongoid::Errors::DocumentNotFound => e
+        generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FATAL", e))
+        return
+      end
+      instance.update_attributes(@instance)
 
+      #needs to be migrated to the VNFGFD
       vnf_flavour = slaInfo['constituent_vnf'].find { |cvnf| cvnf['vnf_reference'] == vnf_id }['vnf_flavour_id_reference']
       puts vnf_flavour
 
@@ -483,7 +497,13 @@ class OrchestratorNsProvisioner < Sinatra::Application
       puts "Instantiation VNF..."
       logger.debug vnf_provisioning_info
       @instance['instantiation_start_time'] = DateTime.now.iso8601(3)
-      updateInstance(@instance)
+      begin
+        instance = Nsr.find(@instance["id"])
+      rescue Mongoid::Errors::DocumentNotFound => e
+        generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FATAL", e))
+        return
+      end
+      instance.update_attributes(@instance)
       begin
         instantiateVNF(callbackUrl, vnf_provisioning_info)
       rescue => e
