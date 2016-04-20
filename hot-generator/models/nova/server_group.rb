@@ -15,17 +15,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-class Server < Resource
+class ServerGroup < Resource
 
-	# Initializes Server object
-	#
-	# @param [String] resource_name the Server resource name
-	# @param [String] flavor the ID or name of the flavor to boot onto
-	# @param [String] image the ID or name of the image to boot with
-	# @param [Array] networks a list of ports ID to be added to this server
-	def initialize(resource_name, flavor, image, networks, user_data, key)
-		type = 'OS::Nova::Server'
-		properties = {'flavor' => flavor, 'image' => image, 'networks' => networks, 'user_data_format' => 'RAW', 'user_data' => user_data, 'key_name' => key}
-		super(resource_name, type, properties)
-	end
+  # Initializes ServerGroup object
+  #
+  # @param [String] resource_name the ServerGroup resource name
+  # @param [String] name the name of the ServerGroup
+  # @param [Array] policies a list of policies
+  def initialize(resource_name, name, policies)
+    type = 'OS::Nova::ServerGroup'
+    properties = {'name' => name, 'policies' => policies}
+    super(resource_name, type, properties)
+  end
 end
