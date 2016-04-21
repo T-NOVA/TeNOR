@@ -72,7 +72,7 @@ class VnfdToHot
 			unless event_info.nil? || event_info['template_file'].nil?
 				raise CustomException::InvalidTemplateFileFormat, "Template file format not supported" unless event_info['template_file_format'].downcase == 'json'
 
-        parsed_event, error = parse_json(event_info['template_file'])
+        parsed_event, errors = CommonMethods.parse_json(event_info['template_file'])
         return 400, errors.to_json if errors
 
         parsed_event.each do |id, output|
