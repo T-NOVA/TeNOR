@@ -1,5 +1,5 @@
 #
-# TeNOR - NS Provisioning
+# TeNOR - HOT Generator
 #
 # Copyright 2014-2016 i2CAT Foundation, Portugal Telecom Inovação
 #
@@ -15,6 +15,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require_relative 'ns'
-require_relative 'repository'
-require_relative 'scaling'
+class KeyPair < Resource
+
+  # Initializes a KeyPair object
+  #
+  # @param [String] resource_name the KeyPair resource name
+  # @param [String] name the name of the keypair
+  def initialize(resource_name, name)
+    @type = 'OS::Nova::KeyPair'
+    @properties = {'name' => name, 'save_private_key' => true}
+    super(resource_name, @type, @properties)
+  end
+end

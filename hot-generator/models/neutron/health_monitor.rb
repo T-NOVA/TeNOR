@@ -1,5 +1,5 @@
 #
-# TeNOR - NS Instance Repository
+# TeNOR - HOT Generator
 #
 # Copyright 2014-2016 i2CAT Foundation, Portugal Telecom Inovação
 #
@@ -15,4 +15,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require_relative 'ns-instance'
+class HealthMonitor < Resource
+
+  # Initializes a Network object
+  #
+  # @param [String] resource_name the Network resource name
+  # @param [String] name the name of the network
+  def initialize(resource_name, name, load_balancer)
+    @type = 'OS::Neutron::HealthMonitor'
+    @properties = {'name' => name, 'admin_state_up' => true, 'loadbalancer' => load_balancer}
+    super(resource_name, @type, @properties)
+  end
+end

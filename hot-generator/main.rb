@@ -29,8 +29,8 @@ require 'securerandom'
 require 'bundler'
 Bundler.require :default, ENV['RACK_ENV'].to_sym
 
-require_relative 'routes/init'
 require_relative 'helpers/init'
+require_relative 'routes/init'
 require_relative 'models/init'
 
 register Sinatra::ConfigFile

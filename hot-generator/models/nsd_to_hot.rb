@@ -37,19 +37,41 @@ class NsdToHot
   def build(nsd, public_net_id, dns_server, flavour)
     router_name = create_router(public_net_id)
     
-    virtual_links = nsd['vld']['virtual_links']
-    nsd['vld']['virtual_links'].each_with_index do |vlink, index|
-      if vlink['sla_ref_id'] == flavour
-        if (vlink['merge'])
+    #virtual_links = nsd['vld']['virtual_links']
+    virtual_links = nsd['vld']['virtual_links'].select{|vlink| vlink['sla_ref_id'] == flavour}
+    raise CustomException::NoFlavorError, "SLA Reference #{flavour} not found" if virtual_links.nil?
+
+    virtual_links.each_with_index do |vlink, index|
+      #if vlink['sla_ref_id'] == flavour
+        if vlink['net_segment']
+          cidr = vlink['net_segment']
+        else
+          cidr = "192."+rand(256)+"." + index.to_s + ".0/24"
+        end
+
+        if vlink['connectivity_type'] == "E-LINE"
+
+        elsif vlink['connectivity_type'] == "E-LAN"
+          #similar case merge is true
+        elsif vlink['connectivity_type'] == "E-TREE"
           #TODO
-          #use the same network
         end
-        vlink['connections'].each_with_index do |link, index2|
-          network_name = create_network(link.split(":ext_")[1])
-          subnet_name = create_subnet(network_name, dns_server, index, index2)
-          create_router_interface(router_name, subnet_name)
+
+        if (vlink['merge'])
+          #network_name = create_network(link.split(":ext_")[1])
+          network_name = create_network(vlink['alias'])
+          subnet_name = create_subnet(network_name, dns_server, cidr)
+          #vlink['connections'].each_with_index do |link, index2|
+            create_router_interface(router_name, subnet_name)
+          #end
+        else
+          vlink['connections'].each_with_index do |link, index2|
+            network_name = create_network(link.split(":ext_")[1])
+            subnet_name = create_subnet(network_name, dns_server, cidr)
+            create_router_interface(router_name, subnet_name)
+          end
         end
-      end
+      #end
     end
 
     #puts @hot.to_yaml
@@ -83,9 +105,9 @@ class NsdToHot
   # @param [String] dns_server the DNS server to use
   # @param [Integer] index the id used for the CIDR
   # @return [String] the name of the created resource
-  def create_subnet(network_name, dns_server, index, index2)
+  def create_subnet(network_name, dns_server, cidr)
     name = get_resource_name
-    @hot.resources_list << Subnet.new(name,  {get_resource: network_name}, dns_server, index, index2)
+    @hot.resources_list << Subnet.new(name,  {get_resource: network_name}, dns_server, cidr)
     name
   end
 

@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 # @see OrchestratorNsProvisioner
-class OrchestratorNsProvisioner < Sinatra::Application
+class NsProvisioner < Sinatra::Application
 
   # @method post_ns
   # @overload post '/ns'
@@ -68,11 +68,8 @@ class OrchestratorNsProvisioner < Sinatra::Application
             :marketplace_callback => instantiation_info['callbackUrl']
         }
 
-    begin
-      @instance = createInstance(instance)
-    rescue => e
-      halt 400, "Failed creating instance. Instance repository fails creating the instance"
-    end
+    @instance = Nsr.new(instance)
+    @instance.save!
 
     #call thread to process instantiation
     #EM.defer(instantiate(instantiation_info), callback())
@@ -89,58 +86,19 @@ class OrchestratorNsProvisioner < Sinatra::Application
   end
 
   #get instance status
-  get "/ns-instances/:ns_instance_id/status" do
-    url = @tenor_modules.select {|service| service["name"] == "ns_instance_repository" }[0]
+  get "/ns-instances/:nsr_id/status" do
+
     begin
-      response = RestClient.get url['host'].to_s + ":" + url['port'].to_s + '/ns-instances/' + params['ns_instance_id'].to_s, :content_type => :json
-    rescue => e
-      logger.error e
-      if (defined?(e.response)).nil?
-        halt 503, "NS-Instance Repository unavailable"
-      end
-      halt e.response.code, e.response.body
+      instance = Nsr.find(params[:nsr_id])
+    rescue Mongoid::Errors::DocumentNotFound => e
+      halt 404
     end
-    instance, errors = parse_json(response)
+
     return instance['status']
   end
 
-  #get instances given status
-  get "/ns-instances" do
-    url = @tenor_modules.select {|service| service["name"] == "ns_instance_repository" }[0]
-    if params[:status]
-      url = url['host'].to_s + ":" + url['port'].to_s + '/ns-instances?status=' + params[:status]
-    else
-      url = url['host'].to_s + ":" + url['port'].to_s + '/ns-instances'
-    end
-
-    begin
-      response = RestClient.get url, :content_type => :json
-    rescue => e
-      logger.error e
-      if (defined?(e.response)).nil?
-        halt 503, "NS-Instance Repository unavailable"
-      end
-      halt e.response.code, e.response.body
-    end
-    return response
-  end
-
-  get "/ns-instances/:instance" do
-    url = @tenor_modules.select {|service| service["name"] == "ns_instance_repository" }[0]
-    begin
-      response = RestClient.get url['host'].to_s + ":" + url['port'].to_s  + '/ns-instances/'+params['instance'], :content_type => :json
-    rescue => e
-      logger.error e
-      if (defined?(e.response)).nil?
-        halt 503, "NS-Instance Repository unavailable"
-      end
-      halt e.response.code, e.response.body
-    end
-    return response
-  end
-
   #update instance status
-  put "/ns-instances/:ns_instance_id/:status" do
+  put "/ns-instances/:id/:status" do
 
     body, errors = parse_json(request.body.read)
     @instance = body['instance']
@@ -148,7 +106,12 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
     if(popInfo.nil?)
       puts "Pop Info is null"
-      removeInstance(@instance)
+      begin
+        @nsInstance = Nsr.find(params["id"])
+      rescue Mongoid::Errors::DocumentNotFound => e
+        halt(404)
+      end
+      @nsInstance.delete
       halt 200, "Removed correctly."
     end
 
@@ -156,7 +119,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
     #popInfo = getPopInfo(@instance['vnf_info']['pop_id'])
     popUrls = getPopUrls(popInfo['info'][0]['extrainfo'])
-    vnf_manager = @tenor_modules.select {|service| service["name"] == "ns_instance_repository" }[0]
+    vnf_manager = @tenor_modules.select {|service| service["name"] == "vnf_manager" }[0]
 
     if params[:status] === 'terminate'
 
@@ -180,7 +143,12 @@ class OrchestratorNsProvisioner < Sinatra::Application
       #terminate VNF
       recoverState(popInfo, @instance['vnf_info'], @instance, error)
       EM.defer do
-        removeInstance(@instance)
+        begin
+          @nsInstance = Nsr.find(params["id"])
+        rescue Mongoid::Errors::DocumentNotFound => e
+          halt(404)
+        end
+        @nsInstance.delete
       end
       halt 200, "Removed correctly"
     elsif params[:status] === 'start'
@@ -199,7 +167,15 @@ class OrchestratorNsProvisioner < Sinatra::Application
       end
 
       @instance['status'] = params['status'].to_s.upcase
-      updateInstance(@instance)
+
+      begin
+        instance = Nsr.find(@instance["id"])
+      rescue Mongoid::Errors::DocumentNotFound => e
+        logger.error e
+        return 404
+      end
+
+      instance.update_attributes(@instance)
     elsif params[:status] === 'stopped'
 
       @instance['vnfrs'].each do |vnf|
@@ -216,66 +192,18 @@ class OrchestratorNsProvisioner < Sinatra::Application
       end
 
       @instance['status'] = params['status'].to_s.upcase
-      updateInstance(@instance)
+      begin
+        instance = Nsr.find(@instance["id"])
+      rescue Mongoid::Errors::DocumentNotFound => e
+        logger.error e
+        return 404
+      end
+
+      instance.update_attributes(@instance)
     end
 
     halt 200, "Updated correctly."
 
-  end
-
-  #remove
-  delete "/ns-instances/:ns_instance_id" do
-    url = @tenor_modules.select {|service| service["name"] == "ns_instance_repository" }[0]
-    vnf_manager = @tenor_modules.select {|service| service["name"] == "vnf_manager" }[0]
-    wicm = @tenor_modules.select {|service| service["name"] == "wicm" }[0]
-    begin
-      response = RestClient.get url['host'].to_s + ":" + url['port'].to_s + '/ns-instances/' + params['ns_instance_id'].to_s, :content_type => :json
-    rescue Mongoid::Errors::DocumentNotFound => e
-      logger.error "This instance id no exists"
-    end
-    @instance, errors = parse_json(response)
-    logger.debug @instance
-
-    # Request WICM to stop redirecting traffic
-    begin
-      response = RestClient.delete wicm['host'].to_s + ":" + wicm['port'].to_s + "/vnf-connectivity/#{@instance['nsd_id']}", :content_type => :json, :accept => :json
-    rescue Errno::ECONNREFUSED
-      halt 500, 'WICM unreachable'
-    rescue => e
-      logger.error e.response
-      halt e.response.code, e.response.body
-    end
-
-    begin
-      popInfo = getPopInfo(@instance['vnf_info']['pop_id'])
-      popUrls = getPopUrls(popInfo['info'][0]['extrainfo'])
-    rescue
-      removeInstance(@instance['id'])
-      halt 200, "Instance removed correctly"
-    end
-
-    #destroy vnf instances
-    @instance['vnfrs'].each do |vnf|
-
-      if (!vnf['vnfr_id'].nil?)
-        auth = {:auth => {:tenant => @instance['vnf_info']['tenant_name'], :username => @instance['vnf_info']['username'], :password => @instance['vnf_info']['password'], :url => {:keystone => popUrls[:keystone]}}}
-        begin
-          response = RestClient.post vnf_manager['host'].to_s + ":" + vnf_manager['port'].to_s + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/destroy', auth.to_json, :content_type => :json
-        rescue Errno::ECONNREFUSED
-          halt 500, 'VNF Manager unreachable'
-        rescue => e
-          logger.error e.response
-          puts "Delete method."
-          halt e.response.code, e.response.body
-        end
-      end
-
-    end
-
-    #terminate VNF
-    recoverState(popInfo, @instance['vnf_info'], @instance, "Removing instance.")
-
-    halt 200, "Instance removed correctly"
   end
 
   get "/ns-instances-mapping" do
@@ -305,6 +233,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
     callback_response = response['callback_response']
     @instance = response['instance']
     popInfo = response['popInfo']
+    nsd = response['nsd']
     nsr_id = params['nsr_id']
 
     puts callback_response.to_json
@@ -320,9 +249,16 @@ class OrchestratorNsProvisioner < Sinatra::Application
     #@instance['vnfrs'] = []
     @instance['vnfrs'] << vnf_info
 
+    begin
+      instance = Nsr.find(@instance["id"])
+    rescue Mongoid::Errors::DocumentNotFound => e
+      logger.error e
+      return 404
+    end
+
     if callback_response['status'] == 'ERROR_CREATING'
       @instance['status'] = "ERROR_CREATING"
-      updateInstance(@instance)
+      instance.update_attributes(@instance)
       #recoverState(popInfo, @instance['vnf_info'], @instance, error)
       generateMarketplaceResponse(@instance['notification'], "Error creating VNF")
       return 200
@@ -331,7 +267,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
     end
 
     @instance['instantiation_end_time'] = DateTime.now.iso8601(3)
-    updateInstance(@instance)
+    instance.update_attributes(@instance)
 
     puts "Instantiation time: " + (DateTime.parse(@instance['instantiation_end_time']).to_time.to_f*1000 - DateTime.parse(@instance['created_at']).to_time.to_f*1000).to_s
 
@@ -346,19 +282,6 @@ class OrchestratorNsProvisioner < Sinatra::Application
         logger.error e
       end
     end
-
-    #get NSD, for monitoring parameters
-    ns_catalogue = @tenor_modules.select {|service| service["name"] == "ns_catalogue" }[0]
-    begin
-      response = RestClient.get ns_catalogue['host'].to_s + ":" + ns_catalogue['port'].to_s  + '/network-services/' + @instance['nsd_id'].to_s, :content_type => :json
-    rescue => e
-      logger.error e
-      if (defined?(e.response)).nil?
-        halt 400, "NS-Instance Repository unavailable"
-      end
-      halt e.response.code, e.response.body
-    end
-    nsd, errors = parse_json(response)
 
     #start monitoring
     EM.defer do

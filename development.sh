@@ -21,10 +21,6 @@ byobu new-window -n 'Prov.'
 byobu send-keys "cd ns-provisioning" C-m
 byobu send-keys "rake start" C-m
 
-byobu new-window -n 'Ins.Repo'
-byobu send-keys "cd ns-instance-repository" C-m
-byobu send-keys "rake start" C-m
-
 byobu new-window -n 'NSMon'
 byobu send-keys "cd ns-monitoring" C-m
 byobu send-keys "rake start" C-m

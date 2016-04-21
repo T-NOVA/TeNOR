@@ -9,6 +9,7 @@ gem 'json-schema', '~>2.5'
 gem 'rest-client', '~>1.8'
 gem 'logstash-logger'
 gem 'eventmachine'
+gem 'mongoid', '~>4.0' # MongoDB driver
 
 group :development do
 	gem 'rerun'

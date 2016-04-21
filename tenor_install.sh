@@ -54,8 +54,8 @@ if [ -z "$logstash_port" ]; then logstash_port=$LOGSTASH_PORT; fi
 
 printf "\nBundle install of each NS/VNF Module\n"
 
-declare -a tenor_ns_url=("ns_manager" "ns_provisioner" "nsd_validator" "ns_monitoring" "ns_catalogue" "ns_instance_repository" "sla_enforcement" )
-declare -a tenor_vnf_url=("vnf_manager" "vnf_provisioner" "vnfd_validator" "vnf_monitoring" "vnf_instance_repository" "vnf_catalogue" )
+declare -a tenor_ns_url=("ns_manager" "ns_provisioner" "nsd_validator" "ns_monitoring" "ns_catalogue" "sla_enforcement" )
+declare -a tenor_vnf_url=("vnf_manager" "vnf_provisioner" "vnfd_validator" "vnf_monitoring" "vnf_catalogue" )
 
 bundle install --quiet
 

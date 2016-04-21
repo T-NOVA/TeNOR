@@ -15,15 +15,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-class KeyPair < Resource
+class Pool < Resource
 
-  # Initializes a Network object
+  # Initializes a Pool object
   #
-  # @param [String] resource_name the Network resource name
-  # @param [String] name the name of the network
+  # @param [String] resource_name the KeyPair resource name
+  # @param [String] name the name of the keypair
   def initialize(resource_name, name)
-    @type = 'OS::Nova::KeyPair'
-    @properties = {'name' => name, save_private_key: true}
+    @type = 'OS::Neutron::LBaaS::Pool'
+    @properties = {'name' => name, 'admin_state_up' => true, 'loadbalancer' => load_balancer}
     super(resource_name, @type, @properties)
   end
 end

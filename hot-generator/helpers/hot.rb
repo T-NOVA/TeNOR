@@ -16,13 +16,13 @@
 # limitations under the License.
 #
 # @see OrchestratorHotGenerator
-class OrchestratorHotGenerator < Sinatra::Application
+module CommonMethods
 
 	# Checks if a JSON message is valid
 	#
 	# @param [JSON] message the JSON message
 	# @return [Hash] if the parsed message is a valid JSON
-	def parse_json(message)
+	def self.parse_json(message)
 		# Check JSON message format
 		begin
 			parsed_message = JSON.parse(message) # parse json message
@@ -32,7 +32,7 @@ class OrchestratorHotGenerator < Sinatra::Application
 			halt 400, e.to_s + "\n"
 		end
 
-		return parsed_message
+		return parsed_message, nil
 	end
 
 	# Generate a HOT template
@@ -42,7 +42,7 @@ class OrchestratorHotGenerator < Sinatra::Application
 	# @param [Array] networks_id the IDs of the networks created by the NS Manager
 	# @param [String] security_group_id the ID of the T-NOVA security group
 	# @return [Hash] the generated hot template
-	def generate_hot_template(vnfd, flavour_key, networks_id, security_group_id)
+	def self.generate_hot_template(vnfd, flavour_key, networks_id, security_group_id)
 		hot = VnfdToHot.new(vnfd['name'], vnfd['description'])
 
 		begin
@@ -69,7 +69,7 @@ class OrchestratorHotGenerator < Sinatra::Application
 	# @param [String] dns_server the DNS Server to add to the networks
 	# @param [String] flavour the T-NOVA flavour
 	# @return [Hash] the generated networks hot template
-	def generate_network_hot_template(nsd, public_net_id, dns_server, flavour)
+	def self.generate_network_hot_template(nsd, public_net_id, dns_server, flavour)
 		hot = NsdToHot.new(nsd['id'], nsd['name'])
 
 		hot.build(nsd, public_net_id, dns_server, flavour)
@@ -79,7 +79,7 @@ class OrchestratorHotGenerator < Sinatra::Application
 	#
 	# @param [Hash] provider_info information about the provider networks
 	# @return [Hash] the generated wicm hot template
-	def generate_wicm_hot_template(provider_info)
+	def self.generate_wicm_hot_template(provider_info)
 		hot = WicmToHot.new('WICM', 'Resources for WICM and SFC integration')
 
 		hot.build(provider_info)

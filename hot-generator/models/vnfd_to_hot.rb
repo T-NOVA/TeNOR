@@ -63,14 +63,6 @@ class VnfdToHot
 		@hot
 	end
 
-	def create_key_pair(keypair_name)
-		name = get_resource_name
-
-		@hot.resources_list << KeyPair.new(name, keypair_name)
-    @hot.outputs_list << Output.new("private_key", "Private key", {get_resource: keypair_name})
-		name
-	end
-
 	# Parse the outputs from the VNFD and builds an outputs hash
 	#
 	# @param [Hash] events the VNF lifecycle events
@@ -79,7 +71,11 @@ class VnfdToHot
 		events.each do |event, event_info|
 			unless event_info.nil? || event_info['template_file'].nil?
 				raise CustomException::InvalidTemplateFileFormat, "Template file format not supported" unless event_info['template_file_format'].downcase == 'json'
-				JSON.parse(event_info['template_file']).each do |id, output|
+
+        parsed_event, errors = CommonMethods.parse_json(event_info['template_file'])
+        return 400, errors.to_json if errors
+
+        parsed_event.each do |id, output|
 					unless outputs.include?(output)
 						outputs << output
 						match = output.match(/^get_attr\[(.*), *(.*)\]$/i).to_a
@@ -92,7 +88,19 @@ class VnfdToHot
 				end
 			end
 		end
-	end
+  end
+
+  # Creates an HEAT key pair resource
+  #
+  # @param [Hash] keypair_name the Name of the KeyPair
+  # @return [String] the name of the created resource
+  def create_key_pair(keypair_name)
+    name = get_resource_name
+
+    @hot.resources_list << KeyPair.new(name, keypair_name)
+    @hot.outputs_list << Output.new("private_key", "Private key", {get_arr: [name, 'private_key']})
+    name
+  end
 
 	# Creates an HEAT image resource from the VNFD
 	#

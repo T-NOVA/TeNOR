@@ -32,6 +32,7 @@ Bundler.require :default, ENV['RACK_ENV'].to_sym
 
 require_relative 'routes/init'
 require_relative 'helpers/init'
+require_relative 'models/init'
 
 register Sinatra::ConfigFile
 # Load configurations
@@ -68,5 +69,6 @@ before do
 end
 
 
-class OrchestratorNsProvisioner < Sinatra::Application
+class NsProvisioner < Sinatra::Application
+	Mongoid.load!('config/mongoid.yml')
 end

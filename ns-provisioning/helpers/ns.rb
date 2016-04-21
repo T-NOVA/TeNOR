@@ -16,26 +16,7 @@
 # limitations under the License.
 #
 # @see OrchestratorNsProvisioner
-class OrchestratorNsProvisioner < Sinatra::Application
-
-  def instantiateVNF(marketplaceUrl, instantiation_info)
-    url = @tenor_modules.select {|service| service["name"] == "vnf_manager" }[0]
-    begin
-      response = RestClient.post url['host'].to_s + ":" + url['port'].to_s + '/vnf-provisioning/vnf-instances', instantiation_info.to_json, :content_type => :json
-    rescue RestClient::ResourceNotFound
-      puts "No exists in the Marketplace."
-    rescue => e
-      puts "Rescue instatiation"
-      logger.error e
-      if (defined?(e.response)).nil?
-        puts e.response.body
-        error = "Instantiation error. Response from the VNF Manager: " + e.response.body
-        generateMarketplaceResponse(marketplaceUrl, generateError(instantiation_info['ns_id'], "FAILED", error))
-        return
-      end
-    end
-
-  end
+class NsProvisioner < Sinatra::Application
 
   def generateMarketplaceResponse(marketplaceUrl, message)
     logger.debug marketplaceUrl
@@ -114,7 +95,8 @@ class OrchestratorNsProvisioner < Sinatra::Application
     deleteUser(popUrls[:keystone], vnf_info['user_id'], token)
     #    deleteTenant(popUrls[:keystone], vnf_info['tenant_id'], token)
 
-    removeInstance(instance)
+    #removeInstance(instance)
+    instance.delete
 
     generateMarketplaceResponse(callbackUrl, generateError(ns_id, "INFO", "Removed correctly"))
   end
@@ -123,7 +105,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
     @instance = instance
 
-    puts @instance
+    puts "Instance1"
     callbackUrl = @instance['notification']
     flavour = @instance['service_deployment_flavour']
     slaInfo = nsd['sla'].find { |sla| sla['sla_key'] == flavour }
@@ -147,16 +129,7 @@ class OrchestratorNsProvisioner < Sinatra::Application
     }
     #choose select mapping
     mapping = callMapping(ms)
-
-    @instance['mapping_time'] = DateTime.now.iso8601(3)
-    begin
-      updateInstance(@instance)
-    rescue => e
-      generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FATAL", e))
-      return
-    end
-
-    puts "Mapping time: " + (DateTime.parse(@instance['mapping_time']).to_time.to_f*1000 - DateTime.parse(@instance['created_at']).to_time.to_f*1000).to_s
+    @instance.update_attribute('mapping_time', DateTime.now.iso8601(3).to_s)
 
     if (!mapping['vnf_mapping'])
       #halt 400, "Mapping: not enough resources."
@@ -165,8 +138,8 @@ class OrchestratorNsProvisioner < Sinatra::Application
     end
 
     if @instance.nil?
-      logger.error "Instance repo not connected"
-      generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", "Internal error: instance repository not connected."))
+      logger.error "Instance is null"
+      generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", "Internal error: instance is null."))
       return
     end
 
@@ -353,9 +326,9 @@ class OrchestratorNsProvisioner < Sinatra::Application
       begin
         response = RestClient.post hot_url['host'].to_s + ":" + hot_url['port'].to_s + '/networkhot/' + sla_id, hot_generator_message.to_json, :content_type => :json, :accept => :json
       rescue Errno::ECONNREFUSED
-        recoverState(popInfo, vnf_info, @instance, "HOT Generator unreachable")
+        error = {"info" => "HOT Generator unrechable."}
+        recoverState(popInfo, vnf_info, @instance, error)
         return
-          #halt 500, 'HOT Generator unreachable'
       rescue => e
         logger.error e.response
         recoverState(popInfo, vnf_info, @instance, e.response)
@@ -373,15 +346,15 @@ class OrchestratorNsProvisioner < Sinatra::Application
         return
       rescue => e
         logger.error e
-        logger.error e.response
         error = {"info" => "Error creating the network stack."}
         recoverState(popInfo, vnf_info, @instance, error)
         return
       end
       stack, error = parse_json(response)
       stack_id = stack['stack']['id']
-      @instance['network_stack'] = stack
-      updateInstance(@instance)
+      #@instance['network_stack'] = stack
+      @instance.update_attribute('network_stack', stack)
+      #instance.update_attributes(@instance)
 
       puts "Check network stack creation..."
       #stack_status
@@ -454,10 +427,13 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
       stack['stack_name'] = "network-" + @instance['id'].to_s
 
-      @instance['vlr'] = networks
-      @instance['vnf_info'] = vnf_info
-      updateInstance(@instance)
+      @instance.update_attribute('vlr', networks)
+      @instance.update_attribute('vnf_info', vnf_info)
+      #@instance['vlr'] = networks
+      #@instance['vnf_info'] = vnf_info
+      #@instance.update_attributes(@instance)
 
+      #needs to be migrated to the VNFGFD
       vnf_flavour = slaInfo['constituent_vnf'].find { |cvnf| cvnf['vnf_reference'] == vnf_id }['vnf_flavour_id_reference']
       puts vnf_flavour
 
@@ -482,17 +458,37 @@ class OrchestratorNsProvisioner < Sinatra::Application
 
       puts "Instantiation VNF..."
       logger.debug vnf_provisioning_info
-      @instance['instantiation_start_time'] = DateTime.now.iso8601(3)
-      updateInstance(@instance)
+      @instance.update_attribute('instantiation_start_time', DateTime.now.iso8601(3).to_s)
+      #@instance['instantiation_start_time'] = DateTime.now.iso8601(3)
+      #@instance.update_attributes(@instance)
+
+      url = @tenor_modules.select {|service| service["name"] == "vnf_manager" }[0]
       begin
-        instantiateVNF(callbackUrl, vnf_provisioning_info)
+        response = RestClient.post url['host'].to_s + ":" + url['port'].to_s + '/vnf-provisioning/vnf-instances', vnf_provisioning_info.to_json, :content_type => :json
       rescue => e
+        puts "Rescue instatiation"
         logger.error e
-        error = {"info" => "Error in the instantiation. (VNF Manager error)"}
-        logger.error error
-        recoverState(popInfo, vnf_info, @instance, error)
-        return
+        if (defined?(e.response)).nil?
+          puts e.response.body
+          error = "Instantiation error. Response from the VNF Manager: " + e.response.body
+          generateMarketplaceResponse(marketplaceUrl, generateError(instantiation_info['ns_id'], "FAILED", error))
+          return
+        end
       end
+
+      vnfr, error = parse_json(response)
+      puts vnfr
+      puts vnfr['_id']
+      #@instance['vnfr'] = vnfr['id']
+
+      vnfrs = []
+      vnf_info = {}
+      vnf_info[:vnfd_id] = vnfr['vnfd_reference']
+      vnf_info[:vnfi_id] = nil
+      vnf_info[:vnfr_id] = vnfr['_id']
+      vnfrs << vnf_info
+
+      @instance.update_attribute('vnfr', vnfrs)
 
     end
   end

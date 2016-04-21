@@ -25,7 +25,7 @@ class Nsr
   include Mongoid::Attributes::Dynamic
   #field :vnfs, type: Array
 
-#  field :nsr_instance, type: Array
+  #  field :nsr_instance, type: Array
   #ETSI fields
   field :auto_scale_policy, type: Hash
   field :monitoring_parameters, type: Array

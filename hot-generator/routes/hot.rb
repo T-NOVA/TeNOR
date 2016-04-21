@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 # @see OrchestratorHotGenerator
-class OrchestratorHotGenerator < Sinatra::Application
+class HotGenerator < Sinatra::Application
 
 	# @method post_hot_flavour
 	# @overload post '/hot/:flavour'
@@ -29,7 +29,9 @@ class OrchestratorHotGenerator < Sinatra::Application
 		halt 415 unless request.content_type == 'application/json'
 
 		# Validate JSON format
-		provision_info = parse_json(request.body.read)
+		provision_info, errors = CommonMethods.CommonMethods.parse_json(request.body.read)
+    return 400, errors.to_json if errors
+
 		vnf = provision_info['vnf']
 
 		networks_id = provision_info['networks_id']
@@ -43,7 +45,7 @@ class OrchestratorHotGenerator < Sinatra::Application
 
 		# Build a HOT template
 		logger.debug 'T-NOVA flavour: ' + params[:flavour]
-		hot = generate_hot_template(vnf['vnfd'], params[:flavour], networks_id, security_group_id)
+		hot = CommonMethods.generate_hot_template(vnf['vnfd'], params[:flavour], networks_id, security_group_id)
 
 		halt 200, hot.to_json
 	end
@@ -59,7 +61,8 @@ class OrchestratorHotGenerator < Sinatra::Application
 		halt 415 unless request.content_type == 'application/json'
 
 		# Validate JSON format
-		networkInfo = parse_json(request.body.read)
+		networkInfo, errors = CommonMethods.parse_json(request.body.read)
+    return 400, errors.to_json if errors
 
 		nsd = networkInfo['nsd']
 		halt 400, 'NSD not found' if nsd.nil?
@@ -72,7 +75,7 @@ class OrchestratorHotGenerator < Sinatra::Application
 
 		# Build a HOT template
 		logger.debug 'T-NOVA flavour: ' + params[:flavour]
-		hot = generate_network_hot_template(nsd, public_net_id, dns_server, params[:flavour])
+		hot = CommonMethods.generate_network_hot_template(nsd, public_net_id, dns_server, params[:flavour])
 
 		halt 200, hot.to_json
 	end
@@ -86,10 +89,11 @@ class OrchestratorHotGenerator < Sinatra::Application
 		halt 415 unless request.content_type == 'application/json'
 
 		# Validate JSON format
-		provider_info = parse_json(request.body.read)
+		provider_info, errors = CommonMethods.parse_json(request.body.read)
+    return 400, errors.to_json if errors
 
 		# Build a HOT template
-		hot = generate_wicm_hot_template(provider_info)
+		hot = CommonMethods.generate_wicm_hot_template(provider_info)
 
 		halt 200, hot.to_json
 	end

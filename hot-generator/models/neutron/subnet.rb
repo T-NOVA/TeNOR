@@ -1,5 +1,5 @@
 #
-# TeNOR - NS Instance Repository
+# TeNOR - HOT Generator
 #
 # Copyright 2014-2016 i2CAT Foundation, Portugal Telecom Inovação
 #
@@ -15,4 +15,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require_relative 'ns-instance'
+class Subnet < Resource
+
+  # Initializes Subnet object
+  #
+  # @param [String] resource_name the Subnet resource name
+  # @param [String] network_id Network ID this subnet belongs to
+  # @param [String] dns_server the DNS server to use in this subnet
+  # @param [String] index the index for the CIDR
+  def initialize(resource_name, network_id, dns_server, cidr)
+    @type = 'OS::Neutron::Subnet'
+    @properties = {"network_id" => network_id, "ip_version" => 4, "cidr" => cidr, :dns_nameservers => [dns_server]}
+    super(resource_name, @type, @properties)
+  end
+end

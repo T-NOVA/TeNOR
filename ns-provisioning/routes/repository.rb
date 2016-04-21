@@ -1,5 +1,5 @@
 #
-# TeNOR - NS Instance Repository
+# TeNOR - NS Provisioning
 #
 # Copyright 2014-2016 i2CAT Foundation, Portugal Telecom Inovação
 #
@@ -15,80 +15,80 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# @see OrchestratorNsInstanceRepository
-class OrchestratorNsInstanceRepository < Sinatra::Application
+# @see NsProvisioner
+class NsProvisioner < Sinatra::Application
 
   # @method get_ns-instances
   # @overload get "/ns-instances"
   # Gets all ns-instances
-	get '/ns-instances' do
+  get '/ns-instances' do
     if params[:status]
       @nsInstances = Nsr.where(:status => params[:status])
     else
       @nsInstances = Nsr.all
     end
 
-		return @nsInstances.to_json
-	end
+    return @nsInstances.to_json
+  end
 
   # @method get_ns-instance
   # @overload get "/ns-instances/:id"
   # Get a ns-instance
-	get '/ns-instances/:id' do
-		begin
-			@nsInstance = Nsr.find(params["id"])
-		rescue Mongoid::Errors::DocumentNotFound => e
-			halt(404)
-		end
-		return @nsInstance.to_json
+  get '/ns-instances/:id' do
+    begin
+      @nsInstance = Nsr.find(params["id"])
+    rescue Mongoid::Errors::DocumentNotFound => e
+      halt(404)
+    end
+    return @nsInstance.to_json
   end
 
   # @method post_ns-instances
   # @overload post "/ns-instances"
   # Post a new ns-instances information
-	post '/ns-instances' do
-		return 415 unless request.content_type == 'application/json'
+  post '/ns-instances' do
+    return 415 unless request.content_type == 'application/json'
 
-		instance, errors = parse_json(request.body.read)
-		return 400, errors.to_json if errors
-		
-		instance = Nsr.new(instance)
-		instance.save!
+    instance, errors = parse_json(request.body.read)
+    return 400, errors.to_json if errors
 
-		return 200, instance.to_json
-	end
+    instance = Nsr.new(instance)
+    instance.save!
+
+    return 200, instance.to_json
+  end
 
   # @method get_ns-instances
   # @overload get "/ns-instances"
   # Update a ns-instance
-	put '/ns-instances/:id' do
-		return 415 unless request.content_type == 'application/json'
+  put '/ns-instances/:id' do
+    return 415 unless request.content_type == 'application/json'
 
-		nsInstance, errors = parse_json(request.body.read)
-		return 400, errors.to_json if errors
+    nsInstance, errors = parse_json(request.body.read)
+    return 400, errors.to_json if errors
 
-		begin
-			@instance = Nsr.find(params["id"])
-		rescue Mongoid::Errors::DocumentNotFound => e
-			logger.error e
-			return 404
-		end
+    begin
+      @instance = Nsr.find(params["id"])
+    rescue Mongoid::Errors::DocumentNotFound => e
+      logger.error e
+      return 404
+    end
 
-		@instance.update_attributes(nsInstance)
+    @instance.update_attributes(nsInstance)
 
-		return 200, @instance.to_json
-	end
+    return 200, @instance.to_json
+  end
 
   # @method delete_ns-instances
   # @overload delete "/ns-instances/:id"
   # Delete a ns-instance
-	delete '/ns-instances/:id' do
-		begin
-			@nsInstance = Nsr.find(params["id"])
-		rescue Mongoid::Errors::DocumentNotFound => e
-			halt(404)
-		end
-		@nsInstance.delete
-	end
+  delete '/ns-instances/:id' do
+    begin
+      @nsInstance = Nsr.find(params["id"])
+    rescue Mongoid::Errors::DocumentNotFound => e
+      halt(404)
+    end
+    @nsInstance.delete
+  end
 
 end

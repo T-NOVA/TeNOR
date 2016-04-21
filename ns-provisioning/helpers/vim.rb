@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 # @see OrchestratorNsProvisioner
-class OrchestratorNsProvisioner < Sinatra::Application
+class NsProvisioner < Sinatra::Application
 
   def openstackAdminAuthentication(keystoneUrl, user, password)
     auth = {:auth => {:tenantName => "t-nova", :passwordCredentials => {:username => user, :password => password}}}

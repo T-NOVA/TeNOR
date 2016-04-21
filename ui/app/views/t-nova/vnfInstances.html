@@ -25,7 +25,7 @@
             <td><a href="" ng-click="showDescriptor(row)">{{row._id}}</a></td>
             <td>{{row.vnfd_reference}}</td>
             <td>{{row.created_at| date:'yyyy-MM-dd HH:mm:ss'}}</td>
-            <td><span ng-if="row.vnf_status === 'instantiated'">Instantiated</span><span ng-if="row.vnf_status === '1'">Running</span><span ng-if="row.vnf_status === '2'">Stopped</span><span ng-if="row.vnf_status === '3'">Terminated</span></td>
+            <td><span ng-if="row.vnf_status === 'instantiated'">INSTATIATED</span><span ng-if="row.vnf_status === '1'">RUNNING</span><span ng-if="row.vnf_status === '2'">STOPPED</span><span ng-if="row.vnf_status === '3'">CREATING</span></td>
             <td>
                 <button ng-click="go('/vnfMonitoring/' + row._id)" class="btn btn-success btn-xs" ng-enabled="row.vnf_status === '1'">Monitoring</button>
                 <button ng-click="stop(row._id)" class="btn btn-danger btn-xs" ng-disabled="row.vnf_status !== 1">Stop</button>

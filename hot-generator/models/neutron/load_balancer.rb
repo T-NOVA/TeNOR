@@ -15,17 +15,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-class Server < Resource
+class LoadBalancer < Resource
 
-	# Initializes Server object
-	#
-	# @param [String] resource_name the Server resource name
-	# @param [String] flavor the ID or name of the flavor to boot onto
-	# @param [String] image the ID or name of the image to boot with
-	# @param [Array] networks a list of ports ID to be added to this server
-	def initialize(resource_name, flavor, image, networks, user_data, key)
-		type = 'OS::Nova::Server'
-		properties = {'flavor' => flavor, 'image' => image, 'networks' => networks, 'user_data_format' => 'RAW', 'user_data' => user_data, 'key_name' => key}
-		super(resource_name, type, properties)
-	end
+  # Initializes a Network object
+  #
+  # @param [String] resource_name the Network resource name
+  # @param [String] name the name of the network
+  def initialize(resource_name, name)
+    @type = 'OS::Neutron::LBaaS::LoadBalancer'
+    @properties = {'name' => name, 'save_private_key' => true}
+    super(resource_name, @type, @properties)
+  end
 end
