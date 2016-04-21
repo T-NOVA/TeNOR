@@ -101,7 +101,7 @@ class OrchestratorVnfProvisioning < Sinatra::Application
 
     # Requests VIM to provision the VNF
     begin
-      response = parse_json(RestClient.post "#{vim_info['heat']}/#{tenant_id}/stacks", {stack_name: vnf_name, template: hot}.to_json , 'X-Auth-Token' => auth_token, :content_type => :json, :accept => :json)
+      response = parse_json(RestClient.post "#{vim_info['heat']}/#{tenant_id}/stacks", {:stack_name => vnf_name, :template => hot}.to_json , 'X-Auth-Token' => auth_token, :content_type => :json, :accept => :json)
     rescue Errno::ECONNREFUSED
       halt 500, 'VIM unreachable'
     rescue => e
@@ -166,6 +166,19 @@ class OrchestratorVnfProvisioning < Sinatra::Application
         logger.error "Image #{vdu['vm_image']} from #{vdu['id']} not accessible."
         halt 400, "Image #{vdu['vm_image']} from #{vdu['id']} not accessible."
       end
+    end
+  end
+
+  def nsmanager_callback(ns_manager_callback, message)
+    logger.debug 'NS Manager message: ' + message.to_json
+    logger.debug 'NS Manager callback: ' + ns_manager_callback.to_json
+    begin
+      response = RestClient.post "#{ns_manager_callback}", message.to_json, 'X-Auth-Token' => @client_token, :content_type => :json, :accept => :json
+    rescue Errno::ECONNREFUSED
+      halt 500, 'NS Manager callback down'
+    rescue => e
+      logger.error e.response
+      halt e.response.code, e.response.body
     end
   end
 

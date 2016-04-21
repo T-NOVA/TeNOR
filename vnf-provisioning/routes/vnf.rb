@@ -114,13 +114,14 @@ class OrchestratorVnfProvisioning < Sinatra::Application
     # Build the VNFR and store it
     begin
       vnfr = Vnfr.create!(
+        deployment_flavour: instantiation_info['flavour'],
         nsr_instance: Array(instantiation_info['ns_id']),
         vnfd_reference: vnf['vnfd']['id'],
         vim_id: instantiation_info['vim_id'],
         vlr_instances: nil,
         vnf_addresses: nil,
         vnf_status: 3,
-        notifications: nil,
+        notifications: instantiation_info['callback_url'],
         lifecycle_event_history: Array('CREATE_IN_PROGRESS'),
         audit_log: nil,
         stack_url: response['stack']['links'][0]['href'],
@@ -292,13 +293,21 @@ class OrchestratorVnfProvisioning < Sinatra::Application
       begin
         response = RestClient.post "#{settings.mapi}/vnf_api/", mapi_request.to_json, :content_type => :json, :accept => :json
       rescue Errno::ECONNREFUSED
+        message = { status: "mAPI_unreachable", vnfd_id: vnfr.vnfd_reference, vnfr_id: vnfr.id}
+        nsmanager_callback(stack_info['ns_manager_callback'], message)
         halt 500, 'mAPI unreachable'
       rescue => e
         logger.error e.response
+        message = { status: "mAPI_error", vnfd_id: vnfr.vnfd_reference, vnfr_id: vnfr.id}
+        nsmanager_callback(stack_info['ns_manager_callback'], message)
         halt e.response.code, e.response.body
       end
 
       # Read from VIM outputs and map with parameters
+
+      puts "Output recevied from Openstack:"
+      puts stack_info['stack']['outputs']
+
       vms_id = {}
       lifecycle_events_values = {}
       vnf_addresses = {}
@@ -341,17 +350,8 @@ class OrchestratorVnfProvisioning < Sinatra::Application
       # Build message to send to the NS Manager callback
       vnfi_id = []
       vnfr.vms_id.each {|key, value| vnfi_id << value}
-      ns_manager = { vnfd_id: vnfr.vnfd_reference, vnfi_id: vnfi_id, vnfr_id: vnfr.id}
-      logger.debug 'NS Manager message: ' + ns_manager.to_json
-      logger.debug 'NS Manager callback: ' + stack_info['ns_manager_callback'].to_json
-      begin
-        response = RestClient.post "#{stack_info['ns_manager_callback']}", ns_manager.to_json, 'X-Auth-Token' => @client_token, :content_type => :json, :accept => :json
-      rescue Errno::ECONNREFUSED
-        halt 500, 'NS Manager callback'
-      rescue => e
-        logger.error e.response
-        halt e.response.code, e.response.body
-      end
+      message = { vnfd_id: vnfr.vnfd_reference, vnfi_id: vnfi_id, vnfr_id: vnfr.id}
+      nsmanager_callback(stack_info['ns_manager_callback'], message)
     else
       # If the stack has failed to create
       if params[:status] == 'create_failed'
@@ -383,17 +383,8 @@ class OrchestratorVnfProvisioning < Sinatra::Application
         end
         logger.debug 'Response from VIM to destroy allocated resources: ' + response.to_json
 
-        ns_manager = { status: "ERROR_CREATING", vnfd_id: vnfr.vnfd_reference, vnfr_id: vnfr.id}
-        logger.debug 'NS Manager message: ' + ns_manager.to_json
-        logger.debug 'NS Manager callback: ' + stack_info['ns_manager_callback'].to_json
-        begin
-          response = RestClient.post "#{stack_info['ns_manager_callback']}", ns_manager.to_json, 'X-Auth-Token' => @client_token, :content_type => :json, :accept => :json
-        rescue Errno::ECONNREFUSED
-          halt 500, 'NS Manager callback'
-        rescue => e
-          logger.error e.response
-          halt e.response.code, e.response.body
-        end
+        message = { status: "ERROR_CREATING", vnfd_id: vnfr.vnfd_reference, vnfr_id: vnfr.id}
+        nsmanager_callback(stack_info['ns_manager_callback'], message)
 
         # Delete the VNFR from the database
         vnfr.destroy
