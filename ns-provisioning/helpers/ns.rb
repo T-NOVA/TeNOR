@@ -478,9 +478,17 @@ class NsProvisioner < Sinatra::Application
 
       vnfr, error = parse_json(response)
       puts vnfr
-      puts vnfr['id']
+      puts vnfr['_id']
       #@instance['vnfr'] = vnfr['id']
-      @instance.update_attribute('vnfr', vnfr['id'])
+
+      vnfrs = []
+      vnf_info = {}
+      vnf_info[:vnfd_id] = vnfr['vnfd_reference']
+      vnf_info[:vnfi_id] = nil
+      vnf_info[:vnfr_id] = vnfr['_id']
+      vnfrs << vnf_info
+
+      @instance.update_attribute('vnfr', vnfrs)
 
     end
   end

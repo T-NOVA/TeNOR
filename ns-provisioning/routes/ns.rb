@@ -256,7 +256,6 @@ class NsProvisioner < Sinatra::Application
       return 404
     end
 
-
     if callback_response['status'] == 'ERROR_CREATING'
       @instance['status'] = "ERROR_CREATING"
       instance.update_attributes(@instance)
