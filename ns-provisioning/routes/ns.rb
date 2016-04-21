@@ -68,8 +68,8 @@ class NsProvisioner < Sinatra::Application
             :marketplace_callback => instantiation_info['callbackUrl']
         }
 
-    instance = Nsr.new(instance)
-    instance.save!
+    @instance = Nsr.new(instance)
+    @instance.save!
 
     #call thread to process instantiation
     #EM.defer(instantiate(instantiation_info), callback())
@@ -249,15 +249,16 @@ class NsProvisioner < Sinatra::Application
     #@instance['vnfrs'] = []
     @instance['vnfrs'] << vnf_info
 
+    begin
+      instance = Nsr.find(@instance["id"])
+    rescue Mongoid::Errors::DocumentNotFound => e
+      logger.error e
+      return 404
+    end
+
+
     if callback_response['status'] == 'ERROR_CREATING'
       @instance['status'] = "ERROR_CREATING"
-      begin
-        instance = Nsr.find(@instance["id"])
-      rescue Mongoid::Errors::DocumentNotFound => e
-        logger.error e
-        return 404
-      end
-
       instance.update_attributes(@instance)
       #recoverState(popInfo, @instance['vnf_info'], @instance, error)
       generateMarketplaceResponse(@instance['notification'], "Error creating VNF")
@@ -267,13 +268,6 @@ class NsProvisioner < Sinatra::Application
     end
 
     @instance['instantiation_end_time'] = DateTime.now.iso8601(3)
-    begin
-      instance = Nsr.find(@instance["id"])
-    rescue Mongoid::Errors::DocumentNotFound => e
-      logger.error e
-      return 404
-    end
-
     instance.update_attributes(@instance)
 
     puts "Instantiation time: " + (DateTime.parse(@instance['instantiation_end_time']).to_time.to_f*1000 - DateTime.parse(@instance['created_at']).to_time.to_f*1000).to_s
