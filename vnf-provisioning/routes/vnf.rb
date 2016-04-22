@@ -121,7 +121,7 @@ class OrchestratorVnfProvisioning < Sinatra::Application
         vlr_instances: nil,
         vnf_addresses: nil,
         vnf_status: 3,
-        notifications: instantiation_info['callback_url'],
+        notifications: [instantiation_info['callback_url']],
         lifecycle_event_history: Array('CREATE_IN_PROGRESS'),
         audit_log: nil,
         stack_url: response['stack']['links'][0]['href'],
