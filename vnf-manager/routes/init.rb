@@ -15,7 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require_relative 'vnfs'
-require_relative 'vnf_provisioning'
+require_relative 'catalogue'
+require_relative 'provisioning'
 require_relative 'configs'
-require_relative 'vnf_monitoring'
+require_relative 'monitoring'
+require_relative 'scaling'
