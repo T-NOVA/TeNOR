@@ -45,7 +45,7 @@ class VnfdToHot
     # Get the vlinks references for the deployment flavour
 		vlinks = deployment_information['vlink_reference']
 
-    key = create_key_pair(SecureRandom.urlsafe_base64(9))
+		key = create_key_pair(SecureRandom.urlsafe_base64(9))
 
 		deployment_information['vdu_reference'].each do |vdu_ref|
 			# Get VDU for deployment
@@ -98,7 +98,7 @@ class VnfdToHot
     name = get_resource_name
 
     @hot.resources_list << KeyPair.new(name, keypair_name)
-    @hot.outputs_list << Output.new("private_key", "Private key", {get_arr: [name, 'private_key']})
+    @hot.outputs_list << Output.new("private_key", "Private key", {get_attr: [name, 'private_key']})
     name
   end
 

@@ -29,7 +29,7 @@ class HotGenerator < Sinatra::Application
 		halt 415 unless request.content_type == 'application/json'
 
 		# Validate JSON format
-		provision_info, errors = CommonMethods.CommonMethods.parse_json(request.body.read)
+		provision_info, errors = CommonMethods.parse_json(request.body.read)
     return 400, errors.to_json if errors
 
 		vnf = provision_info['vnf']
