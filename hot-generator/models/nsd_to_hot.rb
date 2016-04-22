@@ -46,7 +46,7 @@ class NsdToHot
         if vlink['net_segment']
           cidr = vlink['net_segment']
         else
-          cidr = "192."+rand(256)+"." + index.to_s + ".0/24"
+          cidr = "192." + rand(256).to_s + "." + index.to_s + ".0/24"
         end
 
         if vlink['connectivity_type'] == "E-LINE"
