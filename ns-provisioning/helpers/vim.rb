@@ -42,6 +42,7 @@ class NsProvisioner < Sinatra::Application
     rescue => e
       logger.error e
       logger.error e.response.body
+      halt 500, e.response.body
     end
 
     authentication, errors = parse_json(response)
@@ -243,7 +244,6 @@ class NsProvisioner < Sinatra::Application
       response = RestClient.delete stack_url, 'X-Auth-Token' => tenant_token, :content_type => :json, :accept => :json
     rescue Errno::ECONNREFUSED
       error = {"info" => "VIM unrechable."}
-      recoverState(popInfo, vnf_info, @instance, error)
       return
     rescue => e
       logger.error e

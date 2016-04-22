@@ -41,7 +41,7 @@ class NsProvisioner < Sinatra::Application
     vnf_instances = []
     vnfs.each {|x|
       puts x
-      vnf_instances << {:id => x, :parameters => paramsVnf, :vnfr_id => vnf_info['vnfr_id']}
+      vnf_instances << {:id => x, :parameters => paramsVnf, :vnfr_id => vnf_info[:vnfr_id]}
     }
     monitoring[:vnf_instances] = vnf_instances
 
