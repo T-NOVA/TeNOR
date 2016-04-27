@@ -42,15 +42,17 @@ class NsProvisioner < Sinatra::Application
 
   def recoverState(popInfo, vnf_info, instance, error)
 
+    @instance = instance
+
     popUrls = getPopUrls(popInfo['info'][0]['extrainfo'])
-    callbackUrl = instance['notification']
-    ns_id = instance['nsd_id']
+    callbackUrl = @instance['notification']
+    ns_id = @instance['nsd_id']
 
     tenant_token = openstackAuthentication(popUrls[:keystone], vnf_info['tenant_id'], vnf_info['username'], vnf_info['password'])
     token = openstackAdminAuthentication(popUrls[:keystone], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
 
-    if (instance['network_stack'])
-      stack_url = instance['network_stack']['stack']['links'][0]['href']
+    if (@instance['network_stack'])
+      stack_url = @instance['network_stack']['stack']['links'][0]['href']
       logger.error "Removing network stack"
       deleteStack(stack_url, tenant_token)
 
@@ -76,13 +78,17 @@ class NsProvisioner < Sinatra::Application
           logger.error e.response
         end
 
-        puts status
+        logger.error "Try: " + count.to_s + ", status: " + status.to_s
         if (status == "DELETE_FAILED")
           deleteStack(stack_url, tenant_token)
           status = "DELETING"
         end
         count = count +1
-        break if count > 10
+
+        if count > 10
+          halt 400, "Network stack can not be removed"
+        end
+        break if count > 20
       end
 
       logger.info "Network stack removed correctly"
@@ -92,12 +98,10 @@ class NsProvisioner < Sinatra::Application
     end
 
     puts "Removing user..."
-    deleteUser(popUrls[:keystone], vnf_info['user_id'], token)
+    #deleteUser(popUrls[:keystone], vnf_info['user_id'], token)
     #    deleteTenant(popUrls[:keystone], vnf_info['tenant_id'], token)
 
-    #removeInstance(instance)
-    instance.delete
-
+    @instance.delete
     generateMarketplaceResponse(callbackUrl, generateError(ns_id, "INFO", "Removed correctly"))
   end
 
@@ -309,6 +313,8 @@ class NsProvisioner < Sinatra::Application
           break if count > 10
         end
         if (status == "CREATE_FAILED")
+          logger.error "CREATE_FAILED"
+          logger.error response
           recoverState(popInfo, vnf_info, @instance, error)
           return
         end

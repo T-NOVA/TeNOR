@@ -3,7 +3,7 @@ require_relative 'spec_helper'
 RSpec.describe OrchestratorNsCatalogue do
 	def app
 		OrchestratorNsCatalogue
-	end
+  end
 
 	before do
 		begin
@@ -27,7 +27,7 @@ RSpec.describe OrchestratorNsCatalogue do
 		end
 
 		context 'given a valid NS' do
-			let(:response) { post '/network-services', {nsd: {id: 1, name: 'teste'}}.to_json, rack_env={'CONTENT_TYPE' => 'application/json'} }
+			let(:response) { post '/network-services', {nsd: {id: "id1", name: 'teste2', version: "2", vendor: "aasdas"}}.to_json, rack_env={'CONTENT_TYPE' => 'application/json'} }
 
 			it 'responds with a 200' do
 				expect(response.status).to eq 200
@@ -38,7 +38,6 @@ RSpec.describe OrchestratorNsCatalogue do
 			end
 		end
 	end
-
 
 	describe 'GET /network-services' do
 		context 'when there are no NSs' do
@@ -83,6 +82,7 @@ RSpec.describe OrchestratorNsCatalogue do
 		let(:ns) { create :ns }
 
 		context 'when the NS is not found' do
+
 			let(:response_not_found) { get '/network-services/' + 'aaa' }
 
 			it 'responds with an empty body' do
@@ -90,7 +90,7 @@ RSpec.describe OrchestratorNsCatalogue do
 			end
 
 			it 'responds with 404' do
-				expect(response_not_found.status).to eq 404
+        expect(response_not_found.status).to eq 404
 			end
 		end
 
@@ -115,7 +115,7 @@ RSpec.describe OrchestratorNsCatalogue do
 		let(:ns) { create :ns }
 
 		context 'when the NS is not found' do
-			let(:response_not_found) { delete '/network-services/' + ns.nsd[:id] }
+			let(:response_not_found) { delete '/network-services/' + 'invalidId' }
 
 			it 'responds with an empty body' do
 				expect(response_not_found.body).to be_empty
@@ -127,7 +127,7 @@ RSpec.describe OrchestratorNsCatalogue do
 		end
 
 		context 'when the NS is found' do
-			let(:response_found) { delete '/network-services/' + ns._id }
+			let(:response_found) { delete '/network-services/' + ns.nsd[:id] }
 
 			it 'responds with an empty body' do
 				expect(response_found.body).to be_empty

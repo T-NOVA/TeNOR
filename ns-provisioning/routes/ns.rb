@@ -104,13 +104,14 @@ class NsProvisioner < Sinatra::Application
     @instance = body['instance']
     popInfo = body['popInfo']
 
+    begin
+      @nsInstance = Nsr.find(params["id"])
+    rescue Mongoid::Errors::DocumentNotFound => e
+      halt 404
+    end
+
     if(popInfo.nil?)
       puts "Pop Info is null"
-      begin
-        @nsInstance = Nsr.find(params["id"])
-      rescue Mongoid::Errors::DocumentNotFound => e
-        halt(404)
-      end
       @nsInstance.delete
       halt 200, "Removed correctly."
     end
@@ -141,15 +142,8 @@ class NsProvisioner < Sinatra::Application
 
       error = "Removing instance"
       #terminate VNF
-      recoverState(popInfo, @instance['vnf_info'], @instance, error)
-      EM.defer do
-        begin
-          @nsInstance = Nsr.find(params["id"])
-        rescue Mongoid::Errors::DocumentNotFound => e
-          halt(404)
-        end
-        @nsInstance.delete
-      end
+      recoverState(popInfo, @instance['vnf_info'], @nsInstance, error)
+      @nsInstance.delete
       halt 200, "Removed correctly"
     elsif params[:status] === 'start'
 
@@ -167,15 +161,7 @@ class NsProvisioner < Sinatra::Application
       end
 
       @instance['status'] = params['status'].to_s.upcase
-
-      begin
-        instance = Nsr.find(@instance["id"])
-      rescue Mongoid::Errors::DocumentNotFound => e
-        logger.error e
-        return 404
-      end
-
-      instance.update_attributes(@instance)
+      @nsInstance.update_attributes(@instance)
     elsif params[:status] === 'stopped'
 
       @instance['vnfrs'].each do |vnf|
@@ -192,14 +178,7 @@ class NsProvisioner < Sinatra::Application
       end
 
       @instance['status'] = params['status'].to_s.upcase
-      begin
-        instance = Nsr.find(@instance["id"])
-      rescue Mongoid::Errors::DocumentNotFound => e
-        logger.error e
-        return 404
-      end
-
-      instance.update_attributes(@instance)
+      @nsInstance
     end
 
     halt 200, "Updated correctly."
