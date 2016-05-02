@@ -10,12 +10,13 @@ This is TeNOR's, the [T-NOVA](http://www.t-nova.eu) Orchestrator repository.
 - VIM Monitoring (https://github.com/T-NOVA/vim-monitoring) (optional)
 
 ## Requirements
-- Ruby >= 1.9
+- Ruby >= 2
 - Bundler
 - MongoDB
 - Apache Cassandra (optional, used for monitoring)
 - Logstash (optional) & ElasticSearch (optional)
 - Byobu (development) (sudo apt-get install byobu)
+- RabbitMq
 
 #Getting started
 ## Installation
