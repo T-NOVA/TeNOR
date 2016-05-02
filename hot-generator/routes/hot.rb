@@ -98,4 +98,36 @@ class HotGenerator < Sinatra::Application
 		halt 200, hot.to_json
 	end
 
+	# @method post_networkhot_flavour
+	# @overload post '/networkhot/:flavour'
+	# 	Build a HOT to create the networks
+	# 	@param [String] flavour the T-NOVA flavour to generate the HOT
+	# 	@param [JSON] the networks information
+	# Convert a VNFD into a HOT
+	post '/scale/:flavour' do
+    # Return if content-type is invalid
+    halt 415 unless request.content_type == 'application/json'
+
+    # Validate JSON format
+    provision_info, errors = CommonMethods.parse_json(request.body.read)
+    return 400, errors.to_json if errors
+
+    vnf = provision_info['vnf']
+
+    networks_id = provision_info['networks_id']
+    halt 400, 'Networks ID not found' if networks_id.nil?
+
+    security_group_id = provision_info['security_group_id']
+    halt 400, 'Security group ID not found' if security_group_id.nil?
+
+    logger.debug 'Networks IDs: ' + networks_id.to_json
+    logger.debug 'Security Group ID: ' + security_group_id.to_json
+
+    # Build a HOT template
+		logger.debug 'Scale T-NOVA flavour: ' + params[:flavour]
+		hot = CommonMethods.generate_hot_template_scaling(vnf['vnfd'], params[:flavour], networks_id, security_group_id)
+
+		halt 200, hot.to_json
+	end
+
 end

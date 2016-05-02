@@ -1,0 +1,270 @@
+{
+  "vnfd": {
+    "provider_id": 7,
+    "vdu": [
+      {
+        "resource_requirements": {
+          "network_interface_bandwidth_unit": "",
+          "hypervisor_parameters": {
+            "version": "10002|12001|2.6.32-358.el6.x86_64",
+            "type": "QEMU-KVM"
+          },
+          "memory_unit": "GB",
+          "network_interface_card_capabilities": {
+            "SR-IOV": true,
+            "mirroring": false
+          },
+          "storage": {
+            "size_unit": "GB",
+            "persistence": false,
+            "size": 8
+          },
+          "network_interface_bandwidth": "",
+          "platform_pcie_parameters": {
+            "SR-IOV": true,
+            "device_pass_through": true
+          },
+          "vcpus": 1,
+          "vswitch_capabilities": {
+            "version": "2.0",
+            "type": "ovs",
+            "overlay_tunnel": "GRE"
+          },
+          "data_processing_acceleration_library": "",
+          "memory": 2,
+          "memory_parameters": {
+            "large_pages_required": false,
+            "numa_allocation_policy": ""
+          },
+          "cpu_support_accelerator": "AES-NI"
+        },
+        "vm_image": "http://10.10.1.167:8080/NFS/files/trusty-server-cloudimg-amd64-disk1.img",
+        "vm_image_format": "qcow2",
+        "networking_resources": "",
+        "monitoring_parameters_specific": [
+          {
+            "metric": "object",
+            "unit": "INT",
+            "desc": "Number of objects in the repository"
+          }
+        ],
+        "id": "vdu0",
+        "alias": "controller",
+        "controller": true,
+        "connection_points": [
+          {
+            "vlink_ref": "vl0",
+            "id": "CP1uqw"
+          },
+          {
+            "vlink_ref": "vl1",
+            "id": "CPffa9"
+          }
+        ],
+        "monitoring_parameters": [
+          {
+            "metric": "object",
+            "unit": "INT",
+            "desc": "Number of objects in the repository"
+          }
+        ],
+        "vm_image_md5": "910A917DC844E860232262B66C0250DC",
+        "scale_in_out": {
+          "minimum": 1,
+          "maximum": 2
+        }
+      },
+      {
+        "resource_requirements": {
+          "network_interface_bandwidth_unit": "",
+          "hypervisor_parameters": {
+            "version": "10002|12001|2.6.32-358.el6.x86_64",
+            "type": "QEMU-KVM"
+          },
+          "memory_unit": "GB",
+          "network_interface_card_capabilities": {
+            "SR-IOV": true,
+            "mirroring": false
+          },
+          "storage": {
+            "size_unit": "GB",
+            "persistence": false,
+            "size": 8
+          },
+          "network_interface_bandwidth": "",
+          "platform_pcie_parameters": {
+            "SR-IOV": true,
+            "device_pass_through": true
+          },
+          "vcpus": 1,
+          "vswitch_capabilities": {
+            "version": "2.0",
+            "type": "ovs",
+            "overlay_tunnel": "GRE"
+          },
+          "data_processing_acceleration_library": "",
+          "memory": 2,
+          "memory_parameters": {
+            "large_pages_required": false,
+            "numa_allocation_policy": ""
+          },
+          "cpu_support_accelerator": "AES-NI"
+        },
+        "vm_image": "http://10.10.1.167:8080/NFS/files/trusty-server-cloudimg-amd64-disk1.img",
+        "vm_image_format": "qcow2",
+        "networking_resources": "",
+        "monitoring_parameters_specific": [
+          {
+            "metric": "object",
+            "unit": "INT",
+            "desc": "Number of objects in the repository"
+          }
+        ],
+        "id": "vdu1",
+        "alias": "dummy",
+        "controller": false,
+        "connection_points": [
+          {
+            "vlink_ref": "vl1",
+            "id": "CPgq29"
+          }
+        ],
+        "monitoring_parameters": [
+          {
+            "metric": "object",
+            "unit": "INT",
+            "desc": "Number of objects in the repository"
+          }
+        ],
+        "vm_image_md5": "910A917DC844E860232262B66C0250DC",
+        "scale_in_out": {
+          "minimum": 1,
+          "maximum": 1
+        }
+      }
+    ],
+    "name": "scalingtest",
+    "created_at": "2016-04-15T14:32:07Z",
+    "modified_at": "2016-04-15T14:32:07Z",
+    "vlinks": [
+      {
+        "leaf_requirement": "Unlimited",
+        "connectivity_type": "E-LINE",
+        "vdu_reference": [
+          "vdu0"
+        ],
+        "external_access": true,
+        "connection_points_reference": [
+          "CP1uqw",
+          "CP1uqw",
+          "CP1uqw",
+          "CP1uqw"
+        ],
+        "access": true,
+        "alias": "mgt",
+        "root_requirement": "Unlimited",
+        "dhcp": true,
+        "id": "vl0",
+        "qos": ""
+      },
+      {
+        "leaf_requirement": "Unlimited",
+        "connectivity_type": "E-LINE",
+        "vdu_reference": [
+          "vdu0",
+          "vdu1"
+        ],
+        "external_access": true,
+        "connection_points_reference": [
+          "CPffa9",
+          "CPgq29",
+          "CPffa9",
+          "CPgq29",
+          "CPffa9",
+          "CPgq29",
+          "CPffa9",
+          "CPgq29"
+        ],
+        "access": true,
+        "alias": "data",
+        "root_requirement": "Unlimited",
+        "dhcp": true,
+        "id": "vl1",
+        "qos": ""
+      }
+    ],
+    "trade": false,
+    "descriptor_version": "1",
+    "deployment_flavours": [
+      {
+        "vdu_reference": [
+          "vdu0",
+          "vdu1"
+        ],
+        "constraint": "",
+        "flavour_key": "gold",
+        "vlink_reference": [
+          "vl0",
+          "vl1"
+        ],
+        "id": "flavor0",
+        "assurance_parameters": [
+          {
+            "violation": [
+            ],
+            "value": 10000,
+            "penalty": {
+              "type": "Discount",
+              "expression": 1,
+              "validity": "P1D",
+              "unit": "INT"
+            },
+            "formula": "processes_running GT 10000",
+            "rel_id": "param0",
+            "id": "processes_running",
+            "unit": "INT"
+          }
+        ]
+      }
+    ],
+    "version": "1",
+    "vnf_lifecycle_events": [
+      {
+        "authentication_username": "root",
+        "driver": "ssh",
+        "authentication_type": "PubKeyAuthentication",
+        "authentication": "root",
+        "authentication_port": 22,
+        "flavor_id_ref": "flavor0",
+        "events": {
+          "start": {
+            "command": "mkdir /home/ubuntu/start",
+            "template_file": "{\"controller-mgt\":\"get_attr[CP1uqc,ip]\", \"controller-data\":\"get_attr[CPffa9,ip]\", \"dummy-data\":\"get_attr[CPgq29,ip]\"}",
+            "template_file_format": "JSON"
+          },
+          "stop": {
+            "command": "mkdir /home/ubuntu/stop",
+            "template_file": "{}",
+            "template_file_format": "JSON"
+          }
+        },
+        "vnf_container": "/home/ubuntu/"
+      }
+    ],
+    "billing_model": {
+      "model": "RS",
+      "price": {
+        "min_per_period": 0,
+        "max_per_period": 0,
+        "setup": 0,
+        "unit": "EUR"
+      },
+      "period": ""
+    },
+    "provider": "viotech",
+    "release": "T-NOVA",
+    "type": "vHG",
+    "id": 1401,
+    "description": ""
+  }
+}

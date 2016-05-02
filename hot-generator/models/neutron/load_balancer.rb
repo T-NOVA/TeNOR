@@ -17,13 +17,14 @@
 #
 class LoadBalancer < Resource
 
-  # Initializes a Network object
+  # Initializes a LoadBalancer object
   #
   # @param [String] resource_name the Network resource name
   # @param [String] name the name of the network
-  def initialize(resource_name, name)
-    @type = 'OS::Neutron::LBaaS::LoadBalancer'
-    @properties = {'name' => name, 'save_private_key' => true}
+  def initialize(resource_name, protocol_port, pool_id)
+    @type = 'OS::Neutron::LoadBalancer'
+    #@properties = {'name' => name, 'save_private_key' => true, 'vip_subnet' => vip_subnet, 'admin_state_up' => true}
+    @properties = {'protocol_port' => protocol_port, 'pool_id' => pool_id}
     super(resource_name, @type, @properties)
   end
 end

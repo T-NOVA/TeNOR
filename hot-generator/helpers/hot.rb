@@ -62,6 +62,26 @@ module CommonMethods
 		end
 	end
 
+	def self.generate_hot_template_scaling(vnfd, flavour_key, networks_id, security_group_id)
+		hot = ScaleToHot.new(vnfd['name'], vnfd['description'])
+
+		begin
+			hot.build(vnfd, flavour_key, networks_id, security_group_id)
+		rescue CustomException::NoExtensionError => e
+			logger.error e.message
+			halt 400, e.message
+		rescue CustomException::InvalidExtensionError => e
+			logger.error e.message
+			halt 400, e.message
+		rescue CustomException::InvalidTemplateFileFormat => e
+			logger.error e.message
+			halt 400, e.message
+		rescue CustomException::NoFlavorError => e
+			logger.error e.message
+			halt 400, e.message
+		end
+	end
+
 	# Generate a Network HOT template
 	#
 	# @param [Hash] nsd the NSD
@@ -72,7 +92,21 @@ module CommonMethods
 	def self.generate_network_hot_template(nsd, public_net_id, dns_server, flavour)
 		hot = NsdToHot.new(nsd['id'], nsd['name'])
 
-		hot.build(nsd, public_net_id, dns_server, flavour)
+    begin
+      hot.build(nsd, public_net_id, dns_server, flavour)
+    rescue CustomException::NoExtensionError => e
+      logger.error e.message
+      halt 400, e.message
+    rescue CustomException::InvalidExtensionError => e
+      logger.error e.message
+      halt 400, e.message
+    rescue CustomException::InvalidTemplateFileFormat => e
+      logger.error e.message
+      halt 400, e.message
+    rescue CustomException::NoFlavorError => e
+      logger.error e.message
+      halt 400, e.message
+    end
 	end
 
 	# Generate a WICM HOT template

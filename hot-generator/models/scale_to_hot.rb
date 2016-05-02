@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-class VnfdToHot
+class ScaleToHot
 
   # Initializes VnfdToHot object
   #
@@ -36,10 +36,10 @@ class VnfdToHot
   # @return [HOT] returns an HOT object
   def build(vnfd, tnova_flavour, networks_id, security_group_id)
     # Parse needed outputs
-    parse_outputs(vnfd['vnf_lifecycle_events'].find{|lifecycle| lifecycle['flavor_id_ref'] == tnova_flavour}['events'])
+    parse_outputs(vnfd['vnf_lifecycle_events'].find { |lifecycle| lifecycle['flavor_id_ref'] == tnova_flavour }['events'])
 
     # Get T-NOVA deployment flavour
-    deployment_information = vnfd['deployment_flavours'].detect{|flavour| flavour['id'] == tnova_flavour}
+    deployment_information = vnfd['deployment_flavours'].detect { |flavour| flavour['id'] == tnova_flavour }
     raise CustomException::NoFlavorError, "Flavor #{tnova_flavour} not found" if deployment_information.nil?
 
     # Get the vlinks references for the deployment flavour
@@ -47,8 +47,10 @@ class VnfdToHot
 
     key = create_key_pair(SecureRandom.urlsafe_base64(9))
 
-
-    #create LoadBalancer
+    #monitor = create_monitor("TCP")
+    #pool = create_pool("HTTP", monitor, subnet_id, "80")
+    #lb = create_load_balancer(protocol_port, pool)
+    #create_load_balancer_floating_ip(external_, pool, vip, port_id)
 
     #duplicate VDUs according to the max number in scaling
 
@@ -63,33 +65,63 @@ class VnfdToHot
       ports = create_ports(vdu['connection_points'], vnfd['vlinks'], networks_id, security_group_id)
       #ports = create_ports(vdu_ref, vdu['vnfc']['id'], vdu['vnfc']['networking'])
 
+      #if afinity is enabled, the vms should be host in the same hypervisor
+
       create_server(vdu, image_name, flavor_name, ports, key)
+      #vdu['scale_in_out']['maximum']
+      if (vdu['scale_in_out']['maximum'] > 1)
+        auto_scale_group = create_autoscale_group(60, vdu['scale_in_out']['maximum'], vdu['scale_in_out']['minimum'], vdu['id'])
+        create_scale_policy(auto_scale_group, 1)
+        create_scale_policy(auto_scale_group, -1)
+      end
     end
+
+    puts @hot
 
     @hot
   end
 
-  # Parse the outputs from the VNFD and builds an outputs hash
-  #
-  # @param [Hash] events the VNF lifecycle events
-  def parse_outputs(events)
-    outputs = []
-    events.each do |event, event_info|
-      unless event_info.nil? || event_info['template_file'].nil?
-        raise CustomException::InvalidTemplateFileFormat, "Template file format not supported" unless event_info['template_file_format'].downcase == 'json'
-        JSON.parse(event_info['template_file']).each do |id, output|
-          unless outputs.include?(output)
-            outputs << output
-            match = output.match(/^get_attr\[(.*), *(.*)\]$/i).to_a
-            if @outputs.has_key?(match[2])
-              @outputs[match[2]] << match[1]
-            else
-              @outputs[match[2]] = [match[1]]
-            end
-          end
-        end
-      end
+  def create_autoscale_group(cooldown, max_size, min_size, resource)
+    name = get_resource_name
+    @hot.resources_list << AutoScalingGroup.new(name, cooldown, max_size, min_size, {get_resource: resource})
+    name
+  end
+
+  def create_scale_policy(auto_scaling_group, scaling_adjustment)
+    name = get_resource_name
+    @hot.resources_list << ScalingPolicy.new(name, {get_resource: auto_scaling_group}, scaling_adjustment)
+
+    if scaling_adjustment > 0
+      @hot.outputs_list << Output.new("scale_out_url", "Url of scale out.", {get_arr: [name, 'alarm_url']})
+    else
+      @hot.outputs_list << Output.new("scale_in_url", "Url of scale in.", {get_arr: [name, 'alarm_url']})
     end
+    name
+  end
+
+  def create_monitor(type)
+    name = get_resource_name
+    @hot.resources_list << HealthMonitor.new(name, type)
+    name
+  end
+
+  def create_pool(protocol, monitor, subnet_id, port)
+    name = get_resource_name
+    @hot.resources_list << Pool.new(name, protocol, [{get_resource: monitor}], {get_param: subnet_id}, "ROUND_ROBIN", port)
+    name
+  end
+
+  def create_load_balancer(protocol_port, pool)
+    name = get_resource_name
+    @hot.resources_list << LoadBalancer.new(name, protocol_port, {get_resource: pool})
+    name
+  end
+
+
+  def create_load_balancer_floating_ip(protocol_port, pool)
+    name = get_resource_name
+    @hot.resources_list << LoadBalancer.new(name, protocol_port, {get_attr: [pool, vip, port_id]})
+    name
   end
 
   # Creates an HEAT key pair resource
@@ -130,13 +162,13 @@ class VnfdToHot
     ports = []
 
     connection_points.each do |connection_point|
-      vlink = vlinks.find {|vlink| vlink['id'] == connection_point['vlink_ref']}
+      vlink = vlinks.find { |vlink| vlink['id'] == connection_point['vlink_ref'] }
       #detect, and return error if not.
-      network = networks_id.detect{ |network| network['alias'] == vlink['alias'] }
+      network = networks_id.detect { |network| network['alias'] == vlink['alias'] }
       if network != nil
         network_id = network['id']
         port_name = "#{connection_point['id']}"
-        ports << { port: {get_resource: port_name} }
+        ports << {port: {get_resource: port_name}}
         @hot.resources_list << Port.new(port_name, network_id, security_group_id)
 
         # Check if it's necessary to create an output for this resource
@@ -158,32 +190,6 @@ class VnfdToHot
 
     ports
   end
-=begin
-	def create_ports(vdu_id, vnfc_id, vnfcs)
-		ports = []
-
-		vnfcs.each do |vnfc|
-			port_name = "#{vnfc_id}:#{vnfc['connection_point_id']}"
-			ports << { port: {get_resource: port_name} }
-			@hot.resources_list << Port.new(port_name, vnfc['vitual_link_reference'])
-
-			# Check if is necessary to create an output for this resource
-			if @outputs.has_key?('ip') && @outputs['ip'].include?(port_name)
-				@hot.outputs_list << Output.new("#{vnfc_id}:#{vnfc['connection_point_id']}#ip", "#{vdu_id} IP address in #{vnfc['vitual_link_reference']} network", {get_attr: [port_name, 'fixed_ips', 0, 'ip_address']})
-			end
-
-			if vnfc['type'].downcase == 'floating'
-				floating_ip_name = get_resource_name
-				# TODO: Receive the floating ip pool name?
-				@hot.resources_list << FloatingIp.new(floating_ip_name, 'public')
-				@hot.resources_list << FloatingIpAssociation.new(get_resource_name, {get_resource: floating_ip_name}, {get_resource: port_name})
-				@hot.outputs_list << Output.new("#{vdu_id}#floating_ip", "#{vdu_id} Floating IP", {get_attr: [floating_ip_name, 'floating_ip_address']})
-			end
-		end
-
-		ports
-	end
-=end
 
   # Creates an HEAT flavor resource from the VNFD
   #
@@ -236,6 +242,29 @@ class VnfdToHot
             template: bootstrap_script + "\nwc_notify --data-binary '{\"status\": \"SUCCESS\"}'\n"
         }
     }
+  end
+
+  # Parse the outputs from the VNFD and builds an outputs hash
+  #
+  # @param [Hash] events the VNF lifecycle events
+  def parse_outputs(events)
+    outputs = []
+    events.each do |event, event_info|
+      unless event_info.nil? || event_info['template_file'].nil?
+        raise CustomException::InvalidTemplateFileFormat, "Template file format not supported" unless event_info['template_file_format'].downcase == 'json'
+        JSON.parse(event_info['template_file']).each do |id, output|
+          unless outputs.include?(output)
+            outputs << output
+            match = output.match(/^get_attr\[(.*), *(.*)\]$/i).to_a
+            if @outputs.has_key?(match[2])
+              @outputs[match[2]] << match[1]
+            else
+              @outputs[match[2]] = [match[1]]
+            end
+          end
+        end
+      end
+    end
   end
 
   # Generates a new resource name

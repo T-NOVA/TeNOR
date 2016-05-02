@@ -15,15 +15,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-class Pool < Resource
+class AutoScalingGroup < Resource
 
-  # Initializes a Pool object
+  # Initializes AutoScalingGroup object
   #
-  # @param [String] resource_name the KeyPair resource name
-  # @param [String] name the name of the keypair
-  def initialize(resource_name, protocol, monitors, subnet_id, lb_method, protocol_port)
-    @type = 'OS::Neutron::Pool'
-    @properties = {'protocol' => protocol, 'monitors' => monitors, 'subnet_id' => subnet_id, 'lb_method' => lb_method, 'vip' => { 'protocol_port' => protocol_port }}
+  # @param [String] resource_name the resource name
+  # @param [String] handle_name a reference to the wait condition handle used to signal this wait condition
+  # @param [Integer] count the number of seconds to wait for the correct number of signals to arrive
+  def initialize(resource_name, cooldown, max_size, min_size, resource)
+    @type = 'OS::Heat::AutoScalingGroup'
+    @properties = {'cooldown' => cooldown, 'max_size' => max_size, 'min_size' => min_size, 'resource' => resource}
     super(resource_name, @type, @properties)
   end
 end
