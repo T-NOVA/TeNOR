@@ -19,3 +19,7 @@ namespace :db do
     require './main'
   end
 end
+
+YARD::Rake::YardocTask.new do |t|
+  t.files = ['main.rb', 'helpers/ns.rb', 'routes/ns.rb']
+end
