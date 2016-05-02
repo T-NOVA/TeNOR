@@ -1,3 +1,3 @@
-main.rb 6587cda38c7fb953f169ece1ee8b055935c045e9
-helpers/vnfs.rb 6b7a023a4e3813df460b25800886ad6a973cabc9
-routes/vnfs.rb 3ebaa1f9f4524c44e60daa8fddab5ddd1d633f49
+main.rb ea17086c49869137c6c3ea3f9ce0e9a071441895
+helpers/vnfs.rb f6e933f0b81b2ca23d0d5da6d34a74a46597f85a
+routes/configs.rb d67cc555e68d64ead4bb35f5361e07959f53d8b7
