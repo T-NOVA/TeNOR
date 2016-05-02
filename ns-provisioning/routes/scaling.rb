@@ -18,23 +18,16 @@
 # @see OrchestratorNsProvisioner
 class NsProvisioner < Sinatra::Application
 
-  post "/ns-instances/scaling/:nsr_id/scale_out" do
+  post "/ns-instances/scaling/:id/scale_out" do
 
-    url = @tenor_modules.select {|service| service["name"] == "ns_instance_repository" }[0]
     begin
-      response = RestClient.get url['host'].to_s + ":" + url['port'].to_s + '/ns-instances/' + params['nsr_id'].to_s, :content_type => :json
-    rescue => e
-      logger.error e
-      if (defined?(e.response)).nil?
-        halt 503, "NS-Instance Repository unavailable"
-      end
-      halt e.response.code, e.response.body
+      instance = Nsr.find(params["id"])
+    rescue Mongoid::Errors::DocumentNotFound => e
+      halt(404)
     end
-    instance, errors = parse_json(response)
-    puts instance
 
     url = @tenor_modules.select {|service| service["name"] == "vnf_manager" }[0]
-    instance['vnfrs'].each  do |vnf|
+    instance['vnfrs'].each do |vnf|
       puts vnf
 
       begin
@@ -42,6 +35,9 @@ class NsProvisioner < Sinatra::Application
       rescue => e
         logger.error e
       end
+
+      logger.debug response
+
     end
 
     halt 200, "Scale out done."
