@@ -22,6 +22,14 @@ RSpec.describe OrchestratorVnfProvisioning do
     OrchestratorVnfProvisioning
   end
 
+  before do
+    begin
+      DatabaseCleaner.start
+    ensure
+      DatabaseCleaner.clean
+    end
+  end
+
   describe 'GET /' do
     it 'returns the interface list description' do
       c = OrchestratorVnfProvisioning.new
@@ -40,8 +48,21 @@ RSpec.describe OrchestratorVnfProvisioning do
     end
     context 'given a valid request' do
       it 'provisions a new VNF in the VIM' do
-        response = post '/vnf-provisioning/vnf-instances', {vnf: {id: 1}}.to_json, 'CONTENT_TYPE' => 'application/json'
-        puts response.inspect
+        puts "Provisioning to VIM;"
+        response = post '/vnf-provisioning/vnf-instances', File.read(File.expand_path("../fixtures/instantiation_info.json", __FILE__)), 'CONTENT_TYPE' => 'application/json'
+        expect(last_response.status).to eq 201
+
+        puts last_response.body
+      end
+    end
+  end
+
+  describe 'POST /vnf-instances/scaling/:vnfr_id/scale_in' do
+
+    context 'given a valid request' do
+
+      it 'provisions a new VNF in the VIM' do
+        response = post '/vnf-instances/scaling/vnfr_id/scale_in', {vnfd: {id: 1}}.to_json, 'CONTENT_TYPE' => 'application/json'
         expect(last_response.status).to eq 200
       end
     end

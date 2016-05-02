@@ -1,0 +1,44 @@
+{
+  "access": {
+    "token": {
+      "issued_at": "2014-01-30T15:30:58.819584",
+      "expires": "2014-01-31T15:30:58Z",
+      "id": "aaaaa-bbbbb-ccccc-dddd",
+      "tenant": {
+        "description": null,
+        "enabled": true,
+        "id": "tenant_id",
+        "name": "demo"
+      }
+    },
+    "serviceCatalog": [
+    ],
+    "user": {
+      "username": "demo",
+      "roles_links": [],
+      "id": "9a6590b2ab024747bc2167c4e064d00d",
+      "roles": [
+        {
+          "name": "Member"
+        },
+        {
+          "name": "anotherrole"
+        }
+      ],
+      "name": "demo"
+    },
+    "metadata": {
+      "is_admin": 0,
+      "roles": [
+        "7598ac3c634d4c3da4b9126a5f67ca2b",
+        "f95c0ab82d6045d9805033ee1fbc80d4"
+      ]
+    },
+    "trust": {
+      "id": "394998fa61f14736b1f0c1f322882949",
+      "trustee_user_id": "269348fdd9374b8885da1418e0730af1",
+      "trustor_user_id": "3ec3164f750146be97f21559ee4d9c51",
+      "impersonation": false
+    }
+  }
+}

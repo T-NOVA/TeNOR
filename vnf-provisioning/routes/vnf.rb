@@ -111,6 +111,13 @@ class OrchestratorVnfProvisioning < Sinatra::Application
     response = provision_vnf(vim_info, vnf['name'] + SecureRandom.hex, hot)
     logger.debug 'Provision response: ' + response.to_json
 
+    vdu = []
+    vdu0 = {}
+    vdu0['vnfc_instance'] = response['stack']['links'][0]['href']
+    vdu0['id'] = response['stack']['id']
+    vdu0['type'] = 0
+    vdu << vdu0
+
     # Build the VNFR and store it
     begin
       vnfr = Vnfr.create!(
@@ -124,6 +131,7 @@ class OrchestratorVnfProvisioning < Sinatra::Application
         notifications: [instantiation_info['callback_url']],
         lifecycle_event_history: Array('CREATE_IN_PROGRESS'),
         audit_log: nil,
+        vdu: vdu,
         stack_url: response['stack']['links'][0]['href'],
         vms_id: nil,
         lifecycle_info: vnf['vnfd']['vnf_lifecycle_events'].find{|lifecycle| lifecycle['flavor_id_ref'].downcase == vnf_flavour.downcase},
