@@ -58,5 +58,5 @@ before do
 	env['rack.logger'] = settings.logger
 end
 
-class OrchestratorHotGenerator < Sinatra::Application
+class HotGenerator < Sinatra::Application
 end

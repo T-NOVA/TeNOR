@@ -47,14 +47,15 @@ class ScaleToHot
 
     key = create_key_pair(SecureRandom.urlsafe_base64(9))
 
-    #monitor = create_monitor("TCP")
-    #pool = create_pool("HTTP", monitor, subnet_id, "80")
-    #lb = create_load_balancer(protocol_port, pool)
-    #create_load_balancer_floating_ip(external_, pool, vip, port_id)
+    protocol_port = "80"
+    monitor = create_monitor("TCP")
+    pool = create_pool("HTTP", monitor, subnet_id, protocol_port)
+    lb = create_lb(protocol_port, pool, members)
+    create_lb_floating_ip(protocol_port, pool)
 
     #duplicate VDUs according to the max number in scaling
 
-
+    members = []
     deployment_information['vdu_reference'].each do |vdu_ref|
       # Get VDU for deployment
       vdu = vnfd['vdu'].detect { |vdu| vdu['id'] == vdu_ref }
@@ -67,18 +68,35 @@ class ScaleToHot
 
       #if afinity is enabled, the vms should be host in the same hypervisor
 
-      create_server(vdu, image_name, flavor_name, ports, key)
+      server = create_server(vdu, image_name, flavor_name, ports, key)
       #vdu['scale_in_out']['maximum']
       if (vdu['scale_in_out']['maximum'] > 1)
         auto_scale_group = create_autoscale_group(60, vdu['scale_in_out']['maximum'], vdu['scale_in_out']['minimum'], vdu['id'])
         create_scale_policy(auto_scale_group, 1)
         create_scale_policy(auto_scale_group, -1)
+
+        members << { get_resource: server }
       end
+    end
+
+    if (vdu['scale_in_out']['maximum'] > 1)
+      protocol_port = "80"
+      monitor = create_monitor("TCP")
+      pool = create_pool("HTTP", monitor, subnet_id, protocol_port)
+      lb = create_lb(protocol_port, pool, members)
+      port = create_lb_port("loadBalancer", network_id, security_group_id)
+      create_lb_floating_ip(port_name)
     end
 
     puts @hot
 
     @hot
+  end
+
+  def create_lb_port(port_name, network_id, security_group_id)
+    network_id = network['id']
+    @hot.resources_list << Port.new(port_name, network_id, security_group_id)
+    name
   end
 
   def create_autoscale_group(cooldown, max_size, min_size, resource)
@@ -111,17 +129,19 @@ class ScaleToHot
     name
   end
 
-  def create_load_balancer(protocol_port, pool)
+  def create_load_balancer(protocol_port, pool, members)
     name = get_resource_name
-    @hot.resources_list << LoadBalancer.new(name, protocol_port, {get_resource: pool})
+    @hot.resources_list << LoadBalancer.new(name, protocol_port, {get_resource: pool}, members)
     name
   end
 
 
-  def create_load_balancer_floating_ip(protocol_port, pool)
-    name = get_resource_name
-    @hot.resources_list << LoadBalancer.new(name, protocol_port, {get_attr: [pool, vip, port_id]})
-    name
+  def create_load_balancer_floating_ip(port_name)
+    floating_ip_name = get_resource_name
+    # TODO: Receive the floating ip pool name?
+    @hot.resources_list << FloatingIp.new(floating_ip_name, 'public')
+    @hot.resources_list << FloatingIpAssociation.new(get_resource_name, {get_resource: floating_ip_name}, {get_resource: port_name})
+    @hot.outputs_list << Output.new("#{port_name}#floating_ip", "#{port_name} LoadBalancer Floating IP", {get_attr: [floating_ip_name, 'floating_ip_address']})
   end
 
   # Creates an HEAT key pair resource

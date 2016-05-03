@@ -1,6 +1,5 @@
-main.rb c6beba1ae8d943b0e0d4571778890cff95119865
+main.rb eff294566684a36e3d6b46dca2d6cefe80998970
 helpers/hot.rb 05f037e68f2903e05845f3f998bcb98b10b598ea
+helpers/init.rb 75c231ba4c75bd7b51c56d02ee358ca199d8e6af
 routes/hot.rb 3fd8a4b3b3a1ecd28852f0ea1a10245d3d51f6cc
-models/hot.rb 28d4e72547a56d3a93198bb655388be6d75ceb4f
-models/resource.rb 62d60df4d7189c8cf6b79800fdf4b9fa757dbb4f
-models/vnfd_to_hot.rb c869a4171e2cf419f9f08f0bfaeb266761057abf
+routes/init.rb 75c231ba4c75bd7b51c56d02ee358ca199d8e6af
