@@ -16,7 +16,8 @@
 # limitations under the License.
 #
 # @see OrchestratorNsCatalogue
-class OrchestratorNsCatalogue < Sinatra::Application
+#class NsCatalogue < Sinatra::Application
+module ApplicationHelper
 
 	# Checks if a JSON message is valid
 	#
