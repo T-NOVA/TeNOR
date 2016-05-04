@@ -15,23 +15,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# @see OrchestratorVnfManager
-class OrchestratorVnfManager < Sinatra::Application
-
-  # @method get_root
-  # @overload get '/'
-  #       Get all available interfaces
-  # Get all interfaces
-  get '/' do
-    halt 200, interfaces_list.to_json
-  end
+# @see Catalogue
+class Catalogue < VNFManager
 
   # @method post_vnfs
   # @overload post '/vnfs'
   # 	Post a VNF in JSON format
   # 	@param [JSON] the VNF
   # Post a VNF
-  post '/vnfs' do
+  post '/' do
     # Return if content-type is invalid
     halt 415 unless request.content_type == 'application/json'
 
@@ -56,7 +48,7 @@ class OrchestratorVnfManager < Sinatra::Application
   #       Update a VNF
   #       @param [Integer] external_vnf_id VNF external ID
   # Update a VNF
-  put '/vnfs/:external_vnf_id' do
+  put '/:external_vnf_id' do
     # Return if content-type is invalid
     halt 415 unless request.content_type == 'application/json'
 
@@ -80,7 +72,7 @@ class OrchestratorVnfManager < Sinatra::Application
   # @overload get '/vnfs'
   #       Returns a list of VNFs
   # List all VNFs
-  get '/vnfs' do
+  get '/' do
     # Forward request to VNF Catalogue
     begin
       response = RestClient.get settings.vnf_catalogue + request.fullpath, 'X-Auth-Token' => @client_token
@@ -102,7 +94,7 @@ class OrchestratorVnfManager < Sinatra::Application
   #       Show a VNF
   #       @param [Integer] external_vnf_id VNF external ID
   # Show a VNF
-  get '/vnfs/:external_vnf_id' do
+  get '/:external_vnf_id' do
     # Forward request to VNF Catalogue
     begin
       response = RestClient.get settings.vnf_catalogue + request.fullpath, 'X-Auth-Token' => @client_token
@@ -121,7 +113,7 @@ class OrchestratorVnfManager < Sinatra::Application
   #       Delete a VNF by its external ID
   #       @param [Integer] external_vnf_id VNF external ID
   # Delete a VNF
-  delete '/vnfs/:external_vnf_id' do
+  delete '/:external_vnf_id' do
     # Forward request to VNF Catalogue
     begin
       response = RestClient.delete settings.vnf_catalogue + request.fullpath, 'X-Auth-Token' => @client_token

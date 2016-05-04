@@ -15,15 +15,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# @see OrchestratorVnfManager
-class OrchestratorVnfManager < Sinatra::Application
+# @see VNFManager
+class Provisioning < VNFManager
 
-        # @method get_vnf-provisioning_network-service_ns_id
+        # @method get_vnf_provisioning_network_service_ns_id
         # @overload get '/vnf-provisioning/network-service/:ns_id'
         #   Get all the VNFRs of a specific NS
         #   @param [Integer] ns_id the network service ID
         # Get all the VNFRs of a specific NS
-        get '/vnf-provisioning/network-service/:ns_id' do
+        get '/network-service/:ns_id' do
                 # Forward the request to the VNF Provisioning
                 begin
                         response = RestClient.get settings.vnf_provisioning + '/vnf-provisioning/network-service/' + params[:ns_id], 'X-Auth-Token' => @client_token, :accept => :json
@@ -37,11 +37,11 @@ class OrchestratorVnfManager < Sinatra::Application
                 halt response.code, response.body
         end
 
-        # @method get_vnf-provisioning_vnf-instances
+        # @method get_vnf_provisioning_vnf_instances
         # @overload get '/vnf-provisioning/vnf-instances'
         #       Return all VNF Instances
         # Return all VNF Instances
-        get '/vnf-provisioning/vnf-instances' do
+        get '/vnf-instances' do
                 # Send request to VNF Provisioning
                 begin
                         response = RestClient.get settings.vnf_provisioning + '/vnf-provisioning/vnf-instances', 'X-Auth-Token' => @client_token
@@ -55,11 +55,11 @@ class OrchestratorVnfManager < Sinatra::Application
                 halt response.code, response.body
         end
 
-        # @method get_vnf-provisioning_vnf-instances
+        # @method get_vnf_provisioning_vnf_instances
         # @overload get '/vnf-provisioning/vnf-instances'
         #       Return all VNF Instances
         # Return all VNF Instances
-        get '/vnf-provisioning/vnf-instances/:vnfr_id' do
+        get '/vnf-instances/:vnfr_id' do
                 # Send request to VNF Provisioning
                 begin
                         response = RestClient.get settings.vnf_provisioning + '/vnf-provisioning/vnf-instances/' + params['vnfr_id'], 'X-Auth-Token' => @client_token
@@ -73,12 +73,12 @@ class OrchestratorVnfManager < Sinatra::Application
                 halt response.code, response.body
         end
 
-        # @method post_vnf-provisioning_vnf-instances
+        # @method post_vnf_provisioning_vnf_instances
         # @overload post '/vnf-provisioning/vnf-instances'
         #       Request the instantiation of a VNF
         #       @param [JSON] information about VIM and the VNFD ID
         # Request the instantiation of a VNF
-        post '/vnf-provisioning/vnf-instances' do
+        post '/vnf-instances' do
                 # Return if content-type is invalid
                 halt 415 unless request.content_type == 'application/json'
 
@@ -108,13 +108,13 @@ class OrchestratorVnfManager < Sinatra::Application
                 halt response.code, response.body
         end
 
-        # @method post_vnf-provisioning_vnf-instances_vnfr_id_destroy
+        # @method post_vnf_provisioning_vnf_instances_vnfr_id_destroy
         # @overload post '/vnf-provisioning/vnf-instances/:vnfr_id/destroy'
         #       Request to de-allocate the resources of a VNF
         #       @param [String] vnfr_id the VNFR ID
         #       @param [JSON] information about VIM
         # Request to de-allocate the resources of a VNF
-        post '/vnf-provisioning/vnf-instances/:vnfr_id/destroy' do
+        post '/vnf-instances/:vnfr_id/destroy' do
                 # Return if content-type is invalid
                 halt 415 unless request.content_type == 'application/json'
 
@@ -131,13 +131,13 @@ class OrchestratorVnfManager < Sinatra::Application
                 halt response.code, response.body
         end
 
-        # @method post_vnf-provisioning_vnf-instances_vnfr_id_config
+        # @method post_vnf_rovisioning_vnf_instances_vnfr_id_config
         # @overload post '/vnf-provisioning/vnf-instances/:vnfr_id/config'
         #       Request to execute a lifecycle event
         #       @param [String] vnfr_id the VNFR ID
         #       @param [JSON] information about VIM
         # Request to execute a lifecycle event
-        put '/vnf-provisioning/vnf-instances/:vnfr_id/config' do
+        put '/vnf-instances/:vnfr_id/config' do
                 # Return if content-type is invalid
                 halt 415 unless request.content_type == 'application/json'
 

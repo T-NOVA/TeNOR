@@ -15,14 +15,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# @see OrchestratorVnfManager
-class OrchestratorVnfManager < Sinatra::Application
+# @see VNFManager
+class Scaling < VNFManager
 
-  # @method post_vnf-provisioning_scaling
+  # @method post_vnf_provisioning_scaling_out
   # @overload post '/vnf-instances/scaling/:vnfr_id/scale_out'
   # Scale out the VNFR
   # @param [Integer] vnfr_id the vnfr ID
-  post '/vnf-instances/scaling/:vnfr_id/scale_out' do
+  post '/:vnfr_id/scale_out' do
 
     # Get VNF Instance by VNFR id
     begin
@@ -59,11 +59,11 @@ class OrchestratorVnfManager < Sinatra::Application
     halt response.code, response.body
   end
 
-  # @method post_vnf-provisioning_scaling
+  # @method post_vnf_provisioning_scaling_in
   # @overload post '/vnf-instances/scaling/:vnfr_id/scale_in'
   # Scale in the VNFR
   # @param [Integer] vnfr_id the vnfr ID
-  post '/vnf-instances/scaling/:vnfr_id/scale_in' do
+  post '/:vnfr_id/scale_in' do
 
     # Forward the request to the VNF Provisioning
     begin

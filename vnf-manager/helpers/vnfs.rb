@@ -15,8 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# @see OrchestratorVnfManager
-class OrchestratorVnfManager < Sinatra::Application
+# @see ManagerHelper
+module ManagerHelper
 
   # Checks if a JSON message is valid
   #
