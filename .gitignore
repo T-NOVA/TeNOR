@@ -1,2 +1,4 @@
 **/config/*.yml
 **/log/*.log
+**/Gemfile.lock
+Gemfile.lock
