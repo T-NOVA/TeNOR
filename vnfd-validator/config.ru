@@ -1,4 +1,4 @@
 root = ::File.dirname(__FILE__)
 require ::File.join(root, 'main')
 
-run OrchestratorVnfdValidator.new
+run VnfdValidator.new

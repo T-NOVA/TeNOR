@@ -22,6 +22,7 @@ require 'sinatra'
 require 'sinatra/config_file'
 require 'yaml'
 require 'logstash-logger'
+require 'sinatra/advanced_routes'
 
 # Require the bundler gem and then call Bundler.require to load in all gems
 # listed in Gemfile.
@@ -56,5 +57,10 @@ before do
 	env['rack.logger'] = settings.logger
 end
 
-class OrchestratorVnfdValidator < Sinatra::Application
+class VnfdValidator < Sinatra::Application
+
+	helpers VnfdValidatorHelper
+
+
+
 end

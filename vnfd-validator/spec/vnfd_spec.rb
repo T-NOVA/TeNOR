@@ -17,9 +17,9 @@
 #
 require_relative 'spec_helper'
 
-RSpec.describe OrchestratorVnfdValidator do
+RSpec.describe VnfdValidator do
 	def app
-		OrchestratorVnfdValidator
+		VnfdValidator
 	end
 
 	describe 'GET /' do
