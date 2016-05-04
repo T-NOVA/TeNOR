@@ -15,10 +15,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# @see OrchestratorVnfProvisioning
-class OrchestratorVnfProvisioning < Sinatra::Application
+# @see VnfProvisioning
+class Scaling < VnfProvisioning
 
-  post "/vnf-instances/scaling/:vnfr_id/scale_out" do
+  # @method post_vnf_instances_scale_out
+  # @overload post '/vnf-instances/scaling/:id/scale_out'
+  # Post a Scale out request
+  # @param [JSON]
+  post "/:vnfr_id/scale_out" do
 
     # Return if content-type is invalid
     halt 415 unless request.content_type == 'application/json'
@@ -70,7 +74,11 @@ class OrchestratorVnfProvisioning < Sinatra::Application
 
   end
 
-  post "/vnf-instances/scaling/:vnfr_id/scale_in" do
+  # @method post_vnf_instances_scale_in
+  # @overload post '/vnf-instances/scaling/:id/scale_in'
+  # Post a Scale in request
+  # @param [JSON]
+  post "/:vnfr_id/scale_in" do
 
     scaled_resources = "http://www.example.com"
 
@@ -122,13 +130,6 @@ class OrchestratorVnfProvisioning < Sinatra::Application
     vnfr['vdu'].delete_if { |x| x['id'] == scaled_resources['id'] }
 
     halt 200, "Scale in done."
-  end
-
-  post "/test" do
-
-    vnfr = Vnfr.create({})
-
-    return vnfr
   end
 
 end

@@ -1,3 +1,5 @@
-main.rb 4ea073169c51deeb763975c3bed5fcc5fa4be118
-helpers/vnf.rb 153b7c24bf83562b744dae687dd7bfb192d32ac5
-routes/vnf.rb 806cc7ad9c2ab29de5314371477da92be321cfdd
+main.rb ebd894b6cc59ee4b6f9a9a450b5c0b559a73a464
+helpers/vnf.rb 6f6e76d402aba54b4083f5788e6a0b8307564d7b
+routes/vnf.rb ab618b72a9c3d46def76b42d108e0a6f853fa020
+routes/init.rb 0deb0701916fdbaad4215b874a576200b193d3b6
+routes/scaling.rb a66766d175427cc5fafe54bcecf19ab0d151018d

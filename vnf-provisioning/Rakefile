@@ -8,5 +8,5 @@ task :start do
 end
 
 YARD::Rake::YardocTask.new do |t|
-	t.files = ['main.rb', 'helpers/vnf.rb', 'routes/vnf.rb']
+	t.files = ['main.rb', 'helpers/vnf.rb', 'routes/*.rb']
 end
