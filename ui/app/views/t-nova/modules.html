@@ -31,7 +31,7 @@
                             <td>{{row.host}}</td>
                             <td>{{row.port}}</td>
                             <!--td>{{row.service_key}}</td-->
-                            <td ng-style="row.status === 'up' && {'color': 'green'}">{{row.status}}</td>
+                            <td ng-style="{'color': (row.status === 'up' ? 'green': 'red')}">{{row.status}}</td>
                             <td>
                                 <button ng-click="deleteDialog(mS.service_name)" class="btn btn-danger btn-xs">Delete</button>
                             </td>
