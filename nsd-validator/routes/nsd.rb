@@ -15,8 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# @see OrchestratorNsdValidator
-class OrchestratorNsdValidator < Sinatra::Application
+# @see NsdValidator
+class NsdValidator < Sinatra::Application
 
 	# @method post_nsds
 	# @note You have to specify the correct Content-Type

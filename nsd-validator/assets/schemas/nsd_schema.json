@@ -308,10 +308,6 @@
                         {
                           "id": "/nsd/vld/virtual_links/0/connections/0",
                           "type": "string"
-                        },
-                        {
-                          "id": "/nsd/vld/virtual_links/0/connections/1",
-                          "type": "string"
                         }
                       ]
                     },
