@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 # @see OrchestratorNsProvisioner
-class NsProvisioner < Sinatra::Application
+module UtilsHelper
 
   # Checks if a JSON message is valid
   #

@@ -16,8 +16,15 @@
 # limitations under the License.
 #
 # @see OrchestratorNsProvisioner
-class NsProvisioner < Sinatra::Application
+module MonitoringHelper
 
+  # Prepare the monitoring data and sends to the NS Monitoring
+  #
+  # @param [JSON] message the NSD
+  # @param [JSON] message the NSR id
+  # @param [JSON] message the VNF information
+  # @return [Hash, nil] if the parsed message is a valid JSON
+  # @return [Hash, String] if the parsed message is an invalid JSON
   def monitoringData(nsd, nsi_id, vnf_info)
 
     monitoring = {:nsi_id => nsi_id}
@@ -27,12 +34,10 @@ class NsProvisioner < Sinatra::Application
 
     paramsVnf = []
     paramsNs = []
-
     sla = nsd['sla']
     sla.each {|s|
       assurance_parameters = s['assurance_parameters']
       assurance_parameters.each_with_index {|x, i|
-#			puts x
         paramsVnf << {:id => i+1, :name => x['name'], :unit => x['unit']}
         paramsNs << {:id => i+1, :name => x['name'], :formula => x['formula']}
       }
@@ -40,16 +45,11 @@ class NsProvisioner < Sinatra::Application
     monitoring[:parameters] = paramsNs
     vnf_instances = []
     vnfs.each {|x|
-      puts x
       vnf_instances << {:id => x, :parameters => paramsVnf, :vnfr_id => vnf_info[:vnfr_id]}
     }
     monitoring[:vnf_instances] = vnf_instances
 
-    puts monitoring.to_json
-    #puts JSON.pretty_generate(monitoring)
-
-    #return monitoring
-    logger.error JSON.pretty_generate(monitoring)
+    logger.debug JSON.pretty_generate(monitoring)
 
     begin
       response = RestClient.post settings.ns_monitoring + '/ns-monitoring/monitoring-parameters', monitoring.to_json, :content_type => :json

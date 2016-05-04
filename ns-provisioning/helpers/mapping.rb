@@ -15,9 +15,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# @see OrchestratorNsProvisioner
-class NsProvisioner < Sinatra::Application
+# @see MappingHelper
+module MappingHelper
 
+  # Call the Service Mapping for service allocation
+  #
+  # @param [JSON] Microservice information
+  # @return [Hash, nil] if the parsed message is a valid JSON
+  # @return [Hash, String] if the parsed message is an invalid JSON
   def callMapping(ms)
 
     begin

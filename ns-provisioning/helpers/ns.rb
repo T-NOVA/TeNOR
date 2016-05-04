@@ -15,14 +15,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# @see OrchestratorNsProvisioner
-class NsProvisioner < Sinatra::Application
+# @see NsProvisioner
+module NsProvisioner
 
-  def generateMarketplaceResponse(marketplaceUrl, message)
-    logger.debug marketplaceUrl
+  # Sends a notification to the callback url
+  #
+  # @param [JSON] message Notification URL
+  # @param [JSON] message the message to send
+  def generateMarketplaceResponse(notification_url, message)
+    logger.debug notification_url
     logger.debug message.to_json
     begin
-      response = RestClient.post marketplaceUrl, message.to_json, :content_type => :json
+      response = RestClient.post notification_url, message.to_json, :content_type => :json
     rescue RestClient::ResourceNotFound
       puts "No exists in the Marketplace."
     rescue => e
@@ -31,6 +35,12 @@ class NsProvisioner < Sinatra::Application
     end
   end
 
+  # Generates a standard Hash for errors.
+  #
+  # @param [JSON] message NSr id
+  # @param [JSON] message Status
+  # @param [JSON] message Message
+  # @return [Hash] The error message
   def generateError(ns_id, status, message)
     message = {
         :nsd_id => ns_id,
@@ -40,6 +50,13 @@ class NsProvisioner < Sinatra::Application
     return message
   end
 
+  # Recover the state due to fail during the instatiation or when the instance should be removed
+  #
+  # @param [JSON] message PoP information
+  # @param [JSON] message VNF information
+  # @param [JSON] message NSr
+  # @return [Hash, nil] NS
+  # @return [Hash, String] if the parsed message is an invalid JSON
   def recoverState(popInfo, vnf_info, instance, error)
 
     @instance = instance
@@ -48,12 +65,16 @@ class NsProvisioner < Sinatra::Application
     callbackUrl = @instance['notification']
     ns_id = @instance['nsd_id']
 
-    tenant_token = openstackAuthentication(popUrls[:keystone], vnf_info['tenant_id'], vnf_info['username'], vnf_info['password'])
-    token = openstackAdminAuthentication(popUrls[:keystone], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
+    begin
+      tenant_token = openstackAuthentication(popUrls[:keystone], vnf_info['tenant_id'], vnf_info['username'], vnf_info['password'])
+      token = openstackAdminAuthentication(popUrls[:keystone], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
+    rescue => e
+      logger.error "Unauthorized. Remove instance."
+    end
 
     if (@instance['network_stack'])
       stack_url = @instance['network_stack']['stack']['links'][0]['href']
-      logger.error "Removing network stack"
+      logger.debug "Removing network stack"
       deleteStack(stack_url, tenant_token)
 
       status = "DELETING"
@@ -66,7 +87,6 @@ class NsProvisioner < Sinatra::Application
           status = stack_info['stack']['stack_status']
         rescue Errno::ECONNREFUSED
           error = {"info" => "VIM unrechable."}
-          #recoverState(popInfo, vnf_info, @instance, error)
           return
         rescue RestClient::ResourceNotFound
           logger.info "Network already removed."
@@ -98,13 +118,19 @@ class NsProvisioner < Sinatra::Application
     end
 
     puts "Removing user..."
-    #deleteUser(popUrls[:keystone], vnf_info['user_id'], token)
+    deleteUser(popUrls[:keystone], vnf_info['user_id'], token)
     #    deleteTenant(popUrls[:keystone], vnf_info['tenant_id'], token)
 
     @instance.delete
     generateMarketplaceResponse(callbackUrl, generateError(ns_id, "INFO", "Removed correctly"))
   end
 
+  # Intantiate a Network Service, finally calls the VNF Manager
+  #
+  # @param [JSON] message Instance
+  # @param [JSON] message NSD
+  # @return [Hash, nil] NS
+  # @return [Hash, String] if the parsed message is an invalid JSON
   def instantiate(instance, nsd)
 
     @instance = instance

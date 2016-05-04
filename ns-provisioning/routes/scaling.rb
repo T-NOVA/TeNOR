@@ -15,10 +15,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# @see OrchestratorNsProvisioner
-class NsProvisioner < Sinatra::Application
+# @see NsProvisioner
+class Scaling < NsProvisioning
 
-  post "/ns-instances/scaling/:id/scale_out" do
+  # @method post_ns_instances_scale_out
+  # @overload post '/ns-instances/scaling/:id/scale_out'
+  # Post a Scale out request
+  # @param [JSON]
+  post "/:id/scale_out" do
 
     begin
       instance = Nsr.find(params["id"])
@@ -44,7 +48,11 @@ class NsProvisioner < Sinatra::Application
 
   end
 
-  post "/ns-instances/scaling/:nsr_id/scale_in" do
+  # @method post_ns_instances_scale_in
+  # @overload post '/ns-instances/scaling/:id/scale_in'
+  # Post a Scale in request
+  # @param [JSON]
+  post "/:id/scale_in" do
 
 
   end

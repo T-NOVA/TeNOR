@@ -15,16 +15,40 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# @see OrchestratorNsProvisioner
-class NsProvisioner < Sinatra::Application
+# @see NsProvisioning
+class Provisioner < NsProvisioning
 
-  # @method post_ns
+  # @method get_ns_instances
+  # @overload get "/ns-instances"
+  # Gets all ns-instances
+  get '/' do
+    if params[:status]
+      @nsInstances = Nsr.where(:status => params[:status])
+    else
+      @nsInstances = Nsr.all
+    end
+
+    return @nsInstances.to_json
+  end
+
+  # @method get_ns_instance_id
+  # @overload get "/ns-instances/:id"
+  # Get a ns-instance
+  get '/:id' do
+    begin
+      @nsInstance = Nsr.find(params["id"])
+    rescue Mongoid::Errors::DocumentNotFound => e
+      halt(404)
+    end
+    return @nsInstance.to_json
+  end
+
+  # @method post_ns_instances
   # @overload post '/ns'
-  #   Post a NS in JSON format
-  #   @param [JSON]
-  # Post a NS
+  # Instantiation request
+  # @param [JSON]
   #Request body: {"nsd": "descriptor", "customer_id": "some_id", "nap_id": "some_id"}'
-  post '/ns-instances' do
+  post '/' do
 
     # Return if content-type is invalid
     return 415 unless request.content_type == 'application/json'
@@ -80,13 +104,19 @@ class NsProvisioner < Sinatra::Application
     return 200, instance.to_json
   end
 
-  #update instance
-  put "/ns-instances/:ns_instance_id" do
+  # @method put_ns_instance_id
+  # @overload put '/ns-instances/:ns_instance_id'
+  # NS Instance update request
+  # @param [JSON]
+  put "/:ns_instance_id" do
 
   end
 
-  #get instance status
-  get "/ns-instances/:nsr_id/status" do
+  # @method get_ns_instance_status
+  # @overload gett '/ns-instances/:nsr_id/status'
+  # Get instance status
+  # @param [JSON]
+  get "/:nsr_id/status" do
 
     begin
       instance = Nsr.find(params[:nsr_id])
@@ -97,8 +127,11 @@ class NsProvisioner < Sinatra::Application
     return instance['status']
   end
 
-  #update instance status
-  put "/ns-instances/:id/:status" do
+  # @method put_ns_instance_status
+  # @overload post '/ns-instances/:nsr_id/status'
+  # Update instance status
+  # @param [JSON]
+  put "/:id/:status" do
 
     body, errors = parse_json(request.body.read)
     @instance = body['instance']
@@ -197,11 +230,10 @@ class NsProvisioner < Sinatra::Application
 
   end
 
-  # @method post_ns-instances
+  # @method post_ns_instances_id_instantiate
   # @overload post '/ns-instances/:id/instantiate'
   # Response from VNF-Manager, send a message to marketplace
-  #/ns-instances/:ns_instance_id/instantiate
-  post "/ns-instances/:nsr_id/instantiate" do
+  post "/:nsr_id/instantiate" do
     logger.debug "Response about " + params['nsr_id'].to_s
     # Return if content-type is invalid
     return 415 unless request.content_type == 'application/json'
@@ -273,4 +305,5 @@ class NsProvisioner < Sinatra::Application
 
     return 200
   end
+
 end

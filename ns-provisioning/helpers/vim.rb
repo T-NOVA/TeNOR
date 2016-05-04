@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 # @see OrchestratorNsProvisioner
-class NsProvisioner < Sinatra::Application
+module VimHelper
 
   def openstackAdminAuthentication(keystoneUrl, user, password)
     auth = {:auth => {:tenantName => "t-nova", :passwordCredentials => {:username => user, :password => password}}}
@@ -42,7 +42,8 @@ class NsProvisioner < Sinatra::Application
     rescue => e
       logger.error e
       logger.error e.response.body
-      halt 500, e.response.body
+      raise 500,  e.response.body
+      #halt 500, e.response.body
     end
 
     authentication, errors = parse_json(response)
