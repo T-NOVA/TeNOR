@@ -15,10 +15,57 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# @see TnovaManager
-class TnovaManager < Sinatra::Application
+# @see ScalingController
+class ScalingController< TnovaManager
 
-  post '/ns-instances/scaling/:id/scale_out' do
+  # @method post_ns_instances_scaling
+  # @overload get "/ns-instances/scaling/:id/scale_out"
+  # Manual scaling given ns instance id
+  # @param [string] NS instance id
+  post '/:id/scale_out' do
+
+    begin
+      @service = ServiceModel.find_by(name: "ns_provisioning")
+    rescue Mongoid::Errors::DocumentNotFound => e
+      halt 500, {'Content-Type' => "text/plain"}, "NS Provisioning not registred."
+    end
+
+    return 415 unless request.content_type == 'application/json'
+
+    # Validate JSON format
+    instantiation_info = JSON.parse(request.body.read)
+
+    # Get VNF by id
+    begin
+      nsd = RestClient.get settings.ns_catalogue + '/network-services/' + instantiation_info['ns_id'].to_s, 'X-Auth-Token' => @client_token
+    rescue Errno::ECONNREFUSED
+      halt 500, 'NS Catalogue unreachable'
+    rescue => e
+      logger.error e.response
+      halt e.response.code, e.response.body
+    end
+
+    begin
+      response = RestClient.post @service.host + ":" + @service.port.to_s + request.fullpath, "", 'X-Auth-Token' => @client_token, :content_type => :json
+    rescue Errno::ECONNREFUSED
+      halt 500, 'NS Provisioning unreachable'
+    rescue => e
+      logger.error e.response
+      halt e.response.code, e.response.body
+    end
+    logger.error "Instantiation correct."
+    logger.error response.code
+
+    updateStatistics('ns_instantiated_requests')
+
+    return response.code, response.body
+  end
+
+  # @method post_ns_instances_scaling
+  # @overload get "/ns-instances/scaling/:id/scale_out"
+  # Manual scaling given ns instance id
+  # @param [string] NS instance id
+  post '/:id/scale_out' do
 
     begin
       @service = ServiceModel.find_by(name: "ns_provisioning")

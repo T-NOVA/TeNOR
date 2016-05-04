@@ -15,8 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# @see TnovaManager
-class TnovaManager < Sinatra::Application
+# @see ServiceConfigurationHelper
+module ServiceConfigurationHelper
 
   def registerService(json)
     @json = JSON.parse(json)

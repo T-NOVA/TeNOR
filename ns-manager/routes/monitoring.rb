@@ -16,8 +16,12 @@
 # limitations under the License.
 #
 # @see TnovaManager
-class TnovaManager < Sinatra::Application
+class MonitoringController < TnovaManager
 
+  # @method get_accounting_servicestatus
+  # @overload get '/accounting/servicestatus/:ns_instance_id/:status'
+  # Get network service status
+  # @param [string]
   put '/accounting/servicestatus/:ns_instance_id/:status' do
 
     begin
@@ -40,8 +44,12 @@ class TnovaManager < Sinatra::Application
 
   end
 
-  #/instances/:instance_id/monitoring-data?instance_type=ns&metric
-  #/instances/:ns_instance_id/monitoring-data/?instance_type=ns
+  # @method get_instances_monitoring_data
+  # @overload get '/instances/:instance_id/monitoring-data/'
+  # Get monitoring data given instance type and/or metrics
+  # @param [string] instance_type
+  # @param [string] instance_id
+  # @param [string] metric
   get '/instances/:instance_id/monitoring-data/' do
     logger.debug params
     logger.debug request.fullpath
@@ -89,8 +97,10 @@ class TnovaManager < Sinatra::Application
 
   end
 
-  #/ns-monitoring/vnf-instance-readings/087e8897-f82a-4b32-9500-74ec9111e184
-
+  # @method post_vnf_instance_readings
+  # @overload post '/ns-monitoring/vnf-instance-readings/:vnf_instance_id'
+  # Post a vnf monitoring data
+  # @param [string]
   post '/ns-monitoring/vnf-instance-readings/:vnf_instance_id' do
 
     begin
@@ -113,6 +123,10 @@ class TnovaManager < Sinatra::Application
     return response.code, response.body
   end
 
+  # @method get_monitoring_data_last100
+  # @overload get '/instances/:instance_id/monitoring-data/last100'
+  # Get last 100 values
+  # @param [string] Instance id
   get '/instances/:instance_id/monitoring-data/last100/' do
 
     if params['instance_type'] == 'ns'

@@ -16,8 +16,13 @@
 # limitations under the License.
 #
 # @see TnovaManager
-class TnovaManager < Sinatra::Application
+#class TnovaManager < Sinatra::Application
+module StatisticsHelper
 
+  # Update specific statistic
+  #
+  # @param [Symbol] format the format type, `:text` or `:html`
+  # @return [String] the object converted into the expected format.
   def updateStatistics(name)
     begin
       @statistic = StatisticModel.find_by(:name => name)
@@ -29,6 +34,10 @@ class TnovaManager < Sinatra::Application
 
   end
 
+  # Get list of PoPs
+  #
+  # @param [Symbol] format the format type, `:text` or `:html`
+  # @return [String] the object converted into the expected format.
   def savePerformance(instance)
 
     #savint miliseconds

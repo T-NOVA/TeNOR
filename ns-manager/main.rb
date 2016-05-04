@@ -28,52 +28,64 @@ require 'logstash-logger'
 require 'bundler'
 Bundler.require :default, ENV['RACK_ENV'].to_sym
 
-require_relative 'models/init'
-require_relative 'routes/init'
-require_relative 'helpers/init'
+class TnovaManager < Sinatra::Application
 
-register Sinatra::ConfigFile
+	require_relative 'models/init'
+	require_relative 'routes/init'
+	require_relative 'helpers/init'
+
+	register Sinatra::ConfigFile
 # Load configurations
-config_file 'config/config.yml'
+	config_file 'config/config.yml'
 
-configure do
-	# Configure logging
-	logger = LogStashLogger.new(
-			type: :multi_logger,
-			outputs: [
-					{ type: :stdout, formatter: ::Logger::Formatter },
-					{ type: :file, path: "log/#{settings.environment}.log", sync: true},
-					{ host: settings.logstash_host, port: settings.logstash_port }
-			])
-	LogStashLogger.configure do |config|
-		config.customize_event do |event|
-			event["module"] = settings.servicename
+	configure do
+		# Configure logging
+		logger = LogStashLogger.new(
+				type: :multi_logger,
+				outputs: [
+						{ type: :stdout, formatter: ::Logger::Formatter },
+						{ type: :file, path: "log/#{settings.environment}.log", sync: true},
+						{ host: settings.logstash_host, port: settings.logstash_port }
+				])
+		LogStashLogger.configure do |config|
+			config.customize_event do |event|
+				event["module"] = settings.servicename
+			end
+		end
+		set :logger, logger
+	end
+
+	before do
+		env['rack.logger'] = settings.logger
+
+		if settings.environment == 'development'
+			@client_token = "test-token-client-id"
+			return
+		end
+
+		pass if request.path_info == '/'
+		# Validate every request with Gatekeeper
+		@client_token = request.env['HTTP_X_AUTH_TOKEN']
+		begin
+			response = RestClient.get "#{settings.gatekeeper}/token/validate/#{@client_token}", 'X-Auth-Service-Key' => settings.service_key, :content_type => :json
+		rescue Errno::ECONNREFUSED
+			halt 500, 'Gatekeeper unreachable'
+		rescue => e
+			logger.error e.response
+			halt e.response.code, e.response.body
 		end
 	end
-	set :logger, logger
-end
 
-before do
-	env['rack.logger'] = settings.logger
+	helpers ApplicationHelper
+	helpers ServiceConfigurationHelper
+	helpers AuthenticationHelper
+	helpers GatekeeperHelper
+	helpers StatisticsHelper
 
-	if settings.environment == 'development'
-		@client_token = "test-token-client-id"
-		return
-	end
-
-	pass if request.path_info == '/'
-	# Validate every request with Gatekeeper
-	@client_token = request.env['HTTP_X_AUTH_TOKEN']
-	begin
-		response = RestClient.get "#{settings.gatekeeper}/token/validate/#{@client_token}", 'X-Auth-Service-Key' => settings.service_key, :content_type => :json
-	rescue Errno::ECONNREFUSED
-		halt 500, 'Gatekeeper unreachable'
-	rescue => e
-		logger.error e.response
-		halt e.response.code, e.response.body
-	end
-end
-
-class TnovaManager < Sinatra::Application
 	Mongoid.load!('config/mongoid.yml')
+
+  get '/' do
+    return 200, interfaces_list.to_json
+  end
+
 end

@@ -15,10 +15,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# @see TnovaManager
-class TnovaManager < Sinatra::Application
+# @see NsProvisionerController
+class NsProvisionerController < TnovaManager
 
-  post '/ns-instances' do
+  # @method post_ns_instances
+  # @overload post "/ns-instances"
+  # Post a ns-instance
+  post '/' do
 
     begin
       @service = ServiceModel.find_by(name: "ns_provisioning")
@@ -59,7 +62,11 @@ class TnovaManager < Sinatra::Application
     return response.code, response.body
   end
 
-  get "/ns-instances/:ns_instance_id" do
+  # @method get_ns_instances_id
+  # @overload get "/ns-instances/:ns_instance_id"
+  # Post a ns-instance
+  # @param [string]
+  get "/:ns_instance_id" do
     begin
       @service = ServiceModel.find_by(name: "ns_provisioning")
     rescue Mongoid::Errors::DocumentNotFound => e
@@ -78,7 +85,11 @@ class TnovaManager < Sinatra::Application
     return response.code, response.body
   end
 
-  put '/ns-instances/:ns_instance_id' do
+  # @method put_ns_instances
+  # @overload put "/ns-instances/:ns_instance_id"
+  # Update a ns-instance
+  # @param [string] Instance id
+  put '/:ns_instance_id' do
     begin
       @service = ServiceModel.find_by(name: "ns_provisioning")
     rescue Mongoid::Errors::DocumentNotFound => e
@@ -100,7 +111,11 @@ class TnovaManager < Sinatra::Application
     return response.code, response.body
   end
 
-  get "/ns-instances/:ns_instance_id/status" do
+  # @method get_ns_instance_status
+  # @overload get "/ns-instances/:ns_instance_id/status"
+  # Post a ns-instance
+  # @param [string]
+  get "/:ns_instance_id/status" do
     begin
       @service = ServiceModel.find_by(name: "ns_provisioning")
     rescue Mongoid::Errors::DocumentNotFound => e
@@ -119,7 +134,11 @@ class TnovaManager < Sinatra::Application
     return response.code, response.body
   end
 
-  get "/ns-instances" do
+  # @method get_ns_instances
+  # @overload get "/ns-instances"
+  # Post a ns-instance
+  # @param [string]
+  get "/" do
     begin
       @service = ServiceModel.find_by(name: "ns_provisioning")
     rescue Mongoid::Errors::DocumentNotFound => e
@@ -138,7 +157,11 @@ class TnovaManager < Sinatra::Application
     return response.code, response.body
   end
 
-  put '/ns-instances/:ns_instance_id/:status' do
+  # @method put_ns_instances
+  # @overload put "/ns-instances/:ns_instance_id/:status"
+  # Update ns-instance status
+  # @param [string] Instance id
+  put '/:ns_instance_id/:status' do
     begin
       @service = ServiceModel.find_by(name: "ns_provisioning")
     rescue Mongoid::Errors::DocumentNotFound => e
@@ -172,7 +195,11 @@ class TnovaManager < Sinatra::Application
     return response.code, response.body
   end
 
-  delete '/ns-instances/:ns_instance_id' do
+  # @method delete_ns_instances
+  # @overload delete "/ns-instances/:id"
+  # Delete a ns-instance
+  # @param [string] Instance id
+  delete '/:ns_instance_id' do
     begin
       @service = ServiceModel.find_by(name: "ns_provisioning")
     rescue Mongoid::Errors::DocumentNotFound => e
@@ -215,7 +242,11 @@ class TnovaManager < Sinatra::Application
     return response.code, response.body
   end
 
-  post '/ns-instances/:ns_instance_id/instantiate' do
+  # @method post_ns_instances_id_instantiate
+  # @overload post "/ns-instances/:ns_instance_id/instantiate"
+  # Callback response of instantiation request. This mehtod is used by the VNFManager.
+  # @param [string]
+  post '/:ns_instance_id/instantiate' do
 
     callback_response, errors = parse_json(request.body.read)
 
@@ -267,46 +298,6 @@ class TnovaManager < Sinatra::Application
     updateStatistics('ns_instantiated_requests_ok')
 
     return response.code, response.body
-  end
-
-  get '/vnf-provisioning/vnf-instances' do
-    begin
-      @service = ServiceModel.find_by(name: "vnf_manager")
-    rescue Mongoid::Errors::DocumentNotFound => e
-      halt 500, {'Content-Type' => "text/plain"}, "VNF Manager not registred."
-    end
-
-    begin
-      response = RestClient.get @service.host + ":" + @service.port.to_s + request.fullpath, 'X-Auth-Token' => @client_token, :content_type => :json
-    rescue Errno::ECONNREFUSED
-      halt 500, 'VNF Manager unreachable'
-    rescue => e
-      logger.error e.response
-      halt e.response.code, e.response.body
-    end
-
-    return response.code, response.body
-
-  end
-
-  get '/vnf-provisioning/vnf-instances/:vnfr_id' do
-    begin
-      @service = ServiceModel.find_by(name: "vnf_manager")
-    rescue Mongoid::Errors::DocumentNotFound => e
-      halt 500, {'Content-Type' => "text/plain"}, "VNF Manager not registred."
-    end
-
-    begin
-      response = RestClient.get @service.host + ":" + @service.port.to_s + request.fullpath, 'X-Auth-Token' => @client_token, :content_type => :json
-    rescue Errno::ECONNREFUSED
-      halt 500, 'VNF Manager unreachable'
-    rescue => e
-      logger.error e.response
-      halt e.response.code, e.response.body
-    end
-
-    return response.code, response.body
-
   end
 
 end

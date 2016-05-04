@@ -16,8 +16,12 @@
 # limitations under the License.
 #
 # @see TnovaManager
-class TnovaManager < Sinatra::Application
+module AuthenticationHelper
 
+	# Register service in Gatekeeper
+	#
+  # @param [String] serviceName
+	# @return [String] the register information
 	def registerServiceinGK(serviceName)
 		service = {"shortname" => serviceName, "description" => ""}
 
@@ -35,6 +39,10 @@ class TnovaManager < Sinatra::Application
 		return key
 	end
 
+	# Register user to gatekepeer.
+	#
+	# @param [String] username
+	# @return [String] the object converted into the expected format.
 	def registerUserinGK(userName, accessList)
 		user = {
 			"username" => userName,
@@ -52,8 +60,11 @@ class TnovaManager < Sinatra::Application
 		end
 		return user
 	end
-	
-	#send service key to a mS
+
+	# Sends the Gatekeeper key to the specific microservice
+	#
+	# @param [String] Microservice url
+	# @param [String] Microservice key
 	def sendServiceAuth(microservice, key)
 		credentials = {gk_url: settings.gatekeeper, service_key: key}
 		begin
@@ -67,7 +78,9 @@ class TnovaManager < Sinatra::Application
 		end
 	end
 
-	#send service key to a mS
+	# Send service key to a mS
+	#
+	# @return [String] the object converted into the expected format.
 	def loginGK()
 		begin
 			response = RestClient.post settings.gatekeeper + '/token/', "", :"X-Auth-Password" => settings.gk_pass, :"X-Auth-Uid" => settings.gk_user_id
@@ -81,7 +94,9 @@ class TnovaManager < Sinatra::Application
 		settings.gk_token =  metadata["token"]["id"]
 	end
 
-	#send service key to a mS
+	# Get registered services in Gatekeeper
+	#
+	# @return [Array] list of services.
 	def getGKServices()
 		begin
 			response = RestClient.get settings.gatekeeper + '/admin/service/', :content_type => :json, :"X-Auth-Token" => settings.gk_token

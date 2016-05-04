@@ -16,35 +16,42 @@
 # limitations under the License.
 #
 # @see TnovaManager
-class TnovaManager < Sinatra::Application
+class ServiceConfigurationController < TnovaManager
 
-	# @method get_root
-	# @overload get '/'
-	# 	Get all available interfaces
-	# Get all interfaces
-	get '/' do
-		return 200, interfaces_list.to_json
-	end
-
-	post '/configs/registerService' do
+  # @method post_configs_registerService
+  # @overload get '/configs/registerService'
+  # Register a microservice
+	post '/registerService' do
 		return registerService(request.body.read)
 	end
 
-	post '/configs/registerExternalService' do
+  # @method post_configs_registerExternalService
+  # @overload get '/configs/registerExternalService'
+  # Register a external service
+	post '/registerExternalService' do
 		return registerExternalService(request.body.read)
 	end
 
-	post '/configs/unRegisterService/:microservice' do
+	# @method post_configs_unRegisterService
+	# @overload get '/configs/unRegisterService/:service_id'
+	# Unregister a service
+	post '/unRegisterService/:microservice' do
 		logger.info("Unregister service " + params["microservice"])
 		unregisterService(params["microservice"])
 		logger.info("Service " + @json['name'] + " unregistred correctly")
 	end
 
-	delete '/configs/services/:microservice' do
+	# @method delete_configs_services
+	# @overload get '/'
+	# Delete a registered service
+	delete '/services/:microservice' do
 		ServiceModel.find_by(name: params["microservice"]).delete
 	end
 
-	get '/configs/services' do
+	# @method get_configs_services
+	# @overload get '/configs/services'
+	# Get all available services
+	get '/services' do
 	    if params['name']
 			  return ServiceModel.find_by(name: params["name"]).to_json
 	    else
@@ -52,13 +59,18 @@ class TnovaManager < Sinatra::Application
 	    end
 	end
 
- #'/configs/services?name=servicename
-	put '/configs/services' do
+	# @method put_configs_services
+	# @overload get '/configs/services'
+	# Update service information
+	put '/services' do
 		updateService(request.body.read)
 		return "Correct update."
 	end
-	
-	put '/configs/services/:name/status' do
+
+	# @method put_configs_services
+	# @overload get '/configs/services/:name/status'
+	# Update service status
+	put '/services/:name/status' do
 		@service = ServiceModel.find_by(name: params["name"])
 		@service.update_attribute(:status, request.body.read)
 		return "Correct update."
