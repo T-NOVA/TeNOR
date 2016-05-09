@@ -15,10 +15,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# @see OrchestratorNsMonitoring
-class OrchestratorNsMonitoring < Sinatra::Application
+# @see NsMonitoringRepository
+class NsMonitoringRepository < Sinatra::Application
 
-  # @method get_ns-monitoring
+  # @method get_ns_monitoring_data
   # @overload get '/ns-monitoring/:instance_id/monitoring-data/'
   #	Returns all monitored data
   get '/ns-monitoring/:instance_id/monitoring-data/' do
@@ -38,7 +38,7 @@ class OrchestratorNsMonitoring < Sinatra::Application
     return t.to_json
   end
 
-  # @method get_ns-monitoring
+  # @method get_ns_monitoring_data_100
   # @overload get '/ns-monitoring/:instance_id/?:metric/last100/'
   # Returns last 100 values
   get '/ns-monitoring/:instance_id/monitoring-data/last100/' do
@@ -47,7 +47,7 @@ class OrchestratorNsMonitoring < Sinatra::Application
     return t.to_json
   end
 
-  # @method post_ns-monitoring
+  # @method post_ns_monitoring_id
   # @overload post '/ns-monitoring/:instance_id'
   # Inserts monitoring data
   post '/ns-monitoring/:instance_id' do
@@ -55,9 +55,9 @@ class OrchestratorNsMonitoring < Sinatra::Application
     json, errors = parse_json(request.body.read)
     return 400, errors.to_json if errors
 
-    #@json.each do |item|
-    @db.execute("INSERT INTO nsmonitoring (instanceid, date, metricname, unit, value) VALUES ('#{params[:instance_id].to_s}', #{json['timestamp']}, '#{json['type']}', '#{json['unit']}', '#{json['value']}' )")
-    #end
+    instance_id = params[:instance_id]
+    NsMonitoringRepository.save_monitoring(instance_id, json)
     halt 200
   end
+
 end

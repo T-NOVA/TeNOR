@@ -1,4 +1,6 @@
 require 'yard'
+require 'sinatra/activerecord'
+require 'sinatra/activerecord/rake'
 
 namespace(:db) do
   task(:load_config)
@@ -16,6 +18,6 @@ task :start do
 end
 
 YARD::Rake::YardocTask.new do |t|
-	t.files = ['main.rb', 'helpers/init.rb', 'routes/init.rb']
+	t.files = ['main.rb', 'helpers/*.rb', 'routes/*.rb']
 end
 

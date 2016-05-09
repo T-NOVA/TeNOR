@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 # @see VNFMonitoring
-class VNFMonitoring < Sinatra::Application
+module MonitoringHelper
 
 	# Checks if a JSON message is valid
 	#

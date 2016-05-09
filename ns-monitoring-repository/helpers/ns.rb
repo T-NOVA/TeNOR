@@ -15,8 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# @see OrchestratorNsMonitoring
-class OrchestratorNsMonitoring < Sinatra::Application
+# @see NsMonitoringRepository
+module MonitoringHelper
 
 	# Checks if a JSON message is valid
 	#
@@ -34,6 +34,24 @@ class OrchestratorNsMonitoring < Sinatra::Application
 		end
 
 		return parsed_message, nil
+	end
+
+	def self.save_monitoring(instance_id, item)
+		@db = settings.db
+		@db.execute("INSERT INTO nsmonitoring (instanceid, date, metricname, unit, value) VALUES ('#{instance_id.to_s}', #{item['timestamp']}, '#{item['type']}', '#{item['unit']}', '#{item['value']}' )")
+	end
+
+	def self.startSubcription()
+		puts "Start subscription"
+		Thread.new {
+			Thread.current["name"] = "ns_monitoring";
+			ch = settings.channel
+			puts " [*] Waiting for monitoring data."
+			t = ch.queue("ns_monitoring", :exclusive => false).subscribe do |delivery_info, metadata, payload|
+				json = JSON.parse(payload)
+				NsMonitoringRepository.save_monitoring(json['instance_id'], json)
+			end
+		}
 	end
 
 end

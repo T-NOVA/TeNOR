@@ -22,6 +22,7 @@ require 'sinatra'
 require 'sinatra/config_file'
 require 'yaml'
 require 'logstash-logger'
+require 'bunny'
 
 # Require the bundler gem and then call Bundler.require to load in all gems
 # listed in Gemfile.
@@ -51,6 +52,12 @@ configure do
 		end
 	end
 	set :logger, logger
+
+  conn = Bunny.new
+  conn.start
+  channel = conn.create_channel
+  set :conn, conn
+  set :channel, channel
 end
 
 before do
@@ -58,6 +65,14 @@ before do
 end
 
 class NSMonitoring < Sinatra::Application
-	Mongoid.load!('config/mongoid.yml')
-end
 
+	helpers MonitoringHelper
+
+	Mongoid.load!('config/mongoid.yml')
+
+  @@testThreads = []
+
+  #testFunction()
+	MonitoringHelper.startSubcription()
+
+end

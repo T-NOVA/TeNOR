@@ -18,7 +18,7 @@
 # @see VNFMonitoring
 class VNFMonitoring < Sinatra::Application
 
-  # @method post_vnf-monitoring
+  # @method post_vnf_monitoring
   # @overload post '/vnf-monitoring/:vnfi_id/monitoring-parameters'
   # Recevie the parameters to monitor given a vnfi_id
   post '/vnf-monitoring/:vnfr_id/monitoring-parameters' do
@@ -30,10 +30,10 @@ class VNFMonitoring < Sinatra::Application
     logger.error @json
 
     @json['vnfr_id'] = params['vnfr_id']
-    #@json['vnfr'] = params['vnfr']
-    #@json['vnfi_id'] = @json['vnfi_id']
     vnfd = @json['vnfd']
-    vnfr = @json['vnfr']
+    @json.delete('vnfd')
+    vnfr = @json['vnfr']#should not being saved
+    #@json.delete('vnfr')
 
     puts "VNFR:"
     puts @json['vnfr']
@@ -54,7 +54,6 @@ class VNFMonitoring < Sinatra::Application
     end
 
     puts "Creating subcription message"
-    #subscribe
     subscribe = {
         :types => types,
         :instances => instances,
@@ -99,40 +98,43 @@ class VNFMonitoring < Sinatra::Application
   }
 ]
 =end
+
+  # @method post_vnf_monitoring_readings
+  # @overload post '/vnf-monitoring/:vnfi_id/monitoring-parameters'
+  # Receive the monitoring parameters
   post '/vnf-monitoring/:vnfr_id/readings' do
     logger.error "Readings from Monitoring VIM"
     return 415 unless request.content_type == 'application/json'
     json, errors = parse_json(request.body.read)
     return 400, errors.to_json if errors
 
-    vnfr_id = params['vnfr_id']
+    vnfr_id = params['vnfr_id'].to_s
+    #get RabbitMQ channel information
+    ch = settings.channel
 
     json.each do |instance|
       metrics = []
-      enricheds = []
       instance['measurements'].each do |measurement|
-        monitoringMetric = MonitoringMetric.find_by(:vnfr_id => params[:vnfr_id])
-        #store recevied data in Cassandra DB
-        puts monitoringMetric.to_json
+        puts measurement['units']
         metric = {
+            :instance_id => vnfr_id,
             :type => measurement['type'],
             :value => measurement['value'],
-            :unit => measurement['unit'],
+            :unit => measurement['units'],
             :timestamp => Time.parse(measurement['timestamp']).to_i
         }
         metrics.push(metric)
 
-        #if the param is not in the monitoringMetric, not send anything
-        enriched = {
-            #:parameter_id => monitoringMetric['parameter_id'],
-            :type => measurement['type'],
-            :value => measurement['value'],
-            :unit => measurement['unit'],
-            :timestamp => Time.parse(measurement['timestamp']).to_i
-        }
-        enricheds.push(enriched)
+        q = ch.queue(params['vnfr_id'])
+        q.publish(metric.to_json, :persistent => true)
+
+        q = ch.queue("vnf_repository")
+        q.publish(metric.to_json, :persistent => true)
       end
 
+      return 200
+
+      #to remove
       begin
         respone = RestClient.post settings.vnf_instance_repository + '/vnf-monitoring/' + vnfr_id, metrics.to_json, :content_type => :json, :accept => :json
       rescue => e
@@ -141,7 +143,7 @@ class VNFMonitoring < Sinatra::Application
       end
 
       begin
-        RestClient.post settings.ns_manager + '/ns-monitoring/vnf-instance-readings/' + vnfr_id, enricheds.to_json, :content_type => :json, :accept => :json
+        RestClient.post settings.ns_manager + '/ns-monitoring/vnf-instance-readings/' + vnfr_id, metrics.to_json, :content_type => :json, :accept => :json
       rescue => e
         puts e
         puts "Error with sending the values to the NS Monitoring."
@@ -150,7 +152,10 @@ class VNFMonitoring < Sinatra::Application
     return 200
   end
 
-  #/vnf-monitoring/instances/10/monitoring-data/
+  # @method get_monitoring_data
+  # @overload delete '/vnf-monitoring/:instance_id/monitoring-data/last'
+  #	Get monitoring data, last 100 values
+  #	@param [Integer] instance_id
   get '/vnf-monitoring/:instance_id/monitoring-data/' do
     begin
       response = RestClient.get settings.vnf_instance_repository + request.fullpath, :content_type => :json
@@ -161,6 +166,10 @@ class VNFMonitoring < Sinatra::Application
     return response
   end
 
+  # @method get_monitoring_data_100
+  # @overload delete '/vnf-monitoring/:instance_id/monitoring-data/last100'
+  #	Get monitoring data, last 100 values
+  #	@param [Integer] instance_id
   get '/vnf-monitoring/:instance_id/monitoring-data/last100/' do
     begin
       response = RestClient.get settings.vnf_instance_repository + request.fullpath, :content_type => :json
