@@ -23,18 +23,9 @@ module MappingHelper
   # @param [JSON] Microservice information
   # @return [Hash, nil] if the parsed message is a valid JSON
   # @return [Hash, String] if the parsed message is an invalid JSON
-  def callMapping(ms)
+  def callMapping(ms, nsd)
 
-    begin
-      response = RestClient.get settings.manager + '/network-services/' + ms[:NS_id], :content_type => :json
-    rescue Errno::ECONNREFUSED
-      return "Connection refused"
-    rescue => e
-      return "Error"
-      return e.response.code, e.response.body
-    end
-
-    nsd, errors = parse_json(response)
+    #nsd, errors = parse_json(response)
     mapping = {
         "created_at" => "Thu Nov  5 10:13:25 2015",
         "links_mapping" =>

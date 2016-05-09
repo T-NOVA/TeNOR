@@ -158,7 +158,7 @@ module NsProvisioner
         :overcommitting => "true"
     }
     #choose select mapping
-    mapping = callMapping(ms)
+    mapping = callMapping(ms, nsd)
     @instance.update_attribute('mapping_time', DateTime.now.iso8601(3).to_s)
 
     if (!mapping['vnf_mapping'])
