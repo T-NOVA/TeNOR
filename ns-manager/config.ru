@@ -11,3 +11,7 @@ map('/ns-instances') { run NsProvisionerController }
 map('/ns-instances/scaling') { run ScalingController }
 map('/vnf-provisioning') { run VnfProvisionerController }
 map('/vnfs') { run VNFCatalogueController }
+map('/accounting') { run AccountingController }
+map('/ns-monitoring') { run NSMonitoringController }
+map('/instances') { run MonitoringController }
+

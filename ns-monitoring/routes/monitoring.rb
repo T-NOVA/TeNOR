@@ -95,8 +95,6 @@ puts "Out thread"
 
     end
 
-    return 200
-
     monitoring['vnf_instances'].each do |vnf_instance|
       puts vnf_instance['id'] #vnf_id
       puts vnf_instance['vnfr_id']

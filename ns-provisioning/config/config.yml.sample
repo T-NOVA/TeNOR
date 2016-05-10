@@ -12,7 +12,6 @@ threaded: true
 logstash_host: 127.0.0.1
 logstash_port: 5228
 
-#ns_catalogue: http://localhost:4011
 ns_monitoring: http://localhost:4014
 ns_mapping: http://localhost:4042
 sla_enforcement: http://localhost:4016

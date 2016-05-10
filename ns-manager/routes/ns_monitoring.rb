@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 # @see TnovaManager
-class MonitoringController < TnovaManager
+class NSMonitoringController < TnovaManager
 
   # @method get_instances_monitoring_data
   # @overload get '/instances/:instance_id/monitoring-data/'
@@ -57,18 +57,6 @@ class MonitoringController < TnovaManager
     end
     #return response.code, response.body
     return 200, response.body
-  end
-
-  #/instances/:instance_id/monitoring-data/?instance_type=ns&metric
-=begin
-  {
-      "nsi_id": "123",
-      "external_parameter_id": "987",
-      "value": "10.5"
-  }
-=end
-  post '/ns-manager/sla-breaches' do
-
   end
 
   # @method get_monitoring_data_last100

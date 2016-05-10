@@ -56,7 +56,7 @@ class NsMonitoringRepository < Sinatra::Application
     return 400, errors.to_json if errors
 
     instance_id = params[:instance_id]
-    NsMonitoringRepository.save_monitoring(instance_id, json)
+    MonitoringHelper.save_monitoring(instance_id, json)
     halt 200
   end
 
