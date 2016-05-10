@@ -46,12 +46,12 @@ class VNFMonitoring < Sinatra::Application
       vdu['monitoring_parameters'].each do |mP|
         types.push(mP['metric'])
       end
-      vdu['monitoring_parameters_specific'].each do |mP|
+      vdu['monitoring_parameters_specific'].to_a.each do |mP|
         types.push(mP['metric'])
       end
 
-      @json['vnfr'].vms_id.each { |key, value| instances << value }
     end
+    @json['vnfr']['vms_id'].each { |key, value| instances << value }
 
     puts "Creating subcription message"
     subscribe = {
@@ -98,7 +98,7 @@ class VNFMonitoring < Sinatra::Application
   }
 ]
 =end
-
+  #curl http://10.10.1.61:4567/vnf-monitoring/5730bdfdb18cfb5a82000003/readings -H "Content-Type: application/json" -d '[{"instance": "cc58b58f-d38c-48b6-8e83-d238bea0568e", "measurements": [{"timestamp": "1970-01-01T00:00:00Z", "value": 197742, "units": "jiffies", "type": "cpuidle"}]}]'
   # @method post_vnf_monitoring_readings
   # @overload post '/vnf-monitoring/:vnfi_id/monitoring-parameters'
   # Receive the monitoring parameters

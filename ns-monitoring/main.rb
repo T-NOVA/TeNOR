@@ -53,11 +53,6 @@ configure do
 	end
 	set :logger, logger
 
-  conn = Bunny.new
-  conn.start
-  channel = conn.create_channel
-  set :conn, conn
-  set :channel, channel
 end
 
 before do
@@ -70,7 +65,7 @@ class NSMonitoring < Sinatra::Application
 
 	Mongoid.load!('config/mongoid.yml')
 
-  @@testThreads = []
+ # @@testThreads = []
 
   #testFunction()
 	MonitoringHelper.startSubcription()

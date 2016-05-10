@@ -60,13 +60,14 @@ class NSMonitoring < Sinatra::Application
       Thread.current["name"] = nsi_id
 #      Thread.current[:name] = "NAmeasdada"
       Thread.current["name"] = nsi_id;
-      subcriptionThread(monitoring)
+      MonitoringHelper.subcriptionThread(monitoring)
       Thread.stop
     }
-    #@@testThreads <<  {:id => "capullo", :thread => Thread.new {
+    #@@testThreads <<  {:id => "", :thread => Thread.new {
     #  subcriptionThread(monitoring)
     #}
     #}
+puts "Out thread"
 
 =begin
     begin
@@ -81,6 +82,21 @@ class NSMonitoring < Sinatra::Application
     @ns_instance, errors = parse_json(response)
     return 400, errors.to_json if errors
 =end
+
+    monitoring['vnf_instances'].each do |vnf_instance|
+      puts vnf_instance['id'] #vnf_id
+      puts vnf_instance['vnfr_id']
+      begin
+        response = RestClient.post settings.vnf_manager + '/vnf-monitoring/' + vnf_instance['vnfr_id'] + '/monitoring-parameters', object.to_json, :content_type => :json, :accept => :json
+      rescue
+        puts "ERROR"
+        halt 400, "VNF Manager not available"
+      end
+
+    end
+
+    return 200
+
     monitoring['vnf_instances'].each do |vnf_instance|
       puts vnf_instance['id'] #vnf_id
       puts vnf_instance['vnfr_id']
@@ -113,9 +129,7 @@ class NSMonitoring < Sinatra::Application
       end
     end
 
-
     return 200, "Subscription correct."
-
   end
 
   # @method post_monitoring_parameters

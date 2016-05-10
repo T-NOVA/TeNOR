@@ -18,6 +18,11 @@
 # @see NSMonitoring
 module MonitoringHelper
 
+  @conn = Bunny.new
+  @conn.start
+  @channel = @conn.create_channel
+  @@testThreads = []
+
   # Checks if a JSON message is valid
   #
   # @param [JSON] message some JSON message
@@ -51,7 +56,7 @@ module MonitoringHelper
     nsr_id = monitoring['nsi_id'].to_s
     vnf_instances = monitoring['vnf_instances']
 
-    ch = settings.channel
+    ch = @channel
 
     puts " [*] Waiting for logs."
 
@@ -76,6 +81,7 @@ module MonitoringHelper
           rescue => e
             puts e
           end
+          puts @queue
           begin
             @list_vnfs_parameters = VnfQueue.where(:nsi_id => nsi_id, :parameter_id => measurements['type'])
             if @list_vnfs_parameters.length == vnf_instances.length
@@ -122,9 +128,8 @@ module MonitoringHelper
 
   def self.startSubcription()
     puts "Getting list of instances..."
-    #get instance repository for all instances
     begin
-      response = RestClient.get settings.ns_instance_repository + '/ns-instances', :content_type => :json
+      response = RestClient.get Sinatra::Application.settings.ns_instance_repository + '/ns-instances', :content_type => :json
       #puts response
       @ns_instances = JSON.parse(response)
 
