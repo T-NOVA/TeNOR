@@ -294,12 +294,12 @@ class Provisioning < VnfProvisioning
       rescue Errno::ECONNREFUSED
         message = { status: "mAPI_unreachable", vnfd_id: vnfr.vnfd_reference, vnfr_id: vnfr.id}
         nsmanager_callback(stack_info['ns_manager_callback'], message)
-        halt 500, 'mAPI unreachable'
+        #halt 500, 'mAPI unreachable'
       rescue => e
         logger.error e.response
         message = { status: "mAPI_error", vnfd_id: vnfr.vnfd_reference, vnfr_id: vnfr.id}
         nsmanager_callback(stack_info['ns_manager_callback'], message)
-        halt e.response.code, e.response.body
+        #halt e.response.code, e.response.body
       end
 
       # Read from VIM outputs and map with parameters
