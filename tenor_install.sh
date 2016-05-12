@@ -59,7 +59,7 @@ declare -a tenor_vnf_url=("vnf_manager" "vnf_provisioner" "vnfd_validator" "vnf_
 
 bundle install --quiet
 
-for folder in $(find . -type d \( -name "ns*" -o -name "vnf*" -o -name "hot*" \) ); do
+for folder in $(find . -type d \( -name "ns*" -o -name "vnf*" -o -name "hot-generator" \) ); do
 	printf "$folder\n"
 	cd $folder
 	bundle install --quiet
