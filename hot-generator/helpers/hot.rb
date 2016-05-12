@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 # @see OrchestratorHotGenerator
-module CommonMethods
+class CommonMethods
 
 	# Checks if a JSON message is valid
 	#
