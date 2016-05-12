@@ -117,7 +117,7 @@ module MonitoringHelper
           end
 
         end
-        puts "Adding queue???? Whyy??"
+        puts "Adding queue????"
         @@testThreads << {:vnfi_id => vnf_instance['vnfr_id'], :queue => t}
       rescue Interrupt => _
         puts "INTERRUPTION.........."
@@ -146,7 +146,7 @@ module MonitoringHelper
 
           Thread.new {
             Thread.current["name"] = nsi_id;
-            NSMonitoring.subcriptionThread(monitoring)
+            MonitoringHelper.subcriptionThread(monitoring)
             Thread.stop
           }
         rescue Mongoid::Errors::DocumentNotFound => e

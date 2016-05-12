@@ -86,6 +86,7 @@ puts "Out thread"
     monitoring['vnf_instances'].each do |vnf_instance|
       puts vnf_instance['id'] #vnf_id
       puts vnf_instance['vnfr_id']
+      object = {}
       begin
         response = RestClient.post settings.vnf_manager + '/vnf-monitoring/' + vnf_instance['vnfr_id'] + '/monitoring-parameters', object.to_json, :content_type => :json, :accept => :json
       rescue

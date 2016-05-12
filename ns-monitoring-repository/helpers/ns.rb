@@ -54,7 +54,7 @@ module MonitoringHelper
 			puts " [*] Waiting for monitoring data."
 			t = ch.queue("ns_monitoring", :exclusive => false).subscribe do |delivery_info, metadata, payload|
 				json = JSON.parse(payload)
-				NsMonitoringRepository.save_monitoring(json['instance_id'], json)
+				MonitoringHelper.save_monitoring(json['instance_id'], json)
 			end
 		}
 	end
