@@ -18,6 +18,11 @@
 # @seeVnfMonitoring
 module VnfMonitoringHelper
 
+  @conn = Bunny.new
+  @conn.start
+  @channel = @conn.create_channel
+  @@testThreads = []
+
   # Checks if a JSON message is valid
   #
   # @param [JSON] message some JSON message
@@ -48,7 +53,7 @@ module VnfMonitoringHelper
     puts "Start subscription"
     Thread.new {
       Thread.current["name"] = "vnf_repository";
-      ch = settings.channel
+      ch = @channel
       puts " [*] Waiting for logs."
       t = ch.queue("vnf_repository", :exclusive => false).subscribe do |delivery_info, metadata, payload|
         puts "Receving subcription data "

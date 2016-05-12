@@ -71,13 +71,13 @@ before do
 	@db = CassandraCQL::Database.new("#{cassandra_config['host']}:9160", {username: cassandra_config['username'], password: cassandra_config['password']})
 	@db.execute("USE #{cassandra_config['keyspace']}")
 
-	logger.level = Logger::DEBUG
-	env['rack.logger'] = settings.logger
+#	logger.level = Logger::DEBUG
+#	env['rack.logger'] = settings.logger
 end
 
 class VnfMonitoringRepository < Sinatra::Application
 
 	helpers VnfMonitoringHelper
-	VnfMonitoringRepository.startSubcription()
+	VnfMonitoringHelper.startSubcription()
 end
 
