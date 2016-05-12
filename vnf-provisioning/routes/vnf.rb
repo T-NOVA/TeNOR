@@ -75,6 +75,7 @@ class Provisioning < VnfProvisioning
 
     # Convert VNF to HOT (call HOT Generator)
     halt 400, 'No T-NOVA flavour defined.' unless instantiation_info.has_key?('flavour')
+    logger.debug  "Send VNFD to Hot Generator"
     hot_generator_message = {
       vnf: vnf,
       networks_id: instantiation_info['networks'],
@@ -89,6 +90,7 @@ class Provisioning < VnfProvisioning
       halt e.response.code, e.response.body
     end
 
+logger.debug "HEAT template generated"
     vim_info = {
       'keystone' => instantiation_info['auth']['url']['keystone'],
       'tenant' => instantiation_info['auth']['tenant'],
