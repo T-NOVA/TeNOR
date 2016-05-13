@@ -10,7 +10,7 @@ This is TeNOR's, the [T-NOVA](http://www.t-nova.eu) Orchestrator repository.
 - VIM Monitoring (https://github.com/T-NOVA/vim-monitoring) (optional)
 
 ## Requirements
-- Ruby >= 2
+- Ruby >= 2.2
 - Bundler
 - MongoDB
 - Apache Cassandra (optional, used for monitoring)
