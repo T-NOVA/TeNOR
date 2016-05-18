@@ -60,7 +60,7 @@ Post PoP Information:
 ```
  curl -X POST http://$GATEKEEPER_IP:8000/admin/dc/ \
    -H 'X-Auth-Token: '$tokenId'' \
-   -d '{"msg": "PoP Testbed", "dcname":"default", "adminid":"keystoneUser","password":"keystonePass", "extrainfo":"pop-ip='$OPENSTACK_IP' tenant-name=tenantName keystone-endpoint=http://'$OPENSTACK_IP':35357/v2.0 orch-endpoint=http://'$OPENSTACK_IP':8004/v1"}'
+   -d '{"msg": "PoP Testbed", "dcname":"default", "adminid":"keystoneUser","password":"keystonePass", "extrainfo":"pop-ip='$OPENSTACK_IP' tenant-name=tenantName keystone-endpoint=http://'$OPENSTACK_IP':35357/v2.0 orch-endpoint=http://'$OPENSTACK_IP':8004/v1 compute-endpoint=http://'$OPENSTACK_IP':8774/v2.1 neutron-endpoint=http://'$OPENSTACK_IP':9696/v2.0"}'
 ```
 
 Each module is published under different licenses, please take a look on each License file.
