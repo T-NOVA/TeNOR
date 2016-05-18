@@ -22,7 +22,6 @@ require 'sinatra'
 require 'sinatra/config_file'
 require 'yaml'
 require 'logstash-logger'
-require 'sinatra/advanced_routes'
 
 # Require the bundler gem and then call Bundler.require to load in all gems
 # listed in Gemfile.
