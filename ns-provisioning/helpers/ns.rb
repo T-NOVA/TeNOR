@@ -67,7 +67,7 @@ module NsProvisioner
 
     begin
       tenant_token = openstackAuthentication(popUrls[:keystone], vnf_info['tenant_id'], vnf_info['username'], vnf_info['password'])
-      token = openstackAdminAuthentication(popUrls[:keystone], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
+      token = openstackAdminAuthentication(popUrls[:keystone], popUrls[:tenant], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
     rescue => e
       logger.error "Unauthorized. Remove instance."
     end
@@ -147,7 +147,11 @@ module NsProvisioner
     sla_id = nsd['sla'].find { |sla| sla['sla_key'] == flavour }['id']
     puts sla_id
 
-    infr_repo_url = @tenor_modules.select {|service| service["name"] == "infr_repository" }[0]
+    if settings.environment == 'development'
+      infr_repo_url = { "host" => "", "port" => "" }
+    else
+      infr_repo_url = @tenor_modules.select {|service| service["name"] == "infr_repository" }[0]
+    end
 
     ms = {
         :NS_id => nsd['id'],
@@ -185,7 +189,7 @@ module NsProvisioner
     @instance['vnfrs'] = Array.new
     mapping['vnf_mapping'].each do |vnf|
       puts "Start instatination process of " + vnf.to_s
-      pop_id = vnf['maps_to_PoP'].delete('/pop/')
+      pop_id = vnf['maps_to_PoP'].gsub('/pop/')
       vnf_id = vnf['vnf'].delete('/')
       vnf_info = {}
 
@@ -204,7 +208,7 @@ module NsProvisioner
       token = ""
       tenant_token = ""
 
-      if popUrls[:keystone].nil? || popUrls[:orch].nil? || popUrls[:neutron].nil? || popUrls[:compute].nil?
+      if popUrls[:keystone].nil? || popUrls[:orch].nil? || popUrls[:tenant].nil?
         logger.error 'Keystone and/or openstack urls missing'
         generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", "Internal error: Keystone and/or openstack urls missing."))
         return
@@ -213,7 +217,8 @@ module NsProvisioner
       if @instance['project'].nil?
         begin
 
-          token = openstackAdminAuthentication(popUrls[:keystone], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
+          tenantName = "t-nova"
+          token = openstackAdminAuthentication(popUrls[:keystone], popUrls[:tenant], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
 
           if (!settings.default_tenant_name.nil?)
             tenant_name = settings.default_tenant_name

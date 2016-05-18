@@ -15,11 +15,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# @see OrchestratorNsProvisioner
+# @see NSProvisioner
 module VimHelper
 
-  def openstackAdminAuthentication(keystoneUrl, user, password)
-    auth = {:auth => {:tenantName => "t-nova", :passwordCredentials => {:username => user, :password => password}}}
+  def openstackAdminAuthentication(keystoneUrl, tenantName, user, password)
+    auth = {:auth => {:tenantName => tenantName, :passwordCredentials => {:username => user, :password => password}}}
 
     begin
       response = RestClient.post keystoneUrl + '/tokens', auth.to_json, :content_type => :json

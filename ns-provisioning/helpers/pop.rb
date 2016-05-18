@@ -57,6 +57,8 @@ module PopHelper
         popUrls[:compute] = item.split('=')[1]
       elsif key == 'orch-endpoint'
         popUrls[:orch] = item.split('=')[1]
+      elsif key == 'tenant-name'
+        popUrls[:tenant] = item.split('=')[1]
       end
     end
 

@@ -38,7 +38,7 @@ module MappingHelper
         "vnf_mapping" =>
             [
                 {
-                    "maps_to_PoP" => "/pop/1dc4dbf7-2fb3-4acb-96fe-330306f78422",
+                    "maps_to_PoP" => "/pop/default",
                     "vnf" => "/" + nsd['vnfds'][0].to_s
                 }
             ]

@@ -53,12 +53,14 @@ It's possible to load the PoP information in two manners:
 Get the Gatekeeper token:
 
 ```
-tokenId=$(curl -XPOST http://$GATEKEEPER_IP:8000/token/ --header "X-Auth-Password:$GATEKEEPER_PASS" --header "X-Auth-Uid:$GATEKEEPER_USER_ID" | python -c 'import json,sys;obj=json.load(sys.stdin);print obj["token"]["id"]')
+tokenId=$(curl -XPOST http://$GATEKEEPER_IP:8000/token/ -H "X-Auth-Password:$GATEKEEPER_PASS" -H "X-Auth-Uid:$GATEKEEPER_USER_ID" | python -c 'import json,sys;obj=json.load(sys.stdin);print obj["token"]["id"]')
 ```
 
 Post PoP Information:
 ```
- curl -X POST http://GATEKEEPER_IP:8000/admin/dc/  --header 'X-Auth-Token: '$tokenId'' \ -d '{"msg": "PoP Testbed", "dcname":"infrRepository-Pop-ID",\ "adminid":"kyestonUser","password":"keystonePass", "extrainfo":"pop-ip=OPENSTACK_IP keystone-endpoint=http://OPENSTACK_IP:35357/v2.0 orch-endpoint=http://OPENSTACK_IP:8004/v1"}
+ curl -X POST http://$GATEKEEPER_IP:8000/admin/dc/ \
+   -H 'X-Auth-Token: '$tokenId'' \
+   -d '{"msg": "PoP Testbed", "dcname":"default", "adminid":"keystoneUser","password":"keystonePass", "extrainfo":"pop-ip='$OPENSTACK_IP' tenant-name=tenantName keystone-endpoint=http://'$OPENSTACK_IP':35357/v2.0 orch-endpoint=http://'$OPENSTACK_IP':8004/v1"}'
 ```
 
 Each module is published under different licenses, please take a look on each License file.
