@@ -4,7 +4,7 @@ development:
     default:
       database: vnf_catalogue
       hosts:
-      - 10.10.1.64:27017
+      - 127.0.0.1:27017
 
 test:
   sessions:
@@ -18,4 +18,4 @@ production:
     default:
       database: vnf_catalogue
       hosts:
-      - 10.10.1.64:27017
+      - 127.0.0.1:27017
