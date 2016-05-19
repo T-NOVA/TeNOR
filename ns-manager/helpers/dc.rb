@@ -46,6 +46,9 @@ module GatekeeperHelper
   def getPopInfo(popId)
     loginGK()
     popList = getPopList()
+    if popList.index(popId).nil?
+      halt 400, "Pop id error"
+    end
     pop_id = popList.index(popId) + 1
 
     begin

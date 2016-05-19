@@ -294,6 +294,21 @@ class Provisioner < NsProvisioning
       end
     end
 
+    logger.debug "Sending start command"
+    EM.defer do
+      #send start command
+      begin
+        response = RestClient.put settings.manager  + '/ns-instances/'+nsr_id+'/start', {}.to_json, :content_type => :json
+      rescue Errno::ECONNREFUSED
+        logger.error "Connection refused with the NS Manager"
+        #halt 500, 'NS Manager unreachable'
+      rescue => e
+        logger.error e.response
+        logger.error "Error with the start command"
+        #halt e.response.code, e.response.body
+      end
+    end
+
     #start monitoring
     EM.defer do
       monitoringData(nsd, nsr_id, vnf_info)

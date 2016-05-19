@@ -34,9 +34,15 @@ class NsProvisionerController < TnovaManager
     # Validate JSON format
     instantiation_info = JSON.parse(request.body.read)
 
+    begin
+      @service_ns_catalogue = ServiceModel.find_by(name: "ns_catalogue")
+    rescue Mongoid::Errors::DocumentNotFound => e
+      halt 500, {'Content-Type' => "text/plain"}, "NS Provisioning not registred."
+    end
+
     # Get VNF by id
     begin
-      nsd = RestClient.get settings.ns_catalogue + '/network-services/' + instantiation_info['ns_id'].to_s, 'X-Auth-Token' => @client_token
+      nsd = RestClient.get @service_ns_catalogue.host + ":" + @service_ns_catalogue.port.to_s + '/network-services/' + instantiation_info['ns_id'].to_s, 'X-Auth-Token' => @client_token
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Catalogue unreachable'
     rescue => e

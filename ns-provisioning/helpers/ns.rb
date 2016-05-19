@@ -106,7 +106,8 @@ module NsProvisioner
         count = count +1
 
         if count > 10
-          halt 400, "Network stack can not be removed"
+          raise 400, "Network stack can not be removed"
+          #halt 400, "Network stack can not be removed"
         end
         break if count > 20
       end
@@ -189,7 +190,7 @@ module NsProvisioner
     @instance['vnfrs'] = Array.new
     mapping['vnf_mapping'].each do |vnf|
       puts "Start instatination process of " + vnf.to_s
-      pop_id = vnf['maps_to_PoP'].gsub('/pop/')
+      pop_id = vnf['maps_to_PoP'].gsub('/pop/', '')
       vnf_id = vnf['vnf'].delete('/')
       vnf_info = {}
 
@@ -368,7 +369,7 @@ module NsProvisioner
         return
       rescue => e
         logger.error e.response
-        recoverState(popInfo, vnf_info, @instance, e.response)
+        #recoverState(popInfo, vnf_info, @instance, e.response)
         return
       end
       hot, error = parse_json(response)
@@ -379,12 +380,14 @@ module NsProvisioner
         response = RestClient.post "#{popUrls[:orch]}/#{vnf_info['tenant_id']}/stacks", template.to_json, 'X-Auth-Token' => tenant_token, :content_type => :json, :accept => :json
       rescue Errno::ECONNREFUSED
         error = {"info" => "VIM unrechable."}
-        recoverState(popInfo, vnf_info, @instance, error)
+        logger.error error
+        #recoverState(popInfo, vnf_info, @instance, error)
         return
       rescue => e
         logger.error e
         error = {"info" => "Error creating the network stack."}
-        recoverState(popInfo, vnf_info, @instance, error)
+        logger.error error
+        #recoverState(popInfo, vnf_info, @instance, error)
         return
       end
       stack, error = parse_json(response)
