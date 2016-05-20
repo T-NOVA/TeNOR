@@ -96,6 +96,9 @@ class NsCatalogue < Sinatra::Application
       new_ns = Ns.create!(ns)
     rescue Moped::Errors::OperationFailure => e
       return 400, 'ERROR: Duplicated NS ID' if e.message.include? 'E11000'
+    rescue => e
+      logger.error "Some other error."
+      logger.error e
     end
 
     return 200, new_ns.to_json
