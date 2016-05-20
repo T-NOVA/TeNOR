@@ -234,7 +234,7 @@ module NsProvisioner
           putRole(popUrls[:keystone], vnf_info['tenant_id'], vnf_info['user_id'], roleAdminId, token)
           tenant_token = openstackAuthentication(popUrls[:keystone], vnf_info['tenant_id'], vnf_info['username'], vnf_info['password'])
           security_groups = getSecurityGroups(popUrls[:compute], vnf_info['tenant_id'], tenant_token)
-          logger.info "Security Groups: " + security_groups['security_groups'][0]
+          logger.info "Security Groups: " + security_groups['security_groups'][0].to_s
           if (!settings.default_tenant_name.nil?)
             vnf_info['security_group_id'] = security_groups['security_groups'][0]['id']
           elsif secuGroupId = createSecurityGroup(popUrls[:compute], vnf_info['tenant_id'], tenant_token)
@@ -247,7 +247,8 @@ module NsProvisioner
           logger.info "Tenant id: " + vnf_info['tenant_id']
           logger.info "Username: " + vnf_info['username']
 
-        rescue
+        rescue => e
+          logger.error e
           error = {"info" => "Error creating the Openstack credentials."}
           logger.error error
           recoverState(popInfo, vnf_info, @instance, error)
@@ -508,7 +509,7 @@ module NsProvisioner
       end
 
       vnfr, error = parse_json(response)
-      logger.debug "VNFr: " + vnfr
+      logger.debug vnfr
       logger.debug "VNFr id: " + vnfr['_id']
 
       vnfrs = []
