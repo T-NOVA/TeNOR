@@ -23,11 +23,12 @@ module NsProvisioner
   # @param [JSON] message Notification URL
   # @param [JSON] message the message to send
   def generateMarketplaceResponse(notification_url, message)
-    logger.debug notification_url
+    logger.debug "Notification url: " + notification_url
     logger.debug message.to_json
     begin
       response = RestClient.post notification_url, message.to_json, :content_type => :json
     rescue RestClient::ResourceNotFound
+      logger.error "Error sending the callback to the marketplace."
       puts "No exists in the Marketplace."
     rescue => e
       logger.error e
@@ -98,7 +99,7 @@ module NsProvisioner
           logger.error e.response
         end
 
-        logger.error "Try: " + count.to_s + ", status: " + status.to_s
+        logger.debug "Try: " + count.to_s + ", status: " + status.to_s
         if (status == "DELETE_FAILED")
           deleteStack(stack_url, tenant_token)
           status = "DELETING"
@@ -106,8 +107,8 @@ module NsProvisioner
         count = count +1
 
         if count > 10
+          logger.error "Network stack can not be removed"
           raise 400, "Network stack can not be removed"
-          #halt 400, "Network stack can not be removed"
         end
         break if count > 20
       end
@@ -118,9 +119,9 @@ module NsProvisioner
 #      deleteSecurityGroup(popUrls[:compute], vnf_info['tenant_id'], vnf_info['security_group_id'], tenant_token)
     end
 
-    puts "Removing user..."
+    logger.info "Removing user..."
     deleteUser(popUrls[:keystone], vnf_info['user_id'], token)
-    #    deleteTenant(popUrls[:keystone], vnf_info['tenant_id'], token)
+    #deleteTenant(popUrls[:keystone], vnf_info['tenant_id'], token)
 
     @instance.delete
     generateMarketplaceResponse(callbackUrl, generateError(ns_id, "INFO", "Removed correctly"))
@@ -135,8 +136,6 @@ module NsProvisioner
   def instantiate(instance, nsd)
 
     @instance = instance
-
-    puts "Instance1"
     callbackUrl = @instance['notification']
     flavour = @instance['service_deployment_flavour']
     slaInfo = nsd['sla'].find { |sla| sla['sla_key'] == flavour }
@@ -146,7 +145,7 @@ module NsProvisioner
       return
     end
     sla_id = nsd['sla'].find { |sla| sla['sla_key'] == flavour }['id']
-    puts sla_id
+    logger.debug "SLA id: " + sla_id
 
     if settings.environment == 'development'
       infr_repo_url = { "host" => "", "port" => "" }
@@ -184,12 +183,9 @@ module NsProvisioner
     #each service_deployment_flavour has one or more assurance_parameters
     #sla_enforcement(nsd, @instance['id'].to_s)
 
-    #call NS monitoring
-    #monitoringData(nsd)
-
     @instance['vnfrs'] = Array.new
     mapping['vnf_mapping'].each do |vnf|
-      puts "Start instatination process of " + vnf.to_s
+      logger.info "Start instatination process of " + vnf.to_s
       pop_id = vnf['maps_to_PoP'].gsub('/pop/', '')
       vnf_id = vnf['vnf'].delete('/')
       vnf_info = {}
@@ -238,7 +234,7 @@ module NsProvisioner
           putRole(popUrls[:keystone], vnf_info['tenant_id'], vnf_info['user_id'], roleAdminId, token)
           tenant_token = openstackAuthentication(popUrls[:keystone], vnf_info['tenant_id'], vnf_info['username'], vnf_info['password'])
           security_groups = getSecurityGroups(popUrls[:compute], vnf_info['tenant_id'], tenant_token)
-          puts security_groups['security_groups'][0]
+          logger.info "Security Groups: " + security_groups['security_groups'][0]
           if (!settings.default_tenant_name.nil?)
             vnf_info['security_group_id'] = security_groups['security_groups'][0]['id']
           elsif secuGroupId = createSecurityGroup(popUrls[:compute], vnf_info['tenant_id'], tenant_token)
@@ -248,8 +244,8 @@ module NsProvisioner
             addRulesToTenant(popUrls[:compute], vnf_info['tenant_id'], secuGroupId, 'ICMP', tenant_token, -1, -1)
           end
 
-          puts "Tenant id: " + vnf_info['tenant_id']
-          puts "Username: " + vnf_info['username']
+          logger.info "Tenant id: " + vnf_info['tenant_id']
+          logger.info "Username: " + vnf_info['username']
 
         rescue
           error = {"info" => "Error creating the Openstack credentials."}
@@ -360,7 +356,7 @@ module NsProvisioner
           dns_server: settings.dns_server
       }
 
-      puts "Generating network HOT template..."
+      logger.info "Generating network HOT template..."
       begin
         response = RestClient.post hot_url['host'].to_s + ":" + hot_url['port'].to_s + '/networkhot/' + sla_id, hot_generator_message.to_json, :content_type => :json, :accept => :json
       rescue Errno::ECONNREFUSED
@@ -374,7 +370,7 @@ module NsProvisioner
       end
       hot, error = parse_json(response)
 
-      puts "Send network template to HEAT Orchestration"
+      logger.info "Send network template to HEAT Orchestration"
       template = {:stack_name => "network-" + @instance['id'].to_s, :template => hot}
       begin
         response = RestClient.post "#{popUrls[:orch]}/#{vnf_info['tenant_id']}/stacks", template.to_json, 'X-Auth-Token' => tenant_token, :content_type => :json, :accept => :json
@@ -396,7 +392,7 @@ module NsProvisioner
       @instance.update_attribute('network_stack', stack)
       #instance.update_attributes(@instance)
 
-      puts "Check network stack creation..."
+      logger.info "Check network stack creation..."
       #stack_status
       status = "CREATING"
       count = 0
@@ -425,7 +421,7 @@ module NsProvisioner
         return
       end
 
-      puts "Network stack CREATE_COMPLETE. Getting network information..."
+      logger.info "Network stack CREATE_COMPLETE. Getting network information..."
       #get network info to stack
       sleep(3)
       begin
@@ -444,7 +440,7 @@ module NsProvisioner
       network_resources, error = parse_json(response)
       stack_networks = network_resources['resources'].find_all { |res| res['resource_type'] == 'OS::Neutron::Net' }
 
-      puts "Reading network information from stack..."
+      logger.info "Reading network information from stack..."
       networks = []
       #for each network, get resource info
       stack_networks.each do |network|
@@ -469,13 +465,10 @@ module NsProvisioner
 
       @instance.update_attribute('vlr', networks)
       @instance.update_attribute('vnf_info', vnf_info)
-      #@instance['vlr'] = networks
-      #@instance['vnf_info'] = vnf_info
-      #@instance.update_attributes(@instance)
 
       #needs to be migrated to the VNFGFD
       vnf_flavour = slaInfo['constituent_vnf'].find { |cvnf| cvnf['vnf_reference'] == vnf_id }['vnf_flavour_id_reference']
-      puts vnf_flavour
+      logger.info "VNF Flavour: " + vnf_flavour
 
       vnf_provisioning_info = {
           :ns_id => nsd['id'],
@@ -496,17 +489,15 @@ module NsProvisioner
           :callback_url => settings.manager + "/ns-instances/" + @instance['id'] + "/instantiate"
       }
 
-      puts "Instantiation VNF..."
+      logger.info "Starting the instantiation of a VNF..."
       logger.debug vnf_provisioning_info
       @instance.update_attribute('instantiation_start_time', DateTime.now.iso8601(3).to_s)
-      #@instance['instantiation_start_time'] = DateTime.now.iso8601(3)
-      #@instance.update_attributes(@instance)
 
       url = @tenor_modules.select {|service| service["name"] == "vnf_manager" }[0]
       begin
         response = RestClient.post url['host'].to_s + ":" + url['port'].to_s + '/vnf-provisioning/vnf-instances', vnf_provisioning_info.to_json, :content_type => :json
       rescue => e
-        puts "Rescue instatiation"
+        logger.error "Rescue instatiation"
         logger.error e
         if (defined?(e.response)).nil?
           puts e.response.body
@@ -517,9 +508,8 @@ module NsProvisioner
       end
 
       vnfr, error = parse_json(response)
-      puts vnfr
-      puts vnfr['_id']
-      #@instance['vnfr'] = vnfr['id']
+      logger.debug "VNFr: " + vnfr
+      logger.debug "VNFr id: " + vnfr['_id']
 
       vnfrs = []
       vnf_info = {}

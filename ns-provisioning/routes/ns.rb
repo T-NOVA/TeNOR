@@ -64,33 +64,33 @@ class Provisioner < NsProvisioning
       #generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", error))
     end
 
-    if settings.dependencies.all? { |x| @tenor_modules.detect{|el| el['name'] == x} }
+    if settings.dependencies.all? { |x| @tenor_modules.detect { |el| el['name'] == x } }
       halt 400, "The orchestrator has not the correct dependencies"
     end
 
     instance = {
-            :nsd_id => nsd['id'],
-            :descriptor_reference => nsd['id'],
-            :auto_scale_policy => nsd['auto_scale_policy'],
-            :connection_points => nsd['connection_points'],
-            :monitoring_parameters => nsd['monitoring_parameters'],
-            :service_deployment_flavour => instantiation_info['flavour'],
-            :vendor => nsd['vendor'],
-            :version => nsd['version'],
-            #vlr
-            :vnfrs => [],
-            :lifecycle_events => nsd['lifecycle_events'],
-            :vnf_depedency => nsd['vnf_depedency'],
-            :vnffgd => nsd['vnffgd'],
-            #pnfr
-            :resource_reservation => [],
-            :runtime_policy_info => [],
-            :status => "INIT",
-            :notification => instantiation_info['callbackUrl'],
-            :lifecycle_event_history => [],
-            :audit_log => [],
-            :marketplace_callback => instantiation_info['callbackUrl']
-        }
+        :nsd_id => nsd['id'],
+        :descriptor_reference => nsd['id'],
+        :auto_scale_policy => nsd['auto_scale_policy'],
+        :connection_points => nsd['connection_points'],
+        :monitoring_parameters => nsd['monitoring_parameters'],
+        :service_deployment_flavour => instantiation_info['flavour'],
+        :vendor => nsd['vendor'],
+        :version => nsd['version'],
+        #vlr
+        :vnfrs => [],
+        :lifecycle_events => nsd['lifecycle_events'],
+        :vnf_depedency => nsd['vnf_depedency'],
+        :vnffgd => nsd['vnffgd'],
+        #pnfr
+        :resource_reservation => [],
+        :runtime_policy_info => [],
+        :status => "INIT",
+        :notification => instantiation_info['callbackUrl'],
+        :lifecycle_event_history => [],
+        :audit_log => [],
+        :marketplace_callback => instantiation_info['callbackUrl']
+    }
 
     @instance = Nsr.new(instance)
     @instance.save!
@@ -143,7 +143,7 @@ class Provisioner < NsProvisioning
       halt 404
     end
 
-    if(popInfo.nil?)
+    if (popInfo.nil?)
       puts "Pop Info is null"
       @nsInstance.delete
       halt 200, "Removed correctly."
@@ -153,19 +153,20 @@ class Provisioner < NsProvisioning
 
     #popInfo = getPopInfo(@instance['vnf_info']['pop_id'])
     popUrls = getPopUrls(popInfo['info'][0]['extrainfo'])
-    vnf_manager = @tenor_modules.select {|service| service["name"] == "vnf_manager" }[0]
+    vnf_manager = @tenor_modules.select { |service| service["name"] == "vnf_manager" }[0]
 
     if params[:status] === 'terminate'
 
       #destroy vnf instances
       @instance['vnfrs'].each do |vnf|
-        auth = {:auth => { :tenant => @instance['vnf_info']['tenant_name'], :username => @instance['vnf_info']['username'], :password => @instance['vnf_info']['password'], :url => {:keystone => popUrls[:keystone] } } }
+        auth = {:auth => {:tenant => @instance['vnf_info']['tenant_name'], :username => @instance['vnf_info']['username'], :password => @instance['vnf_info']['password'], :url => {:keystone => popUrls[:keystone]}}}
         begin
-          response = RestClient.post vnf_manager['host'].to_s + ":" + vnf_manager['port'].to_s  + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/destroy', auth.to_json, :content_type => :json
+          response = RestClient.post vnf_manager['host'].to_s + ":" + vnf_manager['port'].to_s + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/destroy', auth.to_json, :content_type => :json
         rescue Errno::ECONNREFUSED
           halt 500, 'VNF Manager unreachable'
         rescue RestClient::ResourceNotFound
           puts "Already removed from the VIM."
+          logger.error "Already removed from the VIM."
         rescue => e
           logger.error e.response
           halt e.response.code, e.response.body
@@ -184,8 +185,9 @@ class Provisioner < NsProvisioning
         puts vnf
         event = {:event => "start"}
         begin
-          response = RestClient.put vnf_manager['host'].to_s + ":" + vnf_manager['port'].to_s  + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/config', event.to_json, :content_type => :json
+          response = RestClient.put vnf_manager['host'].to_s + ":" + vnf_manager['port'].to_s + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/config', event.to_json, :content_type => :json
         rescue Errno::ECONNREFUSED
+          logger.error "VNF Manager unreachable."
           halt 500, 'VNF Manager unreachable'
         rescue => e
           logger.error e.response
@@ -198,11 +200,12 @@ class Provisioner < NsProvisioning
     elsif params[:status] === 'stopped'
 
       @instance['vnfrs'].each do |vnf|
-        puts vnf
+        logger.debug vnf
         event = {:event => "stop"}
         begin
-          response = RestClient.put vnf_manager['host'].to_s + ":" + vnf_manager['port'].to_s  + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/config', event.to_json, :content_type => :json
+          response = RestClient.put vnf_manager['host'].to_s + ":" + vnf_manager['port'].to_s + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/config', event.to_json, :content_type => :json
         rescue Errno::ECONNREFUSED
+          logger.error "VNF Manager unreachable."
           halt 500, 'VNF Manager unreachable'
         rescue => e
           logger.error e.response
@@ -234,7 +237,7 @@ class Provisioner < NsProvisioning
   # @overload post '/ns-instances/:id/instantiate'
   # Response from VNF-Manager, send a message to marketplace
   post "/:nsr_id/instantiate" do
-    logger.debug "Response about " + params['nsr_id'].to_s
+    logger.info "Instantiation response about " + params['nsr_id'].to_s
     # Return if content-type is invalid
     return 415 unless request.content_type == 'application/json'
     # Validate JSON format
@@ -247,8 +250,8 @@ class Provisioner < NsProvisioning
     nsd = response['nsd']
     nsr_id = params['nsr_id']
 
-    puts callback_response.to_json
-    puts @instance.to_json
+    logger.debug "Callback response: " + callback_response.to_json
+    logger.debug "Instance: " + @instance.to_json
 
     #vnf = {:vnf_id => vnf_id, :pop_id => pop_id}
     #extract vnfi_id from instantatieVNF response
@@ -298,10 +301,10 @@ class Provisioner < NsProvisioning
     EM.defer do
       #send start command
       begin
-        response = RestClient.put settings.manager  + '/ns-instances/'+nsr_id+'/start', {}.to_json, :content_type => :json
+        response = RestClient.put settings.manager + '/ns-instances/'+nsr_id+'/start', {}.to_json, :content_type => :json
       rescue Errno::ECONNREFUSED
         logger.error "Connection refused with the NS Manager"
-        #halt 500, 'NS Manager unreachable'
+          #halt 500, 'NS Manager unreachable'
       rescue => e
         logger.error e.response
         logger.error "Error with the start command"
@@ -309,14 +312,11 @@ class Provisioner < NsProvisioning
       end
     end
 
-    #start monitoring
+    logger.debug "Starting monitoring workflow..."
     EM.defer do
+      #start monitoring
       monitoringData(nsd, nsr_id, vnf_info)
     end
-
-    #if done, send mapping information to marketplace
-    logger.debug @instance['notification']
-    #generateMarketplaceResponse(@instance['notification'], @instance)
 
     return 200
   end
