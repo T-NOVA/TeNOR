@@ -59,4 +59,5 @@ before do
 end
 
 class HotGenerator < Sinatra::Application
+	helpers CommonMethods
 end

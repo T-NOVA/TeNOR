@@ -57,6 +57,11 @@ class NsdToHot
           #TODO
         end
 
+        network_name = create_network(vlink['alias'])
+        subnet_name = create_subnet(network_name, dns_server, cidr)
+        create_router_interface(router_name, subnet_name)
+
+=begin
         if (vlink['merge'])
           #network_name = create_network(link.split(":ext_")[1])
           network_name = create_network(vlink['alias'])
@@ -67,10 +72,12 @@ class NsdToHot
         else
           vlink['connections'].each_with_index do |link, index2|
             network_name = create_network(link.split(":ext_")[1])
+            cidr = "192." + rand(256).to_s + "." + index.to_s + ".0/24"
             subnet_name = create_subnet(network_name, dns_server, cidr)
             create_router_interface(router_name, subnet_name)
           end
         end
+=end
       #end
     end
 
