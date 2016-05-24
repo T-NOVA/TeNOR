@@ -19,7 +19,7 @@
 class ScalingController< TnovaManager
 
   # @method post_ns_instances_scaling
-  # @overload get "/ns-instances/scaling/:id/scale_out"
+  # @overload post "/ns-instances/scaling/:id/scale_out"
   # Manual scaling given ns instance id
   # @param [string] NS instance id
   post '/:id/scale_out' do
@@ -62,7 +62,7 @@ class ScalingController< TnovaManager
   end
 
   # @method post_ns_instances_scaling
-  # @overload get "/ns-instances/scaling/:id/scale_out"
+  # @overload post "/ns-instances/scaling/:id/scale_out"
   # Manual scaling given ns instance id
   # @param [string] NS instance id
   post '/:id/scale_out' do

@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 # @see TnovaManager
+#deprecated, to remove
 class NSMonitoringController < TnovaManager
 
   # @method get_instances_monitoring_data

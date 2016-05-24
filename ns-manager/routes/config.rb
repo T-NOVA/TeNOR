@@ -19,21 +19,21 @@
 class ServiceConfigurationController < TnovaManager
 
   # @method post_configs_registerService
-  # @overload get '/configs/registerService'
+  # @overload post '/configs/registerService'
   # Register a microservice
 	post '/registerService' do
 		return registerService(request.body.read)
 	end
 
   # @method post_configs_registerExternalService
-  # @overload get '/configs/registerExternalService'
+  # @overload post '/configs/registerExternalService'
   # Register a external service
 	post '/registerExternalService' do
 		return registerExternalService(request.body.read)
 	end
 
 	# @method post_configs_unRegisterService
-	# @overload get '/configs/unRegisterService/:service_id'
+	# @overload post '/configs/unRegisterService/:service_id'
 	# Unregister a service
 	post '/unRegisterService/:microservice' do
 		logger.info("Unregister service " + params["microservice"])
@@ -42,7 +42,7 @@ class ServiceConfigurationController < TnovaManager
 	end
 
 	# @method delete_configs_services
-	# @overload get '/'
+	# @overload delete '/configs/services/:microservice'
 	# Delete a registered service
 	delete '/services/:microservice' do
 		ServiceModel.find_by(name: params["microservice"]).delete
@@ -60,7 +60,7 @@ class ServiceConfigurationController < TnovaManager
 	end
 
 	# @method put_configs_services
-	# @overload get '/configs/services'
+	# @overload put '/configs/services'
 	# Update service information
 	put '/services' do
 		updateService(request.body.read)
@@ -68,7 +68,7 @@ class ServiceConfigurationController < TnovaManager
 	end
 
 	# @method put_configs_services
-	# @overload get '/configs/services/:name/status'
+	# @overload put '/configs/services/:name/status'
 	# Update service status
 	put '/services/:name/status' do
 		@service = ServiceModel.find_by(name: params["name"])

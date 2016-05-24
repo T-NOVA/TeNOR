@@ -70,7 +70,7 @@ class NsProvisionerController < TnovaManager
 
   # @method get_ns_instances_id
   # @overload get "/ns-instances/:ns_instance_id"
-  # Post a ns-instance
+  # Get a ns-instance
   # @param [string]
   get "/:ns_instance_id" do
     begin
@@ -119,7 +119,7 @@ class NsProvisionerController < TnovaManager
 
   # @method get_ns_instance_status
   # @overload get "/ns-instances/:ns_instance_id/status"
-  # Post a ns-instance
+  # Get a ns-instance status
   # @param [string]
   get "/:ns_instance_id/status" do
     begin
@@ -142,7 +142,7 @@ class NsProvisionerController < TnovaManager
 
   # @method get_ns_instances
   # @overload get "/ns-instances"
-  # Post a ns-instance
+  # Get all ns-instances
   # @param [string]
   get "/" do
     begin
@@ -250,7 +250,7 @@ class NsProvisionerController < TnovaManager
 
   # @method post_ns_instances_id_instantiate
   # @overload post "/ns-instances/:ns_instance_id/instantiate"
-  # Callback response of instantiation request. This mehtod is used by the VNFManager.
+  # Callback response of instantiation request. This method is called by the VNFManager.
   # @param [string]
   post '/:ns_instance_id/instantiate' do
 

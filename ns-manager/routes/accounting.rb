@@ -18,9 +18,9 @@
 # @see TnovaManager
 class AccountingController < TnovaManager
 
-  # @method get_accounting_servicestatus
-  # @overload get '/accounting/servicestatus/:ns_instance_id/:status'
-  # Get network service status
+  # @method put_accounting_servicestatus
+  # @overload put '/accounting/servicestatus/:ns_instance_id/:status'
+  # Put network service status
   # @param [string]
   put '/servicestatus/:ns_instance_id/:status' do
 

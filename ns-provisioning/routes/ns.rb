@@ -49,7 +49,7 @@ class Provisioner < NsProvisioning
   # @param [JSON]
   #Request body: {"nsd": "descriptor", "customer_id": "some_id", "nap_id": "some_id"}'
   post '/' do
-
+c
     # Return if content-type is invalid
     return 415 unless request.content_type == 'application/json'
     # Validate JSON format
@@ -193,6 +193,7 @@ class Provisioner < NsProvisioning
           logger.error e.response
           halt e.response.code, e.response.body
         end
+        @nsInstance.push(lifecycle_event_history: "Executed a start")
       end
 
       @instance['status'] = params['status'].to_s.upcase
