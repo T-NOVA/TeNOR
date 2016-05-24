@@ -440,6 +440,7 @@ module NsProvisioner
       end
       network_resources, error = parse_json(response)
       stack_networks = network_resources['resources'].find_all { |res| res['resource_type'] == 'OS::Neutron::Net' }
+      stack_router = network_resources['resources'].find_all { |res| res['resource_type'] == 'OS::Neutron::Router' }
 
       logger.info "Reading network information from stack..."
       networks = []
@@ -461,6 +462,27 @@ module NsProvisioner
         net, error = parse_json(response)
         networks.push({:id => net['resource']['attributes']['id'], :alias => net['resource']['attributes']['name']})
       end
+
+      routers = []
+      stack_router.each do |router|
+        begin
+          response = RestClient.get "#{popUrls[:orch]}/#{vnf_info['tenant_id']}/stacks/#{"network-" + @instance['id'].to_s}/#{stack_id}/resources/#{router['resource_name']}", 'X-Auth-Token' => tenant_token
+        rescue Errno::ECONNREFUSED
+          error = {"info" => "VIM unrechable."}
+          recoverState(popInfo, vnf_info, @instance, error)
+          return
+        rescue => e
+          logger.error e
+          logger.error e.response
+          error = {"info" => "Error creating the network stack."}
+          recoverState(popInfo, vnf_info, @instance, error)
+          return
+        end
+        router, error = parse_json(response)
+        routers.push({:id => router['resource']['attributes']['id'], :alias => router['resource']['attributes']['name']})
+      end
+
+      #getStackResourceInfo(popUrls, vnf_info, resourceName)
 
       stack['stack_name'] = "network-" + @instance['id'].to_s
 
@@ -486,6 +508,7 @@ module NsProvisioner
               :password => vnf_info['password']
           },
           :networks => networks,
+          :routers => stack_router,
           :security_group_id => vnf_info['security_group_id'],
           :callback_url => settings.manager + "/ns-instances/" + @instance['id'] + "/instantiate"
       }
@@ -522,5 +545,23 @@ module NsProvisioner
       @instance.update_attribute('vnfr', vnfrs)
 
     end
+  end
+
+  def getStackResourceInfo(popUrls, vnf_info,  resourceName)
+    begin
+      response = RestClient.get "#{popUrls[:orch]}/#{vnf_info['tenant_id']}/stacks/#{"network-" + @instance['id'].to_s}/#{stack_id}/resources/#{network['resource_name']}", 'X-Auth-Token' => tenant_token
+    rescue Errno::ECONNREFUSED
+      error = {"info" => "VIM unrechable."}
+      recoverState(popInfo, vnf_info, @instance, error)
+      return
+    rescue => e
+      logger.error e
+      logger.error e.response
+      error = {"info" => "Error creating the network stack."}
+      recoverState(popInfo, vnf_info, @instance, error)
+      return
+    end
+    net, error = parse_json(response)
+    networks.push({:id => net['resource']['attributes']['id'], :alias => net['resource']['attributes']['name']})
   end
 end

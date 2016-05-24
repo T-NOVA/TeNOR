@@ -132,7 +132,7 @@ under the License.</p>
   <p class="tag_title">See Also:</p>
   <ul class="see">
     
-      <li><span class='object_link'><a href="NsProvisioner.html" title="NsProvisioner (class)">NsProvisioner</a></span></li>
+      <li><span class='object_link'><a href="NsProvisioner.html" title="NsProvisioner (module)">NsProvisioner</a></span></li>
     
   </ul>
 
@@ -266,7 +266,7 @@ under the License.</p>
     <td>
       <pre class="code"><span class="info file"># File 'routes/scaling.rb', line 55</span>
 
-<span class='id identifier rubyid_post'>post</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/ns-instances/scaling/:id/scale_in</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>do</span>
+<span class='id identifier rubyid_post'>post</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/:id/scale_in</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>do</span>
 
 
 <span class='kw'>end</span></pre>
@@ -347,7 +347,7 @@ under the License.</p>
     <td>
       <pre class="code"><span class="info file"># File 'routes/scaling.rb', line 25</span>
 
-<span class='id identifier rubyid_post'>post</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/ns-instances/scaling/:id/scale_out</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>do</span>
+<span class='id identifier rubyid_post'>post</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/:id/scale_out</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>do</span>
 
   <span class='kw'>begin</span>
     <span class='id identifier rubyid_instance'>instance</span> <span class='op'>=</span> <span class='const'>Nsr</span><span class='period'>.</span><span class='id identifier rubyid_find'>find</span><span class='lparen'>(</span><span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>id</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='rparen'>)</span>
@@ -382,7 +382,7 @@ under the License.</p>
 </div>
 
     <div id="footer">
-  Generated on Tue May  3 15:14:53 2016 by
+  Generated on Tue May 24 18:22:43 2016 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.8.7.6 (ruby-2.0.0).
 </div>

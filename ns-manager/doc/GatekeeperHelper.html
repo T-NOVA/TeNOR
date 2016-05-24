@@ -295,7 +295,10 @@ under the License.</p>
 61
 62
 63
-64</pre>
+64
+65
+66
+67</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'helpers/dc.rb', line 46</span>
@@ -303,6 +306,9 @@ under the License.</p>
 <span class='kw'>def</span> <span class='id identifier rubyid_getPopInfo'>getPopInfo</span><span class='lparen'>(</span><span class='id identifier rubyid_popId'>popId</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_loginGK'>loginGK</span><span class='lparen'>(</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_popList'>popList</span> <span class='op'>=</span> <span class='id identifier rubyid_getPopList'>getPopList</span><span class='lparen'>(</span><span class='rparen'>)</span>
+  <span class='kw'>if</span> <span class='id identifier rubyid_popList'>popList</span><span class='period'>.</span><span class='id identifier rubyid_index'>index</span><span class='lparen'>(</span><span class='id identifier rubyid_popId'>popId</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+    <span class='id identifier rubyid_halt'>halt</span> <span class='int'>400</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Pop id error</span><span class='tstring_end'>&quot;</span></span>
+  <span class='kw'>end</span>
   <span class='id identifier rubyid_pop_id'>pop_id</span> <span class='op'>=</span> <span class='id identifier rubyid_popList'>popList</span><span class='period'>.</span><span class='id identifier rubyid_index'>index</span><span class='lparen'>(</span><span class='id identifier rubyid_popId'>popId</span><span class='rparen'>)</span> <span class='op'>+</span> <span class='int'>1</span>
 
   <span class='kw'>begin</span>
@@ -493,9 +499,6 @@ under the License.</p>
       <pre class="lines">
 
 
-70
-71
-72
 73
 74
 75
@@ -512,10 +515,13 @@ under the License.</p>
 86
 87
 88
-89</pre>
+89
+90
+91
+92</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'helpers/dc.rb', line 70</span>
+      <pre class="code"><span class="info file"># File 'helpers/dc.rb', line 73</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_getPopUrls'>getPopUrls</span><span class='lparen'>(</span><span class='id identifier rubyid_extraInfo'>extraInfo</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_urls'>urls</span> <span class='op'>=</span> <span class='id identifier rubyid_extraInfo'>extraInfo</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'> </span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
@@ -547,7 +553,7 @@ under the License.</p>
 </div>
 
     <div id="footer">
-  Generated on Wed May  4 12:15:17 2016 by
+  Generated on Tue May 24 17:49:02 2016 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.8.7.6 (ruby-2.0.0).
 </div>

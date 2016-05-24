@@ -113,7 +113,7 @@ under the License.</p>
   <p class="tag_title">See Also:</p>
   <ul class="see">
     
-      <li>OrchestratorNsProvisioner</li>
+      <li>NSProvisioner</li>
     
   </ul>
 
@@ -399,7 +399,7 @@ under the License.</p>
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#openstackAdminAuthentication-instance_method" title="#openstackAdminAuthentication (instance method)">- (Object) <strong>openstackAdminAuthentication</strong>(keystoneUrl, user, password) </a>
+      <a href="#openstackAdminAuthentication-instance_method" title="#openstackAdminAuthentication (instance method)">- (Object) <strong>openstackAdminAuthentication</strong>(keystoneUrl, tenantName, user, password) </a>
     
 
     
@@ -508,7 +508,6 @@ under the License.</p>
       <pre class="lines">
 
 
-201
 202
 203
 204
@@ -526,10 +525,11 @@ under the License.</p>
 216
 217
 218
-219</pre>
+219
+220</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'helpers/vim.rb', line 201</span>
+      <pre class="code"><span class="info file"># File 'helpers/vim.rb', line 202</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_addRulesToTenant'>addRulesToTenant</span><span class='lparen'>(</span><span class='id identifier rubyid_computeUrl'>computeUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_tenant_id'>tenant_id</span><span class='comma'>,</span> <span class='id identifier rubyid_security_group_id'>security_group_id</span><span class='comma'>,</span> <span class='id identifier rubyid_protocol'>protocol</span><span class='comma'>,</span> <span class='id identifier rubyid_token'>token</span><span class='comma'>,</span> <span class='id identifier rubyid_from'>from</span><span class='comma'>,</span> <span class='id identifier rubyid_to'>to</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_role'>role</span> <span class='op'>=</span> <span class='lbrace'>{</span>
@@ -570,7 +570,6 @@ under the License.</p>
       <pre class="lines">
 
 
-183
 184
 185
 186
@@ -586,10 +585,11 @@ under the License.</p>
 196
 197
 198
-199</pre>
+199
+200</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'helpers/vim.rb', line 183</span>
+      <pre class="code"><span class="info file"># File 'helpers/vim.rb', line 184</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_createSecurityGroup'>createSecurityGroup</span><span class='lparen'>(</span><span class='id identifier rubyid_computeUrl'>computeUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_tenant_id'>tenant_id</span><span class='comma'>,</span> <span class='id identifier rubyid_token'>token</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_securityGroup'>securityGroup</span> <span class='op'>=</span> <span class='lbrace'>{</span>
@@ -628,7 +628,6 @@ under the License.</p>
       <pre class="lines">
 
 
-54
 55
 56
 57
@@ -646,10 +645,11 @@ under the License.</p>
 69
 70
 71
-72</pre>
+72
+73</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'helpers/vim.rb', line 54</span>
+      <pre class="code"><span class="info file"># File 'helpers/vim.rb', line 55</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_createTenant'>createTenant</span><span class='lparen'>(</span><span class='id identifier rubyid_keystoneUrl'>keystoneUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_projectName'>projectName</span><span class='comma'>,</span> <span class='id identifier rubyid_token'>token</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_project'>project</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='symbol'>:tenant</span> <span class='op'>=&gt;</span> <span class='lbrace'>{</span><span class='symbol'>:description</span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Tenant created by TenOr</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:enabled</span> <span class='op'>=&gt;</span> <span class='kw'>true</span><span class='comma'>,</span> <span class='symbol'>:name</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_projectName'>projectName</span><span class='rbrace'>}</span><span class='rbrace'>}</span>
@@ -690,7 +690,6 @@ under the License.</p>
       <pre class="lines">
 
 
-74
 75
 76
 77
@@ -707,10 +706,11 @@ under the License.</p>
 88
 89
 90
-91</pre>
+91
+92</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'helpers/vim.rb', line 74</span>
+      <pre class="code"><span class="info file"># File 'helpers/vim.rb', line 75</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_createUser'>createUser</span><span class='lparen'>(</span><span class='id identifier rubyid_keystoneUrl'>keystoneUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_projectId'>projectId</span><span class='comma'>,</span> <span class='id identifier rubyid_userName'>userName</span><span class='comma'>,</span> <span class='id identifier rubyid_password'>password</span><span class='comma'>,</span> <span class='id identifier rubyid_token'>token</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_user'>user</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='symbol'>:user</span> <span class='op'>=&gt;</span> <span class='lbrace'>{</span><span class='symbol'>:email</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_userName'>userName</span><span class='op'>+</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>@tenor-tnova.eu</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:enabled</span> <span class='op'>=&gt;</span> <span class='kw'>true</span><span class='comma'>,</span> <span class='symbol'>:name</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_userName'>userName</span><span class='comma'>,</span> <span class='symbol'>:password</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_password'>password</span><span class='comma'>,</span> <span class='symbol'>:tenantId</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_projectId'>projectId</span><span class='rbrace'>}</span><span class='rbrace'>}</span>
@@ -750,7 +750,6 @@ under the License.</p>
       <pre class="lines">
 
 
-221
 222
 223
 224
@@ -758,10 +757,11 @@ under the License.</p>
 226
 227
 228
-229</pre>
+229
+230</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'helpers/vim.rb', line 221</span>
+      <pre class="code"><span class="info file"># File 'helpers/vim.rb', line 222</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_deleteSecurityGroup'>deleteSecurityGroup</span><span class='lparen'>(</span><span class='id identifier rubyid_computeUrl'>computeUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_tenant_id'>tenant_id</span><span class='comma'>,</span> <span class='id identifier rubyid_sec_group_id'>sec_group_id</span><span class='comma'>,</span> <span class='id identifier rubyid_token'>token</span><span class='rparen'>)</span>
 
@@ -792,7 +792,6 @@ under the License.</p>
       <pre class="lines">
 
 
-242
 243
 244
 245
@@ -803,10 +802,11 @@ under the License.</p>
 250
 251
 252
-253</pre>
+253
+254</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'helpers/vim.rb', line 242</span>
+      <pre class="code"><span class="info file"># File 'helpers/vim.rb', line 243</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_deleteStack'>deleteStack</span><span class='lparen'>(</span><span class='id identifier rubyid_stack_url'>stack_url</span><span class='comma'>,</span> <span class='id identifier rubyid_tenant_token'>tenant_token</span><span class='rparen'>)</span>
   <span class='kw'>begin</span>
@@ -840,7 +840,6 @@ under the License.</p>
       <pre class="lines">
 
 
-93
 94
 95
 96
@@ -848,10 +847,11 @@ under the License.</p>
 98
 99
 100
-101</pre>
+101
+102</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'helpers/vim.rb', line 93</span>
+      <pre class="code"><span class="info file"># File 'helpers/vim.rb', line 94</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_deleteTenant'>deleteTenant</span><span class='lparen'>(</span><span class='id identifier rubyid_keystoneUrl'>keystoneUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_tenant_id'>tenant_id</span><span class='comma'>,</span> <span class='id identifier rubyid_token'>token</span><span class='rparen'>)</span>
   <span class='kw'>begin</span>
@@ -882,7 +882,6 @@ under the License.</p>
       <pre class="lines">
 
 
-103
 104
 105
 106
@@ -891,10 +890,11 @@ under the License.</p>
 109
 110
 111
-112</pre>
+112
+113</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'helpers/vim.rb', line 103</span>
+      <pre class="code"><span class="info file"># File 'helpers/vim.rb', line 104</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_deleteUser'>deleteUser</span><span class='lparen'>(</span><span class='id identifier rubyid_keystoneUrl'>keystoneUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_user_id'>user_id</span><span class='comma'>,</span> <span class='id identifier rubyid_token'>token</span><span class='rparen'>)</span>
   <span class='kw'>begin</span>
@@ -926,7 +926,6 @@ under the License.</p>
       <pre class="lines">
 
 
-147
 148
 149
 150
@@ -938,10 +937,11 @@ under the License.</p>
 156
 157
 158
-159</pre>
+159
+160</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'helpers/vim.rb', line 147</span>
+      <pre class="code"><span class="info file"># File 'helpers/vim.rb', line 148</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_getAdminRole'>getAdminRole</span><span class='lparen'>(</span><span class='id identifier rubyid_keystoneUrl'>keystoneUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_token'>token</span><span class='rparen'>)</span>
   <span class='kw'>begin</span>
@@ -976,7 +976,6 @@ under the License.</p>
       <pre class="lines">
 
 
-231
 232
 233
 234
@@ -985,10 +984,11 @@ under the License.</p>
 237
 238
 239
-240</pre>
+240
+241</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'helpers/vim.rb', line 231</span>
+      <pre class="code"><span class="info file"># File 'helpers/vim.rb', line 232</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_getSecurityGroups'>getSecurityGroups</span><span class='lparen'>(</span><span class='id identifier rubyid_computeUrl'>computeUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_tenant_id'>tenant_id</span><span class='comma'>,</span> <span class='id identifier rubyid_token'>token</span><span class='rparen'>)</span>
   <span class='kw'>begin</span>
@@ -1020,7 +1020,6 @@ under the License.</p>
       <pre class="lines">
 
 
-114
 115
 116
 117
@@ -1034,10 +1033,11 @@ under the License.</p>
 125
 126
 127
-128</pre>
+128
+129</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'helpers/vim.rb', line 114</span>
+      <pre class="code"><span class="info file"># File 'helpers/vim.rb', line 115</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_getTenantId'>getTenantId</span><span class='lparen'>(</span><span class='id identifier rubyid_keystoneUrl'>keystoneUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_tenantName'>tenantName</span><span class='comma'>,</span> <span class='id identifier rubyid_token'>token</span><span class='rparen'>)</span>
   <span class='kw'>begin</span>
@@ -1074,7 +1074,6 @@ under the License.</p>
       <pre class="lines">
 
 
-130
 131
 132
 133
@@ -1089,10 +1088,11 @@ under the License.</p>
 142
 143
 144
-145</pre>
+145
+146</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'helpers/vim.rb', line 130</span>
+      <pre class="code"><span class="info file"># File 'helpers/vim.rb', line 131</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_getUserId'>getUserId</span><span class='lparen'>(</span><span class='id identifier rubyid_keystoneUrl'>keystoneUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_username'>username</span><span class='comma'>,</span> <span class='id identifier rubyid_token'>token</span><span class='rparen'>)</span>
   <span class='kw'>begin</span>
@@ -1118,7 +1118,7 @@ under the License.</p>
       <div class="method_details ">
   <h3 class="signature " id="openstackAdminAuthentication-instance_method">
   
-    - (<tt>Object</tt>) <strong>openstackAdminAuthentication</strong>(keystoneUrl, user, password) 
+    - (<tt>Object</tt>) <strong>openstackAdminAuthentication</strong>(keystoneUrl, tenantName, user, password) 
   
 
   
@@ -1149,8 +1149,8 @@ under the License.</p>
     <td>
       <pre class="code"><span class="info file"># File 'helpers/vim.rb', line 21</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_openstackAdminAuthentication'>openstackAdminAuthentication</span><span class='lparen'>(</span><span class='id identifier rubyid_keystoneUrl'>keystoneUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_user'>user</span><span class='comma'>,</span> <span class='id identifier rubyid_password'>password</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_auth'>auth</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='symbol'>:auth</span> <span class='op'>=&gt;</span> <span class='lbrace'>{</span><span class='symbol'>:tenantName</span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>t-nova</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:passwordCredentials</span> <span class='op'>=&gt;</span> <span class='lbrace'>{</span><span class='symbol'>:username</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_user'>user</span><span class='comma'>,</span> <span class='symbol'>:password</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_password'>password</span><span class='rbrace'>}</span><span class='rbrace'>}</span><span class='rbrace'>}</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_openstackAdminAuthentication'>openstackAdminAuthentication</span><span class='lparen'>(</span><span class='id identifier rubyid_keystoneUrl'>keystoneUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_tenantName'>tenantName</span><span class='comma'>,</span> <span class='id identifier rubyid_user'>user</span><span class='comma'>,</span> <span class='id identifier rubyid_password'>password</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_auth'>auth</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='symbol'>:auth</span> <span class='op'>=&gt;</span> <span class='lbrace'>{</span><span class='symbol'>:tenantName</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_tenantName'>tenantName</span><span class='comma'>,</span> <span class='symbol'>:passwordCredentials</span> <span class='op'>=&gt;</span> <span class='lbrace'>{</span><span class='symbol'>:username</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_user'>user</span><span class='comma'>,</span> <span class='symbol'>:password</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_password'>password</span><span class='rbrace'>}</span><span class='rbrace'>}</span><span class='rbrace'>}</span>
 
   <span class='kw'>begin</span>
     <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_post'>post</span> <span class='id identifier rubyid_keystoneUrl'>keystoneUrl</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/tokens</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_auth'>auth</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span>
@@ -1199,7 +1199,8 @@ under the License.</p>
 49
 50
 51
-52</pre>
+52
+53</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'helpers/vim.rb', line 37</span>
@@ -1212,8 +1213,9 @@ under the License.</p>
   <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
     <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span>
     <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
-    <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
-  <span class='kw'>end</span>
+    <span class='id identifier rubyid_raise'>raise</span> <span class='int'>500</span><span class='comma'>,</span>  <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
+    <span class='comment'>#halt 500, e.response.body
+</span>  <span class='kw'>end</span>
 
   <span class='id identifier rubyid_authentication'>authentication</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='op'>=</span> <span class='id identifier rubyid_parse_json'>parse_json</span><span class='lparen'>(</span><span class='id identifier rubyid_response'>response</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='int'>400</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='kw'>if</span> <span class='id identifier rubyid_errors'>errors</span>
@@ -1240,7 +1242,6 @@ under the License.</p>
       <pre class="lines">
 
 
-171
 172
 173
 174
@@ -1250,10 +1251,11 @@ under the License.</p>
 178
 179
 180
-181</pre>
+181
+182</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'helpers/vim.rb', line 171</span>
+      <pre class="code"><span class="info file"># File 'helpers/vim.rb', line 172</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_publicNetworkId'>publicNetworkId</span><span class='lparen'>(</span><span class='id identifier rubyid_neutronUrl'>neutronUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_token'>token</span><span class='rparen'>)</span>
   <span class='kw'>begin</span>
@@ -1286,7 +1288,6 @@ under the License.</p>
       <pre class="lines">
 
 
-161
 162
 163
 164
@@ -1294,10 +1295,11 @@ under the License.</p>
 166
 167
 168
-169</pre>
+169
+170</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'helpers/vim.rb', line 161</span>
+      <pre class="code"><span class="info file"># File 'helpers/vim.rb', line 162</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_putRole'>putRole</span><span class='lparen'>(</span><span class='id identifier rubyid_keystoneUrl'>keystoneUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_tenant_id'>tenant_id</span><span class='comma'>,</span> <span class='id identifier rubyid_user_id'>user_id</span><span class='comma'>,</span> <span class='id identifier rubyid_role_id'>role_id</span><span class='comma'>,</span> <span class='id identifier rubyid_token'>token</span><span class='rparen'>)</span>
   <span class='kw'>begin</span>
@@ -1318,7 +1320,7 @@ under the License.</p>
 </div>
 
     <div id="footer">
-  Generated on Tue May  3 15:14:53 2016 by
+  Generated on Tue May 24 18:22:43 2016 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.8.7.6 (ruby-2.0.0).
 </div>

@@ -193,7 +193,7 @@ under the License.</p>
 
   
     <span class="summary_desc"><div class='inline'>
-<p>Post a ns-instance.</p>
+<p>Get a ns-instance status.</p>
 </div></span>
   
 </li>
@@ -217,7 +217,7 @@ under the License.</p>
 
   
     <span class="summary_desc"><div class='inline'>
-<p>Post a ns-instance.</p>
+<p>Get all ns-instances.</p>
 </div></span>
   
 </li>
@@ -241,7 +241,7 @@ under the License.</p>
 
   
     <span class="summary_desc"><div class='inline'>
-<p>Post a ns-instance.</p>
+<p>Get a ns-instance.</p>
 </div></span>
   
 </li>
@@ -388,12 +388,6 @@ under the License.</p>
       <pre class="lines">
 
 
-202
-203
-204
-205
-206
-207
 208
 209
 210
@@ -429,10 +423,16 @@ under the License.</p>
 240
 241
 242
-243</pre>
+243
+244
+245
+246
+247
+248
+249</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'routes/ns_provisioning.rb', line 202</span>
+      <pre class="code"><span class="info file"># File 'routes/ns_provisioning.rb', line 208</span>
 
 <span class='id identifier rubyid_delete'>delete</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/:ns_instance_id</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>do</span>
   <span class='kw'>begin</span>
@@ -493,7 +493,7 @@ under the License.</p>
 </h3><div class="docstring">
   <div class="discussion">
     
-<p>Post a ns-instance</p>
+<p>Get a ns-instance status</p>
 
 
   </div>
@@ -524,12 +524,6 @@ under the License.</p>
       <pre class="lines">
 
 
-118
-119
-120
-121
-122
-123
 124
 125
 126
@@ -541,10 +535,16 @@ under the License.</p>
 132
 133
 134
-135</pre>
+135
+136
+137
+138
+139
+140
+141</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'routes/ns_provisioning.rb', line 118</span>
+      <pre class="code"><span class="info file"># File 'routes/ns_provisioning.rb', line 124</span>
 
 <span class='id identifier rubyid_get'>get</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/:ns_instance_id/status</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>do</span>
   <span class='kw'>begin</span>
@@ -581,7 +581,7 @@ under the License.</p>
 </h3><div class="docstring">
   <div class="discussion">
     
-<p>Post a ns-instance</p>
+<p>Get all ns-instances</p>
 
 
   </div>
@@ -612,12 +612,6 @@ under the License.</p>
       <pre class="lines">
 
 
-141
-142
-143
-144
-145
-146
 147
 148
 149
@@ -629,10 +623,16 @@ under the License.</p>
 155
 156
 157
-158</pre>
+158
+159
+160
+161
+162
+163
+164</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'routes/ns_provisioning.rb', line 141</span>
+      <pre class="code"><span class="info file"># File 'routes/ns_provisioning.rb', line 147</span>
 
 <span class='id identifier rubyid_get'>get</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>do</span>
   <span class='kw'>begin</span>
@@ -669,7 +669,7 @@ under the License.</p>
 </h3><div class="docstring">
   <div class="discussion">
     
-<p>Post a ns-instance</p>
+<p>Get a ns-instance</p>
 
 
   </div>
@@ -700,12 +700,6 @@ under the License.</p>
       <pre class="lines">
 
 
-69
-70
-71
-72
-73
-74
 75
 76
 77
@@ -717,10 +711,16 @@ under the License.</p>
 83
 84
 85
-86</pre>
+86
+87
+88
+89
+90
+91
+92</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'routes/ns_provisioning.rb', line 69</span>
+      <pre class="code"><span class="info file"># File 'routes/ns_provisioning.rb', line 75</span>
 
 <span class='id identifier rubyid_get'>get</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/:ns_instance_id</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>do</span>
   <span class='kw'>begin</span>
@@ -812,7 +812,13 @@ under the License.</p>
 60
 61
 62
-63</pre>
+63
+64
+65
+66
+67
+68
+69</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'routes/ns_provisioning.rb', line 24</span>
@@ -830,9 +836,15 @@ under the License.</p>
   <span class='comment'># Validate JSON format
 </span>  <span class='id identifier rubyid_instantiation_info'>instantiation_info</span> <span class='op'>=</span> <span class='const'>JSON</span><span class='period'>.</span><span class='id identifier rubyid_parse'>parse</span><span class='lparen'>(</span><span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span><span class='rparen'>)</span>
 
+  <span class='kw'>begin</span>
+    <span class='ivar'>@service_ns_catalogue</span> <span class='op'>=</span> <span class='const'>ServiceModel</span><span class='period'>.</span><span class='id identifier rubyid_find_by'>find_by</span><span class='lparen'>(</span><span class='label'>name:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>ns_catalogue</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  <span class='kw'>rescue</span> <span class='const'>Mongoid</span><span class='op'>::</span><span class='const'>Errors</span><span class='op'>::</span><span class='const'>DocumentNotFound</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='lbrace'>{</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Content-Type</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>text/plain</span><span class='tstring_end'>&quot;</span></span><span class='rbrace'>}</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>NS Provisioning not registred.</span><span class='tstring_end'>&quot;</span></span>
+  <span class='kw'>end</span>
+
   <span class='comment'># Get VNF by id
 </span>  <span class='kw'>begin</span>
-    <span class='id identifier rubyid_nsd'>nsd</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span> <span class='id identifier rubyid_settings'>settings</span><span class='period'>.</span><span class='id identifier rubyid_ns_catalogue'>ns_catalogue</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/network-services/</span><span class='tstring_end'>&#39;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_instantiation_info'>instantiation_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>ns_id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>X-Auth-Token</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='ivar'>@client_token</span>
+    <span class='id identifier rubyid_nsd'>nsd</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span> <span class='ivar'>@service_ns_catalogue</span><span class='period'>.</span><span class='id identifier rubyid_host'>host</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>:</span><span class='tstring_end'>&quot;</span></span> <span class='op'>+</span> <span class='ivar'>@service_ns_catalogue</span><span class='period'>.</span><span class='id identifier rubyid_port'>port</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/network-services/</span><span class='tstring_end'>&#39;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_instantiation_info'>instantiation_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>ns_id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>X-Auth-Token</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='ivar'>@client_token</span>
   <span class='kw'>rescue</span> <span class='const'>Errno</span><span class='op'>::</span><span class='const'>ECONNREFUSED</span>
     <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>NS Catalogue unreachable</span><span class='tstring_end'>&#39;</span></span>
   <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
@@ -874,7 +886,7 @@ under the License.</p>
 </h3><div class="docstring">
   <div class="discussion">
     
-<p>Callback response of instantiation request. This mehtod is used by the
+<p>Callback response of instantiation request. This method is called by the
 VNFManager.</p>
 
 
@@ -906,12 +918,6 @@ VNFManager.</p>
       <pre class="lines">
 
 
-249
-250
-251
-252
-253
-254
 255
 256
 257
@@ -958,10 +964,16 @@ VNFManager.</p>
 298
 299
 300
-301</pre>
+301
+302
+303
+304
+305
+306
+307</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'routes/ns_provisioning.rb', line 249</span>
+      <pre class="code"><span class="info file"># File 'routes/ns_provisioning.rb', line 255</span>
 
 <span class='id identifier rubyid_post'>post</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/:ns_instance_id/instantiate</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>do</span>
 
@@ -1069,12 +1081,6 @@ VNFManager.</p>
       <pre class="lines">
 
 
-92
-93
-94
-95
-96
-97
 98
 99
 100
@@ -1089,10 +1095,16 @@ VNFManager.</p>
 109
 110
 111
-112</pre>
+112
+113
+114
+115
+116
+117
+118</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'routes/ns_provisioning.rb', line 92</span>
+      <pre class="code"><span class="info file"># File 'routes/ns_provisioning.rb', line 98</span>
 
 <span class='id identifier rubyid_put'>put</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/:ns_instance_id</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>do</span>
   <span class='kw'>begin</span>
@@ -1125,7 +1137,7 @@ VNFManager.</p>
 </div>
 
     <div id="footer">
-  Generated on Wed May  4 12:15:18 2016 by
+  Generated on Tue May 24 17:49:03 2016 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.8.7.6 (ruby-2.0.0).
 </div>

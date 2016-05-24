@@ -399,7 +399,9 @@ under the License.</p>
 61
 62
 63
-64</pre>
+64
+65
+66</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'helpers/pop.rb', line 45</span>
@@ -419,6 +421,8 @@ under the License.</p>
       <span class='id identifier rubyid_popUrls'>popUrls</span><span class='lbracket'>[</span><span class='symbol'>:compute</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_item'>item</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>=</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='lbracket'>[</span><span class='int'>1</span><span class='rbracket'>]</span>
     <span class='kw'>elsif</span> <span class='id identifier rubyid_key'>key</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>orch-endpoint</span><span class='tstring_end'>&#39;</span></span>
       <span class='id identifier rubyid_popUrls'>popUrls</span><span class='lbracket'>[</span><span class='symbol'>:orch</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_item'>item</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>=</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='lbracket'>[</span><span class='int'>1</span><span class='rbracket'>]</span>
+    <span class='kw'>elsif</span> <span class='id identifier rubyid_key'>key</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>tenant-name</span><span class='tstring_end'>&#39;</span></span>
+      <span class='id identifier rubyid_popUrls'>popUrls</span><span class='lbracket'>[</span><span class='symbol'>:tenant</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_item'>item</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>=</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='lbracket'>[</span><span class='int'>1</span><span class='rbracket'>]</span>
     <span class='kw'>end</span>
   <span class='kw'>end</span>
 
@@ -434,7 +438,7 @@ under the License.</p>
 </div>
 
     <div id="footer">
-  Generated on Tue May  3 15:14:53 2016 by
+  Generated on Tue May 24 18:22:43 2016 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.8.7.6 (ruby-2.0.0).
 </div>

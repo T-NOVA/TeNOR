@@ -135,7 +135,7 @@ under the License.</p>
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#callMapping-instance_method" title="#callMapping (instance method)">- (Hash, ...) <strong>callMapping</strong>(ms) </a>
+      <a href="#callMapping-instance_method" title="#callMapping (instance method)">- (Hash, ...) <strong>callMapping</strong>(ms, nsd) </a>
     
 
     
@@ -168,7 +168,7 @@ under the License.</p>
       <div class="method_details first">
   <h3 class="signature first" id="callMapping-instance_method">
   
-    - (<tt>Hash</tt>, ...) <strong>callMapping</strong>(ms) 
+    - (<tt>Hash</tt>, ...) <strong>callMapping</strong>(ms, nsd) 
   
 
   
@@ -288,33 +288,15 @@ under the License.</p>
 68
 69
 70
-71
-72
-73
-74
-75
-76
-77
-78
-79
-80</pre>
+71</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'helpers/mapping.rb', line 26</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_callMapping'>callMapping</span><span class='lparen'>(</span><span class='id identifier rubyid_ms'>ms</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_callMapping'>callMapping</span><span class='lparen'>(</span><span class='id identifier rubyid_ms'>ms</span><span class='comma'>,</span> <span class='id identifier rubyid_nsd'>nsd</span><span class='rparen'>)</span>
 
-  <span class='kw'>begin</span>
-    <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span> <span class='id identifier rubyid_settings'>settings</span><span class='period'>.</span><span class='id identifier rubyid_manager'>manager</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/network-services/</span><span class='tstring_end'>&#39;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_ms'>ms</span><span class='lbracket'>[</span><span class='symbol'>:NS_id</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span>
-  <span class='kw'>rescue</span> <span class='const'>Errno</span><span class='op'>::</span><span class='const'>ECONNREFUSED</span>
-    <span class='kw'>return</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Connection refused</span><span class='tstring_end'>&quot;</span></span>
-  <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
-    <span class='kw'>return</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Error</span><span class='tstring_end'>&quot;</span></span>
-    <span class='kw'>return</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
-  <span class='kw'>end</span>
-
-  <span class='id identifier rubyid_nsd'>nsd</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='op'>=</span> <span class='id identifier rubyid_parse_json'>parse_json</span><span class='lparen'>(</span><span class='id identifier rubyid_response'>response</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_mapping'>mapping</span> <span class='op'>=</span> <span class='lbrace'>{</span>
+  <span class='comment'>#nsd, errors = parse_json(response)
+</span>  <span class='id identifier rubyid_mapping'>mapping</span> <span class='op'>=</span> <span class='lbrace'>{</span>
       <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>created_at</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Thu Nov  5 10:13:25 2015</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
       <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>links_mapping</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span>
         <span class='lbracket'>[</span>
@@ -326,7 +308,7 @@ under the License.</p>
       <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>vnf_mapping</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span>
           <span class='lbracket'>[</span>
               <span class='lbrace'>{</span>
-                  <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>maps_to_PoP</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/pop/1dc4dbf7-2fb3-4acb-96fe-330306f78422</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+                  <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>maps_to_PoP</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/pop/default</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
                   <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>vnf</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/</span><span class='tstring_end'>&quot;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_nsd'>nsd</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>vnfds</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
               <span class='rbrace'>}</span>
           <span class='rbracket'>]</span>
@@ -367,7 +349,7 @@ under the License.</p>
 </div>
 
     <div id="footer">
-  Generated on Tue May  3 15:14:53 2016 by
+  Generated on Tue May 24 18:22:43 2016 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.8.7.6 (ruby-2.0.0).
 </div>

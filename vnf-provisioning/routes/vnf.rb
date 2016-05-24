@@ -79,6 +79,7 @@ class Provisioning < VnfProvisioning
     hot_generator_message = {
       vnf: vnf,
       networks_id: instantiation_info['networks'],
+      router_id: instantiation_info['routers'],
       security_group_id: instantiation_info['security_group_id']
     }
     begin
@@ -325,8 +326,23 @@ logger.debug "HEAT template generated"
               unless event_info.nil?
                 JSON.parse(event_info['template_file']).each do |id, parameter|
                   parameter_match = parameter.match(/^get_attr\[(.*), *(.*)\]$/i).to_a
+                  puts parameter_match[1]
+                  puts "parameter match2"
+                  puts #{parameter_match[2]}
+                  puts parameter_match[2]
+                  if output['output_key'] =~ /^#{parameter_match[1]}##{parameter_match[2]}$/i
+                    vnf_addresses["#{parameter_match[1]}"] = output['output_value'] if parameter_match[2] == 'networks' && !vnf_addresses.has_key?("#{parameter_match[1]}") # Only to populate VNF Addresses specified by ETSI
+                    lifecycle_events_values[event] = {} unless lifecycle_events_values.has_key?(event)
+                    lifecycle_events_values[event]["#{parameter_match[1]}##{parameter_match[2]}"] = output['output_value']
+                  end
+
                   if output['output_key'] =~ /^#{parameter_match[1]}##{parameter_match[2]}$/i
                     vnf_addresses["#{parameter_match[1]}"] = output['output_value'] if parameter_match[2] == 'ip' && !vnf_addresses.has_key?("#{parameter_match[1]}") # Only to populate VNF Addresses specified by ETSI 
+                    lifecycle_events_values[event] = {} unless lifecycle_events_values.has_key?(event)
+                    lifecycle_events_values[event]["#{parameter_match[1]}##{parameter_match[2]}"] = output['output_value']
+                  end
+                  if output['output_key'] =~ /^#{parameter_match[1]}##{parameter_match[2]}$/i
+                    vnf_addresses["#{parameter_match[1]}"] = output['output_value'] if parameter_match[2] == 'PublicIp' && !vnf_addresses.has_key?("#{parameter_match[1]}") # Only to populate VNF Addresses specified by ETSI
                     lifecycle_events_values[event] = {} unless lifecycle_events_values.has_key?(event)
                     lifecycle_events_values[event]["#{parameter_match[1]}##{parameter_match[2]}"] = output['output_value']
                   end
