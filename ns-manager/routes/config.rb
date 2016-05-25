@@ -76,4 +76,16 @@ class ServiceConfigurationController < TnovaManager
 		return "Correct update."
 	end
 
+  # @method get_configs_services_publish_microservice
+  # @overload get '/configs/services/:name/status'
+  # Get dependencies for specific microservice, asyncrhonous call
+	get '/services/publish/:microservice' do
+    name =  params[:microservice]
+    EM.defer do
+      ServiceConfigurationHelper.publishService(name)
+    end
+
+    return 200
+	end
+
 end

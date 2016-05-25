@@ -81,9 +81,9 @@ module AuthenticationHelper
 	# Send service key to a mS
 	#
 	# @return [String] the object converted into the expected format.
-	def loginGK()
+	def self.loginGK()
 		begin
-			response = RestClient.post settings.gatekeeper + '/token/', "", :"X-Auth-Password" => settings.gk_pass, :"X-Auth-Uid" => settings.gk_user_id
+			response = RestClient.post Sinatra::Application.settings.gatekeeper + '/token/', "", :"X-Auth-Password" => Sinatra::Application.settings.gk_pass, :"X-Auth-Uid" => Sinatra::Application.settings.gk_user_id
 		rescue => e
 			logger.error e
 		end
@@ -91,18 +91,21 @@ module AuthenticationHelper
 			halt 500, "Gatekeeper response is null when login."
 		end
 		metadata = JSON.parse(response)
-		settings.gk_token =  metadata["token"]["id"]
+    Sinatra::Application.settings.gk_token =  metadata["token"]["id"]
 	end
 
 	# Get registered services in Gatekeeper
 	#
 	# @return [Array] list of services.
-	def getGKServices()
+	def self.getGKServices()
 		begin
-			response = RestClient.get settings.gatekeeper + '/admin/service/', :content_type => :json, :"X-Auth-Token" => settings.gk_token
-		rescue => e
-			logger.error e
-		end
+			response = RestClient.get Sinatra::Application.settings.gatekeeper + '/admin/service/', :content_type => :json, :"X-Auth-Token" => Sinatra::Application.settings.gk_token
+    rescue => e
+      puts "Error"
+      puts e
+			#logger.error e
+    end
+    puts response
 		metadata = JSON.parse(response)
 		return metadata['servicelist']
 	end

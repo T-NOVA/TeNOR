@@ -25,7 +25,7 @@ class AccountingController < TnovaManager
   put '/servicestatus/:ns_instance_id/:status' do
 
     begin
-      @service = ServiceModel.find_by(name: "ns_provisioning")
+      @service = ServiceModel.find_by(name: "ns_provisioner")
     rescue Mongoid::Errors::DocumentNotFound => e
       halt 500, {'Content-Type' => "text/plain"}, "Microservice unrechable."
     end

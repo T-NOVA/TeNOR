@@ -24,7 +24,7 @@ class NsProvisionerController < TnovaManager
   post '/' do
 
     begin
-      @service = ServiceModel.find_by(name: "ns_provisioning")
+      @service = ServiceModel.find_by(name: "ns_provisioner")
     rescue Mongoid::Errors::DocumentNotFound => e
       halt 500, {'Content-Type' => "text/plain"}, "NS Provisioning not registred."
     end
@@ -74,7 +74,7 @@ class NsProvisionerController < TnovaManager
   # @param [string]
   get "/:ns_instance_id" do
     begin
-      @service = ServiceModel.find_by(name: "ns_provisioning")
+      @service = ServiceModel.find_by(name: "ns_provisioner")
     rescue Mongoid::Errors::DocumentNotFound => e
       halt 500, {'Content-Type' => "text/plain"}, "NS Provisioning not registred."
     end
@@ -97,7 +97,7 @@ class NsProvisionerController < TnovaManager
   # @param [string] Instance id
   put '/:ns_instance_id' do
     begin
-      @service = ServiceModel.find_by(name: "ns_provisioning")
+      @service = ServiceModel.find_by(name: "ns_provisioner")
     rescue Mongoid::Errors::DocumentNotFound => e
       halt 500, {'Content-Type' => "text/plain"}, "NS Provisioning not registred."
     end
@@ -121,9 +121,9 @@ class NsProvisionerController < TnovaManager
   # @overload get "/ns-instances/:ns_instance_id/status"
   # Get a ns-instance status
   # @param [string]
-  get "/:ns_instance_id/status" do
+  get '/:ns_instance_id/status' do
     begin
-      @service = ServiceModel.find_by(name: "ns_provisioning")
+      @service = ServiceModel.find_by(name: "ns_provisioner")
     rescue Mongoid::Errors::DocumentNotFound => e
       halt 500, {'Content-Type' => "text/plain"}, "NS Provisioning not registred."
     end
@@ -144,9 +144,9 @@ class NsProvisionerController < TnovaManager
   # @overload get "/ns-instances"
   # Get all ns-instances
   # @param [string]
-  get "/" do
+  get '/' do
     begin
-      @service = ServiceModel.find_by(name: "ns_provisioning")
+      @service = ServiceModel.find_by(name: "ns_provisioner")
     rescue Mongoid::Errors::DocumentNotFound => e
       halt 500, {'Content-Type' => "text/plain"}, "NS Provisioning not registred."
     end
@@ -169,7 +169,7 @@ class NsProvisionerController < TnovaManager
   # @param [string] Instance id
   put '/:ns_instance_id/:status' do
     begin
-      @service = ServiceModel.find_by(name: "ns_provisioning")
+      @service = ServiceModel.find_by(name: "ns_provisioner")
     rescue Mongoid::Errors::DocumentNotFound => e
       halt 500, {'Content-Type' => "text/plain"}, "NS Provisioning not registred."
     end
@@ -207,7 +207,7 @@ class NsProvisionerController < TnovaManager
   # @param [string] Instance id
   delete '/:ns_instance_id' do
     begin
-      @service = ServiceModel.find_by(name: "ns_provisioning")
+      @service = ServiceModel.find_by(name: "ns_provisioner")
     rescue Mongoid::Errors::DocumentNotFound => e
       halt 500, {'Content-Type' => "text/plain"}, "NS Provisioning not registred."
     end
@@ -257,7 +257,7 @@ class NsProvisionerController < TnovaManager
     callback_response, errors = parse_json(request.body.read)
 
     begin
-      @service = ServiceModel.find_by(name: "ns_provisioning")
+      @service = ServiceModel.find_by(name: "ns_provisioner")
     rescue Mongoid::Errors::DocumentNotFound => e
       halt 500, {'Content-Type' => "text/plain"}, "NS Provisioning not registred."
     end

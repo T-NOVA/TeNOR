@@ -25,7 +25,7 @@ class ScalingController< TnovaManager
   post '/:id/scale_out' do
 
     begin
-      @service = ServiceModel.find_by(name: "ns_provisioning")
+      @service = ServiceModel.find_by(name: "ns_provisioner")
     rescue Mongoid::Errors::DocumentNotFound => e
       halt 500, {'Content-Type' => "text/plain"}, "NS Provisioning not registred."
     end
@@ -68,7 +68,7 @@ class ScalingController< TnovaManager
   post '/:id/scale_out' do
 
     begin
-      @service = ServiceModel.find_by(name: "ns_provisioning")
+      @service = ServiceModel.find_by(name: "ns_provisioner")
     rescue Mongoid::Errors::DocumentNotFound => e
       halt 500, {'Content-Type' => "text/plain"}, "NS Provisioning not registred."
     end

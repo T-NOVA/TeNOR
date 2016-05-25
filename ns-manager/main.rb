@@ -28,15 +28,17 @@ require 'logstash-logger'
 require 'bundler'
 Bundler.require :default, ENV['RACK_ENV'].to_sym
 
+register Sinatra::ConfigFile
+# Load configurations
+config_file 'config/config.yml'
+
+Mongoid.load!('config/mongoid.yml')
+
 class TnovaManager < Sinatra::Application
 
-	require_relative 'models/init'
-	require_relative 'routes/init'
-	require_relative 'helpers/init'
-
-	register Sinatra::ConfigFile
-# Load configurations
-	config_file 'config/config.yml'
+  require_relative 'models/init'
+  require_relative 'routes/init'
+  require_relative 'helpers/init'
 
 	configure do
 		# Configure logging
@@ -82,7 +84,8 @@ class TnovaManager < Sinatra::Application
 	helpers GatekeeperHelper
 	helpers StatisticsHelper
 
-	Mongoid.load!('config/mongoid.yml')
+  AuthenticationHelper.loginGK()
+	ServiceConfigurationHelper.publishServices()
 
   get '/' do
     return 200, interfaces_list.to_json
