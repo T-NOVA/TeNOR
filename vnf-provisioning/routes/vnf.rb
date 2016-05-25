@@ -91,7 +91,8 @@ class Provisioning < VnfProvisioning
       halt e.response.code, e.response.body
     end
 
-logger.debug "HEAT template generated"
+    logger.debug "HEAT template generated"
+    logger.debug hot
     vim_info = {
       'keystone' => instantiation_info['auth']['url']['keystone'],
       'tenant' => instantiation_info['auth']['tenant'],
@@ -177,7 +178,6 @@ logger.debug "HEAT template generated"
     }
     token_info = request_auth_token(vim_info)
     auth_token = token_info['access']['token']['id']
-    logger.debug 'Token info: ' + token_info.to_json
 
     # Find VNFR
     begin
@@ -307,8 +307,8 @@ logger.debug "HEAT template generated"
 
       # Read from VIM outputs and map with parameters
 
-      puts "Output recevied from Openstack:"
-      puts stack_info['stack']['outputs']
+      logger.debug "Output recevied from Openstack:"
+      logger.debug stack_info['stack']['outputs']
 
       vms_id = {}
       lifecycle_events_values = {}
@@ -320,21 +320,33 @@ logger.debug "HEAT template generated"
         else
           # If the output is a Floating IP
           if output['output_key'] =~ /^.*#floating_ip$/i
-            vnf_addresses['controller'] = output['output_value']
+            #vnf_addresses['controller'] = output['output_value']
+            vnf_addresses[output['output_key']] = output['output_value']
           else # Else look for the output on the lifecycle events
             vnfr.lifecycle_info['events'].each do |event, event_info|
               unless event_info.nil?
                 JSON.parse(event_info['template_file']).each do |id, parameter|
                   parameter_match = parameter.match(/^get_attr\[(.*), *(.*)\]$/i).to_a
+                  parameter_match = parameter.match(/^get_attr\[(.*)\]$/i).to_a
+
+                  string = parameter_match[1].split(",").map(&:strip)
+
                   puts parameter_match[1]
                   puts "parameter match2"
                   puts #{parameter_match[2]}
                   puts parameter_match[2]
-                  if output['output_key'] =~ /^#{parameter_match[1]}##{parameter_match[2]}$/i
-                    vnf_addresses["#{parameter_match[1]}"] = output['output_value'] if parameter_match[2] == 'networks' && !vnf_addresses.has_key?("#{parameter_match[1]}") # Only to populate VNF Addresses specified by ETSI
-                    lifecycle_events_values[event] = {} unless lifecycle_events_values.has_key?(event)
-                    lifecycle_events_values[event]["#{parameter_match[1]}##{parameter_match[2]}"] = output['output_value']
-                  end
+
+                  puts "String: "
+                  puts string
+                  puts "String[0]: " +string[0].to_s
+                  puts "String[1]: " +string[1].to_s
+                  puts "string[2]: " +string[2].to_s
+
+                  #              vnf_addresses["#{string[0]}"] = output['output_value'] if string[1] == 'networks' && !vnf_addresses.has_key?("#{string[1]}") # Only to populate VNF Addresses specified by ETSI
+                  vnf_addresses["#{string[0]}"] = output['output_value']
+                  lifecycle_events_values[event] = {} unless lifecycle_events_values.has_key?(event)
+                  #                lifecycle_events_values[event]["#{string[1]}##{string[2]}"] = output['output_value']
+                  lifecycle_events_values[event][output['output_key']] = output['output_value']
 
                   if output['output_key'] =~ /^#{parameter_match[1]}##{parameter_match[2]}$/i
                     vnf_addresses["#{parameter_match[1]}"] = output['output_value'] if parameter_match[2] == 'ip' && !vnf_addresses.has_key?("#{parameter_match[1]}") # Only to populate VNF Addresses specified by ETSI 
@@ -376,7 +388,6 @@ logger.debug "HEAT template generated"
         # Request an auth token
         token_info = request_auth_token(stack_info['vim_info'])
         auth_token = token_info['access']['token']['id']
-        logger.debug 'Token info: ' + token_info.to_json
 
         # Request VIM information about the error
         begin
@@ -391,7 +402,7 @@ logger.debug "HEAT template generated"
 
         # Request VIM to delete the stack
         begin
-          response = RestClient.delete vnfr.stack_url, 'X-Auth-Token' => auth_token, :accept => :json
+#          response = RestClient.delete vnfr.stack_url, 'X-Auth-Token' => auth_token, :accept => :json
         rescue Errno::ECONNREFUSED
           halt 500, 'VIM unreachable'
         rescue => e
