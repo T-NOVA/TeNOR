@@ -1,6 +1,6 @@
 ---
 manager: http://127.0.0.1:4000
-servicename: ns-provisioner
+servicename: ns_provisioner
 environment: development
 address: 0.0.0.0
 port: 4012
@@ -13,7 +13,7 @@ logstash_host: 127.0.0.1
 logstash_port: 5228
 
 ns_monitoring: http://localhost:4014
-ns_mapping: http://localhost:4042
+mapping: http://localhost:4042
 sla_enforcement: http://localhost:4016
 
 #vnf_manager: http://localhost:4567
@@ -29,7 +29,7 @@ dns_server:
 default_tenant_id:
 default_tenant_name:
 
-dependencies: [nscatalogue, nsinstancerepo, nsmonitoring, wicm, mAPI, mapping, hot_generator]
+dependencies: [ns_monitoring, mapping, hot_generator, wicm, mAPI]
 
 gk:
 service_key:
