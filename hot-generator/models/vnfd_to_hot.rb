@@ -38,6 +38,8 @@ class VnfdToHot
     # Parse needed outputs
     parse_outputs(vnfd['vnf_lifecycle_events'].find { |lifecycle| lifecycle['flavor_id_ref'] == tnova_flavour }['events'])
 
+    key = create_key_pair(SecureRandom.urlsafe_base64(9))
+
     # Get T-NOVA deployment flavour
     deployment_information = vnfd['deployment_flavours'].detect { |flavour| flavour['id'] == tnova_flavour }
     raise CustomException::NoFlavorError, "Flavor #{tnova_flavour} not found" if deployment_information.nil?
@@ -52,10 +54,6 @@ class VnfdToHot
       net_name = create_networks(vlink_json, '8.8.8.8', routers_id[0]['id'])
       networks_id << { 'alias' => vlink_json['alias'] , 'heat' => net_name}
     end
-
-    puts networks_id
-
-    key = create_key_pair(SecureRandom.urlsafe_base64(9))
 
     deployment_information['vdu_reference'].each do |vdu_ref|
       # Get VDU for deployment
@@ -78,7 +76,7 @@ class VnfdToHot
     if vlink['net_segment']
       cidr = vlink['net_segment']
     else
-      cidr = "192." + rand(256).to_s + ".0.0/24"
+      cidr = "192." + rand(256).to_s + "." + rand(256).to_s + ".0/24"
     end
     subnet_name = create_subnet(network_name, dns_server, cidr)
     create_router_interface(router_id, subnet_name)
@@ -120,29 +118,22 @@ class VnfdToHot
           unless outputs.include?(output)
             outputs << output
             #match = output.match(/^get_attr\[(.*), *(.*)\]$/i).to_a
-
             match = output.match(/^get_attr\[(.*)\]$/i).to_a
-            if (match.size == 0)
+            unless match.size == 0
               match = output.match(/^get_attr \[(.*)\]$/i).to_a
             end
-
-            if (match.size == 0)
+            if match.size == 0
               logger.debug output
               logger.error "The match is null."
             else
               string = match[1].split(",").map(&:strip)
-
               if string.size == 0
                 logger.error "Error getting the 'get_attr' of " + match[1]
               else
-                resource = string[0]
                 get_attr = {get_attr: []}
                 string.each_with_index do |type, i|
-                  if i > 0
                     get_attr[:get_attr] << type
-                  end
                 end
-                get_attr[:get_attr] << resource
 
                 if @outputs.has_key?(match[2])
                   @outputs[match[2]] << match[1]
@@ -151,7 +142,8 @@ class VnfdToHot
                 end
                 puts "Outputs:"
                 puts @outputs
-                @hot.outputs_list << Output.new(id, "", {get_attr: [match[2], "#{match[1]}"]})
+#                @hot.outputs_list << Output.new(id, "", {get_attr: [match[2], "#{match[1]}"]})
+                @hot.outputs_list << Output.new(id, "", get_attr)
               end
             end
           end
@@ -203,6 +195,7 @@ class VnfdToHot
       network = networks_id.detect { |network| network['alias'] == vlink['alias'] }
       if network != nil
         network_id = network['id']
+        network_id = network['alias']
         port_name = "#{connection_point['id']}"
         ports << {port: {get_resource: port_name}}
         #@hot.resources_list << Port.new(port_name, network_id, security_group_id)
