@@ -27,7 +27,7 @@ class VNFMonitoring < Sinatra::Application
     @json, errors = parse_json(request.body.read)
     return 400, errors.to_json if errors
 
-    logger.error @json
+    logger.debug @json
 
     @json['vnfr_id'] = params['vnfr_id']
     vnfd = @json['vnfd']
@@ -73,7 +73,7 @@ class VNFMonitoring < Sinatra::Application
     subscription_response, errors = parse_json(response)
     return 400, errors.to_json if errors
 
-    logger.error subscription_response
+    logger.debug subscription_response
 
     #save subscription id
     #MonitoringMetric
@@ -103,7 +103,7 @@ class VNFMonitoring < Sinatra::Application
   # @overload post '/vnf-monitoring/:vnfi_id/monitoring-parameters'
   # Receive the monitoring parameters
   post '/vnf-monitoring/:vnfr_id/readings' do
-    logger.error "Readings from Monitoring VIM"
+    logger.info "Readings from Monitoring VIM"
     return 415 unless request.content_type == 'application/json'
     json, errors = parse_json(request.body.read)
     return 400, errors.to_json if errors
