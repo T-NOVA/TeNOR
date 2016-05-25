@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 # Set environment
-ENV['RACK_ENV'] ||= 'production'
+ENV['RACK_ENV'] ||= 'development'
 
 require 'sinatra'
 require 'sinatra/config_file'
@@ -51,10 +51,6 @@ configure do
 		end
 	end
 	set :logger, logger
-end
-
-before do
-	env['rack.logger'] = settings.logger
 end
 
 class NsCatalogue < Sinatra::Application
