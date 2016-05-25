@@ -55,7 +55,7 @@ module MappingHelper
     end
 
     begin
-      response = RestClient.post settings.ns_mapping + '/mapper', ms.to_json, :content_type => :json
+      response = RestClient.post settings.mapping + '/mapper', ms.to_json, :content_type => :json
     rescue => e
       logger.error e
       if (defined?(e.response)).nil?

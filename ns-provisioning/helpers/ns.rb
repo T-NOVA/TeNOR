@@ -156,7 +156,7 @@ module NsProvisioner
     ms = {
         :NS_id => nsd['id'],
         :tenor_api => settings.manager,
-        :infr_repo_api => infr_repo_url['host'].to_s + ":" + infr_repo_url['port'].to_s,
+        :infr_repo_api => settings.infr_repository,
         :development => true,
         :NS_sla => sla_id,
         :overcommitting => "true"
@@ -258,8 +258,6 @@ module NsProvisioner
 
       logger.debug @instance
 
-      hot_url = @tenor_modules.select {|service| service["name"] == "hot_generator" }[0]
-
       if false
         # Request WICM to create a service
         wicm_message = {
@@ -268,10 +266,9 @@ module NsProvisioner
             nap_mkt_id: '1',
             nfvi_mkt_id: '1'
         }
-        wicm_url = @tenor_modules.select {|service| service["name"] == "wicm" }[0]
 
         begin
-          response = RestClient.post wicm_url['host'].to_s + ":" + wicm_url['port'].to_s + '/vnf-connectivity', wicm_message.to_json, :content_type => :json, :accept => :json
+          response = RestClient.post settings.wicm + '/vnf-connectivity', wicm_message.to_json, :content_type => :json, :accept => :json
         rescue Errno::ECONNREFUSED
           error = {"info" => "WICM unreachable."}
           recoverState(popInfo, vnf_info, @instance, error)
@@ -288,7 +285,7 @@ module NsProvisioner
         # Request HOT Generator to build the WICM - SFC integration
         provider_info['physical_network'] = 'sfcvlan'
         begin
-          response = RestClient.post hot_url['host'].to_s + ":" + hot_url['port'].to_s + '/wicmhot', provider_info.to_json, :content_type => :json, :accept => :json
+          response = RestClient.post settings.hot_generator + '/wicmhot', provider_info.to_json, :content_type => :json, :accept => :json
         rescue Errno::ECONNREFUSED
           error = {"info" => "HOT Generator unreachable."}
           recoverState(popInfo, vnf_info, @instance, error)
@@ -359,7 +356,7 @@ module NsProvisioner
 
       logger.info "Generating network HOT template..."
       begin
-        response = RestClient.post hot_url['host'].to_s + ":" + hot_url['port'].to_s + '/networkhot/' + sla_id, hot_generator_message.to_json, :content_type => :json, :accept => :json
+        response = RestClient.post settings.hot_generator + '/networkhot/' + sla_id, hot_generator_message.to_json, :content_type => :json, :accept => :json
       rescue Errno::ECONNREFUSED
         error = {"info" => "HOT Generator unrechable."}
         recoverState(popInfo, vnf_info, @instance, error)
@@ -517,9 +514,8 @@ module NsProvisioner
       logger.debug vnf_provisioning_info
       @instance.update_attribute('instantiation_start_time', DateTime.now.iso8601(3).to_s)
 
-      url = @tenor_modules.select {|service| service["name"] == "vnf_manager" }[0]
       begin
-        response = RestClient.post url['host'].to_s + ":" + url['port'].to_s + '/vnf-provisioning/vnf-instances', vnf_provisioning_info.to_json, :content_type => :json
+        response = RestClient.post settings.vnf_manager + '/vnf-provisioning/vnf-instances', vnf_provisioning_info.to_json, :content_type => :json
       rescue => e
         logger.error "Rescue instatiation"
         logger.error e

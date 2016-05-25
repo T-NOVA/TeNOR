@@ -56,23 +56,11 @@ class NsProvisioning < Sinatra::Application
 		set :logger, logger
 	end
 
-	before do
-		env['rack.logger'] = settings.logger
-		begin
-			response = RestClient.get settings.manager + '/configs/services'
-		rescue => e
-			puts "\e[31mNS Manager is down. Services no updated.\e[0m"
-			halt 500, "NS Manager down"
-		end
-		@tenor_modules = JSON.parse(response).to_set
-
-	end
-
 	helpers NsProvisioner
 	helpers MappingHelper
 	helpers MonitoringHelper
 	helpers PopHelper
-	helpers UtilsHelper
+	#helpers UtilsHelper
 	helpers VimHelper
 
 	Mongoid.load!('config/mongoid.yml')

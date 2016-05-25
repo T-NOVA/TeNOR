@@ -49,7 +49,7 @@ class Provisioner < NsProvisioning
   # @param [JSON]
   #Request body: {"nsd": "descriptor", "customer_id": "some_id", "nap_id": "some_id"}'
   post '/' do
-c
+
     # Return if content-type is invalid
     return 415 unless request.content_type == 'application/json'
     # Validate JSON format
@@ -153,7 +153,6 @@ c
 
     #popInfo = getPopInfo(@instance['vnf_info']['pop_id'])
     popUrls = getPopUrls(popInfo['info'][0]['extrainfo'])
-    vnf_manager = @tenor_modules.select { |service| service["name"] == "vnf_manager" }[0]
 
     if params[:status] === 'terminate'
 
@@ -161,7 +160,7 @@ c
       @instance['vnfrs'].each do |vnf|
         auth = {:auth => {:tenant => @instance['vnf_info']['tenant_name'], :username => @instance['vnf_info']['username'], :password => @instance['vnf_info']['password'], :url => {:keystone => popUrls[:keystone]}}}
         begin
-          response = RestClient.post vnf_manager['host'].to_s + ":" + vnf_manager['port'].to_s + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/destroy', auth.to_json, :content_type => :json
+          response = RestClient.post settings.vnf_manager + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/destroy', auth.to_json, :content_type => :json
         rescue Errno::ECONNREFUSED
           halt 500, 'VNF Manager unreachable'
         rescue RestClient::ResourceNotFound
@@ -185,7 +184,7 @@ c
         puts vnf
         event = {:event => "start"}
         begin
-          response = RestClient.put vnf_manager['host'].to_s + ":" + vnf_manager['port'].to_s + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/config', event.to_json, :content_type => :json
+          response = RestClient.put settings.vnf_manager + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/config', event.to_json, :content_type => :json
         rescue Errno::ECONNREFUSED
           logger.error "VNF Manager unreachable."
           halt 500, 'VNF Manager unreachable'
@@ -204,7 +203,7 @@ c
         logger.debug vnf
         event = {:event => "stop"}
         begin
-          response = RestClient.put vnf_manager['host'].to_s + ":" + vnf_manager['port'].to_s + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/config', event.to_json, :content_type => :json
+          response = RestClient.put settings.vnf_manager + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/config', event.to_json, :content_type => :json
         rescue Errno::ECONNREFUSED
           logger.error "VNF Manager unreachable."
           halt 500, 'VNF Manager unreachable'
