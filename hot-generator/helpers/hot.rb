@@ -26,7 +26,7 @@ module CommonMethods
 	#
 	# @param [JSON] message the JSON message
 	# @return [Hash] if the parsed message is a valid JSON
-	def self.parse_json(message)
+=begin	def self.parse_json(message)
 		# Check JSON message format
 		begin
 			parsed_message = JSON.parse(message) # parse json message
@@ -38,7 +38,7 @@ module CommonMethods
 		end
 
 		return parsed_message, nil
-	end
+=end
 
 	# Generate a HOT template
 	#

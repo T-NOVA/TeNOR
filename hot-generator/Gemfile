@@ -17,9 +17,6 @@ group :development, :test do
 	gem 'factory_girl'
 end
 
-# Gatekeeper auth gem
-gem 'sinatra-gkauth', '~>0.2.0', path: '../sinatra-gkauth-gem'
-
 group :development do
 	gem 'rerun'
 end
@@ -27,3 +24,6 @@ end
 group :doc do
 	gem 'yard', '~>0.8'
 end
+
+# Gatekeeper auth gem
+gem 'sinatra-gkauth', '~>0.2.0', path: '../sinatra-gkauth-gem'

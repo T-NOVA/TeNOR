@@ -29,35 +29,32 @@ require 'securerandom'
 require 'bundler'
 Bundler.require :default, ENV['RACK_ENV'].to_sym
 
-require_relative 'helpers/init'
-require_relative 'routes/init'
-require_relative 'models/init'
-
-register Sinatra::ConfigFile
-# Load configurations
-config_file 'config/config.yml'
-
-configure do
-	# Configure logging
-	logger = LogStashLogger.new(
-			type: :multi_logger,
-			outputs: [
-					{ type: :stdout, formatter: ::Logger::Formatter },
-					{ type: :file, path: "log/#{settings.environment}.log", sync: true},
-					{ host: settings.logstash_host, port: settings.logstash_port }
-			])
-	LogStashLogger.configure do |config|
-		config.customize_event do |event|
-			event["module"] = settings.servicename
-		end
-	end
-	set :logger, logger
-end
-
-before do
-	env['rack.logger'] = settings.logger
-end
-
 class HotGenerator < Sinatra::Application
-	helpers CommonMethods
+
+  require_relative 'helpers/init'
+  require_relative 'routes/init'
+  require_relative 'models/init'
+
+  register Sinatra::ConfigFile
+# Load configurations
+  config_file 'config/config.yml'
+
+  configure do
+    # Configure logging
+    logger = LogStashLogger.new(
+        type: :multi_logger,
+        outputs: [
+            {type: :stdout, formatter: ::Logger::Formatter},
+            {type: :file, path: "log/#{settings.environment}.log", sync: true},
+            {host: settings.logstash_host, port: settings.logstash_port}
+        ])
+    LogStashLogger.configure do |config|
+      config.customize_event do |event|
+        event["module"] = settings.servicename
+      end
+    end
+    set :logger, logger
+  end
+
+  helpers CommonMethods
 end
