@@ -437,7 +437,7 @@ module NsProvisioner
       end
       network_resources, error = parse_json(response)
       stack_networks = network_resources['resources'].find_all { |res| res['resource_type'] == 'OS::Neutron::Net' }
-      stack_router = network_resources['resources'].find_all { |res| res['resource_type'] == 'OS::Neutron::Router' }
+      stack_routers = network_resources['resources'].find_all { |res| res['resource_type'] == 'OS::Neutron::Router' }
 
       logger.info "Reading network information from stack..."
       networks = []
@@ -461,7 +461,7 @@ module NsProvisioner
       end
 
       routers = []
-      stack_router.each do |router|
+      stack_routers.each do |router|
         begin
           response = RestClient.get "#{popUrls[:orch]}/#{vnf_info['tenant_id']}/stacks/#{"network-" + @instance['id'].to_s}/#{stack_id}/resources/#{router['resource_name']}", 'X-Auth-Token' => tenant_token
         rescue Errno::ECONNREFUSED
@@ -505,7 +505,7 @@ module NsProvisioner
               :password => vnf_info['password']
           },
           :networks => networks,
-          :routers => stack_router,
+          :routers => routers,
           :security_group_id => vnf_info['security_group_id'],
           :callback_url => settings.manager + "/ns-instances/" + @instance['id'] + "/instantiate"
       }
@@ -529,7 +529,7 @@ module NsProvisioner
 
       vnfr, error = parse_json(response)
       logger.debug vnfr
-      logger.debug "VNFr id: " + vnfr['_id']
+      logger.debug "VNFr id: " + vnfr['_id'].to_s
 
       vnfrs = []
       vnf_info = {}

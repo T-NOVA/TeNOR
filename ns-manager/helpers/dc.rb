@@ -44,7 +44,7 @@ module GatekeeperHelper
   # @param [Symbol] format the format type, `:text` or `:html`
   # @return [String] the object converted into the expected format.
   def getPopInfo(popId)
-    loginGK()
+    AuthenticationHelper.loginGK()
     popList = getPopList()
     if popList.index(popId).nil?
       halt 400, "Pop id error"
