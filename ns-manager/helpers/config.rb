@@ -21,8 +21,8 @@ module ServiceConfigurationHelper
   def registerService(json)
     @json = JSON.parse(json)
 
-    loginGK()
-    gkServices = getGKServices()
+    AuthenticationHelper.loginGK()
+    gkServices = AuthenticationHelper.getGKServices()
 
     index = 0
     while index < gkServices['shortname'].length do
@@ -31,14 +31,14 @@ module ServiceConfigurationHelper
           @service = ServiceModel.find_by(:name => @json['name'])
           @json['service_key'] = gkServices['service-key'][index]
           serviceUri = @json['host'] + ":" + @json['port'].to_s
-          sendServiceAuth(serviceUri, gkServices['service-key'][index])
+          AuthenticationHelper.sendServiceAuth(serviceUri, gkServices['service-key'][index])
           @service.update_attributes(@json)
           return "Service updated"
         rescue Mongoid::Errors::DocumentNotFound => e
           @json['service_key'] = gkServices['service-key'][index]
           @service = ServiceModel.create!(@json)
           serviceUri = @json['host'] + ":" + @json['port'].to_s
-          sendServiceAuth(serviceUri, gkServices['service-key'][index])
+          AuthenticationHelper.sendServiceAuth(serviceUri, gkServices['service-key'][index])
           return "Service registered"
         end
       end
@@ -52,7 +52,7 @@ module ServiceConfigurationHelper
         metadata = JSON.parse(key)
         @json['service_key'] = gkServices['service-key'][index]
         access = @json['host'] + ":" + @json['port'].to_s
-        sendServiceAuth(access, metadata["info"][0]["service-key"])
+        AuthenticationHelper.sendServiceAuth(access, metadata["info"][0]["service-key"])
         @service.update_attributes(@json)
         return "Service updated"
       rescue Mongoid::Errors::DocumentNotFound => e
@@ -61,7 +61,7 @@ module ServiceConfigurationHelper
           metadata = JSON.parse(key)
           @json['service_key'] = gkServices['service-key'][index]
           access = @json['host'] + ":" + @json['port'].to_s
-          sendServiceAuth(access, metadata["info"][0]["service-key"])
+          AuthenticationHelper.sendServiceAuth(access, metadata["info"][0]["service-key"])
           @service = ServiceModel.create!(@json)
           return "Service registered"
         rescue => e

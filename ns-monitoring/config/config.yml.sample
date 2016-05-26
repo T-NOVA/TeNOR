@@ -13,10 +13,10 @@ logstash_host: 127.0.0.1
 logstash_port: 5228
 
 vnf_manager: http://localhost:4567
-ns_provisioning: 10.10.1.61:4012
+ns_provisioner: 10.10.1.61:4012
 ns_monitoring_repo: 10.10.1.61:4017
 
 gk:
 service_key:
 
-dependencies: [ns_monitoring_repo, ns_provisioning, vnf_manager]
+dependencies: [ns_monitoring_repo, ns_provisioner, vnf_manager]

@@ -119,7 +119,7 @@ class VnfdToHot
             outputs << output
             #match = output.match(/^get_attr\[(.*), *(.*)\]$/i).to_a
             match = output.match(/^get_attr\[(.*)\]$/i).to_a
-            unless match.size == 0
+            if match.size == 0
               match = output.match(/^get_attr \[(.*)\]$/i).to_a
             end
             if match.size == 0

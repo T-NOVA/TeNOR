@@ -12,16 +12,8 @@ threaded: true
 logstash_host: 127.0.0.1
 logstash_port: 5228
 
-ns_monitoring: http://localhost:4014
 mapping: http://localhost:4042
 sla_enforcement: http://localhost:4016
-
-#vnf_manager: http://localhost:4567
-
-gatekeeper:  http://localhost:8000
-#infr_repo_api: http://10.10.1.1:8080
-#hot_generator: http://localhost:4571
-#wicm: http://10.30.0.12:12891
 
 dns_server:
 
@@ -29,7 +21,14 @@ dns_server:
 default_tenant_id:
 default_tenant_name:
 
-dependencies: [ns_monitoring, mapping, hot_generator, wicm, mAPI]
+dependencies: [ns_monitoring, vnf_manager, wicm, mAPI, mapping, hot_generator, infr_repository]
 
 gk:
 service_key:
+
+#vnf_manager: http://localhost:4567
+#gatekeeper:  http://localhost:8000
+#infr_repo: http://10.10.1.1:8080
+#hot_generator: http://localhost:4571
+#wicm: http://10.30.0.12:12891
+#ns_monitoring: http://localhost:4014

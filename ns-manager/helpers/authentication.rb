@@ -25,11 +25,11 @@ module AuthenticationHelper
 	def registerServiceinGK(serviceName)
 		service = {"shortname" => serviceName, "description" => ""}
 
-		if settings.gk_token === nil
+		if Sinatra::Application.settings.gk_token === nil
 			return
 		end
 		begin
-			key = RestClient.post settings.gatekeeper + '/admin/service/', service.to_json, :content_type => :json, :"X-Auth-Token" => settings.gk_token
+			key = RestClient.post Sinatra::Application.settings.gatekeeper + '/admin/service/', service.to_json, :content_type => :json, :"X-Auth-Token" => settings.gk_token
 		rescue => e
 			if e.response == nil
 				halt 500, {'Content-Type' => 'text/plain'}, "Register service error."
@@ -51,7 +51,7 @@ module AuthenticationHelper
 			"accesslist" => accessList
 		}
 		begin
-			user = RestClient.post settings.gatekeeper + '/admin/user/', user.to_json, :content_type => :json, :accept => :json
+			user = RestClient.post Sinatra::Application.settings.gatekeeper + '/admin/user/', user.to_json, :content_type => :json, :accept => :json
 		rescue => e
 			if e.response == nil
 				halt 500, {'Content-Type' => 'text/plain'}, "Register user error."
@@ -65,16 +65,13 @@ module AuthenticationHelper
 	#
 	# @param [String] Microservice url
 	# @param [String] Microservice key
-	def sendServiceAuth(microservice, key)
-		credentials = {gk_url: settings.gatekeeper, service_key: key}
+	def self.sendServiceAuth(microservice, key)
+		credentials = {gk_url: Sinatra::Application.settings.gatekeeper, service_key: key}
 		begin
 			RestClient.post microservice + '/gk_credentials', credentials.to_json, :content_type => :json
 		rescue => e
-			logger.error e
-			if e.response == nil
-				halt 500, {'Content-Type' => 'text/plain'}, "MS unreachable."
-			end
-			halt 400, {'Content-Type' => 'text/plain'}, e.response
+			puts e
+			#halt 400, {'Content-Type' => 'text/plain'}, e
 		end
 	end
 
@@ -85,7 +82,7 @@ module AuthenticationHelper
 		begin
 			response = RestClient.post Sinatra::Application.settings.gatekeeper + '/token/', "", :"X-Auth-Password" => Sinatra::Application.settings.gk_pass, :"X-Auth-Uid" => Sinatra::Application.settings.gk_user_id
 		rescue => e
-			logger.error e
+			puts e
 		end
 		if response.nil?
 			halt 500, "Gatekeeper response is null when login."

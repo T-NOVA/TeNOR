@@ -150,13 +150,13 @@ module NsProvisioner
     if settings.environment == 'development'
       infr_repo_url = { "host" => "", "port" => "" }
     else
-      infr_repo_url = @tenor_modules.select {|service| service["name"] == "infr_repository" }[0]
+      infr_repo_url = settings.infr_repository
     end
 
     ms = {
         :NS_id => nsd['id'],
         :tenor_api => settings.manager,
-        :infr_repo_api => settings.infr_repository,
+        :infr_repo_api => infr_repo_url,
         :development => true,
         :NS_sla => sla_id,
         :overcommitting => "true"

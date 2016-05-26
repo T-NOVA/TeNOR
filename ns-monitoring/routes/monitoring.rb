@@ -40,8 +40,8 @@ class NSMonitoring < Sinatra::Application
 =end
 
   # @method post_monitoring_parameters
-  # @overload delete '/network-services/:external_vnf_id'
-  #	Delete a NS by its ID
+  # @overload post '/network-services/:external_vnf_id'
+  #	Post monitoring parameters
   #	@param [Integer] external_ns_id NS external ID
   post '/ns-monitoring/monitoring-parameters' do
     return 415 unless request.content_type == 'application/json'
@@ -67,11 +67,10 @@ class NSMonitoring < Sinatra::Application
     #  subcriptionThread(monitoring)
     #}
     #}
-puts "Out thread"
 
 =begin
     begin
-      response = RestClient.get settings.ns_instance_repository + '/ns-instances/' + monitoring['nsi_id'].to_s, :content_type => :json
+      response = RestClient.get settings.ns_provisioner + '/ns-instances/' + monitoring['nsi_id'].to_s, :content_type => :json
     rescue => e
       logger.error e
       if (defined?(e.response)).nil?
@@ -83,9 +82,10 @@ puts "Out thread"
     return 400, errors.to_json if errors
 =end
 
+    logger.error "Sending monitoring subcribe to VNF Manager."
     monitoring['vnf_instances'].each do |vnf_instance|
-      puts vnf_instance['id'] #vnf_id
-      puts vnf_instance['vnfr_id']
+      logger.debug "VNFD: " + vnf_instance['id'] #vnf_id
+      logger.debug "VNFr: " + vnf_instance['vnfr_id']
       object = {}
       begin
         response = RestClient.post settings.vnf_manager + '/vnf-monitoring/' + vnf_instance['vnfr_id'] + '/monitoring-parameters', object.to_json, :content_type => :json, :accept => :json
@@ -97,8 +97,8 @@ puts "Out thread"
     end
 
     monitoring['vnf_instances'].each do |vnf_instance|
-      puts vnf_instance['id'] #vnf_id
-      puts vnf_instance['vnfr_id']
+      logger.debug "VNFD: " + vnf_instance['id'] #vnf_id
+      logger.debug "VNFr: " + vnf_instance['vnfr_id']
       @monitoring_metrics = create_monitoring_metric_object(monitoring)
       @monitoring_metrics.save!
 
@@ -110,7 +110,7 @@ puts "Out thread"
             #:vnfr_id => @ns_instance['vnfrs'][0]['vnfr_id']
             #,:unit => parameter['unit']
         }
-        logger.error object
+        logger.debug object
 
         #send to VNF-Monitoring the metrics to monitor
         begin
@@ -123,7 +123,7 @@ puts "Out thread"
         subscription_response, errors = parse_json(response)
         return 400, errors.to_json if errors
 
-        logger.error subscription_response
+        logger.debug subscription_response
 
       end
     end
@@ -131,9 +131,9 @@ puts "Out thread"
     return 200, "Subscription correct."
   end
 
-  # @method post_monitoring_parameters
-  # @overload delete '/network-services/:external_vnf_id'
-  #	Delete a NS by its ID
+  # @method post_monitoring_data_unsubcribe
+  # @overload delete '/monitoring-data/unsubscribe:nsi_id'
+  #	Unsubcribe ns instance
   #	@param [Integer] external_ns_id NS external ID
   post '/monitoring-data/unsubscribe/:nsi_id' do
 
@@ -168,11 +168,11 @@ puts "Out thread"
         true
       end
     end
-    puts "Space..."
+
     Thread.list.each do |thread|
       logger.error thread.inspect
       if thread[:name] == '1'
-        logger.error "KILLL THREAAAD"
+        logger.error "Killing thread"
         puts thread[:name]
         #thread.exit
         Thread.kill thread
@@ -189,9 +189,9 @@ puts "Out thread"
   #  "timestamp": "2015-06-18T09:42:10Z"
   #}
 
-  # @method post_vnf_instance_readings
-  # @overload delete '/network-services/:external_vnf_id'
-  #	Receive the monitoring parameters
+  # @method post_ns_monitoring_vnf_instance_readings
+  # @overload post '/  # @method post_ns_monitoring_vnf_instance-readings'
+  #	Receive the monitoring data from the VNF manager
   #	@param [Integer] vnfr_id VNFR id
   post '/ns-monitoring/vnf-instance-readings/:vnfr_id' do
     return 415 unless request.content_type == 'application/json'
@@ -200,7 +200,7 @@ puts "Out thread"
     measurements, errors = parse_json(request.body.read)
     return 400, errors.to_json if errors
 
-    logger.error measurements
+    logger.debug measurements
 
     begin
       monMetrics = NsMonitoringParameter.find_by("vnf_instances.vnfr_id" => params['vnfr_id'])
@@ -208,17 +208,15 @@ puts "Out thread"
       #halt 400, "Monitoring Metric instance no exists"
     end
 
-    logger.error monMetrics
+    logger.debug monMetrics
 
     conn = Bunny.new
     conn.start
 
-    ch  = conn.create_channel
-
-    puts params['vnfr_id']
-      q = ch.queue(params['vnfr_id'])
-      puts "Publishing...."
-      q.publish(measurements.to_json, :persistent => true)
+    ch = conn.create_channel
+    q = ch.queue(params['vnfr_id'])
+    logger.error "Publishing the values..."
+    q.publish(measurements.to_json, :persistent => true)
     conn.close
 
     return
@@ -231,12 +229,12 @@ puts "Out thread"
   end
 
   # @method get_monitoring_data
-  # @overload delete '/ns-monitoring/:instance_id/monitoring-data'
+  # @overload get '/ns-monitoring/:instance_id/monitoring-data'
   #	Get monitoring data
   #	@param [Integer] instance_id
   get '/ns-monitoring/:instance_id/monitoring-data/' do
     begin
-      response = RestClient.get settings.ns_instance_monitoring + request.fullpath, :content_type => :json
+      response = RestClient.get settings.ns_monitoring_repo + request.fullpath, :content_type => :json
     rescue => e
       logger.error e.response
       #return e.response.code, e.response.body
@@ -250,7 +248,7 @@ puts "Out thread"
   #	@param [Integer] instance_id
   get '/ns-monitoring/:instance_id/monitoring-data/last100/' do
     begin
-      response = RestClient.get settings.ns_instance_monitoring + request.fullpath, :content_type => :json
+      response = RestClient.get settings.ns_monitoring_repo + request.fullpath, :content_type => :json
     rescue => e
       logger.error e.response
       #return e.response.code, e.response.body

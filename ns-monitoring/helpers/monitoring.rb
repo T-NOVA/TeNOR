@@ -51,16 +51,16 @@ module MonitoringHelper
   #
   # @param [JSON] message monitoring information
   def self.subcriptionThread(monitoring)
-    puts "Subcription thread"
-    puts monitoring['nsi_id'].to_s
+    logger.info "Subcription thread"
+    logger.error "NSr: " + monitoring['nsi_id'].to_s
     nsr_id = monitoring['nsi_id'].to_s
     vnf_instances = monitoring['vnf_instances']
 
     ch = @channel
 
-    puts " [*] Waiting for logs."
+    logger.debug " [*] Waiting for logs."
 
-    puts vnf_instances
+    logger.debug vnf_instances
 
     vnf_instances.each do |vnf_instance|
       puts "VNF_Instance_id:"
@@ -129,7 +129,7 @@ module MonitoringHelper
   def self.startSubcription()
     puts "Getting list of instances..."
     begin
-      response = RestClient.get Sinatra::Application.settings.ns_instance_repository + '/ns-instances', :content_type => :json
+      response = RestClient.get Sinatra::Application.settings.ns_provisioner + '/ns-instances', :content_type => :json
       #puts response
       @ns_instances = JSON.parse(response)
 
