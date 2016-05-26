@@ -332,18 +332,12 @@ class Provisioning < VnfProvisioning
                   string = parameter_match[1].split(",").map(&:strip)
 
                   puts parameter_match[1]
-                  puts "parameter match2"
-                  puts #{parameter_match[2]}
                   puts parameter_match[2]
-
-                  puts "String: "
+		  puts string
                   puts string
-                  puts "String[0]: " +string[0].to_s
-                  puts "String[1]: " +string[1].to_s
-                  puts "string[2]: " +string[2].to_s
 
                   #              vnf_addresses["#{string[0]}"] = output['output_value'] if string[1] == 'networks' && !vnf_addresses.has_key?("#{string[1]}") # Only to populate VNF Addresses specified by ETSI
-                  vnf_addresses["#{string[0]}"] = output['output_value']
+#@                  vnf_addresses["#{string[0]}"] = output['output_value']
                   lifecycle_events_values[event] = {} unless lifecycle_events_values.has_key?(event)
                   #                lifecycle_events_values[event]["#{string[1]}##{string[2]}"] = output['output_value']
                   lifecycle_events_values[event][output['output_key']] = output['output_value']
