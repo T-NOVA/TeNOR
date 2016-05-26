@@ -57,6 +57,8 @@ before do
 	env['rack.logger'] = settings.logger
 end
 
-class OrchestratorVnfCatalogue < Sinatra::Application
+class VnfCatalogue < Sinatra::Application
+
+	helpers CatalogueHelper
 	Mongoid.load!('config/mongoid.yml')
 end

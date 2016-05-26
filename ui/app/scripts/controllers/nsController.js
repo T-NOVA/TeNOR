@@ -4,7 +4,7 @@ angular.module('tNovaApp')
     .controller('nsController', function ($scope, $stateParams, $filter, tenorService, $interval, $modal) {
 
         $scope.getServiceList = function () {
-            tenorService.get('network-services').then(function (data) {
+            tenorService.get('network-services?limit=1000').then(function (data) {
                 $scope.dataCollection = data;
             });
         };

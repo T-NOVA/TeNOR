@@ -1,5 +1,6 @@
 ---
-servicename: ns-monitoring-repository
+servicename: ns_monitoring_repo
+manager: localhost:4000
 environment: development
 address: 0.0.0.0
 port: 4017
@@ -13,3 +14,5 @@ logstash_port: 5228
 
 gk:
 service_key:
+
+dependencies: []

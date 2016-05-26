@@ -15,21 +15,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# @see OrchestratorVnfdValidator
-class OrchestratorVnfdValidator < Sinatra::Application
+# @see VnfdValidator
+class VnfdValidator < Sinatra::Application
 
-	before do
-
-  end
-
-	# @method get_root
-	# @overload get '/'
-	#       Get all available interfaces
-	# Get all interfaces
-    get '/' do
-    	halt 200, interfaces_list.to_json
-    end
-	
 	# @method post_vnfds
 	# @note You have to specify the correct Content-Type
 	# @overload post '/vnfds'

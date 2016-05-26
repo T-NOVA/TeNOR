@@ -14,14 +14,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-# @see OrchestratorNsCatalogue
-class OrchestratorNsCatalogue < Sinatra::Application
+# @see NsCatalogue
+class NsCatalogue < Sinatra::Application
 
   # @method get_nss
   # @overload get '/network-services'
   #	Returns a list of NSs
-  # List all NSs
   get '/network-services' do
     params[:offset] ||= 1
     params[:limit] ||= 20
@@ -45,11 +43,10 @@ class OrchestratorNsCatalogue < Sinatra::Application
 
   end
 
-  # @method get_nss_external_ns_id
+  # @method get_ns_id
   # @overload get '/network-services/:external_ns_id'
   #	Show a NS
   #	@param [Integer] external_ns_id NS external ID
-  # Show a NS
   get '/network-services/:external_ns_id' do
     begin
       ns = Ns.find_by({"nsd.id" => params[:external_ns_id]})
@@ -61,9 +58,8 @@ class OrchestratorNsCatalogue < Sinatra::Application
 
   # @method post_nss
   # @overload post '/network-services'
-  # 	Post a NS in JSON format
-  # 	@param [JSON] NS in JSON format
-  # Post a NS
+  # Post a NS in JSON format
+  # @param [JSON] NS in JSON format
   post '/network-services' do
     # Return if content-type is invalid
     return 415 unless request.content_type == 'application/json'
@@ -100,12 +96,18 @@ class OrchestratorNsCatalogue < Sinatra::Application
       new_ns = Ns.create!(ns)
     rescue Moped::Errors::OperationFailure => e
       return 400, 'ERROR: Duplicated NS ID' if e.message.include? 'E11000'
+    rescue => e
+      logger.error "Some other error."
+      logger.error e
     end
 
     return 200, new_ns.to_json
   end
 
-  ## Catalogue - UPDATE
+  # @method put_nss
+  # @overload put '/network-services/:id'
+  # Update a NS
+  # @param [JSON] NS in JSON format
   put '/network-services/:external_ns_id' do
 
     # Return if content-type is invalid
@@ -143,11 +145,10 @@ class OrchestratorNsCatalogue < Sinatra::Application
     return 200, new_ns.to_json
   end
 
-  # @method delete_vnfs_external_vnf_id
-  # @overload delete '/vnfs/:external_vnf_id'
-  #	Delete a VNF by its ID
-  #	@param [Integer] external_vnf_id VNF external ID
-  # Delete a VNF
+  # @method delete_ns_id
+  # @overload delete '/network-services/:external_vnf_id'
+  #	Delete a NS by its ID
+  #	@param [Integer] external_ns_id NS external ID
   delete '/network-services/:external_ns_id' do
     begin
       #ns = Ns.find( params[:external_ns_id] )

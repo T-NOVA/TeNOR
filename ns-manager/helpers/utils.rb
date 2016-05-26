@@ -16,7 +16,8 @@
 # limitations under the License.
 #
 # @see TnovaManager
-class TnovaManager < Sinatra::Application
+#class TnovaManager < Sinatra::Application
+module ApplicationHelper
 
   # Checks if a JSON message is valid
   #

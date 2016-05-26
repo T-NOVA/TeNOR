@@ -1,5 +1,6 @@
 ---
-servicename: ns-catalogue
+servicename: ns_catalogue
+manager: localhost:4000
 environment: development
 address: 0.0.0.0
 port: 4011
@@ -8,9 +9,7 @@ timeout: 30
 max_persistent_conns: 512
 daemonize: false
 threaded: true
-logstash_host: logstash_ip
-logstash_port: 5229
-nsd_validator: http://localhost:4015
 
 gk:
 service_key:
+dependencies: [nsd_validator]

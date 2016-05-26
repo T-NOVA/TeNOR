@@ -15,8 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# @see OrchestratorVnfCatalogue
-class OrchestratorVnfCatalogue < Sinatra::Application
+# @see CatalogueHelper
+module CatalogueHelper
 
 	# Checks if a JSON message is valid
 	#

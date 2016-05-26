@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 # @see OrchestratorVnfMonitoring
-class OrchestratorVnfMonitoring < Sinatra::Application
+class VnfMonitoringRepository < Sinatra::Application
 
-  # @method get_ns-monitoring
+  # @method get_vnf_monitoring_data
   # @overload get '/vnf-monitoring/:instance_id/monitoring-data/'
   #	Returns all monitored data
   get '/vnf-monitoring/:instance_id/monitoring-data/' do
@@ -38,7 +38,7 @@ class OrchestratorVnfMonitoring < Sinatra::Application
     return t.to_json
   end
 
-  # @method get_vnf-monitoring
+  # @method get_vnf_monitoring_data_100
   # @overload get '/vnf-monitoring/:instance_id/?:metric/last100/'
   # Returns last 100 values
   get '/vnf-monitoring/:instance_id/monitoring-data/last100/' do
@@ -47,7 +47,7 @@ class OrchestratorVnfMonitoring < Sinatra::Application
     return t.to_json
   end
 
-  # @method post_vnf-monitoring
+  # @method post_vnf_monitoring
   # @overload post '/vnf-monitoring/:instance_id'
   # Inserts monitoring data
   post '/vnf-monitoring/:instance_id' do
@@ -55,9 +55,8 @@ class OrchestratorVnfMonitoring < Sinatra::Application
     json, errors = parse_json(request.body.read)
     return 400, errors.to_json if errors
 
-    json.each do |item|
-      @db.execute("INSERT INTO vnfmonitoring (instanceid, date, metricname, unit, value) VALUES ('#{params[:instance_id].to_s}', #{item['timestamp']}, '#{item['type']}', '#{item['unit']}', '#{item['value']}' )")
-    end
+    instance_id = params[:instance_id]
+    OrchestratorVnfMonitoring.save_monitoring(instance_id, json)
     halt 200
   end
 

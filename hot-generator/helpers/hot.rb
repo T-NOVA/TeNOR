@@ -18,22 +18,27 @@
 # @see OrchestratorHotGenerator
 module CommonMethods
 
+  class <<self
+    attr_accessor :logger
+  end
+
 	# Checks if a JSON message is valid
 	#
 	# @param [JSON] message the JSON message
 	# @return [Hash] if the parsed message is a valid JSON
-	def self.parse_json(message)
+=begin	def self.parse_json(message)
 		# Check JSON message format
 		begin
 			parsed_message = JSON.parse(message) # parse json message
 		rescue JSON::ParserError => e
 			# If JSON not valid, return with errors
+      puts logger
 			logger.error "JSON parsing: #{e.to_s}"
 			halt 400, e.to_s + "\n"
 		end
 
 		return parsed_message, nil
-	end
+=end
 
 	# Generate a HOT template
 	#
@@ -42,8 +47,28 @@ module CommonMethods
 	# @param [Array] networks_id the IDs of the networks created by the NS Manager
 	# @param [String] security_group_id the ID of the T-NOVA security group
 	# @return [Hash] the generated hot template
-	def self.generate_hot_template(vnfd, flavour_key, networks_id, security_group_id)
+	def self.generate_hot_template(vnfd, flavour_key, networks_id, routers_id, security_group_id)
 		hot = VnfdToHot.new(vnfd['name'], vnfd['description'])
+
+		begin
+			hot.build(vnfd, flavour_key, networks_id, routers_id, security_group_id)
+		rescue CustomException::NoExtensionError => e
+			logger.error e.message
+			halt 400, e.message
+		rescue CustomException::InvalidExtensionError => e
+			logger.error e.message
+			halt 400, e.message
+		rescue CustomException::InvalidTemplateFileFormat => e
+			logger.error e.message
+			halt 400, e.message
+		rescue CustomException::NoFlavorError => e
+			logger.error e.message
+			halt 400, e.message
+		end
+	end
+
+	def self.generate_hot_template_scaling(vnfd, flavour_key, networks_id, security_group_id)
+		hot = ScaleToHot.new(vnfd['name'], vnfd['description'])
 
 		begin
 			hot.build(vnfd, flavour_key, networks_id, security_group_id)
@@ -72,7 +97,21 @@ module CommonMethods
 	def self.generate_network_hot_template(nsd, public_net_id, dns_server, flavour)
 		hot = NsdToHot.new(nsd['id'], nsd['name'])
 
-		hot.build(nsd, public_net_id, dns_server, flavour)
+    begin
+      hot.build(nsd, public_net_id, dns_server, flavour)
+    rescue CustomException::NoExtensionError => e
+      logger.error e.message
+      halt 400, e.message
+    rescue CustomException::InvalidExtensionError => e
+      logger.error e.message
+      halt 400, e.message
+    rescue CustomException::InvalidTemplateFileFormat => e
+      logger.error e.message
+      halt 400, e.message
+    rescue CustomException::NoFlavorError => e
+      logger.error e.message
+      halt 400, e.message
+    end
 	end
 
 	# Generate a WICM HOT template

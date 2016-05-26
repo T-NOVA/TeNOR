@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 # Set environment
-ENV['RACK_ENV'] ||= 'production'
+ENV['RACK_ENV'] ||= 'development'
 
 require 'sinatra'
 require 'sinatra/config_file'
@@ -53,10 +53,7 @@ configure do
 	set :logger, logger
 end
 
-before do
-	env['rack.logger'] = settings.logger
-end
-
-class OrchestratorNsCatalogue < Sinatra::Application
+class NsCatalogue < Sinatra::Application
+  helpers ApplicationHelper
 	Mongoid.load!('config/mongoid.yml')
 end

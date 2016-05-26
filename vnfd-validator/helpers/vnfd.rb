@@ -15,8 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# @see OrchestratorVnfdValidator
-class OrchestratorVnfdValidator < Sinatra::Application
+# @see VnfdValidatorHelper
+module VnfdValidatorHelper
 
 	# Checks if a JSON message is valid
 	#
@@ -94,24 +94,6 @@ class OrchestratorVnfdValidator < Sinatra::Application
 		halt 400, errors unless errors.empty?
 
 		vnfd
-	end
-
-	# Method which lists all available interfaces
-	#
-	# @return [Array] an array of hashes containing all interfaces
-	def interfaces_list
-		[
-			{
-				'uri' => '/',
-				'method' => 'GET',
-				'purpose' => 'REST API Structure and Capability Discovery'
-			},
-			{
-				'uri' => '/vnfds',
-				'method' => 'POST',
-				'purpose' => 'Validate a VNFD'
-			}
-		]
 	end
 
 end

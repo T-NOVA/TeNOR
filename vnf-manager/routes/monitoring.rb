@@ -15,15 +15,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# @see OrchestratorVnfManager
-class OrchestratorVnfManager < Sinatra::Application
+# @see VNFManager
+class Monitoring < VNFManager
 
-  # @method post_vnf-monitoring_vnfi_id_monitoring-parameters
+  # @method post_vnf_monitoring_id_parameters
   # @overload get '/vnf-monitoring/:vnfi_id/monitoring-parameters'
   #   Send monitoring info to VNF Monitoring
   #   @param [Integer] vnfi_id the VNF Instance ID
   # Send monitoring info to VNF Monitoring
-  post '/vnf-monitoring/:vnfr_id/monitoring-parameters' do
+  post '/:vnfr_id/monitoring-parameters' do
     # Return if content-type is invalid
     halt 415 unless request.content_type == 'application/json'
 
@@ -66,7 +66,11 @@ class OrchestratorVnfManager < Sinatra::Application
     halt response.code, response.body
   end
 
-  post '/vnf-monitoring/:vnfi_id/readings' do
+  # @method post_vnf_monitoring_id_readings
+  # @overload get '/vnf-monitoring/:vnfi_id/readings'
+  # Recevie monitoring data
+  # @param [Integer] vnfi_id the VNF Instance ID
+  post '/:vnfi_id/readings' do
     # Return if content-type is invalid
     halt 415 unless request.content_type == 'application/json'
 
@@ -87,7 +91,11 @@ class OrchestratorVnfManager < Sinatra::Application
     halt response.code, response.body
   end
 
-  get '/vnf-monitoring/:vnfi_id/monitoring-data/' do
+  # @method get_monitoring_data
+  # @overload get '/vnf-monitoring/:vnfi_id/monitoring-data/'
+  #	Get monitoring data
+  #	@param [Integer] instance_id
+  get '/:vnfi_id/monitoring-data/' do
     # Forward the request to the VNF Monitoring
     begin
       response = RestClient.get "#{settings.vnf_monitoring}" + request.fullpath, 'X-Auth-Token' => @client_token, :content_type => :json, :accept => :json
@@ -101,7 +109,11 @@ class OrchestratorVnfManager < Sinatra::Application
     halt response.code, response.body
   end
 
-  get '/vnf-monitoring/:vnfi_id/monitoring-data/last100/' do
+  # @method get_monitoring_data_100
+  # @overload delete '/vnf-monitoring/:vnfi_id/monitoring-data/last100'
+  #	Get monitoring data, last 100 values
+  #	@param [Integer] instance_id
+  get '/:vnfi_id/monitoring-data/last100/' do
     begin
       response = RestClient.get "#{settings.vnf_monitoring}" + request.fullpath, 'X-Auth-Token' => @client_token, :content_type => :json, :accept => :json
     rescue Errno::ECONNREFUSED

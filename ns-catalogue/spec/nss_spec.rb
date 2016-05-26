@@ -1,8 +1,8 @@
 require_relative 'spec_helper'
 
-RSpec.describe OrchestratorNsCatalogue do
+RSpec.describe NsCatalogue do
 	def app
-		OrchestratorNsCatalogue
+		NsCatalogue
   end
 
 	before do

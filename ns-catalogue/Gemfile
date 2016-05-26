@@ -11,6 +11,9 @@ gem 'logstash-logger'
 
 group :development, :test do
 	gem 'rerun'
+end
+
+group :test do
 	gem 'rspec'
 	gem 'rack-test'
 	gem 'database_cleaner'

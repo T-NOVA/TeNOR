@@ -15,9 +15,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# @see TnovaManager
-class TnovaManager < Sinatra::Application
+# @see ApplicationHelper
+module GatekeeperHelper
 
+  # Get list of PoPs
+  #
+  # @param [Symbol] format the format type, `:text` or `:html`
+  # @return [String] the object converted into the expected format.
   def getPopList()
 
     begin
@@ -35,9 +39,16 @@ class TnovaManager < Sinatra::Application
     return popList['dclist']
   end
 
+  # Get list of PoPs
+  #
+  # @param [Symbol] format the format type, `:text` or `:html`
+  # @return [String] the object converted into the expected format.
   def getPopInfo(popId)
-    loginGK()
+    AuthenticationHelper.loginGK()
     popList = getPopList()
+    if popList.index(popId).nil?
+      halt 400, "Pop id error"
+    end
     pop_id = popList.index(popId) + 1
 
     begin
@@ -55,6 +66,10 @@ class TnovaManager < Sinatra::Application
     return response
   end
 
+  # Get list of PoPs
+  #
+  # @param [Symbol] format the format type, `:text` or `:html`
+  # @return [String] the object converted into the expected format.
   def getPopUrls(extraInfo)
     urls = extraInfo.split(" ")
 

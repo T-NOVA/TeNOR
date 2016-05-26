@@ -15,14 +15,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# @see TnovaManager
-class TnovaManager < Sinatra::Application
+# @see LoggerController
+class LoggerController < TnovaManager
 
 	# @method get_elastic
 	# @overload get '/elastic/*'
 	# Get logs from elasticsearch/logstash. Different strings allowed in order to filter the required data
 	# @param [string]
-  get '/elastic/*' do
+  get '/*' do
   	begin
   		response = RestClient::Request.new(
 		    :method => :get,

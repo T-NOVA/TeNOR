@@ -17,13 +17,13 @@
 #
 class HealthMonitor < Resource
 
-  # Initializes a Network object
+  # Initializes a HealthMonitor object
   #
   # @param [String] resource_name the Network resource name
   # @param [String] name the name of the network
-  def initialize(resource_name, name, load_balancer)
+  def initialize(resource_name, type)
     @type = 'OS::Neutron::HealthMonitor'
-    @properties = {'name' => name, 'admin_state_up' => true, 'loadbalancer' => load_balancer}
+    @properties = {'type' => type, 'delay' => 5, 'max_retries' => 5, 'timeout' => 5}
     super(resource_name, @type, @properties)
   end
 end

@@ -30,7 +30,11 @@ Which will install all the gems.
 
 ### Tests
 
-TODO
+For tests execute  
+
+```sh
+rspec
+```
 
 ### API Documentation
 

@@ -1,0 +1,1329 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>
+  Module: VimHelper
+  
+    &mdash; Documentation by YARD 0.8.7.6
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  hasFrames = window.top.frames.main ? true : false;
+  relpath = '';
+  framesUrl = "frames.html#!VimHelper.html";
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div id="header">
+      <div id="menu">
+  
+    <a href="_index.html">Index (V)</a> &raquo;
+    
+    
+    <span class="title">VimHelper</span>
+  
+
+  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
+</div>
+
+      <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+      Class List
+    </a>
+  
+    <a class="full_list_link" id="method_list_link"
+        href="method_list.html">
+      Method List
+    </a>
+  
+    <a class="full_list_link" id="file_list_link"
+        href="file_list.html">
+      File List
+    </a>
+  
+</div>
+      <div class="clear"></div>
+    </div>
+
+    <iframe id="search_frame"></iframe>
+
+    <div id="content"><h1>Module: VimHelper
+  
+  
+  
+</h1>
+
+<dl class="box">
+  
+  
+    
+  
+    
+  
+  
+  
+    <dt class="r1 last">Defined in:</dt>
+    <dd class="r1 last">helpers/vim.rb</dd>
+  
+</dl>
+<div class="clear"></div>
+
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    
+<p>TeNOR - NS Provisioning</p>
+
+<p>Copyright 2014-2016 i2CAT Foundation, Portugal Telecom Inovação</p>
+
+<p>Licensed under the Apache License, Version 2.0 (the “License”); you may not
+use this file except in compliance with the License. You may obtain a copy
+of the License at</p>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_http'>http</span><span class='symbol'>:/</span><span class='op'>/</span><span class='id identifier rubyid_www'>www</span><span class='period'>.</span><span class='id identifier rubyid_apache'>apache</span><span class='period'>.</span><span class='id identifier rubyid_org'>org</span><span class='op'>/</span><span class='id identifier rubyid_licenses'>licenses</span><span class='op'>/</span><span class='const'>LICENSE</span><span class='op'>-</span><span class='float'>2.0</span>
+</code></pre>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+License for the specific language governing permissions and limitations
+under the License.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+  <p class="tag_title">See Also:</p>
+  <ul class="see">
+    
+      <li>NSProvisioner</li>
+    
+  </ul>
+
+</div>
+
+
+
+
+
+
+  
+    <h2>
+      Instance Method Summary
+      <small>(<a href="#" class="summary_toggle">collapse</a>)</small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#addRulesToTenant-instance_method" title="#addRulesToTenant (instance method)">- (Object) <strong>addRulesToTenant</strong>(computeUrl, tenant_id, security_group_id, protocol, token, from, to) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#createSecurityGroup-instance_method" title="#createSecurityGroup (instance method)">- (Object) <strong>createSecurityGroup</strong>(computeUrl, tenant_id, token) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#createTenant-instance_method" title="#createTenant (instance method)">- (Object) <strong>createTenant</strong>(keystoneUrl, projectName, token) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#createUser-instance_method" title="#createUser (instance method)">- (Object) <strong>createUser</strong>(keystoneUrl, projectId, userName, password, token) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#deleteSecurityGroup-instance_method" title="#deleteSecurityGroup (instance method)">- (Object) <strong>deleteSecurityGroup</strong>(computeUrl, tenant_id, sec_group_id, token) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#deleteStack-instance_method" title="#deleteStack (instance method)">- (Object) <strong>deleteStack</strong>(stack_url, tenant_token) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#deleteTenant-instance_method" title="#deleteTenant (instance method)">- (Object) <strong>deleteTenant</strong>(keystoneUrl, tenant_id, token) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#deleteUser-instance_method" title="#deleteUser (instance method)">- (Object) <strong>deleteUser</strong>(keystoneUrl, user_id, token) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#getAdminRole-instance_method" title="#getAdminRole (instance method)">- (Object) <strong>getAdminRole</strong>(keystoneUrl, token) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#getSecurityGroups-instance_method" title="#getSecurityGroups (instance method)">- (Object) <strong>getSecurityGroups</strong>(computeUrl, tenant_id, token) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#getTenantId-instance_method" title="#getTenantId (instance method)">- (Object) <strong>getTenantId</strong>(keystoneUrl, tenantName, token) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#getUserId-instance_method" title="#getUserId (instance method)">- (Object) <strong>getUserId</strong>(keystoneUrl, username, token) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#openstackAdminAuthentication-instance_method" title="#openstackAdminAuthentication (instance method)">- (Object) <strong>openstackAdminAuthentication</strong>(keystoneUrl, tenantName, user, password) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#openstackAuthentication-instance_method" title="#openstackAuthentication (instance method)">- (Object) <strong>openstackAuthentication</strong>(keystoneUrl, tenantId, user, password) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#publicNetworkId-instance_method" title="#publicNetworkId (instance method)">- (Object) <strong>publicNetworkId</strong>(neutronUrl, token) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#putRole-instance_method" title="#putRole (instance method)">- (Object) <strong>putRole</strong>(keystoneUrl, tenant_id, user_id, role_id, token) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="addRulesToTenant-instance_method">
+  
+    - (<tt>Object</tt>) <strong>addRulesToTenant</strong>(computeUrl, tenant_id, security_group_id, protocol, token, from, to) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'helpers/vim.rb', line 202</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_addRulesToTenant'>addRulesToTenant</span><span class='lparen'>(</span><span class='id identifier rubyid_computeUrl'>computeUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_tenant_id'>tenant_id</span><span class='comma'>,</span> <span class='id identifier rubyid_security_group_id'>security_group_id</span><span class='comma'>,</span> <span class='id identifier rubyid_protocol'>protocol</span><span class='comma'>,</span> <span class='id identifier rubyid_token'>token</span><span class='comma'>,</span> <span class='id identifier rubyid_from'>from</span><span class='comma'>,</span> <span class='id identifier rubyid_to'>to</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_role'>role</span> <span class='op'>=</span> <span class='lbrace'>{</span>
+      <span class='symbol'>:security_group_rule</span> <span class='op'>=&gt;</span> <span class='lbrace'>{</span>
+          <span class='symbol'>:ip_protocol</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_protocol'>protocol</span><span class='comma'>,</span>
+          <span class='symbol'>:from_port</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_from'>from</span><span class='comma'>,</span>
+          <span class='symbol'>:to_port</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_to'>to</span><span class='comma'>,</span>
+          <span class='symbol'>:cidr</span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>0.0.0.0/0</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+          <span class='symbol'>:parent_group_id</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_security_group_id'>security_group_id</span>
+      <span class='rbrace'>}</span>
+  <span class='rbrace'>}</span>
+
+  <span class='kw'>begin</span>
+    <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_post'>post</span> <span class='id identifier rubyid_computeUrl'>computeUrl</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/</span><span class='tstring_end'>&#39;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_tenant_id'>tenant_id</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/os-security-group-rules</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_role'>role</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span><span class='comma'>,</span> <span class='symbol'>:X-Auth-Token</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_token'>token</span>
+  <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
+  <span class='kw'>end</span>
+  <span class='id identifier rubyid_status'>status</span> <span class='int'>200</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="createSecurityGroup-instance_method">
+  
+    - (<tt>Object</tt>) <strong>createSecurityGroup</strong>(computeUrl, tenant_id, token) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'helpers/vim.rb', line 184</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_createSecurityGroup'>createSecurityGroup</span><span class='lparen'>(</span><span class='id identifier rubyid_computeUrl'>computeUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_tenant_id'>tenant_id</span><span class='comma'>,</span> <span class='id identifier rubyid_token'>token</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_securityGroup'>securityGroup</span> <span class='op'>=</span> <span class='lbrace'>{</span>
+      <span class='symbol'>:security_group</span> <span class='op'>=&gt;</span> <span class='lbrace'>{</span>
+          <span class='symbol'>:name</span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>tenor_security_group_</span><span class='tstring_end'>&quot;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_tenant_id'>tenant_id</span><span class='comma'>,</span>
+          <span class='symbol'>:description</span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>A security group created by Tenor</span><span class='tstring_end'>&quot;</span></span>
+      <span class='rbrace'>}</span>
+  <span class='rbrace'>}</span>
+
+  <span class='kw'>begin</span>
+    <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_post'>post</span> <span class='id identifier rubyid_computeUrl'>computeUrl</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/</span><span class='tstring_end'>&#39;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_tenant_id'>tenant_id</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/os-security-groups</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_securityGroup'>securityGroup</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span><span class='comma'>,</span> <span class='symbol'>:X-Auth-Token</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_token'>token</span>
+  <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
+  <span class='kw'>end</span>
+  <span class='id identifier rubyid_sec'>sec</span><span class='comma'>,</span> <span class='id identifier rubyid_error'>error</span> <span class='op'>=</span> <span class='id identifier rubyid_parse_json'>parse_json</span><span class='lparen'>(</span><span class='id identifier rubyid_response'>response</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='id identifier rubyid_sec'>sec</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>security_group</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="createTenant-instance_method">
+  
+    - (<tt>Object</tt>) <strong>createTenant</strong>(keystoneUrl, projectName, token) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'helpers/vim.rb', line 55</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_createTenant'>createTenant</span><span class='lparen'>(</span><span class='id identifier rubyid_keystoneUrl'>keystoneUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_projectName'>projectName</span><span class='comma'>,</span> <span class='id identifier rubyid_token'>token</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_project'>project</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='symbol'>:tenant</span> <span class='op'>=&gt;</span> <span class='lbrace'>{</span><span class='symbol'>:description</span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Tenant created by TenOr</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:enabled</span> <span class='op'>=&gt;</span> <span class='kw'>true</span><span class='comma'>,</span> <span class='symbol'>:name</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_projectName'>projectName</span><span class='rbrace'>}</span><span class='rbrace'>}</span>
+
+  <span class='kw'>begin</span>
+    <span class='kw'>return</span> <span class='id identifier rubyid_getTenantId'>getTenantId</span><span class='lparen'>(</span><span class='id identifier rubyid_keystoneUrl'>keystoneUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_tenantName'>tenantName</span><span class='comma'>,</span> <span class='id identifier rubyid_token'>token</span><span class='rparen'>)</span>
+  <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='kw'>begin</span>
+      <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_post'>post</span> <span class='id identifier rubyid_keystoneUrl'>keystoneUrl</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/tenants</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_project'>project</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span><span class='comma'>,</span> <span class='symbol'>:X-Auth-Token</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_token'>token</span>
+    <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+      <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span>
+      <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
+    <span class='kw'>end</span>
+
+    <span class='id identifier rubyid_project'>project</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='op'>=</span> <span class='id identifier rubyid_parse_json'>parse_json</span><span class='lparen'>(</span><span class='id identifier rubyid_response'>response</span><span class='rparen'>)</span>
+    <span class='kw'>return</span> <span class='int'>400</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='kw'>if</span> <span class='id identifier rubyid_errors'>errors</span>
+
+    <span class='kw'>return</span> <span class='id identifier rubyid_project'>project</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>tenant</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="createUser-instance_method">
+  
+    - (<tt>Object</tt>) <strong>createUser</strong>(keystoneUrl, projectId, userName, password, token) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'helpers/vim.rb', line 75</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_createUser'>createUser</span><span class='lparen'>(</span><span class='id identifier rubyid_keystoneUrl'>keystoneUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_projectId'>projectId</span><span class='comma'>,</span> <span class='id identifier rubyid_userName'>userName</span><span class='comma'>,</span> <span class='id identifier rubyid_password'>password</span><span class='comma'>,</span> <span class='id identifier rubyid_token'>token</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_user'>user</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='symbol'>:user</span> <span class='op'>=&gt;</span> <span class='lbrace'>{</span><span class='symbol'>:email</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_userName'>userName</span><span class='op'>+</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>@tenor-tnova.eu</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:enabled</span> <span class='op'>=&gt;</span> <span class='kw'>true</span><span class='comma'>,</span> <span class='symbol'>:name</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_userName'>userName</span><span class='comma'>,</span> <span class='symbol'>:password</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_password'>password</span><span class='comma'>,</span> <span class='symbol'>:tenantId</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_projectId'>projectId</span><span class='rbrace'>}</span><span class='rbrace'>}</span>
+
+  <span class='kw'>begin</span>
+    <span class='kw'>return</span> <span class='id identifier rubyid_getUserId'>getUserId</span><span class='lparen'>(</span><span class='id identifier rubyid_keystoneUrl'>keystoneUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_userName'>userName</span><span class='comma'>,</span> <span class='id identifier rubyid_token'>token</span><span class='rparen'>)</span>
+  <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='kw'>begin</span>
+      <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_post'>post</span> <span class='id identifier rubyid_keystoneUrl'>keystoneUrl</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/users</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_user'>user</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span><span class='comma'>,</span> <span class='symbol'>:X-Auth-Token</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_token'>token</span>
+    <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+      <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span>
+      <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
+    <span class='kw'>end</span>
+    <span class='id identifier rubyid_user'>user</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='op'>=</span> <span class='id identifier rubyid_parse_json'>parse_json</span><span class='lparen'>(</span><span class='id identifier rubyid_response'>response</span><span class='rparen'>)</span>
+    <span class='kw'>return</span> <span class='int'>400</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='kw'>if</span> <span class='id identifier rubyid_errors'>errors</span>
+
+    <span class='kw'>return</span> <span class='id identifier rubyid_user'>user</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>user</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="deleteSecurityGroup-instance_method">
+  
+    - (<tt>Object</tt>) <strong>deleteSecurityGroup</strong>(computeUrl, tenant_id, sec_group_id, token) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+222
+223
+224
+225
+226
+227
+228
+229
+230</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'helpers/vim.rb', line 222</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_deleteSecurityGroup'>deleteSecurityGroup</span><span class='lparen'>(</span><span class='id identifier rubyid_computeUrl'>computeUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_tenant_id'>tenant_id</span><span class='comma'>,</span> <span class='id identifier rubyid_sec_group_id'>sec_group_id</span><span class='comma'>,</span> <span class='id identifier rubyid_token'>token</span><span class='rparen'>)</span>
+
+  <span class='kw'>begin</span>
+    <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_delete'>delete</span> <span class='id identifier rubyid_computeUrl'>computeUrl</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/</span><span class='tstring_end'>&#39;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_tenant_id'>tenant_id</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/os-security-groups/</span><span class='tstring_end'>&#39;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_sec_group_id'>sec_group_id</span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span><span class='comma'>,</span> <span class='symbol'>:X-Auth-Token</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_token'>token</span>
+  <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="deleteStack-instance_method">
+  
+    - (<tt>Object</tt>) <strong>deleteStack</strong>(stack_url, tenant_token) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'helpers/vim.rb', line 243</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_deleteStack'>deleteStack</span><span class='lparen'>(</span><span class='id identifier rubyid_stack_url'>stack_url</span><span class='comma'>,</span> <span class='id identifier rubyid_tenant_token'>tenant_token</span><span class='rparen'>)</span>
+  <span class='kw'>begin</span>
+    <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_delete'>delete</span> <span class='id identifier rubyid_stack_url'>stack_url</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>X-Auth-Token</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_tenant_token'>tenant_token</span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span><span class='comma'>,</span> <span class='symbol'>:accept</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span>
+  <span class='kw'>rescue</span> <span class='const'>Errno</span><span class='op'>::</span><span class='const'>ECONNREFUSED</span>
+    <span class='id identifier rubyid_error'>error</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>info</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>VIM unrechable.</span><span class='tstring_end'>&quot;</span></span><span class='rbrace'>}</span>
+    <span class='kw'>return</span>
+  <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span>
+    <span class='kw'>return</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="deleteTenant-instance_method">
+  
+    - (<tt>Object</tt>) <strong>deleteTenant</strong>(keystoneUrl, tenant_id, token) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+94
+95
+96
+97
+98
+99
+100
+101
+102</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'helpers/vim.rb', line 94</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_deleteTenant'>deleteTenant</span><span class='lparen'>(</span><span class='id identifier rubyid_keystoneUrl'>keystoneUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_tenant_id'>tenant_id</span><span class='comma'>,</span> <span class='id identifier rubyid_token'>token</span><span class='rparen'>)</span>
+  <span class='kw'>begin</span>
+    <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_delete'>delete</span> <span class='id identifier rubyid_keystoneUrl'>keystoneUrl</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/tenants/</span><span class='tstring_end'>&#39;</span></span><span class='op'>+</span><span class='id identifier rubyid_tenant_id'>tenant_id</span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span><span class='comma'>,</span> <span class='symbol'>:X-Auth-Token</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_token'>token</span>
+  <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
+  <span class='kw'>end</span>
+  <span class='kw'>return</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="deleteUser-instance_method">
+  
+    - (<tt>Object</tt>) <strong>deleteUser</strong>(keystoneUrl, user_id, token) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'helpers/vim.rb', line 104</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_deleteUser'>deleteUser</span><span class='lparen'>(</span><span class='id identifier rubyid_keystoneUrl'>keystoneUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_user_id'>user_id</span><span class='comma'>,</span> <span class='id identifier rubyid_token'>token</span><span class='rparen'>)</span>
+  <span class='kw'>begin</span>
+    <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_delete'>delete</span> <span class='id identifier rubyid_keystoneUrl'>keystoneUrl</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/users/</span><span class='tstring_end'>&#39;</span></span><span class='op'>+</span><span class='id identifier rubyid_user_id'>user_id</span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span><span class='comma'>,</span> <span class='symbol'>:X-Auth-Token</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_token'>token</span>
+  <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
+  <span class='kw'>end</span>
+
+  <span class='kw'>return</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="getAdminRole-instance_method">
+  
+    - (<tt>Object</tt>) <strong>getAdminRole</strong>(keystoneUrl, token) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'helpers/vim.rb', line 148</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_getAdminRole'>getAdminRole</span><span class='lparen'>(</span><span class='id identifier rubyid_keystoneUrl'>keystoneUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_token'>token</span><span class='rparen'>)</span>
+  <span class='kw'>begin</span>
+    <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span> <span class='id identifier rubyid_keystoneUrl'>keystoneUrl</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/OS-KSADM/roles</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span><span class='comma'>,</span> <span class='symbol'>:X-Auth-Token</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_token'>token</span>
+  <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
+  <span class='kw'>end</span>
+  <span class='id identifier rubyid_roles'>roles</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='op'>=</span> <span class='id identifier rubyid_parse_json'>parse_json</span><span class='lparen'>(</span><span class='id identifier rubyid_response'>response</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='int'>400</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='kw'>if</span> <span class='id identifier rubyid_errors'>errors</span>
+
+  <span class='id identifier rubyid_role'>role</span> <span class='op'>=</span> <span class='id identifier rubyid_roles'>roles</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>roles</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_find'>find</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_role'>role</span><span class='op'>|</span> <span class='id identifier rubyid_role'>role</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>name</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>admin</span><span class='tstring_end'>&#39;</span></span> <span class='rbrace'>}</span>
+  <span class='kw'>return</span> <span class='id identifier rubyid_role'>role</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="getSecurityGroups-instance_method">
+  
+    - (<tt>Object</tt>) <strong>getSecurityGroups</strong>(computeUrl, tenant_id, token) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'helpers/vim.rb', line 232</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_getSecurityGroups'>getSecurityGroups</span><span class='lparen'>(</span><span class='id identifier rubyid_computeUrl'>computeUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_tenant_id'>tenant_id</span><span class='comma'>,</span> <span class='id identifier rubyid_token'>token</span><span class='rparen'>)</span>
+  <span class='kw'>begin</span>
+    <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span> <span class='id identifier rubyid_computeUrl'>computeUrl</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/</span><span class='tstring_end'>&#39;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_tenant_id'>tenant_id</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/os-security-groups</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span><span class='comma'>,</span> <span class='symbol'>:X-Auth-Token</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_token'>token</span>
+  <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
+  <span class='kw'>end</span>
+  <span class='id identifier rubyid_sec'>sec</span><span class='comma'>,</span> <span class='id identifier rubyid_error'>error</span> <span class='op'>=</span> <span class='id identifier rubyid_parse_json'>parse_json</span><span class='lparen'>(</span><span class='id identifier rubyid_response'>response</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='id identifier rubyid_sec'>sec</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="getTenantId-instance_method">
+  
+    - (<tt>Object</tt>) <strong>getTenantId</strong>(keystoneUrl, tenantName, token) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'helpers/vim.rb', line 115</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_getTenantId'>getTenantId</span><span class='lparen'>(</span><span class='id identifier rubyid_keystoneUrl'>keystoneUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_tenantName'>tenantName</span><span class='comma'>,</span> <span class='id identifier rubyid_token'>token</span><span class='rparen'>)</span>
+  <span class='kw'>begin</span>
+    <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span> <span class='id identifier rubyid_keystoneUrl'>keystoneUrl</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/tenants</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span><span class='comma'>,</span> <span class='symbol'>:X-Auth-Token</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_token'>token</span>
+  <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
+  <span class='kw'>end</span>
+
+  <span class='id identifier rubyid_tenants'>tenants</span> <span class='op'>=</span> <span class='id identifier rubyid_parse_json'>parse_json</span><span class='lparen'>(</span><span class='id identifier rubyid_response'>response</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_tenants'>tenants</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>tenants</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_tenant'>tenant</span><span class='op'>|</span>
+    <span class='kw'>if</span> <span class='id identifier rubyid_tenant'>tenant</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>name</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='id identifier rubyid_tenantName'>tenantName</span>
+      <span class='kw'>return</span> <span class='id identifier rubyid_tenant'>tenant</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="getUserId-instance_method">
+  
+    - (<tt>Object</tt>) <strong>getUserId</strong>(keystoneUrl, username, token) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'helpers/vim.rb', line 131</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_getUserId'>getUserId</span><span class='lparen'>(</span><span class='id identifier rubyid_keystoneUrl'>keystoneUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_username'>username</span><span class='comma'>,</span> <span class='id identifier rubyid_token'>token</span><span class='rparen'>)</span>
+  <span class='kw'>begin</span>
+    <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span> <span class='id identifier rubyid_keystoneUrl'>keystoneUrl</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/users</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span><span class='comma'>,</span> <span class='symbol'>:X-Auth-Token</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_token'>token</span>
+  <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
+  <span class='kw'>end</span>
+
+  <span class='id identifier rubyid_users'>users</span> <span class='op'>=</span> <span class='id identifier rubyid_parse_json'>parse_json</span><span class='lparen'>(</span><span class='id identifier rubyid_response'>response</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_users'>users</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>users</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_user'>user</span><span class='op'>|</span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_user'>user</span>
+    <span class='kw'>if</span> <span class='id identifier rubyid_user'>user</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>name</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='id identifier rubyid_username'>username</span>
+      <span class='kw'>return</span> <span class='id identifier rubyid_user'>user</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="openstackAdminAuthentication-instance_method">
+  
+    - (<tt>Object</tt>) <strong>openstackAdminAuthentication</strong>(keystoneUrl, tenantName, user, password) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'helpers/vim.rb', line 21</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_openstackAdminAuthentication'>openstackAdminAuthentication</span><span class='lparen'>(</span><span class='id identifier rubyid_keystoneUrl'>keystoneUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_tenantName'>tenantName</span><span class='comma'>,</span> <span class='id identifier rubyid_user'>user</span><span class='comma'>,</span> <span class='id identifier rubyid_password'>password</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_auth'>auth</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='symbol'>:auth</span> <span class='op'>=&gt;</span> <span class='lbrace'>{</span><span class='symbol'>:tenantName</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_tenantName'>tenantName</span><span class='comma'>,</span> <span class='symbol'>:passwordCredentials</span> <span class='op'>=&gt;</span> <span class='lbrace'>{</span><span class='symbol'>:username</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_user'>user</span><span class='comma'>,</span> <span class='symbol'>:password</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_password'>password</span><span class='rbrace'>}</span><span class='rbrace'>}</span><span class='rbrace'>}</span>
+
+  <span class='kw'>begin</span>
+    <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_post'>post</span> <span class='id identifier rubyid_keystoneUrl'>keystoneUrl</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/tokens</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_auth'>auth</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span>
+  <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
+  <span class='kw'>end</span>
+
+  <span class='id identifier rubyid_authentication'>authentication</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='op'>=</span> <span class='id identifier rubyid_parse_json'>parse_json</span><span class='lparen'>(</span><span class='id identifier rubyid_response'>response</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='int'>400</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='kw'>if</span> <span class='id identifier rubyid_errors'>errors</span>
+
+  <span class='kw'>return</span> <span class='id identifier rubyid_authentication'>authentication</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>access</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>token</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="openstackAuthentication-instance_method">
+  
+    - (<tt>Object</tt>) <strong>openstackAuthentication</strong>(keystoneUrl, tenantId, user, password) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'helpers/vim.rb', line 37</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_openstackAuthentication'>openstackAuthentication</span><span class='lparen'>(</span><span class='id identifier rubyid_keystoneUrl'>keystoneUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_tenantId'>tenantId</span><span class='comma'>,</span> <span class='id identifier rubyid_user'>user</span><span class='comma'>,</span> <span class='id identifier rubyid_password'>password</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_auth'>auth</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='symbol'>:auth</span> <span class='op'>=&gt;</span> <span class='lbrace'>{</span><span class='symbol'>:tenantId</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_tenantId'>tenantId</span><span class='comma'>,</span> <span class='symbol'>:passwordCredentials</span> <span class='op'>=&gt;</span> <span class='lbrace'>{</span><span class='symbol'>:username</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_user'>user</span><span class='comma'>,</span> <span class='symbol'>:password</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_password'>password</span><span class='rbrace'>}</span><span class='rbrace'>}</span><span class='rbrace'>}</span>
+
+  <span class='kw'>begin</span>
+    <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_post'>post</span> <span class='id identifier rubyid_keystoneUrl'>keystoneUrl</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/tokens</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_auth'>auth</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span>
+  <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
+    <span class='id identifier rubyid_raise'>raise</span> <span class='int'>500</span><span class='comma'>,</span>  <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
+    <span class='comment'>#halt 500, e.response.body
+</span>  <span class='kw'>end</span>
+
+  <span class='id identifier rubyid_authentication'>authentication</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='op'>=</span> <span class='id identifier rubyid_parse_json'>parse_json</span><span class='lparen'>(</span><span class='id identifier rubyid_response'>response</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='int'>400</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='kw'>if</span> <span class='id identifier rubyid_errors'>errors</span>
+
+  <span class='kw'>return</span> <span class='id identifier rubyid_authentication'>authentication</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>access</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>token</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="publicNetworkId-instance_method">
+  
+    - (<tt>Object</tt>) <strong>publicNetworkId</strong>(neutronUrl, token) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'helpers/vim.rb', line 172</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_publicNetworkId'>publicNetworkId</span><span class='lparen'>(</span><span class='id identifier rubyid_neutronUrl'>neutronUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_token'>token</span><span class='rparen'>)</span>
+  <span class='kw'>begin</span>
+    <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span> <span class='id identifier rubyid_neutronUrl'>neutronUrl</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/networks</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span><span class='comma'>,</span> <span class='symbol'>:X-Auth-Token</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_token'>token</span>
+  <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
+  <span class='kw'>end</span>
+  <span class='id identifier rubyid_networks'>networks</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='op'>=</span> <span class='id identifier rubyid_parse_json'>parse_json</span><span class='lparen'>(</span><span class='id identifier rubyid_response'>response</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_network'>network</span> <span class='op'>=</span> <span class='id identifier rubyid_networks'>networks</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>networks</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_find'>find</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_role'>role</span><span class='op'>|</span> <span class='id identifier rubyid_role'>role</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>name</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>public</span><span class='tstring_end'>&#39;</span></span> <span class='rbrace'>}</span>
+  <span class='kw'>return</span> <span class='id identifier rubyid_network'>network</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="putRole-instance_method">
+  
+    - (<tt>Object</tt>) <strong>putRole</strong>(keystoneUrl, tenant_id, user_id, role_id, token) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+162
+163
+164
+165
+166
+167
+168
+169
+170</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'helpers/vim.rb', line 162</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_putRole'>putRole</span><span class='lparen'>(</span><span class='id identifier rubyid_keystoneUrl'>keystoneUrl</span><span class='comma'>,</span> <span class='id identifier rubyid_tenant_id'>tenant_id</span><span class='comma'>,</span> <span class='id identifier rubyid_user_id'>user_id</span><span class='comma'>,</span> <span class='id identifier rubyid_role_id'>role_id</span><span class='comma'>,</span> <span class='id identifier rubyid_token'>token</span><span class='rparen'>)</span>
+  <span class='kw'>begin</span>
+    <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_put'>put</span> <span class='id identifier rubyid_keystoneUrl'>keystoneUrl</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/tenants/</span><span class='tstring_end'>&#39;</span></span><span class='op'>+</span><span class='id identifier rubyid_tenant_id'>tenant_id</span><span class='op'>+</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/users/</span><span class='tstring_end'>&#39;</span></span><span class='op'>+</span><span class='id identifier rubyid_user_id'>user_id</span><span class='op'>+</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/roles/OS-KSADM/</span><span class='tstring_end'>&#39;</span></span><span class='op'>+</span><span class='id identifier rubyid_role_id'>role_id</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span><span class='comma'>,</span> <span class='symbol'>:X-Auth-Token</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_token'>token</span>
+  <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
+  <span class='kw'>end</span>
+  <span class='id identifier rubyid_status'>status</span> <span class='int'>200</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+    <div id="footer">
+  Generated on Tue May 24 18:22:43 2016 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.8.7.6 (ruby-2.0.0).
+</div>
+
+  </body>
+</html>

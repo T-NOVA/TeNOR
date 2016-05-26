@@ -1,0 +1,862 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>
+  Module: ServiceConfigurationHelper
+  
+    &mdash; Documentation by YARD 0.8.7.6
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  hasFrames = window.top.frames.main ? true : false;
+  relpath = '';
+  framesUrl = "frames.html#!ServiceConfigurationHelper.html";
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div id="header">
+      <div id="menu">
+  
+    <a href="_index.html">Index (S)</a> &raquo;
+    
+    
+    <span class="title">ServiceConfigurationHelper</span>
+  
+
+  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
+</div>
+
+      <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+      Class List
+    </a>
+  
+    <a class="full_list_link" id="method_list_link"
+        href="method_list.html">
+      Method List
+    </a>
+  
+    <a class="full_list_link" id="file_list_link"
+        href="file_list.html">
+      File List
+    </a>
+  
+</div>
+      <div class="clear"></div>
+    </div>
+
+    <iframe id="search_frame"></iframe>
+
+    <div id="content"><h1>Module: ServiceConfigurationHelper
+  
+  
+  
+</h1>
+
+<dl class="box">
+  
+  
+    
+  
+    
+  
+  
+  
+    <dt class="r1 last">Defined in:</dt>
+    <dd class="r1 last">helpers/config.rb</dd>
+  
+</dl>
+<div class="clear"></div>
+
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    
+<p>TeNOR - NS Manager</p>
+
+<p>Copyright 2014-2016 i2CAT Foundation, Portugal Telecom Inovação</p>
+
+<p>Licensed under the Apache License, Version 2.0 (the “License”); you may not
+use this file except in compliance with the License. You may obtain a copy
+of the License at</p>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_http'>http</span><span class='symbol'>:/</span><span class='op'>/</span><span class='id identifier rubyid_www'>www</span><span class='period'>.</span><span class='id identifier rubyid_apache'>apache</span><span class='period'>.</span><span class='id identifier rubyid_org'>org</span><span class='op'>/</span><span class='id identifier rubyid_licenses'>licenses</span><span class='op'>/</span><span class='const'>LICENSE</span><span class='op'>-</span><span class='float'>2.0</span>
+</code></pre>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+License for the specific language governing permissions and limitations
+under the License.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+  <p class="tag_title">See Also:</p>
+  <ul class="see">
+    
+      <li><span class='object_link'><a href="" title="ServiceConfigurationHelper (module)">ServiceConfigurationHelper</a></span></li>
+    
+  </ul>
+
+</div>
+
+
+
+
+
+
+  
+    <h2>
+      Instance Method Summary
+      <small>(<a href="#" class="summary_toggle">collapse</a>)</small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#auth-instance_method" title="#auth (instance method)">- (Object) <strong>auth</strong>(key) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Check if the token of service is correct.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#interfaces_list-instance_method" title="#interfaces_list (instance method)">- (Array) <strong>interfaces_list</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Method which lists all available interfaces.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#registerExternalService-instance_method" title="#registerExternalService (instance method)">- (Object) <strong>registerExternalService</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#registerService-instance_method" title="#registerService (instance method)">- (Object) <strong>registerService</strong>(json) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#unRegisterAllService-instance_method" title="#unRegisterAllService (instance method)">- (Object) <strong>unRegisterAllService</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Unregister all the services.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#unregisterService-instance_method" title="#unregisterService (instance method)">- (Object) <strong>unregisterService</strong>(name) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#updateService-instance_method" title="#updateService (instance method)">- (Object) <strong>updateService</strong>(service) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="auth-instance_method">
+  
+    - (<tt>Object</tt>) <strong>auth</strong>(key) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Check if the token of service is correct</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+108
+109
+110
+111
+112</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'helpers/config.rb', line 108</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_auth'>auth</span><span class='lparen'>(</span><span class='id identifier rubyid_key'>key</span><span class='rparen'>)</span>
+  <span class='comment'>#TODO
+</span>  <span class='comment'>#return response
+</span>  <span class='id identifier rubyid_status'>status</span> <span class='int'>201</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="interfaces_list-instance_method">
+  
+    - (<tt>Array</tt>) <strong>interfaces_list</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Method which lists all available interfaces</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Array</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>the array containing a list of all interfaces</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'helpers/config.rb', line 117</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_interfaces_list'>interfaces_list</span>
+  <span class='lbracket'>[</span>
+      <span class='lbrace'>{</span>
+          <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>uri</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+          <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>method</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>GET</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+          <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>purpose</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>REST API Structure and Capability Discovery</span><span class='tstring_end'>&#39;</span></span>
+      <span class='rbrace'>}</span><span class='comma'>,</span>
+      <span class='lbrace'>{</span>
+          <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>uri</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/configs/registerService</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+          <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>method</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>POST</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+          <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>purpose</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Register a service configuration</span><span class='tstring_end'>&#39;</span></span>
+      <span class='rbrace'>}</span><span class='comma'>,</span>
+      <span class='lbrace'>{</span>
+          <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>uri</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/configs/unRegisterService/{microservice}</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+          <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>method</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>POST</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+          <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>purpose</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Unregister a service configuration</span><span class='tstring_end'>&#39;</span></span>
+      <span class='rbrace'>}</span><span class='comma'>,</span>
+      <span class='lbrace'>{</span>
+          <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>uri</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/configs/services</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+          <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>method</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>GET</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+          <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>purpose</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>List all services configuration</span><span class='tstring_end'>&#39;</span></span>
+      <span class='rbrace'>}</span><span class='comma'>,</span>
+      <span class='lbrace'>{</span>
+          <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>uri</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/configs/services</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+          <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>method</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>PUT</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+          <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>purpose</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Update service configuration</span><span class='tstring_end'>&#39;</span></span>
+      <span class='rbrace'>}</span><span class='comma'>,</span>
+      <span class='lbrace'>{</span>
+          <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>uri</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/configs/services/{name}/status</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+          <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>method</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>PUT</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+          <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>purpose</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Update service status</span><span class='tstring_end'>&#39;</span></span>
+      <span class='rbrace'>}</span><span class='comma'>,</span>
+      <span class='lbrace'>{</span>
+          <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>uri</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/network-services</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+          <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>method</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>GET</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+          <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>purpose</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Redirects a GET request to the specified micro-service</span><span class='tstring_end'>&#39;</span></span>
+      <span class='rbrace'>}</span><span class='comma'>,</span>
+      <span class='lbrace'>{</span>
+          <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>uri</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/network-services</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+          <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>method</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>POST</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+          <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>purpose</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Redirects a GET request to the specified micro-service</span><span class='tstring_end'>&#39;</span></span>
+      <span class='rbrace'>}</span><span class='comma'>,</span>
+      <span class='lbrace'>{</span>
+          <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>uri</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/network-services/{id}</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+          <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>method</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>PUT</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+          <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>purpose</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Redirects a GET request to the specified micro-service</span><span class='tstring_end'>&#39;</span></span>
+      <span class='rbrace'>}</span><span class='comma'>,</span>
+      <span class='lbrace'>{</span>
+          <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>uri</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/network-services/{id}</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+          <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>method</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>DELETE</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+          <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>purpose</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Redirects a GET request to the specified micro-service</span><span class='tstring_end'>&#39;</span></span>
+      <span class='rbrace'>}</span><span class='comma'>,</span>
+      <span class='lbrace'>{</span>
+          <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>uri</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/vnfs</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+          <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>method</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>POST</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+          <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>purpose</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Redirects a GET request to the specified micro-service</span><span class='tstring_end'>&#39;</span></span>
+      <span class='rbrace'>}</span><span class='comma'>,</span>
+      <span class='lbrace'>{</span>
+          <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>uri</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/vnfs/{id}</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+          <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>method</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>PUT</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+          <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>purpose</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Redirects a GET request to the specified micro-service</span><span class='tstring_end'>&#39;</span></span>
+      <span class='rbrace'>}</span><span class='comma'>,</span>
+      <span class='lbrace'>{</span>
+          <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>uri</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/{path}</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+          <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>method</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>POST</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+          <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>purpose</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Redirects a POST request to the specified micro-service</span><span class='tstring_end'>&#39;</span></span>
+      <span class='rbrace'>}</span><span class='comma'>,</span>
+      <span class='lbrace'>{</span>
+          <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>uri</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/{path}</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+          <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>method</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>DELETE</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+          <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>purpose</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Redirects a DELETE request to the specified micro-service</span><span class='tstring_end'>&#39;</span></span>
+      <span class='rbrace'>}</span><span class='comma'>,</span>
+      <span class='lbrace'>{</span>
+          <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>uri</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/ns-instances</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+          <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>method</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>POST</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+          <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>purpose</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Create an instance request</span><span class='tstring_end'>&#39;</span></span>
+      <span class='rbrace'>}</span>
+  <span class='rbracket'>]</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="registerExternalService-instance_method">
+  
+    - (<tt>Object</tt>) <strong>registerExternalService</strong> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'helpers/config.rb', line 75</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_registerExternalService'>registerExternalService</span><span class='lparen'>(</span><span class='rparen'>)</span>
+  <span class='ivar'>@json</span> <span class='op'>=</span> <span class='const'>JSON</span><span class='period'>.</span><span class='id identifier rubyid_parse'>parse</span><span class='lparen'>(</span><span class='id identifier rubyid_json'>json</span><span class='rparen'>)</span>
+  <span class='kw'>begin</span>
+    <span class='ivar'>@service</span> <span class='op'>=</span> <span class='const'>ServiceModel</span><span class='period'>.</span><span class='id identifier rubyid_find_by'>find_by</span><span class='lparen'>(</span><span class='symbol'>:name</span> <span class='op'>=&gt;</span> <span class='ivar'>@json</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>name</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='rparen'>)</span>
+    <span class='ivar'>@service</span><span class='period'>.</span><span class='id identifier rubyid_update_attributes'>update_attributes</span><span class='lparen'>(</span><span class='ivar'>@json</span><span class='rparen'>)</span>
+    <span class='kw'>return</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Service updated</span><span class='tstring_end'>&quot;</span></span>
+  <span class='kw'>rescue</span> <span class='const'>Mongoid</span><span class='op'>::</span><span class='const'>Errors</span><span class='op'>::</span><span class='const'>DocumentNotFound</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='kw'>begin</span>
+      <span class='ivar'>@service</span> <span class='op'>=</span> <span class='const'>ServiceModel</span><span class='period'>.</span><span class='id identifier rubyid_create!'>create!</span><span class='lparen'>(</span><span class='ivar'>@json</span><span class='rparen'>)</span>
+      <span class='kw'>return</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Service registered</span><span class='tstring_end'>&quot;</span></span>
+    <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+      <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span>
+      <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='lbrace'>{</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Content-Type</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>text/plain</span><span class='tstring_end'>&#39;</span></span><span class='rbrace'>}</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Error registering the service</span><span class='tstring_end'>&quot;</span></span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="registerService-instance_method">
+  
+    - (<tt>Object</tt>) <strong>registerService</strong>(json) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'helpers/config.rb', line 21</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_registerService'>registerService</span><span class='lparen'>(</span><span class='id identifier rubyid_json'>json</span><span class='rparen'>)</span>
+  <span class='ivar'>@json</span> <span class='op'>=</span> <span class='const'>JSON</span><span class='period'>.</span><span class='id identifier rubyid_parse'>parse</span><span class='lparen'>(</span><span class='id identifier rubyid_json'>json</span><span class='rparen'>)</span>
+
+  <span class='id identifier rubyid_loginGK'>loginGK</span><span class='lparen'>(</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_gkServices'>gkServices</span> <span class='op'>=</span> <span class='id identifier rubyid_getGKServices'>getGKServices</span><span class='lparen'>(</span><span class='rparen'>)</span>
+
+  <span class='id identifier rubyid_index'>index</span> <span class='op'>=</span> <span class='int'>0</span>
+  <span class='kw'>while</span> <span class='id identifier rubyid_index'>index</span> <span class='op'>&lt;</span> <span class='id identifier rubyid_gkServices'>gkServices</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>shortname</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span> <span class='kw'>do</span>
+    <span class='kw'>if</span> <span class='id identifier rubyid_gkServices'>gkServices</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>shortname</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='id identifier rubyid_index'>index</span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='ivar'>@json</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>name</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+      <span class='kw'>begin</span>
+        <span class='ivar'>@service</span> <span class='op'>=</span> <span class='const'>ServiceModel</span><span class='period'>.</span><span class='id identifier rubyid_find_by'>find_by</span><span class='lparen'>(</span><span class='symbol'>:name</span> <span class='op'>=&gt;</span> <span class='ivar'>@json</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>name</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='rparen'>)</span>
+        <span class='ivar'>@json</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>service_key</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_gkServices'>gkServices</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>service-key</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='id identifier rubyid_index'>index</span><span class='rbracket'>]</span>
+        <span class='id identifier rubyid_serviceUri'>serviceUri</span> <span class='op'>=</span> <span class='ivar'>@json</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>host</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>:</span><span class='tstring_end'>&quot;</span></span> <span class='op'>+</span> <span class='ivar'>@json</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>port</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
+        <span class='id identifier rubyid_sendServiceAuth'>sendServiceAuth</span><span class='lparen'>(</span><span class='id identifier rubyid_serviceUri'>serviceUri</span><span class='comma'>,</span> <span class='id identifier rubyid_gkServices'>gkServices</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>service-key</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='id identifier rubyid_index'>index</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+        <span class='ivar'>@service</span><span class='period'>.</span><span class='id identifier rubyid_update_attributes'>update_attributes</span><span class='lparen'>(</span><span class='ivar'>@json</span><span class='rparen'>)</span>
+        <span class='kw'>return</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Service updated</span><span class='tstring_end'>&quot;</span></span>
+      <span class='kw'>rescue</span> <span class='const'>Mongoid</span><span class='op'>::</span><span class='const'>Errors</span><span class='op'>::</span><span class='const'>DocumentNotFound</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+        <span class='ivar'>@json</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>service_key</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_gkServices'>gkServices</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>service-key</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='id identifier rubyid_index'>index</span><span class='rbracket'>]</span>
+        <span class='ivar'>@service</span> <span class='op'>=</span> <span class='const'>ServiceModel</span><span class='period'>.</span><span class='id identifier rubyid_create!'>create!</span><span class='lparen'>(</span><span class='ivar'>@json</span><span class='rparen'>)</span>
+        <span class='id identifier rubyid_serviceUri'>serviceUri</span> <span class='op'>=</span> <span class='ivar'>@json</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>host</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>:</span><span class='tstring_end'>&quot;</span></span> <span class='op'>+</span> <span class='ivar'>@json</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>port</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
+        <span class='id identifier rubyid_sendServiceAuth'>sendServiceAuth</span><span class='lparen'>(</span><span class='id identifier rubyid_serviceUri'>serviceUri</span><span class='comma'>,</span> <span class='id identifier rubyid_gkServices'>gkServices</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>service-key</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='id identifier rubyid_index'>index</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+        <span class='kw'>return</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Service registered</span><span class='tstring_end'>&quot;</span></span>
+      <span class='kw'>end</span>
+    <span class='kw'>end</span>
+    <span class='id identifier rubyid_index'>index</span> <span class='op'>+=</span><span class='int'>1</span>
+  <span class='kw'>end</span>
+
+  <span class='kw'>if</span> <span class='id identifier rubyid_index'>index</span> <span class='op'>===</span> <span class='id identifier rubyid_gkServices'>gkServices</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>shortname</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span>
+    <span class='kw'>begin</span>
+      <span class='ivar'>@service</span> <span class='op'>=</span> <span class='const'>ServiceModel</span><span class='period'>.</span><span class='id identifier rubyid_find_by'>find_by</span><span class='lparen'>(</span><span class='symbol'>:name</span> <span class='op'>=&gt;</span> <span class='ivar'>@json</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>name</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_key'>key</span> <span class='op'>=</span> <span class='id identifier rubyid_registerServiceinGK'>registerServiceinGK</span><span class='lparen'>(</span><span class='ivar'>@json</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>name</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_metadata'>metadata</span> <span class='op'>=</span> <span class='const'>JSON</span><span class='period'>.</span><span class='id identifier rubyid_parse'>parse</span><span class='lparen'>(</span><span class='id identifier rubyid_key'>key</span><span class='rparen'>)</span>
+      <span class='ivar'>@json</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>service_key</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_gkServices'>gkServices</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>service-key</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='id identifier rubyid_index'>index</span><span class='rbracket'>]</span>
+      <span class='id identifier rubyid_access'>access</span> <span class='op'>=</span> <span class='ivar'>@json</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>host</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>:</span><span class='tstring_end'>&quot;</span></span> <span class='op'>+</span> <span class='ivar'>@json</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>port</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
+      <span class='id identifier rubyid_sendServiceAuth'>sendServiceAuth</span><span class='lparen'>(</span><span class='id identifier rubyid_access'>access</span><span class='comma'>,</span> <span class='id identifier rubyid_metadata'>metadata</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>info</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>service-key</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='rparen'>)</span>
+      <span class='ivar'>@service</span><span class='period'>.</span><span class='id identifier rubyid_update_attributes'>update_attributes</span><span class='lparen'>(</span><span class='ivar'>@json</span><span class='rparen'>)</span>
+      <span class='kw'>return</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Service updated</span><span class='tstring_end'>&quot;</span></span>
+    <span class='kw'>rescue</span> <span class='const'>Mongoid</span><span class='op'>::</span><span class='const'>Errors</span><span class='op'>::</span><span class='const'>DocumentNotFound</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+      <span class='kw'>begin</span>
+        <span class='id identifier rubyid_key'>key</span> <span class='op'>=</span> <span class='id identifier rubyid_registerServiceinGK'>registerServiceinGK</span><span class='lparen'>(</span><span class='ivar'>@json</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>name</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='rparen'>)</span>
+        <span class='id identifier rubyid_metadata'>metadata</span> <span class='op'>=</span> <span class='const'>JSON</span><span class='period'>.</span><span class='id identifier rubyid_parse'>parse</span><span class='lparen'>(</span><span class='id identifier rubyid_key'>key</span><span class='rparen'>)</span>
+        <span class='ivar'>@json</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>service_key</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_gkServices'>gkServices</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>service-key</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='id identifier rubyid_index'>index</span><span class='rbracket'>]</span>
+        <span class='id identifier rubyid_access'>access</span> <span class='op'>=</span> <span class='ivar'>@json</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>host</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>:</span><span class='tstring_end'>&quot;</span></span> <span class='op'>+</span> <span class='ivar'>@json</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>port</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
+        <span class='id identifier rubyid_sendServiceAuth'>sendServiceAuth</span><span class='lparen'>(</span><span class='id identifier rubyid_access'>access</span><span class='comma'>,</span> <span class='id identifier rubyid_metadata'>metadata</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>info</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>service-key</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='rparen'>)</span>
+        <span class='ivar'>@service</span> <span class='op'>=</span> <span class='const'>ServiceModel</span><span class='period'>.</span><span class='id identifier rubyid_create!'>create!</span><span class='lparen'>(</span><span class='ivar'>@json</span><span class='rparen'>)</span>
+        <span class='kw'>return</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Service registered</span><span class='tstring_end'>&quot;</span></span>
+      <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+        <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span>
+        <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='lbrace'>{</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Content-Type</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>text/plain</span><span class='tstring_end'>&#39;</span></span><span class='rbrace'>}</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Error registering the service</span><span class='tstring_end'>&quot;</span></span>
+      <span class='kw'>end</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="unRegisterAllService-instance_method">
+  
+    - (<tt>Object</tt>) <strong>unRegisterAllService</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Unregister all the services</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+103
+104
+105</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'helpers/config.rb', line 103</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_unRegisterAllService'>unRegisterAllService</span>
+  <span class='const'>ServiceModel</span><span class='period'>.</span><span class='id identifier rubyid_delete_all'>delete_all</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="unregisterService-instance_method">
+  
+    - (<tt>Object</tt>) <strong>unregisterService</strong>(name) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+92
+93
+94
+95</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'helpers/config.rb', line 92</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_unregisterService'>unregisterService</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_settings'>settings</span><span class='period'>.</span><span class='id identifier rubyid_services'>services</span><span class='lbracket'>[</span><span class='id identifier rubyid_name'>name</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='kw'>nil</span>
+  <span class='const'>ServiceModel</span><span class='period'>.</span><span class='id identifier rubyid_find_by'>find_by</span><span class='lparen'>(</span><span class='label'>name:</span> <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>microservice</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_delete'>delete</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="updateService-instance_method">
+  
+    - (<tt>Object</tt>) <strong>updateService</strong>(service) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+97
+98
+99
+100</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'helpers/config.rb', line 97</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_updateService'>updateService</span><span class='lparen'>(</span><span class='id identifier rubyid_service'>service</span><span class='rparen'>)</span>
+  <span class='ivar'>@service</span> <span class='op'>=</span> <span class='const'>ServiceModel</span><span class='period'>.</span><span class='id identifier rubyid_find_by'>find_by</span><span class='lparen'>(</span><span class='label'>name:</span> <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>name</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='rparen'>)</span>
+  <span class='ivar'>@service</span><span class='period'>.</span><span class='id identifier rubyid_update_attributes'>update_attributes</span><span class='lparen'>(</span><span class='ivar'>@json</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+    <div id="footer">
+  Generated on Tue May 24 17:49:02 2016 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.8.7.6 (ruby-2.0.0).
+</div>
+
+  </body>
+</html>

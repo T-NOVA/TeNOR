@@ -1,0 +1,2190 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>
+  Class: OrchestratorVnfProvisioning
+  
+    &mdash; Documentation by YARD 0.8.7.6
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  hasFrames = window.top.frames.main ? true : false;
+  relpath = '';
+  framesUrl = "frames.html#!OrchestratorVnfProvisioning.html";
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div id="header">
+      <div id="menu">
+  
+    <a href="_index.html">Index (O)</a> &raquo;
+    
+    
+    <span class="title">OrchestratorVnfProvisioning</span>
+  
+
+  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
+</div>
+
+      <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+      Class List
+    </a>
+  
+    <a class="full_list_link" id="method_list_link"
+        href="method_list.html">
+      Method List
+    </a>
+  
+    <a class="full_list_link" id="file_list_link"
+        href="file_list.html">
+      File List
+    </a>
+  
+</div>
+      <div class="clear"></div>
+    </div>
+
+    <iframe id="search_frame"></iframe>
+
+    <div id="content"><h1>Class: OrchestratorVnfProvisioning
+  
+  
+  
+</h1>
+
+<dl class="box">
+  
+    <dt class="r1">Inherits:</dt>
+    <dd class="r1">
+      <span class="inheritName">Sinatra::Application</span>
+      
+        <ul class="fullTree">
+          <li>Object</li>
+          
+            <li class="next">Sinatra::Application</li>
+          
+            <li class="next">OrchestratorVnfProvisioning</li>
+          
+        </ul>
+        <a href="#" class="inheritanceTree">show all</a>
+      
+      </dd>
+    
+  
+  
+    
+  
+    
+  
+  
+  
+    <dt class="r2 last">Defined in:</dt>
+    <dd class="r2 last">helpers/vnf.rb<span class="defines">,<br />
+  main.rb,<br /> routes/vnf.rb</span>
+</dd>
+  
+</dl>
+<div class="clear"></div>
+
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    
+<p>TeNOR - VNF Provisioning</p>
+
+<p>Copyright 2014-2016 i2CAT Foundation, Portugal Telecom Inovação</p>
+
+<p>Licensed under the Apache License, Version 2.0 (the “License”); you may not
+use this file except in compliance with the License. You may obtain a copy
+of the License at</p>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_http'>http</span><span class='symbol'>:/</span><span class='op'>/</span><span class='id identifier rubyid_www'>www</span><span class='period'>.</span><span class='id identifier rubyid_apache'>apache</span><span class='period'>.</span><span class='id identifier rubyid_org'>org</span><span class='op'>/</span><span class='id identifier rubyid_licenses'>licenses</span><span class='op'>/</span><span class='const'>LICENSE</span><span class='op'>-</span><span class='float'>2.0</span>
+</code></pre>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+License for the specific language governing permissions and limitations
+under the License.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+  <p class="tag_title">See Also:</p>
+  <ul class="see">
+    
+      <li><span class='object_link'><a href="" title="OrchestratorVnfProvisioning (class)">OrchestratorVnfProvisioning</a></span></li>
+    
+  </ul>
+
+</div>
+
+
+
+
+
+
+  
+    <h2>
+      Instance Method Summary
+      <small>(<a href="#" class="summary_toggle">collapse</a>)</small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#%2Fvnf-provisioning%2F%3Avnfr_id%2Fstack%2F%3Astatus-instance_method" title="#post (instance method)">- (Object) <strong>post</strong>(&#39;/vnf-provisioning/:vnfr_id/stack/:status&#39;) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Receive a VNF status after provisioning at the VIM.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#%2Fvnf-provisioning%2Fnetwork-service%2F%3Ansr_id-instance_method" title="#get (instance method)">- (Object) <strong>get</strong>(&#39;/vnf-provisioning/network-service/:ns_id&#39;) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Get all the VNFRs of a specific NS.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#%2Fvnf-provisioning%2Fvnf-instances-instance_method" title="#post (instance method)">- (Object) <strong>post</strong>(&#39;/vnf-provisioning/vnf-instances&#39;) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Instantiate a VNF.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#%2Fvnf-provisioning%2Fvnf-instances%2F%3Avnfr_id-instance_method" title="#get (instance method)">- (Object) <strong>get</strong>(&#39;/vnf-provisioning/vnf-instances/:vnfr_id) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Get a specific VNFR by its ID.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#%2Fvnf-provisioning%2Fvnf-instances%2F%3Avnfr_id%2Fconfig-instance_method" title="#post (instance method)">- (Object) <strong>post</strong>(&#39;/vnf-provisioning/vnf-instances/:vnfr_id/config&#39;) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Request to execute a lifecycle event.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#%2Fvnf-provisioning%2Fvnf-instances%2F%3Avnfr_id%2Fdestroy-instance_method" title="#post (instance method)">- (Object) <strong>post</strong>(&#39;/vnf-provisioning/vnf-instances/:vnfr_id/destroy&#39;) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Destroy a VNF.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#create_thread_to_monitor_stack-instance_method" title="#create_thread_to_monitor_stack (instance method)">- (Object) <strong>create_thread_to_monitor_stack</strong>(vnfr_id, stack_url, vim_info, ns_manager_callback) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Monitor stack state.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#get_root-instance_method" title="#get (instance method)">- (Object) <strong>get</strong>(&#39;/&#39;) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Get all interfaces.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#interfaces_list-instance_method" title="#interfaces_list (instance method)">- (Array) <strong>interfaces_list</strong> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Method which lists all available interfaces.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#nsmanager_callback-instance_method" title="#nsmanager_callback (instance method)">- (Object) <strong>nsmanager_callback</strong>(ns_manager_callback, message) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#parse_json-instance_method" title="#parse_json (instance method)">- (Hash) <strong>parse_json</strong>(message) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Checks if a JSON message is valid.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#provision_vnf-instance_method" title="#provision_vnf (instance method)">- (Object) <strong>provision_vnf</strong>(vim_info, vnf_name, hot) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Provision a VNF.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#request_auth_token-instance_method" title="#request_auth_token (instance method)">- (Hash) <strong>request_auth_token</strong>(vim_info) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Request an auth token from the VIM.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#verify_vdu_images-instance_method" title="#verify_vdu_images (instance method)">- (Object) <strong>verify_vdu_images</strong>(vdus) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Verify if the VDU images are accessible to download.</p>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+  
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="/vnf-provisioning/:vnfr_id/stack/:status-instance_method">
+  
+    - (<tt>Object</tt>) <strong>post</strong>(&#39;/vnf-provisioning/:vnfr_id/stack/:status&#39;) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Receive a VNF status after provisioning at the VIM</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="docstring">
+  <div class="discussion">
+    
+<p>Receive a VNF status after provisioning at the VIM</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>vnfr_id</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>the VNFR ID</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>status</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>the VNF status at the VIM</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+
+</div>
+
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314
+315
+316
+317
+318
+319
+320
+321
+322
+323
+324
+325
+326
+327
+328
+329
+330
+331
+332
+333
+334
+335
+336
+337
+338
+339
+340
+341
+342
+343
+344
+345
+346
+347
+348
+349
+350
+351
+352
+353
+354
+355
+356
+357
+358
+359
+360
+361
+362
+363
+364
+365
+366
+367
+368
+369
+370
+371
+372
+373
+374
+375
+376
+377
+378
+379
+380
+381
+382
+383
+384
+385
+386
+387
+388
+389
+390
+391
+392
+393
+394
+395
+396
+397
+398
+399
+400
+401
+402
+403
+404</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'routes/vnf.rb', line 282</span>
+
+<span class='id identifier rubyid_post'>post</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/vnf-provisioning/:vnfr_id/stack/:status</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>do</span>
+  <span class='comment'># Parse body message
+</span>  <span class='id identifier rubyid_stack_info'>stack_info</span> <span class='op'>=</span> <span class='id identifier rubyid_parse_json'>parse_json</span><span class='lparen'>(</span><span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_debug'>debug</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Stack info: </span><span class='tstring_end'>&#39;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_stack_info'>stack_info</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span>
+
+  <span class='kw'>begin</span>
+    <span class='id identifier rubyid_vnfr'>vnfr</span> <span class='op'>=</span> <span class='const'>Vnfr</span><span class='period'>.</span><span class='id identifier rubyid_find'>find</span><span class='lparen'>(</span><span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:vnfr_id</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+  <span class='kw'>rescue</span> <span class='const'>Mongoid</span><span class='op'>::</span><span class='const'>Errors</span><span class='op'>::</span><span class='const'>DocumentNotFound</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>VNFR record not found</span><span class='tstring_end'>&#39;</span></span>
+    <span class='id identifier rubyid_halt'>halt</span> <span class='int'>404</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># If stack is in create complete state
+</span>  <span class='kw'>if</span> <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:status</span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>create_complete</span><span class='tstring_end'>&#39;</span></span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_debug'>debug</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Create complete</span><span class='tstring_end'>&#39;</span></span>
+
+    <span class='comment'># Send the VNFR to the mAPI
+</span>    <span class='id identifier rubyid_mapi_request'>mapi_request</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='label'>id:</span> <span class='id identifier rubyid_vnfr'>vnfr</span><span class='period'>.</span><span class='id identifier rubyid_id'>id</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='comma'>,</span> <span class='label'>vnfd:</span> <span class='lbrace'>{</span><span class='label'>vnf_lifecycle_events:</span> <span class='id identifier rubyid_vnfr'>vnfr</span><span class='period'>.</span><span class='id identifier rubyid_lifecycle_info'>lifecycle_info</span><span class='rbrace'>}</span><span class='rbrace'>}</span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_debug'>debug</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>mAPI request: </span><span class='tstring_end'>&#39;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_mapi_request'>mapi_request</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span>
+    <span class='kw'>begin</span>
+      <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_post'>post</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_settings'>settings</span><span class='period'>.</span><span class='id identifier rubyid_mapi'>mapi</span><span class='embexpr_end'>}</span><span class='tstring_content'>/vnf_api/</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_mapi_request'>mapi_request</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span><span class='comma'>,</span> <span class='symbol'>:accept</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span>
+    <span class='kw'>rescue</span> <span class='const'>Errno</span><span class='op'>::</span><span class='const'>ECONNREFUSED</span>
+      <span class='id identifier rubyid_message'>message</span> <span class='op'>=</span> <span class='lbrace'>{</span> <span class='label'>status:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>mAPI_unreachable</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='label'>vnfd_id:</span> <span class='id identifier rubyid_vnfr'>vnfr</span><span class='period'>.</span><span class='id identifier rubyid_vnfd_reference'>vnfd_reference</span><span class='comma'>,</span> <span class='label'>vnfr_id:</span> <span class='id identifier rubyid_vnfr'>vnfr</span><span class='period'>.</span><span class='id identifier rubyid_id'>id</span><span class='rbrace'>}</span>
+      <span class='id identifier rubyid_nsmanager_callback'>nsmanager_callback</span><span class='lparen'>(</span><span class='id identifier rubyid_stack_info'>stack_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>ns_manager_callback</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_message'>message</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>mAPI unreachable</span><span class='tstring_end'>&#39;</span></span>
+    <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+      <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span>
+      <span class='id identifier rubyid_message'>message</span> <span class='op'>=</span> <span class='lbrace'>{</span> <span class='label'>status:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>mAPI_error</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='label'>vnfd_id:</span> <span class='id identifier rubyid_vnfr'>vnfr</span><span class='period'>.</span><span class='id identifier rubyid_vnfd_reference'>vnfd_reference</span><span class='comma'>,</span> <span class='label'>vnfr_id:</span> <span class='id identifier rubyid_vnfr'>vnfr</span><span class='period'>.</span><span class='id identifier rubyid_id'>id</span><span class='rbrace'>}</span>
+      <span class='id identifier rubyid_nsmanager_callback'>nsmanager_callback</span><span class='lparen'>(</span><span class='id identifier rubyid_stack_info'>stack_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>ns_manager_callback</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_message'>message</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_halt'>halt</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
+    <span class='kw'>end</span>
+
+    <span class='comment'># Read from VIM outputs and map with parameters
+</span>
+    <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Output recevied from Openstack:</span><span class='tstring_end'>&quot;</span></span>
+    <span class='id identifier rubyid_puts'>puts</span> <span class='id identifier rubyid_stack_info'>stack_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>stack</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>outputs</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+
+    <span class='id identifier rubyid_vms_id'>vms_id</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
+    <span class='id identifier rubyid_lifecycle_events_values'>lifecycle_events_values</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
+    <span class='id identifier rubyid_vnf_addresses'>vnf_addresses</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
+    <span class='id identifier rubyid_stack_info'>stack_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>stack</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>outputs</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_output'>output</span><span class='op'>|</span>
+      <span class='comment'># If the output is an ID
+</span>      <span class='kw'>if</span> <span class='id identifier rubyid_output'>output</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>output_key</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^.*#id$</span><span class='regexp_end'>/i</span></span>
+        <span class='id identifier rubyid_vms_id'>vms_id</span><span class='lbracket'>[</span><span class='id identifier rubyid_output'>output</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>output_key</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_match'>match</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^(.*)#id$</span><span class='regexp_end'>/i</span></span><span class='rparen'>)</span><span class='lbracket'>[</span><span class='int'>1</span><span class='rbracket'>]</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_output'>output</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>output_value</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+      <span class='kw'>else</span>
+        <span class='comment'># If the output is a Floating IP
+</span>        <span class='kw'>if</span> <span class='id identifier rubyid_output'>output</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>output_key</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^.*#floating_ip$</span><span class='regexp_end'>/i</span></span>
+          <span class='id identifier rubyid_vnf_addresses'>vnf_addresses</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>controller</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_output'>output</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>output_value</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+        <span class='kw'>else</span> <span class='comment'># Else look for the output on the lifecycle events
+</span>          <span class='id identifier rubyid_vnfr'>vnfr</span><span class='period'>.</span><span class='id identifier rubyid_lifecycle_info'>lifecycle_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>events</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_event'>event</span><span class='comma'>,</span> <span class='id identifier rubyid_event_info'>event_info</span><span class='op'>|</span>
+            <span class='kw'>unless</span> <span class='id identifier rubyid_event_info'>event_info</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+              <span class='const'>JSON</span><span class='period'>.</span><span class='id identifier rubyid_parse'>parse</span><span class='lparen'>(</span><span class='id identifier rubyid_event_info'>event_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>template_file</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_id'>id</span><span class='comma'>,</span> <span class='id identifier rubyid_parameter'>parameter</span><span class='op'>|</span>
+                <span class='id identifier rubyid_parameter_match'>parameter_match</span> <span class='op'>=</span> <span class='id identifier rubyid_parameter'>parameter</span><span class='period'>.</span><span class='id identifier rubyid_match'>match</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^get_attr\[(.*), *(.*)\]$</span><span class='regexp_end'>/i</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_to_a'>to_a</span>
+                <span class='kw'>if</span> <span class='id identifier rubyid_output'>output</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>output_key</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_parameter_match'>parameter_match</span><span class='lbracket'>[</span><span class='int'>1</span><span class='rbracket'>]</span><span class='embexpr_end'>}</span><span class='tstring_content'>#</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_parameter_match'>parameter_match</span><span class='lbracket'>[</span><span class='int'>2</span><span class='rbracket'>]</span><span class='embexpr_end'>}</span><span class='tstring_content'>$</span><span class='regexp_end'>/i</span></span>
+                  <span class='id identifier rubyid_vnf_addresses'>vnf_addresses</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_parameter_match'>parameter_match</span><span class='lbracket'>[</span><span class='int'>1</span><span class='rbracket'>]</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_output'>output</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>output_value</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='kw'>if</span> <span class='id identifier rubyid_parameter_match'>parameter_match</span><span class='lbracket'>[</span><span class='int'>2</span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>ip</span><span class='tstring_end'>&#39;</span></span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_vnf_addresses'>vnf_addresses</span><span class='period'>.</span><span class='id identifier rubyid_has_key?'>has_key?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_parameter_match'>parameter_match</span><span class='lbracket'>[</span><span class='int'>1</span><span class='rbracket'>]</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='comment'># Only to populate VNF Addresses specified by ETSI 
+</span>                  <span class='id identifier rubyid_lifecycle_events_values'>lifecycle_events_values</span><span class='lbracket'>[</span><span class='id identifier rubyid_event'>event</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span> <span class='kw'>unless</span> <span class='id identifier rubyid_lifecycle_events_values'>lifecycle_events_values</span><span class='period'>.</span><span class='id identifier rubyid_has_key?'>has_key?</span><span class='lparen'>(</span><span class='id identifier rubyid_event'>event</span><span class='rparen'>)</span>
+                  <span class='id identifier rubyid_lifecycle_events_values'>lifecycle_events_values</span><span class='lbracket'>[</span><span class='id identifier rubyid_event'>event</span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_parameter_match'>parameter_match</span><span class='lbracket'>[</span><span class='int'>1</span><span class='rbracket'>]</span><span class='embexpr_end'>}</span><span class='tstring_content'>#</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_parameter_match'>parameter_match</span><span class='lbracket'>[</span><span class='int'>2</span><span class='rbracket'>]</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_output'>output</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>output_value</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+                <span class='kw'>end</span>
+              <span class='kw'>end</span>
+            <span class='kw'>end</span>
+          <span class='kw'>end</span>
+        <span class='kw'>end</span>
+      <span class='kw'>end</span>
+    <span class='kw'>end</span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_debug'>debug</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>VMs ID: </span><span class='tstring_end'>&#39;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_vms_id'>vms_id</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_debug'>debug</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>VNF Addresses: </span><span class='tstring_end'>&#39;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_vnf_addresses'>vnf_addresses</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_debug'>debug</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Lifecycle events values: </span><span class='tstring_end'>&#39;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_lifecycle_events_values'>lifecycle_events_values</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span>
+
+    <span class='comment'># Update the VNFR
+</span>    <span class='id identifier rubyid_vnfr'>vnfr</span><span class='period'>.</span><span class='id identifier rubyid_push'>push</span><span class='lparen'>(</span><span class='label'>lifecycle_event_history:</span> <span class='id identifier rubyid_stack_info'>stack_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>stack</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>stack_status</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_vnfr'>vnfr</span><span class='period'>.</span><span class='id identifier rubyid_update_attributes!'>update_attributes!</span><span class='lparen'>(</span>
+      <span class='label'>vnf_addresses:</span> <span class='id identifier rubyid_vnf_addresses'>vnf_addresses</span><span class='comma'>,</span>
+      <span class='label'>vnf_status:</span> <span class='int'>1</span><span class='comma'>,</span>
+      <span class='label'>vms_id:</span> <span class='id identifier rubyid_vms_id'>vms_id</span><span class='comma'>,</span>
+      <span class='label'>lifecycle_events_values:</span> <span class='id identifier rubyid_lifecycle_events_values'>lifecycle_events_values</span><span class='rparen'>)</span>
+
+    <span class='comment'># Build message to send to the NS Manager callback
+</span>    <span class='id identifier rubyid_vnfi_id'>vnfi_id</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
+    <span class='id identifier rubyid_vnfr'>vnfr</span><span class='period'>.</span><span class='id identifier rubyid_vms_id'>vms_id</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='lbrace'>{</span><span class='op'>|</span><span class='id identifier rubyid_key'>key</span><span class='comma'>,</span> <span class='id identifier rubyid_value'>value</span><span class='op'>|</span> <span class='id identifier rubyid_vnfi_id'>vnfi_id</span> <span class='op'>&lt;&lt;</span> <span class='id identifier rubyid_value'>value</span><span class='rbrace'>}</span>
+    <span class='id identifier rubyid_message'>message</span> <span class='op'>=</span> <span class='lbrace'>{</span> <span class='label'>vnfd_id:</span> <span class='id identifier rubyid_vnfr'>vnfr</span><span class='period'>.</span><span class='id identifier rubyid_vnfd_reference'>vnfd_reference</span><span class='comma'>,</span> <span class='label'>vnfi_id:</span> <span class='id identifier rubyid_vnfi_id'>vnfi_id</span><span class='comma'>,</span> <span class='label'>vnfr_id:</span> <span class='id identifier rubyid_vnfr'>vnfr</span><span class='period'>.</span><span class='id identifier rubyid_id'>id</span><span class='rbrace'>}</span>
+    <span class='id identifier rubyid_nsmanager_callback'>nsmanager_callback</span><span class='lparen'>(</span><span class='id identifier rubyid_stack_info'>stack_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>ns_manager_callback</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_message'>message</span><span class='rparen'>)</span>
+  <span class='kw'>else</span>
+    <span class='comment'># If the stack has failed to create
+</span>    <span class='kw'>if</span> <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:status</span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>create_failed</span><span class='tstring_end'>&#39;</span></span>
+      <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_debug'>debug</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Created failed</span><span class='tstring_end'>&#39;</span></span>
+      <span class='comment'># Request an auth token
+</span>      <span class='id identifier rubyid_token_info'>token_info</span> <span class='op'>=</span> <span class='id identifier rubyid_request_auth_token'>request_auth_token</span><span class='lparen'>(</span><span class='id identifier rubyid_stack_info'>stack_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>vim_info</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_auth_token'>auth_token</span> <span class='op'>=</span> <span class='id identifier rubyid_token_info'>token_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>access</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>token</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+      <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_debug'>debug</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Token info: </span><span class='tstring_end'>&#39;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_token_info'>token_info</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span>
+
+      <span class='comment'># Request VIM information about the error
+</span>      <span class='kw'>begin</span>
+        <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span> <span class='id identifier rubyid_vnfr'>vnfr</span><span class='period'>.</span><span class='id identifier rubyid_stack_url'>stack_url</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>X-Auth-Token</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_auth_token'>auth_token</span><span class='comma'>,</span> <span class='symbol'>:accept</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span>
+      <span class='kw'>rescue</span> <span class='const'>Errno</span><span class='op'>::</span><span class='const'>ECONNREFUSED</span>
+        <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>VIM unreachable</span><span class='tstring_end'>&#39;</span></span>
+      <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+        <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span>
+        <span class='id identifier rubyid_halt'>halt</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
+      <span class='kw'>end</span>
+      <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Response from the VIM about the error: </span><span class='tstring_end'>&#39;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_response'>response</span>
+
+      <span class='comment'># Request VIM to delete the stack
+</span>      <span class='kw'>begin</span>
+        <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_delete'>delete</span> <span class='id identifier rubyid_vnfr'>vnfr</span><span class='period'>.</span><span class='id identifier rubyid_stack_url'>stack_url</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>X-Auth-Token</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_auth_token'>auth_token</span><span class='comma'>,</span> <span class='symbol'>:accept</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span>
+      <span class='kw'>rescue</span> <span class='const'>Errno</span><span class='op'>::</span><span class='const'>ECONNREFUSED</span>
+        <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>VIM unreachable</span><span class='tstring_end'>&#39;</span></span>
+      <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+        <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span>
+        <span class='id identifier rubyid_halt'>halt</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
+      <span class='kw'>end</span>
+      <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_debug'>debug</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Response from VIM to destroy allocated resources: </span><span class='tstring_end'>&#39;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span>
+
+      <span class='id identifier rubyid_message'>message</span> <span class='op'>=</span> <span class='lbrace'>{</span> <span class='label'>status:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>ERROR_CREATING</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='label'>vnfd_id:</span> <span class='id identifier rubyid_vnfr'>vnfr</span><span class='period'>.</span><span class='id identifier rubyid_vnfd_reference'>vnfd_reference</span><span class='comma'>,</span> <span class='label'>vnfr_id:</span> <span class='id identifier rubyid_vnfr'>vnfr</span><span class='period'>.</span><span class='id identifier rubyid_id'>id</span><span class='rbrace'>}</span>
+      <span class='id identifier rubyid_nsmanager_callback'>nsmanager_callback</span><span class='lparen'>(</span><span class='id identifier rubyid_stack_info'>stack_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>ns_manager_callback</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_message'>message</span><span class='rparen'>)</span>
+
+      <span class='comment'># Delete the VNFR from the database
+</span>      <span class='id identifier rubyid_vnfr'>vnfr</span><span class='period'>.</span><span class='id identifier rubyid_destroy'>destroy</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+
+  <span class='id identifier rubyid_halt'>halt</span> <span class='int'>200</span>
+
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="/vnf-provisioning/network-service/:nsr_id-instance_method">
+  
+    - (<tt>Object</tt>) <strong>get</strong>(&#39;/vnf-provisioning/network-service/:ns_id&#39;) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Get all the VNFRs of a specific NS</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="docstring">
+  <div class="discussion">
+    
+<p>Get all the VNFRs of a specific NS</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div>
+
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+34
+35
+36
+37
+38
+39
+40
+41
+42</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'routes/vnf.rb', line 34</span>
+
+<span class='id identifier rubyid_get'>get</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/vnf-provisioning/network-service/:nsr_id</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>do</span>
+  <span class='kw'>begin</span>
+    <span class='id identifier rubyid_vnfrs'>vnfrs</span> <span class='op'>=</span> <span class='const'>Vnfr</span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='label'>nsr_instance:</span> <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:nsr_id</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+  <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span>
+    <span class='id identifier rubyid_halt'>halt</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
+  <span class='kw'>end</span>
+  <span class='id identifier rubyid_halt'>halt</span> <span class='int'>200</span><span class='comma'>,</span> <span class='id identifier rubyid_vnfrs'>vnfrs</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="/vnf-provisioning/vnf-instances-instance_method">
+  
+    - (<tt>Object</tt>) <strong>post</strong>(&#39;/vnf-provisioning/vnf-instances&#39;) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Instantiate a VNF</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="docstring">
+  <div class="discussion">
+    
+<p>Instantiate a VNF</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>the</span>
+      
+      
+        <span class='type'>(<tt>JSON</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>VNF to instantiate and auth info</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+
+</div>
+
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+48
+49
+50
+51
+52
+53
+54
+55
+56</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'routes/vnf.rb', line 48</span>
+
+<span class='id identifier rubyid_get'>get</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/vnf-provisioning/vnf-instances</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>do</span>
+  <span class='kw'>begin</span>
+    <span class='id identifier rubyid_vnfrs'>vnfrs</span> <span class='op'>=</span> <span class='const'>Vnfr</span><span class='period'>.</span><span class='id identifier rubyid_all'>all</span>
+  <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span>
+    <span class='id identifier rubyid_halt'>halt</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
+  <span class='kw'>end</span>
+  <span class='id identifier rubyid_halt'>halt</span> <span class='int'>200</span><span class='comma'>,</span> <span class='id identifier rubyid_vnfrs'>vnfrs</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="/vnf-provisioning/vnf-instances/:vnfr_id-instance_method">
+  
+    - (<tt>Object</tt>) <strong>get</strong>(&#39;/vnf-provisioning/vnf-instances/:vnfr_id) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Get a specific VNFR by its ID</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="docstring">
+  <div class="discussion">
+    
+<p>Get a specific VNFR by its ID</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div>
+
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+154
+155
+156
+157
+158
+159
+160
+161</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'routes/vnf.rb', line 154</span>
+
+<span class='id identifier rubyid_get'>get</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/vnf-provisioning/vnf-instances/:vnfr_id</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>do</span>
+  <span class='kw'>begin</span>
+    <span class='id identifier rubyid_vnfr'>vnfr</span> <span class='op'>=</span> <span class='const'>Vnfr</span><span class='period'>.</span><span class='id identifier rubyid_find'>find</span><span class='lparen'>(</span><span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:vnfr_id</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+  <span class='kw'>rescue</span> <span class='const'>Mongoid</span><span class='op'>::</span><span class='const'>Errors</span><span class='op'>::</span><span class='const'>DocumentNotFound</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='id identifier rubyid_halt'>halt</span> <span class='int'>404</span>
+  <span class='kw'>end</span>
+  <span class='id identifier rubyid_halt'>halt</span> <span class='int'>200</span><span class='comma'>,</span> <span class='id identifier rubyid_vnfr'>vnfr</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="/vnf-provisioning/vnf-instances/:vnfr_id/config-instance_method">
+  
+    - (<tt>Object</tt>) <strong>post</strong>(&#39;/vnf-provisioning/vnf-instances/:vnfr_id/config&#39;) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Request to execute a lifecycle event</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="docstring">
+  <div class="discussion">
+    
+<p>Request to execute a lifecycle event</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>vnfr_id</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>the VNFR ID</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'></span>
+      
+      
+        <span class='type'>(<tt>JSON</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+
+</div>
+
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'routes/vnf.rb', line 232</span>
+
+<span class='id identifier rubyid_put'>put</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/vnf-provisioning/vnf-instances/:vnfr_id/config</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>do</span>
+  <span class='comment'># Return if content-type is invalid
+</span>  <span class='id identifier rubyid_halt'>halt</span> <span class='int'>415</span> <span class='kw'>unless</span> <span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_content_type'>content_type</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>application/json</span><span class='tstring_end'>&#39;</span></span>
+
+  <span class='comment'># Validate JSON format
+</span>  <span class='id identifier rubyid_config_info'>config_info</span> <span class='op'>=</span> <span class='id identifier rubyid_parse_json'>parse_json</span><span class='lparen'>(</span><span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span><span class='rparen'>)</span>
+
+  <span class='comment'># Return if have an invalid event type
+</span>  <span class='id identifier rubyid_halt'>halt</span> <span class='int'>400</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Invalid event type.</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>unless</span> <span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>start</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>stop</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>restart</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>scale-in</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>scale-out</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span> <span class='id identifier rubyid_config_info'>config_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>event</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_downcase'>downcase</span>
+
+  <span class='comment'># Get VNFR stack info
+</span>  <span class='id identifier rubyid_vnfr'>vnfr</span> <span class='op'>=</span> <span class='const'>Vnfr</span><span class='period'>.</span><span class='id identifier rubyid_find'>find</span><span class='lparen'>(</span><span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:vnfr_id</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+
+  <span class='comment'># Return if event doesn&#39;t have information
+</span>  <span class='id identifier rubyid_halt'>halt</span> <span class='int'>400</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Event has no information</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_vnfr'>vnfr</span><span class='period'>.</span><span class='id identifier rubyid_lifecycle_info'>lifecycle_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>events</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='id identifier rubyid_config_info'>config_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>event</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+
+  <span class='comment'># Build mAPI request
+</span>  <span class='id identifier rubyid_mapi_request'>mapi_request</span> <span class='op'>=</span> <span class='lbrace'>{</span>
+    <span class='label'>event:</span> <span class='id identifier rubyid_config_info'>config_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>event</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='comma'>,</span>
+    <span class='label'>vnf_controller:</span> <span class='id identifier rubyid_vnfr'>vnfr</span><span class='period'>.</span><span class='id identifier rubyid_vnf_addresses'>vnf_addresses</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>controller</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='comma'>,</span>
+    <span class='label'>parameters:</span> <span class='id identifier rubyid_vnfr'>vnfr</span><span class='period'>.</span><span class='id identifier rubyid_lifecycle_events_values'>lifecycle_events_values</span><span class='lbracket'>[</span><span class='id identifier rubyid_config_info'>config_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>event</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='rbracket'>]</span>
+  <span class='rbrace'>}</span>
+  <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_debug'>debug</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>mAPI request: </span><span class='tstring_end'>&#39;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_mapi_request'>mapi_request</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span>
+
+  <span class='comment'># Send request to the mAPI
+</span>  <span class='kw'>begin</span>
+    <span class='kw'>if</span> <span class='id identifier rubyid_mapi_request'>mapi_request</span><span class='lbracket'>[</span><span class='symbol'>:event</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_downcase'>downcase</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>start</span><span class='tstring_end'>&#39;</span></span>
+      <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_post'>post</span> <span class='id identifier rubyid_settings'>settings</span><span class='period'>.</span><span class='id identifier rubyid_mapi'>mapi</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/vnf_api/</span><span class='tstring_end'>&#39;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:vnfr_id</span><span class='rbracket'>]</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/config/</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_mapi_request'>mapi_request</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span><span class='comma'>,</span> <span class='symbol'>:accept</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span>
+    <span class='kw'>else</span>
+      <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_put'>put</span> <span class='id identifier rubyid_settings'>settings</span><span class='period'>.</span><span class='id identifier rubyid_mapi'>mapi</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/vnf_api/</span><span class='tstring_end'>&#39;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:vnfr_id</span><span class='rbracket'>]</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/config/</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_mapi_request'>mapi_request</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span><span class='comma'>,</span> <span class='symbol'>:accept</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span>
+    <span class='kw'>end</span>
+  <span class='kw'>rescue</span> <span class='const'>Errno</span><span class='op'>::</span><span class='const'>ECONNREFUSED</span>
+    <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>mAPI unreachable</span><span class='tstring_end'>&#39;</span></span>
+  <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span>
+    <span class='id identifier rubyid_halt'>halt</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Update the VNFR event history
+</span>  <span class='id identifier rubyid_vnfr'>vnfr</span><span class='period'>.</span><span class='id identifier rubyid_push'>push</span><span class='lparen'>(</span><span class='label'>lifecycle_event_history:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Executed a </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_mapi_request'>mapi_request</span><span class='lbracket'>[</span><span class='symbol'>:event</span><span class='rbracket'>]</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+
+  <span class='id identifier rubyid_halt'>halt</span> <span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="/vnf-provisioning/vnf-instances/:vnfr_id/destroy-instance_method">
+  
+    - (<tt>Object</tt>) <strong>post</strong>(&#39;/vnf-provisioning/vnf-instances/:vnfr_id/destroy&#39;) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Destroy a VNF</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="docstring">
+  <div class="discussion">
+    
+<p>Destroy a VNF</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>vnfr_id</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>the VNFR ID</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>the</span>
+      
+      
+        <span class='type'>(<tt>JSON</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>VNF to instantiate and auth info</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+
+</div>
+
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'routes/vnf.rb', line 169</span>
+
+<span class='id identifier rubyid_post'>post</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/vnf-provisioning/vnf-instances/:vnfr_id/destroy</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>do</span>
+  <span class='comment'># Return if content-type is invalid
+</span>  <span class='id identifier rubyid_halt'>halt</span> <span class='int'>415</span> <span class='kw'>unless</span> <span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_content_type'>content_type</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>application/json</span><span class='tstring_end'>&#39;</span></span>
+
+  <span class='comment'># Validate JSON format
+</span>  <span class='id identifier rubyid_destroy_info'>destroy_info</span> <span class='op'>=</span> <span class='id identifier rubyid_parse_json'>parse_json</span><span class='lparen'>(</span><span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_debug'>debug</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Destroy info: </span><span class='tstring_end'>&#39;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_destroy_info'>destroy_info</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span>
+
+  <span class='comment'># Request an auth token from the VIM
+</span>  <span class='id identifier rubyid_vim_info'>vim_info</span> <span class='op'>=</span> <span class='lbrace'>{</span>
+    <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>keystone</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_destroy_info'>destroy_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>auth</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>url</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>keystone</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='comma'>,</span>
+    <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>tenant</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_destroy_info'>destroy_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>auth</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>tenant</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='comma'>,</span>
+    <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>username</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_destroy_info'>destroy_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>auth</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>username</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='comma'>,</span>
+    <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>password</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_destroy_info'>destroy_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>auth</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>password</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+  <span class='rbrace'>}</span>
+  <span class='id identifier rubyid_token_info'>token_info</span> <span class='op'>=</span> <span class='id identifier rubyid_request_auth_token'>request_auth_token</span><span class='lparen'>(</span><span class='id identifier rubyid_vim_info'>vim_info</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_auth_token'>auth_token</span> <span class='op'>=</span> <span class='id identifier rubyid_token_info'>token_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>access</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>token</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+  <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_debug'>debug</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Token info: </span><span class='tstring_end'>&#39;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_token_info'>token_info</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span>
+
+  <span class='comment'># Find VNFR
+</span>  <span class='kw'>begin</span>
+    <span class='id identifier rubyid_vnfr'>vnfr</span> <span class='op'>=</span> <span class='const'>Vnfr</span><span class='period'>.</span><span class='id identifier rubyid_find'>find</span><span class='lparen'>(</span><span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:vnfr_id</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+  <span class='kw'>rescue</span> <span class='const'>Mongoid</span><span class='op'>::</span><span class='const'>Errors</span><span class='op'>::</span><span class='const'>DocumentNotFound</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='id identifier rubyid_halt'>halt</span> <span class='int'>404</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Requests the VIM to delete the stack
+</span>  <span class='kw'>begin</span>
+    <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_delete'>delete</span> <span class='id identifier rubyid_vnfr'>vnfr</span><span class='period'>.</span><span class='id identifier rubyid_stack_url'>stack_url</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>X-Auth-Token</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_auth_token'>auth_token</span><span class='comma'>,</span> <span class='symbol'>:accept</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span>
+  <span class='kw'>rescue</span> <span class='const'>Errno</span><span class='op'>::</span><span class='const'>ECONNREFUSED</span>
+    <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>VIM unreachable</span><span class='tstring_end'>&#39;</span></span>
+  <span class='kw'>rescue</span> <span class='const'>RestClient</span><span class='op'>::</span><span class='const'>ResourceNotFound</span>
+    <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Already removed from the VIM.</span><span class='tstring_end'>&quot;</span></span>
+  <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span>
+    <span class='id identifier rubyid_halt'>halt</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
+  <span class='kw'>end</span>
+  <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_debug'>debug</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>VIM response to destroy: </span><span class='tstring_end'>&#39;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span>
+
+  <span class='comment'># Delete the VNFR from mAPI
+</span>  <span class='kw'>begin</span>
+    <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_delete'>delete</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_settings'>settings</span><span class='period'>.</span><span class='id identifier rubyid_mapi'>mapi</span><span class='embexpr_end'>}</span><span class='tstring_content'>/vnf_api/</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_vnfr'>vnfr</span><span class='period'>.</span><span class='id identifier rubyid_id'>id</span><span class='embexpr_end'>}</span><span class='tstring_content'>/</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>X-Auth-Token</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='ivar'>@client_token</span>
+  <span class='kw'>rescue</span> <span class='const'>Errno</span><span class='op'>::</span><span class='const'>ECONNREFUSED</span>
+    <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>mAPI unreachable</span><span class='tstring_end'>&#39;</span></span>
+  <span class='kw'>rescue</span> <span class='const'>RestClient</span><span class='op'>::</span><span class='const'>ResourceNotFound</span>
+    <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Already removed from the mAPI.</span><span class='tstring_end'>&quot;</span></span>
+  <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span>
+    <span class='comment'>#halt e.response.code, e.response.body
+</span>  <span class='kw'>end</span>  
+
+  <span class='comment'># Delete the VNFR from the database
+</span>  <span class='id identifier rubyid_vnfr'>vnfr</span><span class='period'>.</span><span class='id identifier rubyid_destroy'>destroy</span>
+
+  <span class='id identifier rubyid_halt'>halt</span> <span class='int'>200</span><span class='comma'>,</span> <span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="create_thread_to_monitor_stack-instance_method">
+  
+    - (<tt>Object</tt>) <strong>create_thread_to_monitor_stack</strong>(vnfr_id, stack_url, vim_info, ns_manager_callback) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Monitor stack state</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>url</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>the HEAT URL for the stack</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>auth_token</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>the auth token to authenticate with the VIM</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'helpers/vnf.rb', line 119</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_create_thread_to_monitor_stack'>create_thread_to_monitor_stack</span><span class='lparen'>(</span><span class='id identifier rubyid_vnfr_id'>vnfr_id</span><span class='comma'>,</span> <span class='id identifier rubyid_stack_url'>stack_url</span><span class='comma'>,</span> <span class='id identifier rubyid_vim_info'>vim_info</span><span class='comma'>,</span> <span class='id identifier rubyid_ns_manager_callback'>ns_manager_callback</span><span class='rparen'>)</span>
+  <span class='comment'># Check when stack change state
+</span>  <span class='id identifier rubyid_thread'>thread</span> <span class='op'>=</span> <span class='const'>Thread</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span> <span class='kw'>do</span> 
+    <span class='id identifier rubyid_sleep_time'>sleep_time</span> <span class='op'>=</span> <span class='int'>10</span> <span class='comment'># set wait time in seconds
+</span>
+    <span class='kw'>begin</span>
+      <span class='comment'># Request an auth token
+</span>      <span class='id identifier rubyid_token_info'>token_info</span> <span class='op'>=</span> <span class='id identifier rubyid_request_auth_token'>request_auth_token</span><span class='lparen'>(</span><span class='id identifier rubyid_vim_info'>vim_info</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_auth_token'>auth_token</span> <span class='op'>=</span> <span class='id identifier rubyid_token_info'>token_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>access</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>token</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+
+      <span class='kw'>begin</span>          
+        <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='id identifier rubyid_parse_json'>parse_json</span><span class='lparen'>(</span><span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span> <span class='id identifier rubyid_stack_url'>stack_url</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>X-Auth-Token</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_auth_token'>auth_token</span><span class='comma'>,</span> <span class='symbol'>:accept</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span><span class='rparen'>)</span>
+      <span class='kw'>rescue</span> <span class='const'>Errno</span><span class='op'>::</span><span class='const'>ECONNREFUSED</span>
+        <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>VIM unreachable</span><span class='tstring_end'>&#39;</span></span>
+      <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+        <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span>
+      <span class='kw'>end</span>
+
+      <span class='id identifier rubyid_sleep'>sleep</span> <span class='id identifier rubyid_sleep_time'>sleep_time</span> <span class='comment'># wait x seconds
+</span>
+    <span class='kw'>end</span> <span class='kw'>while</span> <span class='id identifier rubyid_response'>response</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>stack</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>stack_status</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_downcase'>downcase</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>create_in_progress</span><span class='tstring_end'>&#39;</span></span>
+
+    <span class='comment'># After stack create is complete, send information back to provisioning
+</span>    <span class='id identifier rubyid_response'>response</span><span class='lbracket'>[</span><span class='symbol'>:ns_manager_callback</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_ns_manager_callback'>ns_manager_callback</span>
+    <span class='id identifier rubyid_response'>response</span><span class='lbracket'>[</span><span class='symbol'>:vim_info</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_vim_info'>vim_info</span> <span class='comment'># Needed to delete the stack if it failed
+</span>    <span class='kw'>begin</span>
+      <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_post'>post</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>http://localhost:</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_settings'>settings</span><span class='period'>.</span><span class='id identifier rubyid_port'>port</span><span class='embexpr_end'>}</span><span class='tstring_content'>/vnf-provisioning/</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_vnfr_id'>vnfr_id</span><span class='embexpr_end'>}</span><span class='tstring_content'>/stack/</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_response'>response</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>stack</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>stack_status</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_downcase'>downcase</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span>
+    <span class='kw'>rescue</span> <span class='const'>Errno</span><span class='op'>::</span><span class='const'>ECONNREFUSED</span>
+      <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>VNF Provisioning unreachable</span><span class='tstring_end'>&#39;</span></span>
+    <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+      <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="get_root-instance_method">
+  
+    - (<tt>Object</tt>) <strong>get</strong>(&#39;/&#39;) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Get all interfaces</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="docstring">
+  <div class="discussion">
+    
+<p>Get all available interfaces</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div>
+
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+25
+26
+27
+28</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'routes/vnf.rb', line 25</span>
+
+<span class='id identifier rubyid_get'>get</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>do</span>
+  <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_debug'>debug</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Interfaces list: </span><span class='tstring_end'>&#39;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_interfaces_list'>interfaces_list</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span>
+  <span class='id identifier rubyid_halt'>halt</span> <span class='int'>200</span><span class='comma'>,</span> <span class='id identifier rubyid_interfaces_list'>interfaces_list</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="interfaces_list-instance_method">
+  
+    - (<tt>Array</tt>) <strong>interfaces_list</strong> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Method which lists all available interfaces</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Array</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>an array of hashes containing all interfaces</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'helpers/vnf.rb', line 41</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_interfaces_list'>interfaces_list</span>
+  <span class='lbracket'>[</span>
+      <span class='lbrace'>{</span>
+          <span class='label'>uri:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+          <span class='label'>method:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>GET</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+          <span class='label'>purpose:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>REST API Structure and Capability Discovery</span><span class='tstring_end'>&#39;</span></span>
+      <span class='rbrace'>}</span><span class='comma'>,</span>
+      <span class='lbrace'>{</span>
+          <span class='label'>uri:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/vnf-provisioning/vnf-instances</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+          <span class='label'>method:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>POST</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+          <span class='label'>purpose:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Provision a VNF</span><span class='tstring_end'>&#39;</span></span>
+      <span class='rbrace'>}</span><span class='comma'>,</span>
+      <span class='lbrace'>{</span>
+          <span class='label'>uri:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/vnf-provisioning/vnf-instances/:id/destroy</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+          <span class='label'>method:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>POST</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+          <span class='label'>purpose:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Destroy a VNF</span><span class='tstring_end'>&#39;</span></span>
+      <span class='rbrace'>}</span>
+  <span class='rbracket'>]</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="nsmanager_callback-instance_method">
+  
+    - (<tt>Object</tt>) <strong>nsmanager_callback</strong>(ns_manager_callback, message) 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'helpers/vnf.rb', line 172</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_nsmanager_callback'>nsmanager_callback</span><span class='lparen'>(</span><span class='id identifier rubyid_ns_manager_callback'>ns_manager_callback</span><span class='comma'>,</span> <span class='id identifier rubyid_message'>message</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_debug'>debug</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>NS Manager message: </span><span class='tstring_end'>&#39;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_message'>message</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span>
+  <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_debug'>debug</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>NS Manager callback: </span><span class='tstring_end'>&#39;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_ns_manager_callback'>ns_manager_callback</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span>
+  <span class='kw'>begin</span>
+    <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_post'>post</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_ns_manager_callback'>ns_manager_callback</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_message'>message</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>X-Auth-Token</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='ivar'>@client_token</span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span><span class='comma'>,</span> <span class='symbol'>:accept</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span>
+  <span class='kw'>rescue</span> <span class='const'>Errno</span><span class='op'>::</span><span class='const'>ECONNREFUSED</span>
+    <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>NS Manager callback down</span><span class='tstring_end'>&#39;</span></span>
+  <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span>
+    <span class='id identifier rubyid_halt'>halt</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="parse_json-instance_method">
+  
+    - (<tt>Hash</tt>) <strong>parse_json</strong>(message) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Checks if a JSON message is valid</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>message</span>
+      
+      
+        <span class='type'>(<tt>JSON</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>some JSON message</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Hash</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>the parsed message</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'helpers/vnf.rb', line 25</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_parse_json'>parse_json</span><span class='lparen'>(</span><span class='id identifier rubyid_message'>message</span><span class='rparen'>)</span>
+  <span class='comment'># Check JSON message format
+</span>  <span class='kw'>begin</span>
+    <span class='id identifier rubyid_parsed_message'>parsed_message</span> <span class='op'>=</span> <span class='const'>JSON</span><span class='period'>.</span><span class='id identifier rubyid_parse'>parse</span><span class='lparen'>(</span><span class='id identifier rubyid_message'>message</span><span class='rparen'>)</span> <span class='comment'># parse json message
+</span>  <span class='kw'>rescue</span> <span class='const'>JSON</span><span class='op'>::</span><span class='const'>ParserError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='comment'># If JSON not valid, return with errors
+</span>    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>JSON parsing: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+    <span class='id identifier rubyid_halt'>halt</span> <span class='int'>400</span><span class='comma'>,</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span>
+  <span class='kw'>end</span>
+
+  <span class='id identifier rubyid_parsed_message'>parsed_message</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="provision_vnf-instance_method">
+  
+    - (<tt>Object</tt>) <strong>provision_vnf</strong>(vim_info, vnf_name, hot) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Provision a VNF</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>auth_info</span>
+      
+      
+        <span class='type'>(<tt>Hash</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>the keystone url, the tenant name, the username and the password</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>heat_url</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>the Heat API URL</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>vnf_name</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>The name of the VNF</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>hot</span>
+      
+      
+        <span class='type'>(<tt>Hash</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>the generated Heat template</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'helpers/vnf.rb', line 96</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_provision_vnf'>provision_vnf</span><span class='lparen'>(</span><span class='id identifier rubyid_vim_info'>vim_info</span><span class='comma'>,</span> <span class='id identifier rubyid_vnf_name'>vnf_name</span><span class='comma'>,</span> <span class='id identifier rubyid_hot'>hot</span><span class='rparen'>)</span>
+  <span class='comment'># Request an auth token
+</span>  <span class='id identifier rubyid_token_info'>token_info</span> <span class='op'>=</span> <span class='id identifier rubyid_request_auth_token'>request_auth_token</span><span class='lparen'>(</span><span class='id identifier rubyid_vim_info'>vim_info</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_tenant_id'>tenant_id</span> <span class='op'>=</span> <span class='id identifier rubyid_token_info'>token_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>access</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>token</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>tenant</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+  <span class='id identifier rubyid_auth_token'>auth_token</span> <span class='op'>=</span> <span class='id identifier rubyid_token_info'>token_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>access</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>token</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+
+  <span class='comment'># Requests VIM to provision the VNF
+</span>  <span class='kw'>begin</span>
+    <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='id identifier rubyid_parse_json'>parse_json</span><span class='lparen'>(</span><span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_post'>post</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_vim_info'>vim_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>heat</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='embexpr_end'>}</span><span class='tstring_content'>/</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_tenant_id'>tenant_id</span><span class='embexpr_end'>}</span><span class='tstring_content'>/stacks</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='lbrace'>{</span><span class='symbol'>:stack_name</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_vnf_name'>vnf_name</span><span class='comma'>,</span> <span class='symbol'>:template</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_hot'>hot</span><span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span> <span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>X-Auth-Token</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_auth_token'>auth_token</span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span><span class='comma'>,</span> <span class='symbol'>:accept</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span><span class='rparen'>)</span>
+  <span class='kw'>rescue</span> <span class='const'>Errno</span><span class='op'>::</span><span class='const'>ECONNREFUSED</span>
+    <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>VIM unreachable</span><span class='tstring_end'>&#39;</span></span>
+  <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span>
+    <span class='id identifier rubyid_halt'>halt</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
+  <span class='kw'>end</span>
+
+  <span class='id identifier rubyid_response'>response</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="request_auth_token-instance_method">
+  
+    - (<tt>Hash</tt>) <strong>request_auth_token</strong>(vim_info) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Request an auth token from the VIM</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>auth_info</span>
+      
+      
+        <span class='type'>(<tt>Hash</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>the keystone url, the tenant name, the username and the password</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Hash</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>the auth token and the tenant id</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'helpers/vnf.rb', line 65</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_request_auth_token'>request_auth_token</span><span class='lparen'>(</span><span class='id identifier rubyid_vim_info'>vim_info</span><span class='rparen'>)</span>
+  <span class='comment'># Build request message
+</span>  <span class='id identifier rubyid_request'>request</span> <span class='op'>=</span> <span class='lbrace'>{</span>
+    <span class='label'>auth:</span> <span class='lbrace'>{</span>
+      <span class='label'>tenantName:</span> <span class='id identifier rubyid_vim_info'>vim_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>tenant</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='comma'>,</span>
+      <span class='label'>passwordCredentials:</span> <span class='lbrace'>{</span>
+        <span class='label'>username:</span> <span class='id identifier rubyid_vim_info'>vim_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>username</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='comma'>,</span>
+        <span class='label'>password:</span> <span class='id identifier rubyid_vim_info'>vim_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>password</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+      <span class='rbrace'>}</span>
+    <span class='rbrace'>}</span>
+  <span class='rbrace'>}</span>
+
+  <span class='comment'># GET auth token
+</span>  <span class='kw'>begin</span>
+    <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_post'>post</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_vim_info'>vim_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>keystone</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='embexpr_end'>}</span><span class='tstring_content'>/tokens</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span><span class='comma'>,</span> <span class='symbol'>:accept</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span>
+  <span class='kw'>rescue</span> <span class='const'>Errno</span><span class='op'>::</span><span class='const'>ECONNREFUSED</span>
+    <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>VIM unreachable</span><span class='tstring_end'>&#39;</span></span>
+  <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span>
+    <span class='id identifier rubyid_halt'>halt</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
+  <span class='kw'>end</span>
+
+  <span class='id identifier rubyid_parse_json'>parse_json</span><span class='lparen'>(</span><span class='id identifier rubyid_response'>response</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="verify_vdu_images-instance_method">
+  
+    - (<tt>Object</tt>) <strong>verify_vdu_images</strong>(vdus) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Verify if the VDU images are accessible to download</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>List</span>
+      
+      
+        <span class='type'>(<tt>Array</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>of all VDUs of the VNF</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'helpers/vnf.rb', line 157</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_verify_vdu_images'>verify_vdu_images</span><span class='lparen'>(</span><span class='id identifier rubyid_vdus'>vdus</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_vdus'>vdus</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_vdu'>vdu</span><span class='op'>|</span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_debug'>debug</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Verifying image: </span><span class='tstring_end'>&#39;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_vdu'>vdu</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>vm_image</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'> from </span><span class='tstring_end'>&#39;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_vdu'>vdu</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
+    <span class='kw'>begin</span>
+      <span class='kw'>unless</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_head'>head</span><span class='lparen'>(</span><span class='id identifier rubyid_vdu'>vdu</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>vm_image</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span> <span class='op'>==</span> <span class='int'>200</span>
+        <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Image </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_vdu'>vdu</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>vm_image</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='embexpr_end'>}</span><span class='tstring_content'> from </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_vdu'>vdu</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='embexpr_end'>}</span><span class='tstring_content'> not found.</span><span class='tstring_end'>&quot;</span></span>
+        <span class='id identifier rubyid_halt'>halt</span> <span class='int'>400</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Image </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_vdu'>vdu</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>vm_image</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='embexpr_end'>}</span><span class='tstring_content'> from </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_vdu'>vdu</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='embexpr_end'>}</span><span class='tstring_content'> not found.</span><span class='tstring_end'>&quot;</span></span>
+      <span class='kw'>end</span>
+    <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+      <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Image </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_vdu'>vdu</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>vm_image</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='embexpr_end'>}</span><span class='tstring_content'> from </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_vdu'>vdu</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='embexpr_end'>}</span><span class='tstring_content'> not accessible.</span><span class='tstring_end'>&quot;</span></span>
+      <span class='id identifier rubyid_halt'>halt</span> <span class='int'>400</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Image </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_vdu'>vdu</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>vm_image</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='embexpr_end'>}</span><span class='tstring_content'> from </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_vdu'>vdu</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='embexpr_end'>}</span><span class='tstring_content'> not accessible.</span><span class='tstring_end'>&quot;</span></span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+    <div id="footer">
+  Generated on Mon May  2 14:20:15 2016 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.8.7.6 (ruby-2.0.0).
+</div>
+
+  </body>
+</html>

@@ -15,15 +15,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# @see OrchestratorVnfManager
-class OrchestratorVnfManager < Sinatra::Application
+# @see ServiceConfiguration
+class ServiceConfiguration < VNFManager
 
 	# @method put_configs_config_id
 	# @overload put '/configs/:config_id'
 	# 	Update a configuration value
 	# 	@param [Integer] config_id the configuration ID
 	# Update a configuration
-	put '/configs/:config_id' do
+	put '/:config_id' do
 		halt 501, 'Not implemented yet'
 
 		# Return if service ID is invalid
@@ -45,7 +45,7 @@ class OrchestratorVnfManager < Sinatra::Application
 	# @overload get '/configs'
 	# 	List all configurations
 	# Get all configs
-	get '/configs' do
+	get '/' do
 		# Forward request to NS Manager
 		begin
 			response = RestClient.get settings.ns_manager + '/configs/services', 'X-Auth-Token' => @client_token
@@ -64,7 +64,7 @@ class OrchestratorVnfManager < Sinatra::Application
 	# 	Show a specific configuration
 	# 	@param [Integer] config_id the configuration ID
 	# Get a specific config
-	get '/configs/:config_id' do
+	get '/:config_id' do
 		# Forward request to NS Manager
 		begin
 			response = RestClient.get settings.ns_manager + '/configs/services', {params: {name: params[:config_id]}}, 'X-Auth-Token' => @client_token
@@ -83,7 +83,7 @@ class OrchestratorVnfManager < Sinatra::Application
 	# 	Delete a specific configuration
 	# 	@param [Integer] config_id the configuration ID
 	# Delete a configuration
-	delete 'configs/:config_id' do
+	delete '/:config_id' do
 		# Forward request to NS Manager
 		begin
 			response = RestClient.delete settings.ns_manager + '/configs/services', {params: {name: params[:config_id]}}, 'X-Auth-Token' => @client_token

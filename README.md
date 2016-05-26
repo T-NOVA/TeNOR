@@ -10,12 +10,13 @@ This is TeNOR's, the [T-NOVA](http://www.t-nova.eu) Orchestrator repository.
 - VIM Monitoring (https://github.com/T-NOVA/vim-monitoring) (optional)
 
 ## Requirements
-- Ruby >= 1.9
+- Ruby >= 2.2
 - Bundler
 - MongoDB
 - Apache Cassandra (optional, used for monitoring)
 - Logstash (optional) & ElasticSearch (optional)
 - Byobu (development) (sudo apt-get install byobu)
+- RabbitMq
 
 #Getting started
 ## Installation
@@ -52,12 +53,14 @@ It's possible to load the PoP information in two manners:
 Get the Gatekeeper token:
 
 ```
-tokenId=$(curl -XPOST http://$GATEKEEPER_IP:8000/token/ --header "X-Auth-Password:$GATEKEEPER_PASS" --header "X-Auth-Uid:$GATEKEEPER_USER_ID" | python -c 'import json,sys;obj=json.load(sys.stdin);print obj["token"]["id"]')
+tokenId=$(curl -XPOST http://$GATEKEEPER_IP:8000/token/ -H "X-Auth-Password:$GATEKEEPER_PASS" -H "X-Auth-Uid:$GATEKEEPER_USER_ID" | python -c 'import json,sys;obj=json.load(sys.stdin);print obj["token"]["id"]')
 ```
 
 Post PoP Information:
 ```
- curl -X POST http://GATEKEEPER_IP:8000/admin/dc/  --header 'X-Auth-Token: '$tokenId'' \ -d '{"msg": "PoP Testbed", "dcname":"infrRepository-Pop-ID",\ "adminid":"kyestonUser","password":"keystonePass", "extrainfo":"pop-ip=OPENSTACK_IP keystone-endpoint=http://OPENSTACK_IP:35357/v2.0 orch-endpoint=http://OPENSTACK_IP:8004/v1"}
+ curl -X POST http://$GATEKEEPER_IP:8000/admin/dc/ \
+   -H 'X-Auth-Token: '$tokenId'' \
+   -d '{"msg": "PoP Testbed", "dcname":"default", "adminid":"keystoneUser","password":"keystonePass", "extrainfo":"pop-ip='$OPENSTACK_IP' tenant-name=tenantName keystone-endpoint=http://'$OPENSTACK_IP':35357/v2.0 orch-endpoint=http://'$OPENSTACK_IP':8004/v1 compute-endpoint=http://'$OPENSTACK_IP':8774/v2.1 neutron-endpoint=http://'$OPENSTACK_IP':9696/v2.0"}'
 ```
 
 Each module is published under different licenses, please take a look on each License file.

@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 # @see VNFMonitoring
-class VNFMonitoring < Sinatra::Application
+module MonitoringHelper
 
 	# Checks if a JSON message is valid
 	#
@@ -50,7 +50,8 @@ class VNFMonitoring < Sinatra::Application
 			obj.vnf_instances.push(VnfInstance.new(vnf_id: vnf_instance['id'], parameters: params))
 			obj.parameters.push(params)
 		end
-				logger.error obj.to_json
+
+		logger.debug obj.to_json
 		#	vnf_instances.each do |vnf_instance|
 		#			obj.vnf_instances.push(ConstituentVdu.new(vdu_reference: constituent_vdu['vdu_reference'], number_of_instances: constituent_vdu['number_of_instances'], constituent_vnfc: constituent_vdu['constituent_vnfc']))
 		#		end

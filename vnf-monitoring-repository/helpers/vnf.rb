@@ -15,25 +15,53 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# @see OrchestratorVnfMonitoring
-class OrchestratorVnfMonitoring < Sinatra::Application
+# @seeVnfMonitoring
+module VnfMonitoringHelper
 
-	# Checks if a JSON message is valid
-	#
-	# @param [JSON] message some JSON message
-	# @return [Hash, nil] if the parsed message is a valid JSON
-	# @return [Hash, String] if the parsed message is an invalid JSON
-	def parse_json(message)
-		# Check JSON message format
-		begin
-			parsed_message = JSON.parse(message) # parse json message
-		rescue JSON::ParserError => e
-			# If JSON not valid, return with errors
-			logger.error "JSON parsing: #{e.to_s}"
-			return message, e.to_s + "\n"
-		end
+  @conn = Bunny.new
+  @conn.start
+  @channel = @conn.create_channel
+  @@testThreads = []
 
-		return parsed_message, nil
-	end
+  # Checks if a JSON message is valid
+  #
+  # @param [JSON] message some JSON message
+  # @return [Hash, nil] if the parsed message is a valid JSON
+  # @return [Hash, String] if the parsed message is an invalid JSON
+  def parse_json(message)
+    # Check JSON message format
+    begin
+      parsed_message = JSON.parse(message) # parse json message
+    rescue JSON::ParserError => e
+      # If JSON not valid, return with errors
+      logger.error "JSON parsing: #{e.to_s}"
+      return message, e.to_s + "\n"
+    end
 
+    return parsed_message, nil
+  end
+
+  def self.save_monitoring(instance_id, json)
+    @db = settings.db
+    json.each do |item|
+      puts "Inserting"
+      @db.execute("INSERT INTO vnfmonitoring (instanceid, date, metricname, unit, value) VALUES ('#{instance_id.to_s}', #{item['timestamp']}, '#{item['type']}', '#{item['unit']}', '#{item['value']}' )")
+    end
+  end
+
+  def self.startSubcription()
+    puts "Start subscription"
+    Thread.new {
+      Thread.current["name"] = "vnf_repository";
+      ch = @channel
+      puts " [*] Waiting for logs."
+      t = ch.queue("vnf_repository", :exclusive => false).subscribe do |delivery_info, metadata, payload|
+        puts "Receving subcription data "
+        json = JSON.parse(payload)
+        array = [json]
+        VnfMonitoringRepository.save_monitoring(json['instance_id'], array)
+      end
+
+    }
+  end
 end

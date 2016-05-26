@@ -1,0 +1,154 @@
+{
+  "heat_template_version": "2014-10-16",
+  "description": "",
+  "resources": {
+    "nicolas'test_0": {
+      "type": "OS::Nova::KeyPair",
+      "properties": {
+        "name": "p7CiZZ4-GfyT",
+        "save_private_key": true
+      }
+    },
+    "nicolas'test_1": {
+      "type": "OS::Glance::Image",
+      "properties": {
+        "container_format": "bare",
+        "disk_format": "qcow2",
+        "location": "http://10.10.1.167:8080/NFS/files/trusty-server-cloudimg-amd64-disk1.img",
+        "name": "nicolas'test_1"
+      }
+    },
+    "nicolas'test_2": {
+      "type": "OS::Nova::Flavor",
+      "properties": {
+        "disk": 8,
+        "ram": 2048,
+        "vcpus": 1
+      }
+    },
+    "nicolas'test_3": {
+      "type": "OS::Heat::WaitConditionHandle",
+      "properties": {}
+    },
+    "nicolas'test_4": {
+      "type": "OS::Heat::WaitCondition",
+      "properties": {
+        "handle": {
+          "get_resource": "nicolas'test_3"
+        },
+        "timeout": 600
+      }
+    },
+    "vdu0": {
+      "type": "OS::Nova::Server",
+      "properties": {
+        "flavor": {
+          "get_resource": "nicolas'test_2"
+        },
+        "image": {
+          "get_resource": "nicolas'test_1"
+        },
+        "networks": [],
+        "user_data_format": "RAW",
+        "user_data": {
+          "str_replace": {
+            "params": {
+              "wc_notify": {
+                "get_attr": [
+                  "nicolas'test_3",
+                  "curl_cli"
+                ]
+              }
+            },
+            "template": "#!/bin/bash\nwc_notify --data-binary '{\"status\": \"SUCCESS\"}'\n"
+          }
+        },
+        "key_name": {
+          "get_resource": "nicolas'test_0"
+        }
+      }
+    },
+    "nicolas'test_6": {
+      "type": "OS::Glance::Image",
+      "properties": {
+        "container_format": "bare",
+        "disk_format": "qcow2",
+        "location": "http://10.10.1.167:8080/NFS/files/trusty-server-cloudimg-amd64-disk1.img",
+        "name": "nicolas'test_6"
+      }
+    },
+    "nicolas'test_7": {
+      "type": "OS::Nova::Flavor",
+      "properties": {
+        "disk": 8,
+        "ram": 2048,
+        "vcpus": 1
+      }
+    },
+    "nicolas'test_8": {
+      "type": "OS::Heat::WaitConditionHandle",
+      "properties": {}
+    },
+    "nicolas'test_9": {
+      "type": "OS::Heat::WaitCondition",
+      "properties": {
+        "handle": {
+          "get_resource": "nicolas'test_8"
+        },
+        "timeout": 600
+      }
+    },
+    "vdu1": {
+      "type": "OS::Nova::Server",
+      "properties": {
+        "flavor": {
+          "get_resource": "nicolas'test_7"
+        },
+        "image": {
+          "get_resource": "nicolas'test_6"
+        },
+        "networks": [],
+        "user_data_format": "RAW",
+        "user_data": {
+          "str_replace": {
+            "params": {
+              "wc_notify": {
+                "get_attr": [
+                  "nicolas'test_8",
+                  "curl_cli"
+                ]
+              }
+            },
+            "template": "#!/bin/bash\nwc_notify --data-binary '{\"status\": \"SUCCESS\"}'\n"
+          }
+        },
+        "key_name": {
+          "get_resource": "nicolas'test_0"
+        }
+      }
+    }
+  },
+  "outputs": {
+    "private_key": {
+      "description": "Private key",
+      "value": {
+        "get_attr": [
+          "nicolas'test_0",
+          "private_key"
+        ]
+      }
+    },
+    "vdu0#id": {
+      "description": "vdu0 ID",
+      "value": {
+        "get_resource": "vdu0"
+      }
+    },
+    "vdu1#id": {
+      "description": "vdu1 ID",
+      "value": {
+        "get_resource": "vdu1"
+      }
+    }
+  }
+}

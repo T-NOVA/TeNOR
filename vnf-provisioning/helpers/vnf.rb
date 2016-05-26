@@ -15,8 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# @see OrchestratorVnfProvisioning
-class OrchestratorVnfProvisioning < Sinatra::Application
+# @see ProvisioningHelper
+module ProvisioningHelper
 
   # Checks if a JSON message is valid
   #

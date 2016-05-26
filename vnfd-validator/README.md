@@ -28,9 +28,15 @@ bundle install
 
 Which will install all the gems.
 
+Configure the microservice using the config/config.yml file.
+
 ### Tests
 
-TODO
+For tests execute  
+
+```sh
+rspec
+```
 
 ### API Documentation
 

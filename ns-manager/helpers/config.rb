@@ -15,14 +15,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# @see TnovaManager
-class TnovaManager < Sinatra::Application
+# @see ServiceConfigurationHelper
+module ServiceConfigurationHelper
 
   def registerService(json)
     @json = JSON.parse(json)
 
-    loginGK()
-    gkServices = getGKServices()
+    AuthenticationHelper.loginGK()
+    gkServices = AuthenticationHelper.getGKServices()
 
     index = 0
     while index < gkServices['shortname'].length do
@@ -31,14 +31,14 @@ class TnovaManager < Sinatra::Application
           @service = ServiceModel.find_by(:name => @json['name'])
           @json['service_key'] = gkServices['service-key'][index]
           serviceUri = @json['host'] + ":" + @json['port'].to_s
-          sendServiceAuth(serviceUri, gkServices['service-key'][index])
+          AuthenticationHelper.sendServiceAuth(serviceUri, gkServices['service-key'][index])
           @service.update_attributes(@json)
           return "Service updated"
         rescue Mongoid::Errors::DocumentNotFound => e
           @json['service_key'] = gkServices['service-key'][index]
           @service = ServiceModel.create!(@json)
           serviceUri = @json['host'] + ":" + @json['port'].to_s
-          sendServiceAuth(serviceUri, gkServices['service-key'][index])
+          AuthenticationHelper.sendServiceAuth(serviceUri, gkServices['service-key'][index])
           return "Service registered"
         end
       end
@@ -52,7 +52,7 @@ class TnovaManager < Sinatra::Application
         metadata = JSON.parse(key)
         @json['service_key'] = gkServices['service-key'][index]
         access = @json['host'] + ":" + @json['port'].to_s
-        sendServiceAuth(access, metadata["info"][0]["service-key"])
+        AuthenticationHelper.sendServiceAuth(access, metadata["info"][0]["service-key"])
         @service.update_attributes(@json)
         return "Service updated"
       rescue Mongoid::Errors::DocumentNotFound => e
@@ -61,7 +61,7 @@ class TnovaManager < Sinatra::Application
           metadata = JSON.parse(key)
           @json['service_key'] = gkServices['service-key'][index]
           access = @json['host'] + ":" + @json['port'].to_s
-          sendServiceAuth(access, metadata["info"][0]["service-key"])
+          AuthenticationHelper.sendServiceAuth(access, metadata["info"][0]["service-key"])
           @service = ServiceModel.create!(@json)
           return "Service registered"
         rescue => e
@@ -111,87 +111,131 @@ class TnovaManager < Sinatra::Application
     status 201
   end
 
-  # Method which lists all available interfaces
-  #
-  # @return [Array] the array containing a list of all interfaces
-  def interfaces_list
-    [
-        {
-            'uri' => '/',
-            'method' => 'GET',
-            'purpose' => 'REST API Structure and Capability Discovery'
-        },
-        {
-            'uri' => '/configs/registerService',
-            'method' => 'POST',
-            'purpose' => 'Register a service configuration'
-        },
-        {
-            'uri' => '/configs/unRegisterService/{microservice}',
-            'method' => 'POST',
-            'purpose' => 'Unregister a service configuration'
-        },
-        {
-            'uri' => '/configs/services',
-            'method' => 'GET',
-            'purpose' => 'List all services configuration'
-        },
-        {
-            'uri' => '/configs/services',
-            'method' => 'PUT',
-            'purpose' => 'Update service configuration'
-        },
-        {
-            'uri' => '/configs/services/{name}/status',
-            'method' => 'PUT',
-            'purpose' => 'Update service status'
-        },
-        {
-            'uri' => '/network-services',
-            'method' => 'GET',
-            'purpose' => 'Redirects a GET request to the specified micro-service'
-        },
-        {
-            'uri' => '/network-services',
-            'method' => 'POST',
-            'purpose' => 'Redirects a GET request to the specified micro-service'
-        },
-        {
-            'uri' => '/network-services/{id}',
-            'method' => 'PUT',
-            'purpose' => 'Redirects a GET request to the specified micro-service'
-        },
-        {
-            'uri' => '/network-services/{id}',
-            'method' => 'DELETE',
-            'purpose' => 'Redirects a GET request to the specified micro-service'
-        },
-        {
-            'uri' => '/vnfs',
-            'method' => 'POST',
-            'purpose' => 'Redirects a GET request to the specified micro-service'
-        },
-        {
-            'uri' => '/vnfs/{id}',
-            'method' => 'PUT',
-            'purpose' => 'Redirects a GET request to the specified micro-service'
-        },
-        {
-            'uri' => '/{path}',
-            'method' => 'POST',
-            'purpose' => 'Redirects a POST request to the specified micro-service'
-        },
-        {
-            'uri' => '/{path}',
-            'method' => 'DELETE',
-            'purpose' => 'Redirects a DELETE request to the specified micro-service'
-        },
-        {
-            'uri' => '/ns-instances',
-            'method' => 'POST',
-            'purpose' => 'Create an instance request'
-        }
-    ]
+  def self.getServices()
+    begin
+      @services = ServiceModel.all
+    rescue => e
+      puts e
+    end
+    return @services
   end
+
+  def self.getService(name)
+    begin
+      @service = ServiceModel.find_by(:name => name)
+    rescue => e
+      puts e
+    end
+    return @service
+  end
+
+  def self.publishServices
+    services = getServices()
+    services.each do |service|
+      begin
+        RestClient.post service['host'] + ":" + service['port'] + "/gk_dependencies", services.to_json, :content_type => :json
+      rescue => e
+        #logger.error e
+        #puts e
+        #halt 500, {'Content-Type' => 'text/plain'}, "Error sending dependencies to " +service['name']
+      end
+    end
+  end
+
+  def self.publishService(name)
+    services = getServices
+    service = getService(name)
+    begin
+      RestClient.post service['host'] + ":" + service['port'] + "/gk_dependencies", services.to_json, :content_type => :json
+    rescue => e
+      #logger.error e
+      puts e
+      #halt 500, {'Content-Type' => 'text/plain'}, "Error sending dependencies to " +service['name']
+    end
+
+  end
+
+# Method which lists all available interfaces
+#
+# @return [Array] the array containing a list of all interfaces
+def interfaces_list
+  [
+      {
+          'uri' => '/',
+          'method' => 'GET',
+          'purpose' => 'REST API Structure and Capability Discovery'
+      },
+      {
+          'uri' => '/configs/registerService',
+          'method' => 'POST',
+          'purpose' => 'Register a service configuration'
+      },
+      {
+          'uri' => '/configs/unRegisterService/{microservice}',
+          'method' => 'POST',
+          'purpose' => 'Unregister a service configuration'
+      },
+      {
+          'uri' => '/configs/services',
+          'method' => 'GET',
+          'purpose' => 'List all services configuration'
+      },
+      {
+          'uri' => '/configs/services',
+          'method' => 'PUT',
+          'purpose' => 'Update service configuration'
+      },
+      {
+          'uri' => '/configs/services/{name}/status',
+          'method' => 'PUT',
+          'purpose' => 'Update service status'
+      },
+      {
+          'uri' => '/network-services',
+          'method' => 'GET',
+          'purpose' => 'Redirects a GET request to the specified micro-service'
+      },
+      {
+          'uri' => '/network-services',
+          'method' => 'POST',
+          'purpose' => 'Redirects a GET request to the specified micro-service'
+      },
+      {
+          'uri' => '/network-services/{id}',
+          'method' => 'PUT',
+          'purpose' => 'Redirects a GET request to the specified micro-service'
+      },
+      {
+          'uri' => '/network-services/{id}',
+          'method' => 'DELETE',
+          'purpose' => 'Redirects a GET request to the specified micro-service'
+      },
+      {
+          'uri' => '/vnfs',
+          'method' => 'POST',
+          'purpose' => 'Redirects a GET request to the specified micro-service'
+      },
+      {
+          'uri' => '/vnfs/{id}',
+          'method' => 'PUT',
+          'purpose' => 'Redirects a GET request to the specified micro-service'
+      },
+      {
+          'uri' => '/{path}',
+          'method' => 'POST',
+          'purpose' => 'Redirects a POST request to the specified micro-service'
+      },
+      {
+          'uri' => '/{path}',
+          'method' => 'DELETE',
+          'purpose' => 'Redirects a DELETE request to the specified micro-service'
+      },
+      {
+          'uri' => '/ns-instances',
+          'method' => 'POST',
+          'purpose' => 'Create an instance request'
+      }
+  ]
+end
 
 end

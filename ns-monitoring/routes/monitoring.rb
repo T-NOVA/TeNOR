@@ -38,6 +38,11 @@ class NSMonitoring < Sinatra::Application
 	 ]
 	}
 =end
+
+  # @method post_monitoring_parameters
+  # @overload post '/network-services/:external_vnf_id'
+  #	Post monitoring parameters
+  #	@param [Integer] external_ns_id NS external ID
   post '/ns-monitoring/monitoring-parameters' do
     return 415 unless request.content_type == 'application/json'
 
@@ -47,8 +52,25 @@ class NSMonitoring < Sinatra::Application
 
     logger.debug monitoring
 
+    #logger.error threads
+    logger.error @@testThreads
+    nsi_id = monitoring['nsi_id'].to_s
+    #@@testThreads <<
+    Thread.new {
+      Thread.current["name"] = nsi_id
+#      Thread.current[:name] = "NAmeasdada"
+      Thread.current["name"] = nsi_id;
+      MonitoringHelper.subcriptionThread(monitoring)
+      Thread.stop
+    }
+    #@@testThreads <<  {:id => "", :thread => Thread.new {
+    #  subcriptionThread(monitoring)
+    #}
+    #}
+
+=begin
     begin
-      response = RestClient.get settings.ns_instance_repository + '/ns-instances/' + monitoring['nsi_id'].to_s, :content_type => :json
+      response = RestClient.get settings.ns_provisioner + '/ns-instances/' + monitoring['nsi_id'].to_s, :content_type => :json
     rescue => e
       logger.error e
       if (defined?(e.response)).nil?
@@ -58,10 +80,25 @@ class NSMonitoring < Sinatra::Application
     end
     @ns_instance, errors = parse_json(response)
     return 400, errors.to_json if errors
+=end
+
+    logger.error "Sending monitoring subcribe to VNF Manager."
+    monitoring['vnf_instances'].each do |vnf_instance|
+      logger.debug "VNFD: " + vnf_instance['id'] #vnf_id
+      logger.debug "VNFr: " + vnf_instance['vnfr_id']
+      object = {}
+      begin
+        response = RestClient.post settings.vnf_manager + '/vnf-monitoring/' + vnf_instance['vnfr_id'] + '/monitoring-parameters', object.to_json, :content_type => :json, :accept => :json
+      rescue
+        puts "ERROR"
+        halt 400, "VNF Manager not available"
+      end
+
+    end
 
     monitoring['vnf_instances'].each do |vnf_instance|
-      puts vnf_instance['id'] #vnf_id
-      puts vnf_instance['vnfr_id']
+      logger.debug "VNFD: " + vnf_instance['id'] #vnf_id
+      logger.debug "VNFr: " + vnf_instance['vnfr_id']
       @monitoring_metrics = create_monitoring_metric_object(monitoring)
       @monitoring_metrics.save!
 
@@ -73,7 +110,7 @@ class NSMonitoring < Sinatra::Application
             #:vnfr_id => @ns_instance['vnfrs'][0]['vnfr_id']
             #,:unit => parameter['unit']
         }
-        logger.error object
+        logger.debug object
 
         #send to VNF-Monitoring the metrics to monitor
         begin
@@ -86,12 +123,62 @@ class NSMonitoring < Sinatra::Application
         subscription_response, errors = parse_json(response)
         return 400, errors.to_json if errors
 
-        logger.error subscription_response
+        logger.debug subscription_response
 
       end
     end
 
     return 200, "Subscription correct."
+  end
+
+  # @method post_monitoring_data_unsubcribe
+  # @overload delete '/monitoring-data/unsubscribe:nsi_id'
+  #	Unsubcribe ns instance
+  #	@param [Integer] external_ns_id NS external ID
+  post '/monitoring-data/unsubscribe/:nsi_id' do
+
+    begin
+      monMetrics = NsMonitoringParameter.find_by("nsi_id" => params['nsi_id'])
+    rescue Mongoid::Errors::DocumentNotFound => e
+      halt 400, "Monitoring Metric instance no exists"
+    end
+
+    #for each vnf_instance, cancel the subscription and remove the threads
+    monMetrics['vnf_instances'].each do |monitoring_vnf|
+      @@testThreads.delete_if do |thr|
+        if thr[:vnfi_id] == monitoring_vnf['id']
+          thr[:queue].cancel
+          true
+        end
+      end
+    end
+
+  end
+
+  # @method post_monitoring_parameters
+  # @overload delete '/network-services/:external_vnf_id'
+  #	Delete a NS by its ID
+  #	@param [Integer] external_ns_id NS external ID
+  get '/testa' do
+    logger.error @@testThreads
+
+    @@testThreads.delete_if do |thr|
+      if thr[:vnfi_id] == '56d6c342b18cfb7afc000003' || thr[:vnfi_id] == '56d6c342b18cfb7afc000099'
+        thr[:queue].cancel
+        true
+      end
+    end
+
+    Thread.list.each do |thread|
+      logger.error thread.inspect
+      if thread[:name] == '1'
+        logger.error "Killing thread"
+        puts thread[:name]
+        #thread.exit
+        Thread.kill thread
+      end
+    end
+    return
 
   end
 
@@ -101,6 +188,11 @@ class NSMonitoring < Sinatra::Application
   #  "value": "99.99",
   #  "timestamp": "2015-06-18T09:42:10Z"
   #}
+
+  # @method post_ns_monitoring_vnf_instance_readings
+  # @overload post '/  # @method post_ns_monitoring_vnf_instance-readings'
+  #	Receive the monitoring data from the VNF manager
+  #	@param [Integer] vnfr_id VNFR id
   post '/ns-monitoring/vnf-instance-readings/:vnfr_id' do
     return 415 unless request.content_type == 'application/json'
 
@@ -108,91 +200,24 @@ class NSMonitoring < Sinatra::Application
     measurements, errors = parse_json(request.body.read)
     return 400, errors.to_json if errors
 
-    logger.error measurements
+    logger.debug measurements
 
     begin
       monMetrics = NsMonitoringParameter.find_by("vnf_instances.vnfr_id" => params['vnfr_id'])
     rescue Mongoid::Errors::DocumentNotFound => e
-      halt 400, "Monitoring Metric instance no exists"
+      #halt 400, "Monitoring Metric instance no exists"
     end
 
-    logger.error monMetrics
+    logger.debug monMetrics
 
-    measurements.each do |measurement|
-      #parameter_name = monMetrics['parameters'].find {|p| p['id'] == parameters['id']}['name']
-      parameter_info = monMetrics['parameters'].find { |p| p['name'] == measurement['type'] }
-      if !parameter_info.nil?
-        if monMetrics.vnf_instances.length == 1
-          #store value in cassandra
-          metrics = {
-              #:type => parameter_name,
-              :type => measurement['type'],
-              :value => measurement['value'],
-              :unit => measurement['unit'],
-              :timestamp => measurement['timestamp']
-          }
-          begin
-            RestClient.post settings.ns_instance_monitoring + '/ns-monitoring/' + monMetrics['nsi_id'], metrics.to_json, :content_type => :json, :accept => :json
-          rescue => e
-            logger.error e.response
-            return e.response.code, e.response.body
-          end
-        end
-      end
+    conn = Bunny.new
+    conn.start
 
-    end
-
-    puts "TODO"
-    return
-    parametersSize = 0
-
-    #enrich data, wait response from each vnf-parameter and vnfs
-    monMetrics.vnf_instances.each do |vnfInstance|
-      next if (vnfInstance['id'] != params['vnf_instance_id'])
-      parametersSize = vnfInstance['parameters'].length
-      vnfInstance['parameters'].each do |parameters|
-        #next if (vnfInstance['id'] != response['parameter_id'])
-        logger.error "parameter............................"
-
-        @queue = VnfQueue.where(:vnfi_id => vnfInstance['id'])
-        if @queue.length == 0
-          VnfQueue.new({
-                           :vnfi_id => params['vnf_instance_id'],
-                           :parameter_id => response['parameter_id'],
-                           :value => response['value'],
-                           :timestamp => response['timestamp']
-                       }).save!
-          #return
-        end
-
-        @queue.each do |queueValue|
-          logger.error queueValue
-          #next if (queueValue['parameter_id'] != response['parameter_id'])
-          if response['parameter_id'] == queueValue['parameter_id']
-            queueValue.update_attribute(:value, response['value'].to_s)
-            break
-          elsif response['parameter_id'] == parameters['id']
-            logger.error "Saving value2 ................................"
-            #if response['parameter_id'] == queueValue['parameter_id']
-            VnfQueue.new({
-                             :vnfi_id => params['vnf_instance_id'],
-                             :parameter_id => response['parameter_id'],
-                             :value => response['value'],
-                             :timestamp => response['timestamp']
-                         }).save!
-            #return
-          end
-        end
-
-
-      end
-    end
-
-    logger.error "-----------------------------------" + @queue.length.to_s + "................................."
-    if @queue.length >= parametersSize
-      logger.error "Send to expression module"
-      @queue.delete
-    end
+    ch = conn.create_channel
+    q = ch.queue(params['vnfr_id'])
+    logger.error "Publishing the values..."
+    q.publish(measurements.to_json, :persistent => true)
+    conn.close
 
     return
   end
@@ -203,10 +228,13 @@ class NSMonitoring < Sinatra::Application
 
   end
 
-  #/ns-monitoring/instances/10/monitoring-data/
+  # @method get_monitoring_data
+  # @overload get '/ns-monitoring/:instance_id/monitoring-data'
+  #	Get monitoring data
+  #	@param [Integer] instance_id
   get '/ns-monitoring/:instance_id/monitoring-data/' do
     begin
-      response = RestClient.get settings.ns_instance_monitoring + request.fullpath, :content_type => :json
+      response = RestClient.get settings.ns_monitoring_repo + request.fullpath, :content_type => :json
     rescue => e
       logger.error e.response
       #return e.response.code, e.response.body
@@ -214,9 +242,13 @@ class NSMonitoring < Sinatra::Application
     return response
   end
 
+  # @method get_monitoring_data_100
+  # @overload delete '/ns-monitoring/:instance_id/monitoring-data/last100'
+  #	Get monitoring data, last 100 values
+  #	@param [Integer] instance_id
   get '/ns-monitoring/:instance_id/monitoring-data/last100/' do
     begin
-      response = RestClient.get settings.ns_instance_monitoring + request.fullpath, :content_type => :json
+      response = RestClient.get settings.ns_monitoring_repo + request.fullpath, :content_type => :json
     rescue => e
       logger.error e.response
       #return e.response.code, e.response.body

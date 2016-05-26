@@ -52,6 +52,12 @@ configure do
 	set :logger, logger
 
 	BASEDIR = File.join(File.dirname(__FILE__), '.')
+
+	cassandra_config_file = File.join(BASEDIR, 'config', 'database.yml')
+	cassandra_config = YAML::load_file(cassandra_config_file)[env]
+	@db = CassandraCQL::Database.new("#{cassandra_config['host']}:9160", {username: cassandra_config['username'], password: cassandra_config['password']})
+	@db.execute("USE #{cassandra_config['keyspace']}")
+	set :db, @db
 end
 
 before do
@@ -64,6 +70,9 @@ before do
 	env['rack.logger'] = logger
 end
 
-class OrchestratorNsMonitoring < Sinatra::Application
+class NsMonitoringRepository < Sinatra::Application
+
+	helpers MonitoringHelper
+	MonitoringHelper.startSubcription()
 end
 

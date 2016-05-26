@@ -23,6 +23,7 @@ require 'sinatra/config_file'
 require 'yaml'
 require 'cassandra-cql'
 require 'logstash-logger'
+require 'bunny'
 
 # Require the bundler gem and then call Bundler.require to load in all gems
 # listed in Gemfile.
@@ -52,8 +53,17 @@ configure do
 	end
 	set :logger, logger
 	BASEDIR = File.join(File.dirname(__FILE__), '.')
+  conn = Bunny.new
+  conn.start
+  channel = conn.create_channel
+  set :conn, conn
+  set :channel, channel
+  cassandra_config_file = File.join(BASEDIR, 'config', 'database.yml')
+  cassandra_config = YAML::load_file(cassandra_config_file)[env]
+  @db = CassandraCQL::Database.new("#{cassandra_config['host']}:9160", {username: cassandra_config['username'], password: cassandra_config['password']})
+  @db.execute("USE #{cassandra_config['keyspace']}")
+  set :db, @db
 end
-
 
 before do
 	cassandra_config_file = File.join(BASEDIR, 'config', 'database.yml')
@@ -61,10 +71,13 @@ before do
 	@db = CassandraCQL::Database.new("#{cassandra_config['host']}:9160", {username: cassandra_config['username'], password: cassandra_config['password']})
 	@db.execute("USE #{cassandra_config['keyspace']}")
 
-	logger.level = Logger::DEBUG
-	env['rack.logger'] = settings.logger
+#	logger.level = Logger::DEBUG
+#	env['rack.logger'] = settings.logger
 end
 
-class OrchestratorVnfMonitoring < Sinatra::Application
+class VnfMonitoringRepository < Sinatra::Application
+
+	helpers VnfMonitoringHelper
+	VnfMonitoringHelper.startSubcription()
 end
 

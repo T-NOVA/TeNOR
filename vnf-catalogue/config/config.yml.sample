@@ -15,3 +15,5 @@ vnfd_validator: http://localhost:4570
 
 gk:
 service_key:
+
+dependencies: [vnfd_validator]

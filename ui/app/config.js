@@ -1,7 +1,0 @@
-'use strict';
-
-angular.module('tNovaApp.config', [])
-    .constant('BACKEND', 'http://localhost:9000')
-    .constant('AUTHENTICATION', 'http://10.10.1.63:8000')
-    .constant('TENOR', 'http://10.10.1.61:4000')
-    .constant('REPOSITORY', 'http://10.10.1.69:8888');

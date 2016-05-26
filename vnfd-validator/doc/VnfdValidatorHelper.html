@@ -1,0 +1,659 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>
+  Module: VnfdValidatorHelper
+  
+    &mdash; Documentation by YARD 0.8.7.6
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  hasFrames = window.top.frames.main ? true : false;
+  relpath = '';
+  framesUrl = "frames.html#!VnfdValidatorHelper.html";
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div id="header">
+      <div id="menu">
+  
+    <a href="_index.html">Index (V)</a> &raquo;
+    
+    
+    <span class="title">VnfdValidatorHelper</span>
+  
+
+  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
+</div>
+
+      <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+      Class List
+    </a>
+  
+    <a class="full_list_link" id="method_list_link"
+        href="method_list.html">
+      Method List
+    </a>
+  
+    <a class="full_list_link" id="file_list_link"
+        href="file_list.html">
+      File List
+    </a>
+  
+</div>
+      <div class="clear"></div>
+    </div>
+
+    <iframe id="search_frame"></iframe>
+
+    <div id="content"><h1>Module: VnfdValidatorHelper
+  
+  
+  
+</h1>
+
+<dl class="box">
+  
+  
+    
+  
+    
+  
+  
+  
+    <dt class="r1 last">Defined in:</dt>
+    <dd class="r1 last">helpers/vnfd.rb</dd>
+  
+</dl>
+<div class="clear"></div>
+
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    
+<p>TeNOR - VNFD Validator</p>
+
+<p>Copyright 2014-2016 i2CAT Foundation, Portugal Telecom Inovação</p>
+
+<p>Licensed under the Apache License, Version 2.0 (the “License”); you may not
+use this file except in compliance with the License. You may obtain a copy
+of the License at</p>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_http'>http</span><span class='symbol'>:/</span><span class='op'>/</span><span class='id identifier rubyid_www'>www</span><span class='period'>.</span><span class='id identifier rubyid_apache'>apache</span><span class='period'>.</span><span class='id identifier rubyid_org'>org</span><span class='op'>/</span><span class='id identifier rubyid_licenses'>licenses</span><span class='op'>/</span><span class='const'>LICENSE</span><span class='op'>-</span><span class='float'>2.0</span>
+</code></pre>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+License for the specific language governing permissions and limitations
+under the License.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+  <p class="tag_title">See Also:</p>
+  <ul class="see">
+    
+      <li><span class='object_link'><a href="" title="VnfdValidatorHelper (module)">VnfdValidatorHelper</a></span></li>
+    
+  </ul>
+
+</div>
+
+
+
+
+
+
+  
+    <h2>
+      Instance Method Summary
+      <small>(<a href="#" class="summary_toggle">collapse</a>)</small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#parse_json-instance_method" title="#parse_json (instance method)">- (Hash) <strong>parse_json</strong>(message) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Checks if a JSON message is valid.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#parse_xml-instance_method" title="#parse_xml (instance method)">- (Hash) <strong>parse_xml</strong>(message) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Checks if a XML message is valid.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#validate_json_vnfd-instance_method" title="#validate_json_vnfd (instance method)">- (Hash) <strong>validate_json_vnfd</strong>(vnfd) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Checks if a parsed JSON message is a valid VNFD.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#validate_xml_vnfd-instance_method" title="#validate_xml_vnfd (instance method)">- (Hash) <strong>validate_xml_vnfd</strong>(vnfd) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Checks if a parsed XML message is a valid VNFD.</p>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="parse_json-instance_method">
+  
+    - (<tt>Hash</tt>) <strong>parse_json</strong>(message) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Checks if a JSON message is valid</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>message</span>
+      
+      
+        <span class='type'>(<tt>JSON</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>some JSON message</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Hash</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>if the parsed message is a valid JSON</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'helpers/vnfd.rb', line 25</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_parse_json'>parse_json</span><span class='lparen'>(</span><span class='id identifier rubyid_message'>message</span><span class='rparen'>)</span>
+	<span class='comment'># Check JSON message format
+</span>	<span class='kw'>begin</span>
+		<span class='id identifier rubyid_parsed_message'>parsed_message</span> <span class='op'>=</span> <span class='const'>JSON</span><span class='period'>.</span><span class='id identifier rubyid_parse'>parse</span><span class='lparen'>(</span><span class='id identifier rubyid_message'>message</span><span class='rparen'>)</span> <span class='comment'># parse json message
+</span>	<span class='kw'>rescue</span> <span class='const'>JSON</span><span class='op'>::</span><span class='const'>ParserError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+		<span class='comment'># If JSON not valid, return with errors
+</span>		<span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>JSON parsing: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+		<span class='id identifier rubyid_halt'>halt</span> <span class='int'>400</span><span class='comma'>,</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span>
+	<span class='kw'>end</span>
+
+	<span class='id identifier rubyid_parsed_message'>parsed_message</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="parse_xml-instance_method">
+  
+    - (<tt>Hash</tt>) <strong>parse_xml</strong>(message) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Checks if a XML message is valid</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>message</span>
+      
+      
+        <span class='type'>(<tt>XML</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>some XML message</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Hash</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>if the parsed message is a valid XML</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'helpers/vnfd.rb', line 59</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_parse_xml'>parse_xml</span><span class='lparen'>(</span><span class='id identifier rubyid_message'>message</span><span class='rparen'>)</span>
+	<span class='comment'># Check XML message format
+</span>	<span class='kw'>begin</span>
+		<span class='id identifier rubyid_parsed_message'>parsed_message</span> <span class='op'>=</span> <span class='const'>Nokogiri</span><span class='op'>::</span><span class='const'>XML</span><span class='lparen'>(</span><span class='id identifier rubyid_message'>message</span><span class='rparen'>)</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_config'>config</span><span class='op'>|</span> <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_strict'>strict</span> <span class='rbrace'>}</span>
+	<span class='kw'>rescue</span> <span class='const'>Nokogiri</span><span class='op'>::</span><span class='const'>XML</span><span class='op'>::</span><span class='const'>SyntaxError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+		<span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>XML parsing: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+		<span class='id identifier rubyid_halt'>halt</span> <span class='int'>400</span><span class='comma'>,</span> <span class='id identifier rubyid_e'>e</span>
+	<span class='kw'>end</span>
+
+	<span class='id identifier rubyid_parsed_message'>parsed_message</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="validate_json_vnfd-instance_method">
+  
+    - (<tt>Hash</tt>) <strong>validate_json_vnfd</strong>(vnfd) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Checks if a parsed JSON message is a valid VNFD</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>vnfd</span>
+      
+      
+        <span class='type'>(<tt>Hash</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>the JSON message parsed</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Hash</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>if the JSON message is a valid VNFD</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'helpers/vnfd.rb', line 42</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_validate_json_vnfd'>validate_json_vnfd</span><span class='lparen'>(</span><span class='id identifier rubyid_vnfd'>vnfd</span><span class='rparen'>)</span>
+	<span class='comment'># Read VNFD json schema
+</span>	<span class='id identifier rubyid_json_schema'>json_schema</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span><span class='lparen'>(</span><span class='id identifier rubyid_settings'>settings</span><span class='period'>.</span><span class='id identifier rubyid_json_schema'>json_schema</span><span class='rparen'>)</span>
+	<span class='kw'>begin</span>
+		<span class='const'>JSON</span><span class='op'>::</span><span class='const'>Validator</span><span class='period'>.</span><span class='id identifier rubyid_validate!'>validate!</span><span class='lparen'>(</span><span class='id identifier rubyid_json_schema'>json_schema</span><span class='comma'>,</span> <span class='id identifier rubyid_vnfd'>vnfd</span><span class='rparen'>)</span>
+	<span class='kw'>rescue</span> <span class='const'>JSON</span><span class='op'>::</span><span class='const'>Schema</span><span class='op'>::</span><span class='const'>ValidationError</span>
+		<span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>JSON validation: </span><span class='embexpr_beg'>#{</span><span class='gvar'>$!</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+		<span class='id identifier rubyid_halt'>halt</span> <span class='int'>400</span><span class='comma'>,</span> <span class='gvar'>$!</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span>
+	<span class='kw'>end</span>
+
+	<span class='id identifier rubyid_vnfd'>vnfd</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="validate_xml_vnfd-instance_method">
+  
+    - (<tt>Hash</tt>) <strong>validate_xml_vnfd</strong>(vnfd) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Checks if a parsed XML message is a valid VNFD</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>vnfd</span>
+      
+      
+        <span class='type'>(<tt>Hash</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>the XML message parsed</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Hash</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>if the XML message is a valid VNFD</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'helpers/vnfd.rb', line 75</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_validate_xml_vnfd'>validate_xml_vnfd</span><span class='lparen'>(</span><span class='id identifier rubyid_vnfd'>vnfd</span><span class='rparen'>)</span>
+	<span class='comment'># Read VNFD xsd schema
+</span>	<span class='kw'>begin</span>
+		<span class='id identifier rubyid_xsd'>xsd</span> <span class='op'>=</span> <span class='const'>Nokogiri</span><span class='op'>::</span><span class='const'>XML</span><span class='op'>::</span><span class='const'>Schema</span><span class='lparen'>(</span><span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span><span class='lparen'>(</span><span class='id identifier rubyid_settings'>settings</span><span class='period'>.</span><span class='id identifier rubyid_xml_schema'>xml_schema</span><span class='rparen'>)</span><span class='rparen'>)</span>
+	<span class='kw'>rescue</span> <span class='const'>Nokogiri</span><span class='op'>::</span><span class='const'>XML</span><span class='op'>::</span><span class='const'>SyntaxError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+		<span class='id identifier rubyid_errors'>errors</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
+		<span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_error'>error</span><span class='op'>|</span>
+			<span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>XSD parsing: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_error'>error</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+			<span class='id identifier rubyid_errors'>errors</span><span class='period'>.</span><span class='id identifier rubyid_push'>push</span><span class='lparen'>(</span><span class='id identifier rubyid_error'>error</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='rparen'>)</span>
+		<span class='kw'>end</span>
+		<span class='id identifier rubyid_halt'>halt</span> <span class='int'>400</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span>
+	<span class='kw'>end</span>
+
+	<span class='comment'># Validate received XML message against VNFD schema
+</span>	<span class='id identifier rubyid_errors'>errors</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
+	<span class='id identifier rubyid_xsd'>xsd</span><span class='period'>.</span><span class='id identifier rubyid_validate'>validate</span><span class='lparen'>(</span><span class='id identifier rubyid_vnfd'>vnfd</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_error'>error</span><span class='op'>|</span>
+		<span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>XSD validation: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+		<span class='id identifier rubyid_errors'>errors</span><span class='period'>.</span><span class='id identifier rubyid_push'>push</span><span class='lparen'>(</span><span class='id identifier rubyid_error'>error</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='rparen'>)</span>
+	<span class='kw'>end</span>
+	<span class='id identifier rubyid_halt'>halt</span> <span class='int'>400</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='kw'>unless</span> <span class='id identifier rubyid_errors'>errors</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+
+	<span class='id identifier rubyid_vnfd'>vnfd</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+    <div id="footer">
+  Generated on Tue May  3 11:29:25 2016 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.8.7.6 (ruby-2.0.0).
+</div>
+
+  </body>
+</html>

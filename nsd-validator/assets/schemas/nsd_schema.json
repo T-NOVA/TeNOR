@@ -204,44 +204,10 @@
         "monitoring_parameters": {
           "id": "/nsd/monitoring_parameters",
           "type": "array",
-          "items": [
-            {
-              "id": "/nsd/monitoring_parameters/0",
-              "type": "object",
-              "properties": {
-                "desc": {
-                  "id": "/nsd/monitoring_parameters/0/desc",
-                  "type": "string"
-                },
-                "metric": {
-                  "id": "/nsd/monitoring_parameters/0/metric",
-                  "type": "string"
-                },
-                "unit": {
-                  "id": "/nsd/monitoring_parameters/0/unit",
-                  "type": "string"
-                }
-              }
-            },
-            {
-              "id": "/nsd/monitoring_parameters/1",
-              "type": "object",
-              "properties": {
-                "desc": {
-                  "id": "/nsd/monitoring_parameters/1/desc",
-                  "type": "string"
-                },
-                "metric": {
-                  "id": "/nsd/monitoring_parameters/1/metric",
-                  "type": "string"
-                },
-                "unit": {
-                  "id": "/nsd/monitoring_parameters/1/unit",
-                  "type": "string"
-                }
-              }
-            }
-          ]
+          "items": {
+            "type": "object"
+          },
+          "minItems": 0
         },
         "vld": {
           "id": "/nsd/vld",
@@ -304,16 +270,7 @@
                     "connections": {
                       "id": "/nsd/vld/virtual_links/0/connections",
                       "type": "array",
-                      "items": [
-                        {
-                          "id": "/nsd/vld/virtual_links/0/connections/0",
-                          "type": "string"
-                        },
-                        {
-                          "id": "/nsd/vld/virtual_links/0/connections/1",
-                          "type": "string"
-                        }
-                      ]
+                      "minItems": 1
                     },
                     "connectivity_type": {
                       "id": "/nsd/vld/virtual_links/0/connectivity_type",

@@ -21,12 +21,12 @@ echo "       MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
 printf "\n\nStarting TeNOR installation script\n\n"
 
 RAILS_ENV=development
-LOGSTASH_IP="10.10.1.67"
+LOGSTASH_IP="127.0.0.1"
 LOGSTASH_PORT="5228"
-TENOR_IP="10.10.1.61"
-MONGODB_IP="10.10.1.64:27017"
-GATEKEEPER="10.10.1.63:8000"
-DNS_SERVER="10.30.0.11"
+TENOR_IP="127.0.0.1"
+MONGODB_IP="127.0.0.1:27017"
+GATEKEEPER="127.0.0.1:8000"
+DNS_SERVER="8.8.8.8"
 
 echo "Type the IP where is installed TeNOR, followed by [ENTER]:"
 read tenor_ip
@@ -59,7 +59,7 @@ declare -a tenor_vnf_url=("vnf_manager" "vnf_provisioner" "vnfd_validator" "vnf_
 
 bundle install --quiet
 
-for folder in $(find . -type d \( -name "ns*" -o -name "vnf*" -o -name "hot*" \) ); do
+for folder in $(find . -type d \( -name "ns*" -o -name "vnf*" -o -name "hot-generator" \) ); do
 	printf "$folder\n"
 	cd $folder
 	bundle install --quiet

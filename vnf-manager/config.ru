@@ -3,4 +3,10 @@
 root = ::File.dirname(__FILE__)
 require ::File.join(root, 'main')
 
-run OrchestratorVnfManager.new
+run VNFManager.new
+
+map('/vnfs') { run Catalogue }
+map('/configs') { run ServiceConfiguration }
+map('/vnf-monitoring') { run Monitoring }
+map('/vnf-provisioning') { run Provisioning }
+map('/vnf-instances/scaling') { run Scaling }

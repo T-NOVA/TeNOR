@@ -15,11 +15,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# @see TnovaManager
-class TnovaManager < Sinatra::Application
+# @see GatekeeperController
+class GatekeeperController < TnovaManager
 
-  get '/gatekeeper/dc/:popId' do
-
+  # @method get_gatekeeper_dc
+  # @overload get '/gatekeeper/dc'
+  #	Returns a list of DCs
+  get '/dc/:popId' do
     return getPopInfo(params[:popId])
   end
 

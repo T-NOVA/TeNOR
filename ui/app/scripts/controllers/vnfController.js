@@ -4,7 +4,7 @@ angular.module('tNovaApp')
     .controller('vnfController', function ($scope, $stateParams, $filter, tenorService, $interval, $modal) {
 
         $scope.getVnfList = function () {
-            tenorService.get('vnfs').then(function (data) {
+            tenorService.get('vnfs?limit=1000').then(function (data) {
                 $scope.dataCollection = data;
             });
         };

@@ -16,8 +16,13 @@
 # limitations under the License.
 #
 # @see OrchestratorNsProvisioner
-class NsProvisioner < Sinatra::Application
+module PopHelper
 
+  # Returns the information of PoPs
+  #
+  # @param [String] message the pop id
+  # @return [Hash, nil] if the parsed message is a valid JSON
+  # @return [Hash, String] if the parsed message is an invalid JSON
   def getPopInfo(pop_id)
 
     begin
@@ -32,6 +37,11 @@ class NsProvisioner < Sinatra::Application
     return popInfo
   end
 
+  # Returns the list of URLs of the PoPs
+  #
+  # @param [JSON] message some JSON message
+  # @return [Hash, nil] if the parsed message is a valid JSON
+  # @return [Hash, String] if the parsed message is an invalid JSON
   def getPopUrls(extraInfo)
     urls = extraInfo.split(" ")
 
@@ -47,6 +57,8 @@ class NsProvisioner < Sinatra::Application
         popUrls[:compute] = item.split('=')[1]
       elsif key == 'orch-endpoint'
         popUrls[:orch] = item.split('=')[1]
+      elsif key == 'tenant-name'
+        popUrls[:tenant] = item.split('=')[1]
       end
     end
 

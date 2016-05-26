@@ -15,23 +15,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# @see OrchestratorVnfProvisioning
-class OrchestratorVnfProvisioning < Sinatra::Application
+# @see Provisioning
+class Provisioning < VnfProvisioning
 
-  # @method get_root
-  # @overload get '/'
-  #   Get all available interfaces
-  # Get all interfaces
-  get '/' do
-    logger.debug 'Interfaces list: ' + interfaces_list.to_json
-    halt 200, interfaces_list.to_json
-  end
-
-  # @method get_vnf-provisioning_network-service_ns_id
+  # @method get_vnf_provisioning_network_service_ns_id
   # @overload get '/vnf-provisioning/network-service/:ns_id'
   #   Get all the VNFRs of a specific NS
   # Get all the VNFRs of a specific NS
-  get '/vnf-provisioning/network-service/:nsr_id' do
+  get '/network-service/:nsr_id' do
     begin
       vnfrs = Vnfr.where(nsr_instance: params[:nsr_id])
     rescue => e
@@ -41,11 +32,11 @@ class OrchestratorVnfProvisioning < Sinatra::Application
     halt 200, vnfrs.to_json
   end
 
-  # @method get_vnf-provisioning_vnf-instances
+  # @method get_vnf_provisioning_vnf_instances
   # @overload get '/vnf-provisioning/vnf-instances'
   #   Return all VNF Instances
   # Return all VNF Instances
-  get '/vnf-provisioning/vnf-instances' do
+  get '/vnf-instances' do
     begin
       vnfrs = Vnfr.all
     rescue => e
@@ -55,12 +46,12 @@ class OrchestratorVnfProvisioning < Sinatra::Application
     halt 200, vnfrs.to_json
   end
 
-  # @method post_vnf-provisioning_vnf-instances
+  # @method post_vnf_provisioning_vnf_instances
   # @overload post '/vnf-provisioning/vnf-instances'
   #   Instantiate a VNF
   #   @param [JSON] the VNF to instantiate and auth info
   # Instantiate a VNF
-  post '/vnf-provisioning/vnf-instances' do
+  post '/vnf-instances' do
     # Return if content-type is invalid
     halt 415 unless request.content_type == 'application/json'
 
@@ -84,9 +75,11 @@ class OrchestratorVnfProvisioning < Sinatra::Application
 
     # Convert VNF to HOT (call HOT Generator)
     halt 400, 'No T-NOVA flavour defined.' unless instantiation_info.has_key?('flavour')
+    logger.debug  "Send VNFD to Hot Generator"
     hot_generator_message = {
       vnf: vnf,
       networks_id: instantiation_info['networks'],
+      router_id: instantiation_info['routers'],
       security_group_id: instantiation_info['security_group_id']
     }
     begin
@@ -98,6 +91,8 @@ class OrchestratorVnfProvisioning < Sinatra::Application
       halt e.response.code, e.response.body
     end
 
+    logger.debug "HEAT template generated"
+    logger.debug hot
     vim_info = {
       'keystone' => instantiation_info['auth']['url']['keystone'],
       'tenant' => instantiation_info['auth']['tenant'],
@@ -110,6 +105,13 @@ class OrchestratorVnfProvisioning < Sinatra::Application
     # Request VIM to provision a VNF
     response = provision_vnf(vim_info, vnf['name'] + SecureRandom.hex, hot)
     logger.debug 'Provision response: ' + response.to_json
+
+    vdu = []
+    vdu0 = {}
+    vdu0['vnfc_instance'] = response['stack']['links'][0]['href']
+    vdu0['id'] = response['stack']['id']
+    vdu0['type'] = 0
+    vdu << vdu0
 
     # Build the VNFR and store it
     begin
@@ -124,6 +126,7 @@ class OrchestratorVnfProvisioning < Sinatra::Application
         notifications: [instantiation_info['callback_url']],
         lifecycle_event_history: Array('CREATE_IN_PROGRESS'),
         audit_log: nil,
+        vdu: vdu,
         stack_url: response['stack']['links'][0]['href'],
         vms_id: nil,
         lifecycle_info: vnf['vnfd']['vnf_lifecycle_events'].find{|lifecycle| lifecycle['flavor_id_ref'].downcase == vnf_flavour.downcase},
@@ -139,11 +142,11 @@ class OrchestratorVnfProvisioning < Sinatra::Application
     halt 201, vnfr.to_json
   end
 
-  # @method get_vnf-provisioning_vnf-instances_vnfr_id
+  # @method get_vnf_provisioning_vnf_instances_vnfr_id
   # @overload get '/vnf-provisioning/vnf-instances/:vnfr_id
   #   Get a specific VNFR by its ID
   # Get a specific VNFR by its ID
-  get '/vnf-provisioning/vnf-instances/:vnfr_id' do
+  get '/vnf-instances/:vnfr_id' do
     begin
       vnfr = Vnfr.find(params[:vnfr_id])
     rescue Mongoid::Errors::DocumentNotFound => e
@@ -152,13 +155,13 @@ class OrchestratorVnfProvisioning < Sinatra::Application
     halt 200, vnfr.to_json
   end
 
-  # @method post_vnf-provisioning_vnf-instances_vnfr_id_destroy
+  # @method post_vnf_provisioning_instances_vnfr_id_destroy
   # @overload post '/vnf-provisioning/vnf-instances/:vnfr_id/destroy'
   #   Destroy a VNF
   #   @param [String] vnfr_id the VNFR ID
   #   @param [JSON] the VNF to instantiate and auth info
   # Destroy a VNF
-  post '/vnf-provisioning/vnf-instances/:vnfr_id/destroy' do
+  post '/vnf-instances/:vnfr_id/destroy' do
     # Return if content-type is invalid
     halt 415 unless request.content_type == 'application/json'
 
@@ -175,7 +178,6 @@ class OrchestratorVnfProvisioning < Sinatra::Application
     }
     token_info = request_auth_token(vim_info)
     auth_token = token_info['access']['token']['id']
-    logger.debug 'Token info: ' + token_info.to_json
 
     # Find VNFR
     begin
@@ -215,13 +217,13 @@ class OrchestratorVnfProvisioning < Sinatra::Application
     halt 200, response.body
   end
 
-  # @method post_vnf-provisioning_vnf-instances_vnfr_id_config
+  # @method post_vnf_provisioning_instances_id_config
   # @overload post '/vnf-provisioning/vnf-instances/:vnfr_id/config'
   #   Request to execute a lifecycle event
   #   @param [String] vnfr_id the VNFR ID
   #   @param [JSON]
   # Request to execute a lifecycle event
-  put '/vnf-provisioning/vnf-instances/:vnfr_id/config' do
+  put '/vnf-instances/:vnfr_id/config' do
     # Return if content-type is invalid
     halt 415 unless request.content_type == 'application/json'
 
@@ -265,13 +267,13 @@ class OrchestratorVnfProvisioning < Sinatra::Application
     halt response.code, response.body
   end
 
-  # @method post_vnf-provisioning_vnfr_id_stack_status
+  # @method post_vnf_provisioning_id_stack_status
   # @overload post '/vnf-provisioning/:vnfr_id/stack/:status'
   #   Receive a VNF status after provisioning at the VIM
   #   @param [String] vnfr_id the VNFR ID
   #   @param [String] status the VNF status at the VIM
   # Receive a VNF status after provisioning at the VIM
-  post '/vnf-provisioning/:vnfr_id/stack/:status' do
+  post '/:vnfr_id/stack/:status' do
     # Parse body message
     stack_info = parse_json(request.body.read)
     logger.debug 'Stack info: ' + stack_info.to_json
@@ -295,18 +297,18 @@ class OrchestratorVnfProvisioning < Sinatra::Application
       rescue Errno::ECONNREFUSED
         message = { status: "mAPI_unreachable", vnfd_id: vnfr.vnfd_reference, vnfr_id: vnfr.id}
         nsmanager_callback(stack_info['ns_manager_callback'], message)
-        halt 500, 'mAPI unreachable'
+        #halt 500, 'mAPI unreachable'
       rescue => e
         logger.error e.response
         message = { status: "mAPI_error", vnfd_id: vnfr.vnfd_reference, vnfr_id: vnfr.id}
         nsmanager_callback(stack_info['ns_manager_callback'], message)
-        halt e.response.code, e.response.body
+        #halt e.response.code, e.response.body
       end
 
       # Read from VIM outputs and map with parameters
 
-      puts "Output recevied from Openstack:"
-      puts stack_info['stack']['outputs']
+      logger.debug "Output recevied from Openstack:"
+      logger.debug stack_info['stack']['outputs']
 
       vms_id = {}
       lifecycle_events_values = {}
@@ -318,14 +320,35 @@ class OrchestratorVnfProvisioning < Sinatra::Application
         else
           # If the output is a Floating IP
           if output['output_key'] =~ /^.*#floating_ip$/i
-            vnf_addresses['controller'] = output['output_value']
+            #vnf_addresses['controller'] = output['output_value']
+            vnf_addresses[output['output_key']] = output['output_value']
           else # Else look for the output on the lifecycle events
             vnfr.lifecycle_info['events'].each do |event, event_info|
               unless event_info.nil?
                 JSON.parse(event_info['template_file']).each do |id, parameter|
                   parameter_match = parameter.match(/^get_attr\[(.*), *(.*)\]$/i).to_a
+                  parameter_match = parameter.match(/^get_attr\[(.*)\]$/i).to_a
+
+                  string = parameter_match[1].split(",").map(&:strip)
+
+                  puts parameter_match[1]
+                  puts parameter_match[2]
+		  puts string
+                  puts string
+
+                  #              vnf_addresses["#{string[0]}"] = output['output_value'] if string[1] == 'networks' && !vnf_addresses.has_key?("#{string[1]}") # Only to populate VNF Addresses specified by ETSI
+#@                  vnf_addresses["#{string[0]}"] = output['output_value']
+                  lifecycle_events_values[event] = {} unless lifecycle_events_values.has_key?(event)
+                  #                lifecycle_events_values[event]["#{string[1]}##{string[2]}"] = output['output_value']
+                  lifecycle_events_values[event][output['output_key']] = output['output_value']
+
                   if output['output_key'] =~ /^#{parameter_match[1]}##{parameter_match[2]}$/i
                     vnf_addresses["#{parameter_match[1]}"] = output['output_value'] if parameter_match[2] == 'ip' && !vnf_addresses.has_key?("#{parameter_match[1]}") # Only to populate VNF Addresses specified by ETSI 
+                    lifecycle_events_values[event] = {} unless lifecycle_events_values.has_key?(event)
+                    lifecycle_events_values[event]["#{parameter_match[1]}##{parameter_match[2]}"] = output['output_value']
+                  end
+                  if output['output_key'] =~ /^#{parameter_match[1]}##{parameter_match[2]}$/i
+                    vnf_addresses["#{parameter_match[1]}"] = output['output_value'] if parameter_match[2] == 'PublicIp' && !vnf_addresses.has_key?("#{parameter_match[1]}") # Only to populate VNF Addresses specified by ETSI
                     lifecycle_events_values[event] = {} unless lifecycle_events_values.has_key?(event)
                     lifecycle_events_values[event]["#{parameter_match[1]}##{parameter_match[2]}"] = output['output_value']
                   end
@@ -359,7 +382,6 @@ class OrchestratorVnfProvisioning < Sinatra::Application
         # Request an auth token
         token_info = request_auth_token(stack_info['vim_info'])
         auth_token = token_info['access']['token']['id']
-        logger.debug 'Token info: ' + token_info.to_json
 
         # Request VIM information about the error
         begin
@@ -374,7 +396,7 @@ class OrchestratorVnfProvisioning < Sinatra::Application
 
         # Request VIM to delete the stack
         begin
-          response = RestClient.delete vnfr.stack_url, 'X-Auth-Token' => auth_token, :accept => :json
+#          response = RestClient.delete vnfr.stack_url, 'X-Auth-Token' => auth_token, :accept => :json
         rescue Errno::ECONNREFUSED
           halt 500, 'VIM unreachable'
         rescue => e

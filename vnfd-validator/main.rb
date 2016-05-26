@@ -56,5 +56,10 @@ before do
 	env['rack.logger'] = settings.logger
 end
 
-class OrchestratorVnfdValidator < Sinatra::Application
+class VnfdValidator < Sinatra::Application
+
+	helpers VnfdValidatorHelper
+
+
+
 end

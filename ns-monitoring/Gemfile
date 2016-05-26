@@ -7,8 +7,10 @@ gem 'sinatra-contrib', '~>1.4'
 gem 'nokogiri', '~>1.6'
 gem 'json-schema', '~>2.5'
 gem 'rest-client', '~>1.8'
-gem 'em-postman'
 gem 'logstash-logger'
+gem 'bunny'
+gem 'sinatra-activerecord'
+gem 'sqlite3'
 
 group :development do
 	gem 'rerun'

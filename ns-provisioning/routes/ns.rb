@@ -15,16 +15,40 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# @see OrchestratorNsProvisioner
-class NsProvisioner < Sinatra::Application
+# @see NsProvisioning
+class Provisioner < NsProvisioning
 
-  # @method post_ns
+  # @method get_ns_instances
+  # @overload get "/ns-instances"
+  # Gets all ns-instances
+  get '/' do
+    if params[:status]
+      @nsInstances = Nsr.where(:status => params[:status])
+    else
+      @nsInstances = Nsr.all
+    end
+
+    return @nsInstances.to_json
+  end
+
+  # @method get_ns_instance_id
+  # @overload get "/ns-instances/:id"
+  # Get a ns-instance
+  get '/:id' do
+    begin
+      @nsInstance = Nsr.find(params["id"])
+    rescue Mongoid::Errors::DocumentNotFound => e
+      halt(404)
+    end
+    return @nsInstance.to_json
+  end
+
+  # @method post_ns_instances
   # @overload post '/ns'
-  #   Post a NS in JSON format
-  #   @param [JSON]
-  # Post a NS
+  # Instantiation request
+  # @param [JSON]
   #Request body: {"nsd": "descriptor", "customer_id": "some_id", "nap_id": "some_id"}'
-  post '/ns-instances' do
+  post '/' do
 
     # Return if content-type is invalid
     return 415 unless request.content_type == 'application/json'
@@ -40,33 +64,33 @@ class NsProvisioner < Sinatra::Application
       #generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", error))
     end
 
-    if settings.dependencies.all? { |x| @tenor_modules.detect{|el| el['name'] == x} }
-      halt 400, "The orchestrator has not the correct dependencies"
-    end
+#    if settings.dependencies.all? { |x| @tenor_modules.detect { |el| el['name'] == x } }
+#      halt 400, "The orchestrator has not the correct dependencies"
+#    end
 
     instance = {
-            :nsd_id => nsd['id'],
-            :descriptor_reference => nsd['id'],
-            :auto_scale_policy => nsd['auto_scale_policy'],
-            :connection_points => nsd['connection_points'],
-            :monitoring_parameters => nsd['monitoring_parameters'],
-            :service_deployment_flavour => instantiation_info['flavour'],
-            :vendor => nsd['vendor'],
-            :version => nsd['version'],
-            #vlr
-            :vnfrs => [],
-            :lifecycle_events => nsd['lifecycle_events'],
-            :vnf_depedency => nsd['vnf_depedency'],
-            :vnffgd => nsd['vnffgd'],
-            #pnfr
-            :resource_reservation => [],
-            :runtime_policy_info => [],
-            :status => "INIT",
-            :notification => instantiation_info['callbackUrl'],
-            :lifecycle_event_history => [],
-            :audit_log => [],
-            :marketplace_callback => instantiation_info['callbackUrl']
-        }
+        :nsd_id => nsd['id'],
+        :descriptor_reference => nsd['id'],
+        :auto_scale_policy => nsd['auto_scale_policy'],
+        :connection_points => nsd['connection_points'],
+        :monitoring_parameters => nsd['monitoring_parameters'],
+        :service_deployment_flavour => instantiation_info['flavour'],
+        :vendor => nsd['vendor'],
+        :version => nsd['version'],
+        #vlr
+        :vnfrs => [],
+        :lifecycle_events => nsd['lifecycle_events'],
+        :vnf_depedency => nsd['vnf_depedency'],
+        :vnffgd => nsd['vnffgd'],
+        #pnfr
+        :resource_reservation => [],
+        :runtime_policy_info => [],
+        :status => "INIT",
+        :notification => instantiation_info['callbackUrl'],
+        :lifecycle_event_history => [],
+        :audit_log => [],
+        :marketplace_callback => instantiation_info['callbackUrl']
+    }
 
     @instance = Nsr.new(instance)
     @instance.save!
@@ -80,13 +104,19 @@ class NsProvisioner < Sinatra::Application
     return 200, instance.to_json
   end
 
-  #update instance
-  put "/ns-instances/:ns_instance_id" do
+  # @method put_ns_instance_id
+  # @overload put '/ns-instances/:ns_instance_id'
+  # NS Instance update request
+  # @param [JSON]
+  put "/:ns_instance_id" do
 
   end
 
-  #get instance status
-  get "/ns-instances/:nsr_id/status" do
+  # @method get_ns_instance_status
+  # @overload gett '/ns-instances/:nsr_id/status'
+  # Get instance status
+  # @param [JSON]
+  get "/:nsr_id/status" do
 
     begin
       instance = Nsr.find(params[:nsr_id])
@@ -97,8 +127,11 @@ class NsProvisioner < Sinatra::Application
     return instance['status']
   end
 
-  #update instance status
-  put "/ns-instances/:id/:status" do
+  # @method put_ns_instance_status
+  # @overload post '/ns-instances/:nsr_id/status'
+  # Update instance status
+  # @param [JSON]
+  put "/:id/:status" do
 
     body, errors = parse_json(request.body.read)
     @instance = body['instance']
@@ -110,7 +143,7 @@ class NsProvisioner < Sinatra::Application
       halt 404
     end
 
-    if(popInfo.nil?)
+    if (popInfo.nil?)
       puts "Pop Info is null"
       @nsInstance.delete
       halt 200, "Removed correctly."
@@ -120,19 +153,19 @@ class NsProvisioner < Sinatra::Application
 
     #popInfo = getPopInfo(@instance['vnf_info']['pop_id'])
     popUrls = getPopUrls(popInfo['info'][0]['extrainfo'])
-    vnf_manager = @tenor_modules.select {|service| service["name"] == "vnf_manager" }[0]
 
     if params[:status] === 'terminate'
 
       #destroy vnf instances
       @instance['vnfrs'].each do |vnf|
-        auth = {:auth => { :tenant => @instance['vnf_info']['tenant_name'], :username => @instance['vnf_info']['username'], :password => @instance['vnf_info']['password'], :url => {:keystone => popUrls[:keystone] } } }
+        auth = {:auth => {:tenant => @instance['vnf_info']['tenant_name'], :username => @instance['vnf_info']['username'], :password => @instance['vnf_info']['password'], :url => {:keystone => popUrls[:keystone]}}}
         begin
-          response = RestClient.post vnf_manager['host'].to_s + ":" + vnf_manager['port'].to_s  + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/destroy', auth.to_json, :content_type => :json
+          response = RestClient.post settings.vnf_manager + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/destroy', auth.to_json, :content_type => :json
         rescue Errno::ECONNREFUSED
           halt 500, 'VNF Manager unreachable'
         rescue RestClient::ResourceNotFound
           puts "Already removed from the VIM."
+          logger.error "Already removed from the VIM."
         rescue => e
           logger.error e.response
           halt e.response.code, e.response.body
@@ -151,13 +184,15 @@ class NsProvisioner < Sinatra::Application
         puts vnf
         event = {:event => "start"}
         begin
-          response = RestClient.put vnf_manager['host'].to_s + ":" + vnf_manager['port'].to_s  + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/config', event.to_json, :content_type => :json
+          response = RestClient.put settings.vnf_manager + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/config', event.to_json, :content_type => :json
         rescue Errno::ECONNREFUSED
+          logger.error "VNF Manager unreachable."
           halt 500, 'VNF Manager unreachable'
         rescue => e
           logger.error e.response
           halt e.response.code, e.response.body
         end
+        @nsInstance.push(lifecycle_event_history: "Executed a start")
       end
 
       @instance['status'] = params['status'].to_s.upcase
@@ -165,11 +200,12 @@ class NsProvisioner < Sinatra::Application
     elsif params[:status] === 'stopped'
 
       @instance['vnfrs'].each do |vnf|
-        puts vnf
+        logger.debug vnf
         event = {:event => "stop"}
         begin
-          response = RestClient.put vnf_manager['host'].to_s + ":" + vnf_manager['port'].to_s  + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/config', event.to_json, :content_type => :json
+          response = RestClient.put settings.vnf_manager + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/config', event.to_json, :content_type => :json
         rescue Errno::ECONNREFUSED
+          logger.error "VNF Manager unreachable."
           halt 500, 'VNF Manager unreachable'
         rescue => e
           logger.error e.response
@@ -197,12 +233,11 @@ class NsProvisioner < Sinatra::Application
 
   end
 
-  # @method post_ns-instances
+  # @method post_ns_instances_id_instantiate
   # @overload post '/ns-instances/:id/instantiate'
   # Response from VNF-Manager, send a message to marketplace
-  #/ns-instances/:ns_instance_id/instantiate
-  post "/ns-instances/:nsr_id/instantiate" do
-    logger.debug "Response about " + params['nsr_id'].to_s
+  post "/:nsr_id/instantiate" do
+    logger.info "Instantiation response about " + params['nsr_id'].to_s
     # Return if content-type is invalid
     return 415 unless request.content_type == 'application/json'
     # Validate JSON format
@@ -215,8 +250,8 @@ class NsProvisioner < Sinatra::Application
     nsd = response['nsd']
     nsr_id = params['nsr_id']
 
-    puts callback_response.to_json
-    puts @instance.to_json
+    logger.debug "Callback response: " + callback_response.to_json
+    logger.debug "Instance: " + @instance.to_json
 
     #vnf = {:vnf_id => vnf_id, :pop_id => pop_id}
     #extract vnfi_id from instantatieVNF response
@@ -262,15 +297,28 @@ class NsProvisioner < Sinatra::Application
       end
     end
 
-    #start monitoring
+    logger.debug "Sending start command"
     EM.defer do
+      #send start command
+      begin
+        response = RestClient.put settings.manager + '/ns-instances/'+nsr_id+'/start', {}.to_json, :content_type => :json
+      rescue Errno::ECONNREFUSED
+        logger.error "Connection refused with the NS Manager"
+          #halt 500, 'NS Manager unreachable'
+      rescue => e
+        logger.error e.response
+        logger.error "Error with the start command"
+        #halt e.response.code, e.response.body
+      end
+    end
+
+    logger.debug "Starting monitoring workflow..."
+    EM.defer do
+      #start monitoring
       monitoringData(nsd, nsr_id, vnf_info)
     end
 
-    #if done, send mapping information to marketplace
-    logger.debug @instance['notification']
-    #generateMarketplaceResponse(@instance['notification'], @instance)
-
     return 200
   end
+
 end

@@ -21,9 +21,9 @@ class Pool < Resource
   #
   # @param [String] resource_name the KeyPair resource name
   # @param [String] name the name of the keypair
-  def initialize(resource_name, name)
-    @type = 'OS::Neutron::LBaaS::Pool'
-    @properties = {'name' => name, 'admin_state_up' => true, 'loadbalancer' => load_balancer}
+  def initialize(resource_name, protocol, monitors, subnet_id, lb_method, protocol_port)
+    @type = 'OS::Neutron::Pool'
+    @properties = {'protocol' => protocol, 'monitors' => monitors, 'subnet_id' => subnet_id, 'lb_method' => lb_method, 'vip' => { 'protocol_port' => protocol_port }}
     super(resource_name, @type, @properties)
   end
 end

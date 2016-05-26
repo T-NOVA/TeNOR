@@ -1,5 +1,5 @@
 ---
-servicename: vnf-manager
+servicename: vnf_manager
 environment: development
 address: 0.0.0.0
 port: 4567
@@ -10,12 +10,15 @@ daemonize: false
 threaded: true
 logstash_host: 84.88.40.160
 logstash_port: 5228
+manager: localhost:4000
 
 vnf_catalogue: http://localhost:4569
 vnf_provisioning: http://localhost:4572
 vnf_monitoring: http://localhost:4573
-ns_manager: http://apis.t-nova.eu/orchestrator
+ns_manager: http://localhost:4000
 wicm: http://193.136.92.173:12891
 
 gk:
 service_key:
+
+dependencies: [ns_catalogue, ns_instance_repository, ns_monitoring, wicm, mAPI, mapping, hot_generator, infr_repository]

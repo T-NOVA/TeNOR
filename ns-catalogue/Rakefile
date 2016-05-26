@@ -15,7 +15,7 @@ task :start do
 end
 
 YARD::Rake::YardocTask.new do |t|
-	t.files = ['main.rb', 'helpers/ns.rb', 'routes/ns.rb']
+	t.files = ['main.rb', 'helpers/ns.rb', 'routes/ns.rb', 'models/ns.rb']
 end
 
 namespace :db do

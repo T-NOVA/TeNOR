@@ -15,21 +15,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# @see OrchestratorNsProvisioner
-class NsProvisioner < Sinatra::Application
+# @see MappingHelper
+module MappingHelper
 
-  def callMapping(ms)
+  # Call the Service Mapping for service allocation
+  #
+  # @param [JSON] Microservice information
+  # @return [Hash, nil] if the parsed message is a valid JSON
+  # @return [Hash, String] if the parsed message is an invalid JSON
+  def callMapping(ms, nsd)
 
-    begin
-      response = RestClient.get settings.manager + '/network-services/' + ms[:NS_id], :content_type => :json
-    rescue Errno::ECONNREFUSED
-      return "Connection refused"
-    rescue => e
-      return "Error"
-      return e.response.code, e.response.body
-    end
-
-    nsd, errors = parse_json(response)
+    #nsd, errors = parse_json(response)
     mapping = {
         "created_at" => "Thu Nov  5 10:13:25 2015",
         "links_mapping" =>
@@ -42,7 +38,7 @@ class NsProvisioner < Sinatra::Application
         "vnf_mapping" =>
             [
                 {
-                    "maps_to_PoP" => "/pop/1dc4dbf7-2fb3-4acb-96fe-330306f78422",
+                    "maps_to_PoP" => "/pop/default",
                     "vnf" => "/" + nsd['vnfds'][0].to_s
                 }
             ]
@@ -59,7 +55,7 @@ class NsProvisioner < Sinatra::Application
     end
 
     begin
-      response = RestClient.post settings.ns_mapping + '/mapper', ms.to_json, :content_type => :json
+      response = RestClient.post settings.mapping + '/mapper', ms.to_json, :content_type => :json
     rescue => e
       logger.error e
       if (defined?(e.response)).nil?

@@ -15,10 +15,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# @see TnovaManager
-class TnovaManager < Sinatra::Application
+# @see VNFManager
+class VNFCatalogueController < TnovaManager
 
-  get '/vnfs' do
+  # @method get_vnfs
+  # @overload get "/vnfs"
+  # Get the VNFs list
+  get '/' do
     begin
       @service = ServiceModel.find_by(name: "vnf_manager")
     rescue Mongoid::Errors::DocumentNotFound => e
@@ -38,7 +41,11 @@ class TnovaManager < Sinatra::Application
 
   end
 
-  get '/vnfs/:vnf_id' do
+  # @method get_vnfs
+  # @overload get "/vnfs/:vnf_id"
+  # Get specific VNF
+  # @param [string]
+  get '/:vnf_id' do
     begin
       @service = ServiceModel.find_by(name: "vnf_manager")
     rescue Mongoid::Errors::DocumentNotFound => e
@@ -58,7 +65,10 @@ class TnovaManager < Sinatra::Application
 
   end
 
-  post '/vnfs' do
+  # @method post_vnfs
+  # @overload post "/vnfs"
+  # Post a new VNF
+  post '/' do
 
     # Return if content-type is invalid
     return 415 unless request.content_type == 'application/json'
@@ -83,7 +93,11 @@ class TnovaManager < Sinatra::Application
 
   end
 
-  put '/vnfs/:external_vnf_id' do
+  # @method put_vnfs
+  # @overload put "/vnfs/:vnf_id"
+  # Update a VNF
+  # @param [string]
+  put '/:vnf_id' do
 
     # Return if content-type is invalid
     return 415 unless request.content_type == 'application/json'
@@ -107,7 +121,11 @@ class TnovaManager < Sinatra::Application
 
   end
 
-  delete '/vnfs/:external_ns_id' do
+  # @method delete_vnfs
+  # @overload delete "/vnfs/:vnf_id"
+  # Delete a VNFs
+  # @param [string]
+  delete '/:vnf_id' do
 
     begin
       @service = ServiceModel.find_by(name: "vnf_manager")

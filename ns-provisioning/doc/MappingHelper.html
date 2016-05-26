@@ -1,0 +1,358 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>
+  Module: MappingHelper
+  
+    &mdash; Documentation by YARD 0.8.7.6
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  hasFrames = window.top.frames.main ? true : false;
+  relpath = '';
+  framesUrl = "frames.html#!MappingHelper.html";
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div id="header">
+      <div id="menu">
+  
+    <a href="_index.html">Index (M)</a> &raquo;
+    
+    
+    <span class="title">MappingHelper</span>
+  
+
+  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
+</div>
+
+      <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+      Class List
+    </a>
+  
+    <a class="full_list_link" id="method_list_link"
+        href="method_list.html">
+      Method List
+    </a>
+  
+    <a class="full_list_link" id="file_list_link"
+        href="file_list.html">
+      File List
+    </a>
+  
+</div>
+      <div class="clear"></div>
+    </div>
+
+    <iframe id="search_frame"></iframe>
+
+    <div id="content"><h1>Module: MappingHelper
+  
+  
+  
+</h1>
+
+<dl class="box">
+  
+  
+    
+  
+    
+  
+  
+  
+    <dt class="r1 last">Defined in:</dt>
+    <dd class="r1 last">helpers/mapping.rb</dd>
+  
+</dl>
+<div class="clear"></div>
+
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    
+<p>TeNOR - NS Provisioning</p>
+
+<p>Copyright 2014-2016 i2CAT Foundation, Portugal Telecom Inovação</p>
+
+<p>Licensed under the Apache License, Version 2.0 (the “License”); you may not
+use this file except in compliance with the License. You may obtain a copy
+of the License at</p>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_http'>http</span><span class='symbol'>:/</span><span class='op'>/</span><span class='id identifier rubyid_www'>www</span><span class='period'>.</span><span class='id identifier rubyid_apache'>apache</span><span class='period'>.</span><span class='id identifier rubyid_org'>org</span><span class='op'>/</span><span class='id identifier rubyid_licenses'>licenses</span><span class='op'>/</span><span class='const'>LICENSE</span><span class='op'>-</span><span class='float'>2.0</span>
+</code></pre>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+License for the specific language governing permissions and limitations
+under the License.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+  <p class="tag_title">See Also:</p>
+  <ul class="see">
+    
+      <li><span class='object_link'><a href="" title="MappingHelper (module)">MappingHelper</a></span></li>
+    
+  </ul>
+
+</div>
+
+
+
+
+
+
+  
+    <h2>
+      Instance Method Summary
+      <small>(<a href="#" class="summary_toggle">collapse</a>)</small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#callMapping-instance_method" title="#callMapping (instance method)">- (Hash, ...) <strong>callMapping</strong>(ms, nsd) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Call the Service Mapping for service allocation.</p>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="callMapping-instance_method">
+  
+    - (<tt>Hash</tt>, ...) <strong>callMapping</strong>(ms, nsd) 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Call the Service Mapping for service allocation</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>Microservice</span>
+      
+      
+        <span class='type'>(<tt>JSON</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>information</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Hash</tt>, <tt>nil</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>if the parsed message is a valid JSON</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Hash</tt>, <tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>if the parsed message is an invalid JSON</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'helpers/mapping.rb', line 26</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_callMapping'>callMapping</span><span class='lparen'>(</span><span class='id identifier rubyid_ms'>ms</span><span class='comma'>,</span> <span class='id identifier rubyid_nsd'>nsd</span><span class='rparen'>)</span>
+
+  <span class='comment'>#nsd, errors = parse_json(response)
+</span>  <span class='id identifier rubyid_mapping'>mapping</span> <span class='op'>=</span> <span class='lbrace'>{</span>
+      <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>created_at</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Thu Nov  5 10:13:25 2015</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+      <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>links_mapping</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span>
+        <span class='lbracket'>[</span>
+            <span class='lbrace'>{</span>
+                <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>vld_id</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>vld1</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+                <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>maps_to_link</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/pop/link/85b0bc34-dff0-4399-8435-4fb2ed65790a</span><span class='tstring_end'>&quot;</span></span>
+            <span class='rbrace'>}</span>
+        <span class='rbracket'>]</span><span class='comma'>,</span>
+      <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>vnf_mapping</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span>
+          <span class='lbracket'>[</span>
+              <span class='lbrace'>{</span>
+                  <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>maps_to_PoP</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/pop/default</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+                  <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>vnf</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/</span><span class='tstring_end'>&quot;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_nsd'>nsd</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>vnfds</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
+              <span class='rbrace'>}</span>
+          <span class='rbracket'>]</span>
+  <span class='rbrace'>}</span>
+
+  <span class='id identifier rubyid_unsuccessfullMapping'>unsuccessfullMapping</span> <span class='op'>=</span> <span class='lbrace'>{</span>
+      <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Error</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Error in MIP problem</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+      <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Info</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>MIP solution is undefined</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+      <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>created_at</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Thu Nov  5 10:11:37 2015</span><span class='tstring_end'>&quot;</span></span>
+  <span class='rbrace'>}</span>
+
+  <span class='kw'>if</span> <span class='id identifier rubyid_ms'>ms</span><span class='lbracket'>[</span><span class='symbol'>:development</span><span class='rbracket'>]</span>
+    <span class='kw'>return</span> <span class='id identifier rubyid_mapping'>mapping</span>
+  <span class='kw'>end</span>
+
+  <span class='kw'>begin</span>
+    <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_post'>post</span> <span class='id identifier rubyid_settings'>settings</span><span class='period'>.</span><span class='id identifier rubyid_ns_mapping'>ns_mapping</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/mapper</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_ms'>ms</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span>
+  <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='kw'>if</span> <span class='lparen'>(</span><span class='kw'>defined?</span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='rparen'>)</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+      <span class='comment'>#halt 400, &quot;NS-Mapping unavailable&quot;
+</span>    <span class='kw'>end</span>
+    <span class='comment'>#halt e.response.code, e.response.body
+</span>  <span class='kw'>end</span>
+
+  <span class='id identifier rubyid_mapping'>mapping</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='op'>=</span> <span class='id identifier rubyid_parse_json'>parse_json</span><span class='lparen'>(</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='int'>400</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='kw'>if</span> <span class='id identifier rubyid_errors'>errors</span>
+
+  <span class='kw'>return</span> <span class='id identifier rubyid_mapping'>mapping</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+    <div id="footer">
+  Generated on Tue May 24 18:22:43 2016 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.8.7.6 (ruby-2.0.0).
+</div>
+
+  </body>
+</html>

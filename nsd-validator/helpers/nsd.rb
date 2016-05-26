@@ -15,8 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# @see OrchestratorNsdValidator
-class OrchestratorNsdValidator < Sinatra::Application
+# @see NsdValidatorHelper
+module NsdValidatorHelper
 
 	# Checks if a JSON message is valid
 	#
