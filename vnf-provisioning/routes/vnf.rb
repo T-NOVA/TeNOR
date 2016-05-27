@@ -79,7 +79,7 @@ class Provisioning < VnfProvisioning
     hot_generator_message = {
       vnf: vnf,
       networks_id: instantiation_info['networks'],
-      router_id: instantiation_info['routers'],
+      routers_id: instantiation_info['routers'],
       security_group_id: instantiation_info['security_group_id']
     }
     begin
