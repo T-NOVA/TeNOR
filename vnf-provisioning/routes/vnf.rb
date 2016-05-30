@@ -348,6 +348,7 @@ class Provisioning < VnfProvisioning
                     lifecycle_events_values[event]["#{parameter_match[1]}##{parameter_match[2]}"] = output['output_value']
                     if id == 'controller' && !vnf_addresses.key?('controller')
                       vnf_addresses['controller'] = output['output_value']
+		    end
                   end
                   if output['output_key'] =~ /^#{parameter_match[1]}##{parameter_match[2]}$/i
                     vnf_addresses["#{parameter_match[1]}"] = output['output_value'] if parameter_match[2] == 'PublicIp' && !vnf_addresses.has_key?("#{parameter_match[1]}") # Only to populate VNF Addresses specified by ETSI
