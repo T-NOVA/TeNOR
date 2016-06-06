@@ -5,6 +5,9 @@
     <li class="active"><i class="fa fa-list-ul"></i> <a ui-sref="root.ns">Network Services</a>
     </li>
 </ol>
+<div class="pull-right">
+    <button ng-click="go('/nsd_creation')" class="btn btn-success">Add NSD</button>
+</div>
 <table st-table="displayedCollection" st-safe-src="dataCollection" class="table table-striped">
     <thead>
         <tr>

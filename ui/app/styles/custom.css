@@ -102,3 +102,6 @@ pre {
     stroke-width: 2px;
     stroke: #029200;
 }
+.panel-heading.panel-header-error {
+    background-color: #f2dede;
+}
