@@ -46,12 +46,29 @@ angular.module('tNovaApp')
                 "dcname": obj.id,
                 "adminid": obj.adminName,
                 "password": obj.adminPass,
-                "extrainfo": "pop-ip=" + obj.openstack_ip + " keystone-endpoint=http://" + obj.openstack_ip + ":35357/v2.0 orch-endpoint=http://" + obj.openstack_ip + ":8004/v1"
+                "extrainfo": "tenant-name=" + obj.tenantName + " pop-ip=" + obj.openstack_ip + " keystone-endpoint=http://" + obj.openstack_ip + ":35357/v2.0 orch-endpoint=http://" + obj.openstack_ip + ":8004/v1"
             };
             console.log(pop);
             AuthService.post($window.localStorage.token, "admin/dc/", pop).then(function (d) {
                 console.log(d);
                 $scope.registeredDcList = d.dclist;
+            });
+        };
+
+        $scope.getPopInfo = function (popId) {
+            console.log(popId);
+            popId = popId + 1;
+            AuthService.get($window.localStorage.token, "admin/dc/" + popId).then(function (data) {
+                console.log(data);
+                $scope.popInfo = data;
+                //remove d.info[0].password
+                $scope.jsonObj = JSON.stringify(data, undefined, 4);
+                $modal({
+                    title: "Pop - " + popId,
+                    template: "views/t-nova/modals/info/showPop.html",
+                    show: true,
+                    scope: $scope,
+                });
             });
         };
 

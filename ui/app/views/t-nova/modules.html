@@ -13,33 +13,33 @@
                     <thead>
                         <tr>
                             <th st-sort="name" class="col-sm-2 col-md-2 col-lg-2">Name</th>
-                            <th data-title="'ip'" class="col-sm-1 col-md-1 col-lg-1">IP</th>
-                            <th data-title="'port'" class="col-sm-1 col-md-1 col-lg-1">Port</th>
-                            <!--th data-title="'port'" class="col-sm-1 col-md-1 col-lg-1">Service key</th-->
-                            <th data-title="'status'" class="col-sm-1 col-md-1 col-lg-1">Status</th>
-                            <th data-title="'action'" class="col-sm-1 col-md-1 col-lg-1">Actions</th>
+                            <th st-sort="ip" data-title="'ip'" class="col-sm-1 col-md-1 col-lg-1">IP</th>
+                            <th st-sort="port" data-title=" 'port' " class="col-sm-1 col-md-1 col-lg-1 ">Port</th>
+                            <!--th data-title=" 'port' " class="col-sm-1 col-md-1 col-lg-1 ">Service key</th-->
+                            <th st-sort="status " data-title=" 'status' " class="col-sm-1 col-md-1 col-lg-1 ">Status</th>
+                            <th data-title=" 'action' " class="col-sm-1 col-md-1 col-lg-1 ">Actions</th>
                         </tr>
                         <tr>
-                            <th colspan="2">
-                                <input st-search="" class="form-control" placeholder="global search ..." type="text" />
+                            <th colspan="2 ">
+                                <input st-search=" " class="form-control " placeholder="global search ... " type="text " />
                             </th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr ng-repeat="row in displayedCollection">
+                        <tr ng-repeat="row in displayedCollection ">
                             <td>{{row.name}}</td>
                             <td>{{row.host}}</td>
                             <td>{{row.port}}</td>
                             <!--td>{{row.service_key}}</td-->
-                            <td ng-style="{'color': (row.status === 'up' ? 'green': 'red')}">{{row.status}}</td>
+                            <td ng-style="{ 'color': (row.status==='up' ? 'green': 'red')} ">{{row.status}}</td>
                             <td>
-                                <button ng-click="deleteDialog(mS.service_name)" class="btn btn-danger btn-xs">Delete</button>
+                                <button ng-click="deleteDialog(mS.service_name) " class="btn btn-danger btn-xs ">Delete</button>
                             </td>
                         </tr>
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td class="text-center" st-pagination="" st-items-by-page="10" colspan="4">
+                            <td class="text-center " st-pagination=" " st-items-by-page="10 " colspan="4 ">
                             </td>
                         </tr>
                     </tfoot>
@@ -47,53 +47,53 @@
             </div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="content-box-large">
-            <div class="panel-heading">
-                <div class="panel-title">Register new service</div>
+    <div class="col-md-4 ">
+        <div class="content-box-large ">
+            <div class="panel-heading ">
+                <div class="panel-title ">Register new service</div>
             </div>
-            <div class="panel-body">
-                <form action="">
+            <div class="panel-body ">
+                <form action=" ">
                     <fieldset>
-                        <div class="form-group">
+                        <div class="form-group ">
                             <label>Service name</label>
-                            <input ng-model="service.service_name" class="form-control" placeholder="name" type="text">
+                            <input ng-model="service.service_name " class="form-control " placeholder="name " type="text ">
                         </div>
-                        <div class="form-group">
+                        <div class="form-group ">
                             <label>Path</label>
-                            <input ng-model="service.service_path" class="form-control" placeholder="/path" type="text" value="mypassword">
+                            <input ng-model="service.service_path " class="form-control " placeholder="/path " type="text " value="mypassword ">
                         </div>
-                        <div class="form-group">
+                        <div class="form-group ">
                             <label>Ip</label>
-                            <input ng-model="service.service_host" class="form-control" placeholder="IP" type="text" value="">
+                            <input ng-model="service.service_host " class="form-control " placeholder="IP " type="text " value=" ">
                         </div>
-                        <div class="form-group">
+                        <div class="form-group ">
                             <label>Port</label>
-                            <input ng-model="service.service_port" class="form-control" placeholder="Port" type="text" value="">
+                            <input ng-model="service.service_port " class="form-control " placeholder="Port " type="text " value=" ">
                         </div>
                     </fieldset>
                     <div>
-                        <button type="submit" class="btn btn-primary" ng-click="registerService(service)">Register</button>
+                        <button type="submit " class="btn btn-primary " ng-click="registerService(service) ">Register</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-    <div class="col-md-12">
-        <div class="content-box-large">
-            <div class="panel-heading">
-                <div class="panel-title">Timeline</div>
-                <div class="pull-right">
-                    <button type="button" class="btn btn-default" ng-model="selectedSeverity" data-html="1" bs-options="severity as severity for severity in severities" bs-select ng-change="selectSeverity()">
-                        Select <span class="caret"></span>
+    <div class="col-md-12 ">
+        <div class="content-box-large ">
+            <div class="panel-heading ">
+                <div class="panel-title ">Timeline</div>
+                <div class="pull-right ">
+                    <button type="button " class="btn btn-default " ng-model="selectedSeverity " data-html="1 " bs-options="severity as severity for severity in severities " bs-select ng-change="selectSeverity() ">
+                        Select <span class="caret "></span>
                     </button>
                 </div>
             </div>
-            <div class="panel-body">
-                <time-line data="data" options="options"></time-line>
+            <div class="panel-body ">
+                <time-line data="data " options="options "></time-line>
 
                 <div class="panel-group " ng-model="panels.activePanel " role="tablist " aria-multiselectable="true " bs-collapse>
-                    <div class="panel panel-default">
+                    <div class="panel panel-default ">
                         <div class="panel-heading " role="tab ">
                             <h4 class="panel-title ">
                                 <a bs-collapse-toggle>Logs</a>
@@ -101,27 +101,27 @@
                         </div>
                         <div class="panel-collapse " role="tabpanel " bs-collapse-target>
                             <div class="panel-body ">
-                                <table st-table="logCollection" st-safe-src="log" class="table table-striped">
+                                <table st-table="logCollection " st-safe-src="log " class="table table-striped ">
                                     <thead>
                                         <tr>
-                                            <th data-title="'date'" class="col-sm-2 col-md-2 col-lg-2">Date</th>
-                                            <th data-title="'status'" class="col-sm-1 col-md-1 col-lg-1">Type</th>
-                                            <th data-title="'content'" class="col-sm-9 col-md-9 col-lg-9">Content</th>
+                                            <th data-title=" 'date' " class="col-sm-2 col-md-2 col-lg-2 ">Date</th>
+                                            <th data-title=" 'status' " class="col-sm-1 col-md-1 col-lg-1 ">Type</th>
+                                            <th data-title=" 'content' " class="col-sm-9 col-md-9 col-lg-9 ">Content</th>
                                         </tr>
                                         <tr>
-                                            <th colspan="1">
-                                                <input st-search="created_at" class="form-control" placeholder="data search ..." type="text" />
+                                            <th colspan="1 ">
+                                                <input st-search="created_at " class="form-control " placeholder="data search ... " type="text " />
                                             </th>
-                                            <th colspan="1">
-                                                <input st-search="_source.severity" class="form-control" placeholder="search ..." type="text" />
+                                            <th colspan="1 ">
+                                                <input st-search="_source.severity " class="form-control " placeholder="search ... " type="text " />
                                             </th>
-                                            <th colspan="1">
-                                                <input st-search="content" class="form-control" placeholder="content search ..." type="text" />
+                                            <th colspan="1 ">
+                                                <input st-search="content " class="form-control " placeholder="content search ... " type="text " />
                                             </th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr ng-repeat="row in logCollection">
+                                        <tr ng-repeat="row in logCollection ">
                                             <td>{{row._source['@timestamp'] | date:'yyyy-MM-dd HH:mm:ss'}}</td>
                                             <td>{{row._source.severity}}</td>
                                             <td>{{row._source.message}}</td>
@@ -129,7 +129,7 @@
                                     </tbody>
                                     <tfoot>
                                         <tr>
-                                            <td class="text-center" st-pagination="" st-items-by-page="20" colspan="3">
+                                            <td class="text-center " st-pagination=" " st-items-by-page="20 " colspan="3 ">
                                             </td>
                                         </tr>
                                     </tfoot>

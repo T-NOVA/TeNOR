@@ -1,0 +1,61 @@
+<div class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" style="width: 800px">
+        <div class="modal-content">
+            <div class="modal-header" ng-show="title">
+                <button type="button" class="close" ng-click="$hide()">&times;</button>
+                <h4 class="modal-title" ng-bind="title"></h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6 col-xs-6">
+                        <div class="form-group">
+                            <label for="node_os">id:</label>
+                            <input ng-if="popInfo.info[0].dcname" type="text" readonly class="form-control" id="node_os" value="{{popInfo.info[0].dcname}}">
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-xs-6">
+                        <div class="form-group">
+                            <label for="node_os_version">User name:</label>
+                            <input ng-if="popInfo.info[0].adminuser" type="text" readonly class="form-control" id="node_os_version" value="{{popInfo.info[0].adminuser}}">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 col-xs-12">
+                        <div class="form-group">
+                            <label for="node_platform">Extra info:</label>
+                            <input type="text" readonly class="form-control" id="node_platform" value="{{popInfo.info[0].extrainfo}}">
+                        </div>
+                    </div>
+                </div>
+                <div class="row" ng-show="current_node != null">
+                    <div class="col-md-12 col-xs-12">
+                        <div class="form-group">
+                            <label for="node_state">URN:</label>
+                            <input type="text" readonly class="form-control" id="node_state" value="{{popInfo.info[0].adminuser}}">
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-group" ng-model="panels.activePanel" role="tablist" aria-multiselectable="true" bs-collapse>
+                    <div class="panel panel-default" ng-repeat="panel in panels">
+                        <div class="panel-heading" role="tab">
+                            <h4 class="panel-title">
+                                <a bs-collapse-toggle style="cursor: pointer;">JSON format</a>
+                            </h4>
+                        </div>
+                        <div class="panel-collapse" role="tabpanel" bs-collapse-target>
+                            <div class="panel-body">
+                                <pre class="beautify" ng-bind-html="jsonObj | prettify"></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- /.box-body -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="$hide()">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
