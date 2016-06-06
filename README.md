@@ -1,4 +1,4 @@
-<img src="./tenor_logo.png" height=150 />
+<img src="./ui/app/images/tenor_logo.png" height=150 />
 
 This is TeNOR's, the [T-NOVA](http://www.t-nova.eu) Orchestrator repository.
 
@@ -22,17 +22,16 @@ This is TeNOR's, the [T-NOVA](http://www.t-nova.eu) Orchestrator repository.
 
 ##Steps
 
-1. Install and run the requirements (Gatekeeper and MongoDB)
+1. Install and run the requirements (Gatekeeper and MongoDB). Installation scripts are provided in the `dependencies` folder.
 2. Install TeNOR (internal dependencies and configurations)
 3. Start TeNOR
 4. Register the modules (each microservice)
 5. Insert the Openstack information
 
 ## Installation
+TeNOR has an installation script that helps with the installation and configuration of the Ruby Gem dependencies. Once is executed in a shell, the system asks a set of questions regarding the location of the MongoDB and the Gatekeeper. Then, automatically will install the Ruby Gem dependencies and will configure TeNOR.
 
-The installation script ask a set of questions regarding the location of the MongoDB and the Gatekeeper. Then, automatically will install the Ruby Gem dependencies and will configure TeNOR.
-
-Make sure that you have installed a ruby version >= 2.2 and the `bundle` command is installed.
+Make sure that you have installed a Ruby version >= 2.2 and the `bundle` command is installed.
 
 For the installation, run the following script:
 `./tenor_installation.sh`
@@ -58,9 +57,9 @@ The registration of modules can be done with in two ways:
 
  - Using the TeNOR User Interface
  `Configuration -> Modules`
- -  Using the following script:
+ - Using the following script:
  `./loadModules.sh`
- 
+
 The content of the loadModules.sh is a set of CuRL request to the NS Manager inserting the IP and PORT of each microservice. Automatically, the NS Manager register each module into Gatekeeper in order to generate a microservice-token.
 
 ##Loading PoP information in Gatekeeper
@@ -111,7 +110,7 @@ Each microservice is listening in different port. This port is configured in the
 Make a request to the following address (NS Manager):
 
 ```
-curl http://localhost:4000/
+curl -XGET http://localhost:4000/
 ```
 
 ##License
