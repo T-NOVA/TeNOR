@@ -1,6 +1,7 @@
 ---
-servicename: vnf-catalogue
+servicename: vnf_catalogue
 environment: development
+manager: localhost:4567
 address: 0.0.0.0
 port: 4569
 max_conns: 1024
