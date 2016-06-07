@@ -13,9 +13,6 @@ angular.module('tNovaApp')
         });
         tenorService.get("ns-instances").then(function (data) {
             if (data !== undefined) $scope.instancesSize = data.length;
-            tenorService.get("vnf-instances").then(function (data) {
-                if (data !== undefined) $scope.instancesSize = $scope.instancesSize + data.length;
-            });
         });
 
         $scope.summaryData = {};
@@ -33,7 +30,6 @@ angular.module('tNovaApp')
         console.log($scope.summaryData);
         //Summary monitoring data
         tenorService.get('statistics').then(function (data) {
-            console.log(data);
             if (data) {
                 data.forEach(function (d) {
                     console.log(d);

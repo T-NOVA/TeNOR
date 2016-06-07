@@ -9,7 +9,7 @@
  * Main module of the application.
  */
 
-angular.module('tNovaApp', ['ui.router', 'ngSanitize', 'tNovaApp.config', 'tNovaApp.controllers', 'tNovaApp.directives', 'tNovaApp.services', 'smart-table', 'mgcrea.ngStrap', 'LocalStorageModule', 'cb.x2js', 'darthwade.dwLoading'])
+angular.module('tNovaApp', ['ui.router', 'ngSanitize', 'tNovaApp.config', 'tNovaApp.controllers', 'tNovaApp.directives', 'tNovaApp.services', 'smart-table', 'mgcrea.ngStrap', 'LocalStorageModule', 'cb.x2js', 'darthwade.dwLoading', 'checklist-model', 'angularResizable'])
     .config(function (localStorageServiceProvider) {
         localStorageServiceProvider
             .setPrefix('tNovaApp')
@@ -198,6 +198,14 @@ angular.module('tNovaApp', ['ui.router', 'ngSanitize', 'tNovaApp.config', 'tNova
                             'master@root': {
                                 templateUrl: 'views/t-nova/pop.html',
                                 controller: 'PoPController'
+                            }
+                        }
+                    }).state('root.nsdCreation', {
+                        url: '/nsd_creation',
+                        views: {
+                            'master@root': {
+                                templateUrl: 'views/t-nova/descriptorCreation.html',
+                                controller: 'descriptionCreationController'
                             }
                         }
                     });

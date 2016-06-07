@@ -1,5 +1,5 @@
 ---
-servicename: vnf-monitoring-repository
+servicename: vnf_monitoring_repo
 environment: development
 address: 0.0.0.0
 port: 4018

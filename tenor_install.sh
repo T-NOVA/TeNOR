@@ -21,22 +21,21 @@ echo "       MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
 printf "\n\nStarting TeNOR installation script\n\n"
 
 RAILS_ENV=development
-LOGSTASH_IP="127.0.0.1"
-LOGSTASH_PORT="5228"
 TENOR_IP="127.0.0.1"
 MONGODB_IP="127.0.0.1:27017"
 GATEKEEPER="127.0.0.1:8000"
 DNS_SERVER="8.8.8.8"
+LOGSTASH_ADDRESS="127.0.0.1:5228"
 
 echo "Type the IP where is installed TeNOR, followed by [ENTER]:"
 read tenor_ip
 if [ -z "$tenor_ip" ]; then tenor_ip=$TENOR_IP; fi
 
-echo "Type the IP:PORT where is installed the MongoDB, followed by [ENTER]:"
+echo "Type the IP:PORT (xxx.xxx.xxx.xxx:xxxx) where is installed the MongoDB, followed by [ENTER]:"
 read mongo_ip
 if [ -z "$mongo_ip" ]; then mongo_ip=$MONGODB_IP; fi
 
-echo "Type the IP:PORT where is installed Gatekeeper, followed by [ENTER]:"
+echo "Type the IP:PORT (xxx.xxx.xxx.xxx:xxxx) where is installed Gatekeeper, followed by [ENTER]:"
 read gatekeeper
 if [ -z "$gatekeeper" ]; then gatekeeper=$GATEKEEPER; fi
 
@@ -44,13 +43,13 @@ echo "Type the IP of the DNS server, followed by [ENTER]:"
 read dns
 if [ -z "$dns" ]; then dns=$DNS_SERVER; fi
 
-echo "Type the IP of logstash (xxx.xxx.xxx.xxx), followed by [ENTER]:"
-read logstash_host
-if [ -z "$logstash_host" ]; then logstash_host=$LOGSTASH_IP; fi
+echo "Type the IP:PORT (xxx.xxx.xxx.xxx:xxxx) where is installed Logstash, followed by [ENTER]:"
+read logstash_address
+if [ -z "$logstash_address" ]; then logstash_address=$LOGSTASH_ADDRESS; fi
 
-echo "Type the port of logstash (5228), followed by [ENTER]:"
-read logstash_port
-if [ -z "$logstash_port" ]; then logstash_port=$LOGSTASH_PORT; fi
+logstash_host=${logstash_address%%:*}
+logstash_port=${logstash_address##*:}
+
 
 printf "\nBundle install of each NS/VNF Module\n"
 

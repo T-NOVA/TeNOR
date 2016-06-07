@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('tNovaApp')
-    .controller('nsController', function ($scope, $stateParams, $filter, tenorService, $interval, $modal) {
+    .controller('nsController', function ($scope, $stateParams, $filter, tenorService, $interval, $modal, $location) {
 
         $scope.getServiceList = function () {
             tenorService.get('network-services?limit=1000').then(function (data) {
@@ -72,6 +72,11 @@ angular.module('tNovaApp')
         $scope.terminate = function (id) {
             console.log("Terminate Network Service");
         };
+
+        $scope.go = function (hash) {
+            $location.path(hash);
+        };
+
     })
     .controller('nsInstancesController', function ($scope, $location, $stateParams, $filter, tenorService, $interval, $modal) {
         var promise;

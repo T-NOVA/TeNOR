@@ -15,8 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# @see OrchestratorNsCatalogue
-#class NsCatalogue < Sinatra::Application
+# @see NsCatalogue
 module ApplicationHelper
 
 	def build_http_link(offset, limit)

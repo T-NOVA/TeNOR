@@ -1,6 +1,7 @@
 ---
-servicename: vnfd-validator
+servicename: vnfd_validator
 environment: development
+manager: localhost:4567
 address: 0.0.0.0
 port: 4570
 max_conns: 1024
@@ -16,3 +17,5 @@ json_schema: assets/schemas/vnfd_schema.json
 
 gk:
 service_key:
+
+dependencies: []

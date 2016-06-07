@@ -1,6 +1,7 @@
 ---
-servicename: vnf-provisioning
+servicename: vnf_provisioning
 environment: development
+manager: localhost:4000
 address: 0.0.0.0
 port: 4572
 max_conns: 1024
@@ -18,4 +19,4 @@ mapi: http://admin:changeme@10.10.1.67:1234
 gk:
 service_key:
 
-dependencies: [ns_catalogue, ns_instance_repository, ns_monitoring, wicm, mAPI, mapping, hot_generator, infr_repository]
+dependencies: [vnf_manager, mAPI, hot_generator]

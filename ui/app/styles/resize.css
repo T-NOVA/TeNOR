@@ -1,0 +1,44 @@
+$spacing: 14px;
+$footer-height: 70px;
+main {
+    display: flex;
+    height: 100%;
+    padding-bottom: $footer-height;
+    background: #fff;
+}
+.content {
+    flex: 1;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: space-around;
+    align-content: space-around;
+    padding: $spacing/2;
+}
+.row {
+    min-height: 50px;
+    flex: 1;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-around;
+    align-content: space-around;
+    &.resizable {
+        flex: 0 0 300px;
+    }
+}
+.row.resizable {
+    flex: 0 0 300px;
+}
+section {
+    box-sizing: border-box;
+    border-radius: 10px;
+    padding: 1.25em 1.75em;
+    border: $spacing/2 solid #fff;
+    flex: 1;
+    min-width: 120px;
+    &.resizable {
+        flex: 0 0 300px;
+    }
+}
+section.resizable {
+    flex: 0 0 300px;
+}
