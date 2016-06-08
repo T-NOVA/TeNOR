@@ -131,7 +131,7 @@
                                             <button type="button" class="btn btn-default" ng-model="event.vnf_id" data-html="1" bs-options="vnf for vnf in nsd.vnfds" bs-select required placeholder="choose">
                                                 Select <span class="caret" style="position: relative; z-index: 5000"></span>
                                             </button>
-                                            Flavour
+                                            Flavour {{typeOf(event.vnf_id)}}
                                             <button type="button" class="btn btn-default" ng-model="event.sla_ref_id" data-html="1" bs-options="sla.id as sla.id for sla in getEvents('start', event.vnf_id)" bs-select required placeholder="choose">
                                                 Select <span class="caret" style="position: relative; z-index: 5000"></span>
                                             </button>

@@ -11,7 +11,6 @@ angular.module('tNovaApp')
 
         $scope.selectedIcons = [];
         $scope.nsds = [];
-
         //$scope.multiplePanels.activePanels = [2];
 
         // $scope.flavours
@@ -111,6 +110,7 @@ angular.module('tNovaApp')
             var nsd = {
                 "nsd": $scope.nsd
             };
+            $scope.nsd.vnfds.map(String);
             console.log(nsd);
             var jsData;
 
@@ -597,5 +597,10 @@ angular.module('tNovaApp')
                 }
         }
     ];
+
+
+        _.each($scope.vnfs, function (d) {
+            d.vnfd.id = "" + d.vnfd.id;
+        })
 
     });
