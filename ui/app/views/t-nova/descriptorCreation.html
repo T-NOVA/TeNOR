@@ -34,8 +34,6 @@
                                         <label ng-repeat="vnf in vnfs">
                                             <input type="checkbox" checklist-model="nsd.vnfds" checklist-value="vnf.vnfd.id"> {{vnf.name}}({{vnf.vnfd.id}})
                                         </label>
-
-
                                         <div class="dropzone box box-red">
                                             <ul dnd-list="nsd.A.columns">
                                                 <li ng-repeat="item in nsd.A.columns" dnd-draggable="item" dnd-effect-allowed="move" dnd-moved="nsd.A.columns.splice($index, 1)" dnd-selected="models.selected = item" ng-class="{selected: models.selected === item}" ng-include="item.type + '.html'">
@@ -58,7 +56,7 @@
                                     </div>
                                     <div class="panel-body">
                                         <div class="row">
-                                            <div class="col-md-6 col-sm-12 ng-scope" ng-repeat="sla in nsd.sla track by $index">
+                                            <div class="col-md-8 col-sm-12 ng-scope" ng-repeat="sla in nsd.sla track by $index">
                                                 <div class="box box-primary">
                                                     <div class="box-header with-border">
                                                         <h3 class="box-title ng-binding">SLA (sla{{$index}})</h3>
@@ -78,20 +76,19 @@
                                                             <h5>Constituent VNFs:</h5>
                                                             <button type="button" class="btn btn-success" ng-click="addConstituentVnf($index)"><span class="glyphicon glyphicon-plus"></span></button>
                                                             <hr/>
-                                                            <div class="form-group col-md-12 col-sm-12">
+                                                            <div class="form-group col-md-12 col-sm-12" ng-repeat="constituent_vnf in sla.constituent_vnfs track by $index">
                                                                 <label>VNFs:</label>
-                                                                <button type="button" class="btn btn-default" ng-model="sla.constituent_vnfs" data-html="1" bs-options="vnf for vnf in nsd.vnfds" bs-select required ng-change="" placeholder="choose">
+                                                                <button type="button" class="btn btn-default" ng-model="constituent_vnf.vnf_reference" data-html="1" bs-options="vnf for vnf in nsd.vnfds" bs-select required placeholder="choose">
                                                                     Select <span class="caret" style="position: relative; z-index: 5000"></span>
                                                                 </button>
                                                                 <label>VNF Flavour:</label>
-                                                                <button type="button" class="btn btn-dflavor in flavorsefault" ng-model="sla.flavour_keys" data-html="1" bs-options="flavours.flavour_key for flavours in getFlavours(nsd.sla[0].constituent_vnfs)" bs-select required placeholder="choose">
+                                                                <button type="button" class="btn btn-default" ng-model="constituent_vnf.flavour_keys" data-html="1" bs-options="flavours.flavour_key as flavours.flavour_key for flavours in getFlavours(constituent_vnf.vnf_reference)" bs-select required placeholder="choose">
                                                                     Select <span class="caret" style="position: relative; z-index: 5000"></span>
                                                                 </button>
-                                                                <button type="button" class="btn btn-danger" ng-click="removeConstituentVNF(flavor)"><span class="glyphicon glyphicon-remove"></span></button>
+                                                                <button type="button" class="btn btn-danger" ng-click="removeConstituentVNF(sla.id, $index)"><span class="glyphicon glyphicon-remove"></span></button>
                                                                 <div class="form-group col-md-12 col-sm-12">
                                                                     <label>Instances:</label>
-                                                                    <input class="form-control" type="number" ng-model="sla.number_of_instances" min="0" value="1">
-                                                                    <div ng-model="t.items" ng-include="'list.html'"></div>
+                                                                    <input class="form-control" type="number" ng-model="constituent_vnf.number_of_instances" min="0" value="1">
                                                                     <div class="clearfix"></div>
                                                                 </div>
                                                             </div>
@@ -105,36 +102,54 @@
                                 </div>
                             </div>
                             <div class="panel panel-default">
+                                <div class="panel-heading" role="tab" ng-class="{ 'panel-header-error' : registerForm.information }">
+                                    <h4 class="panel-title"><a bs-collapse-toggle>Montoring parameters</a></h4>
+                                </div>
+                                <div class="panel-collapse" role="tabpanel" bs-collapse-target>
+                                    <div class="panel-body">
+                                        <div class="checkbox">
+                                            <label style="display: inline-block;width:200px;">
+                                                <input type="checkbox" ng-model="selectedAll.value" ng-click="checkAll()">Check All
+                                            </label>
+                                            <label ng-repeat="m_metric in generic_monitoring_parameters" style="display: inline-block;width:200px;">
+                                                <input type="checkbox" checklist-model="nsd.monitoring_parameters" checklist-value="m_metric"> {{m_metric.desc}}({{m_metric.unit}})
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel panel-default">
                                 <div class="panel-heading" role="tab" ng-class="{ 'panel-header-error' : registerForm.lifecycle_events }">
                                     <h4 class="panel-title"><a bs-collapse-toggle>Lifecycle events (>=1)</a></h4>
-                                    <button class="btn btn-default pull-right" ng-click="addStart()">Add</button>
                                 </div>
                                 <div class="panel-collapse" role="tabpanel" bs-collapse-target>
                                     <div class="panel-body">
                                         Start
-                                        <fieldset data-ng-repeat="start_event in nsd.lifecycle_events.start track by $index">
+                                        <button class="btn btn-default pull-right" ng-click="addEvent('start')">Add start</button>
+                                        <fieldset data-ng-repeat="event in nsd.lifecycle_events.start track by $index">
                                             VNF
-                                            <button type="button" class="btn btn-default" ng-model="start_event.vnf_id" data-html="1" bs-options="vnf.name for vnf in nsd.vnfds" bs-select required ng-change="">
+                                            <button type="button" class="btn btn-default" ng-model="event.vnf_id" data-html="1" bs-options="vnf for vnf in nsd.vnfds" bs-select required placeholder="choose">
                                                 Select <span class="caret" style="position: relative; z-index: 5000"></span>
                                             </button>
-                                            <!--Event
-                                    <button type="button" class="btn btn-default" ng-model="start_event.vnf_event" data-html="1" bs-options="event.id for events in getEvents($index, 'start')" bs-select required>
-                                        Select <span class="caret" style="position: relative; z-index: 5000"></span>
-                                    </button>-->
-                                            <button class="remove" ng-show="$last" ng-click="removeChoice()">-</button>
+                                            Flavour
+                                            <button type="button" class="btn btn-default" ng-model="event.sla_ref_id" data-html="1" bs-options="sla.id as sla.id for sla in getEvents('start', event.vnf_id)" bs-select required placeholder="choose">
+                                                Select <span class="caret" style="position: relative; z-index: 5000"></span>
+                                            </button>
+                                            <button type="button" class="btn btn-danger" ng-click="removeEvent('start', $index)"><span class="glyphicon glyphicon-remove"></span></button>
                                         </fieldset>
                                         Stop
-                                        <!--fieldset data-ng-repeat="lifecycle_event in nsd.lifecycle_events.stop track by $index">
-                                    VNF
-                                    <button type="button" class="btn btn-default" ng-model="lifecycle_events.stop" data-html="1" bs-options="vnf.name for vnf in nsd.vnfds" bs-select required ng-change="getFlavours(vnf)">
-                                        Select <span class="caret" style="position: relative; z-index: 5000"></span>
-                                    </button>
-                                    Event
-                                    <button type="button" class="btn btn-default" ng-model="lifecycle_event.stop.vnf_event" data-html="1" bs-options="event.id for events in getEvents($index, 'stop')" bs-select required>
-                                        Select <span class="caret" style="position: relative; z-index: 5000"></span>
-                                    </button>
-                                    <button class="remove" ng-show="$last" ng-click="removeChoice()">-</button>
-                                </fieldset-->
+                                        <button class="btn btn-default pull-right" ng-click="addEvent('stop')">Add stop</button>
+                                        <fieldset data-ng-repeat="event in nsd.lifecycle_events.stop track by $index">
+                                            VNF
+                                            <button type="button" class="btn btn-default" ng-model="event.vnf_id" data-html="1" bs-options="vnf for vnf in nsd.vnfds" bs-select required placeholder="choose">
+                                                Select <span class="caret" style="position: relative; z-index: 5000"></span>
+                                            </button>
+                                            Flavour
+                                            <button type="button" class="btn btn-default" ng-model="event.sla_ref_id" data-html="1" bs-options="sla.id as sla.id for sla in getEvents('stop', event.vnf_id)" bs-select required placeholder="choose">
+                                                Select <span class="caret" style="position: relative; z-index: 5000"></span>
+                                            </button>
+                                            <button type="button" class="btn btn-danger" ng-click="removeEvent('stop', $index)"><span class="glyphicon glyphicon-remove"></span></button>
+                                        </fieldset>
                                     </div>
                                 </div>
                             </div>
