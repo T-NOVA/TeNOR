@@ -123,4 +123,10 @@ module CommonMethods
 
 		hot.build(provider_info)
 	end
+
+	def self.is_num?(str)
+		!!Integer(str)
+	rescue ArgumentError, TypeError
+		false
+	end
 end

@@ -132,7 +132,11 @@ class VnfdToHot
               else
                 get_attr = {get_attr: []}
                 string.each_with_index do |type, i|
+                  if CommonMethods.is_num?(type)
+                    get_attr[:get_attr] << type.to_i
+                  else
                     get_attr[:get_attr] << type
+                  end
                 end
 
                 if @outputs.has_key?(match[2])
