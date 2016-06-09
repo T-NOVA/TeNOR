@@ -11,20 +11,19 @@ angular.module('tNovaApp')
 
         $scope.selectedIcons = [];
         $scope.nsds = [];
-
         //$scope.multiplePanels.activePanels = [2];
 
-        $scope.flavours
+        // $scope.flavours
 
         $scope.getFlavours = function (vnfd) {
             //console.log($scope.nsd.sla[0].constituent_vnfs);
             if (vnfd == undefined) return;
             return $scope.vnfs.filter(function (d) {
-                return d.vnfd.id === $scope.nsd.sla[0].constituent_vnfs;
+                return d.vnfd.id === vnfd;
             })[0].vnfd.deployment_flavours;
         };
 
-        $scope.getEvents = function (index, type) {
+        $scope.getEvents2 = function (index, type) {
             console.log(index);
             console.log(type);
             console.log($scope.nsd.lifecycle_events[type][index]);
@@ -36,6 +35,15 @@ angular.module('tNovaApp')
             })[0].vnfd.vdu.vnf_lifecycle_events;
         };
 
+        $scope.getEvents = function (type, vnf_id) {
+            var vnfs = $scope.nsd.sla.filter(function (sla) {
+                return sla.constituent_vnfs.filter(function (c_vnf) {
+                    return c_vnf.vnf_ref_id === vnf_id;
+                })
+            });
+            return vnfs;
+        };
+
         $scope.addNSD = function (nsd) {
             $scope.nsds.push(nsd)
         };
@@ -43,14 +51,13 @@ angular.module('tNovaApp')
         $scope.addSla = function () {
             var newItemNo = $scope.nsd.sla.length + 1;
             $scope.nsd.sla.push({
-                'id': 'sla' + newItemNo
+                'id': 'sla' + newItemNo,
+                'constituent_vnfs': []
             });
         };
         $scope.addConstituentVnf = function (sla_index) {
             var newItemNo = $scope.nsd.sla[sla_index].constituent_vnfs.length + 1;
-            $scope.nsd.sla[sla_index].constituent_vnfs.push({
-                'id': 'sla' + newItemNo
-            });
+            $scope.nsd.sla[sla_index].constituent_vnfs.push({});
         };
 
         $scope.addNew = function (type) {
@@ -60,10 +67,9 @@ angular.module('tNovaApp')
             });
         };
 
-        $scope.addStart = function () {
-            var newItemNo = $scope.nsd.lifecycle_events.start.length + 1;
-            $scope.nsd.lifecycle_events.start.push({
-                'id': "start" + newItemNo
+        $scope.addEvent = function (type) {
+            $scope.nsd.lifecycle_events[type].push({
+                'vnf_event': type
             });
         };
 
@@ -83,6 +89,19 @@ angular.module('tNovaApp')
             }
         };
 
+        $scope.removeConstituentVNF = function (sla_id, id) {
+            console.log(sla_id)
+            $scope.nsd.sla[sla_id].constituent_vnfs[id].splice(id, id);
+            var newItemNo = $scope.choices.length - 1;
+            if (newItemNo !== 0) {
+                $scope.nsd.sla.pop();
+            }
+        };
+
+        $scope.removeEvent = function (type, id) {
+            $scope.nsd.lifecycle_events[type][id].splice(id, id);
+        };
+
         $scope.submitNsd = function () {
 
             $scope.registerForm = {};
@@ -91,6 +110,7 @@ angular.module('tNovaApp')
             var nsd = {
                 "nsd": $scope.nsd
             };
+            $scope.nsd.vnfds.map(String);
             console.log(nsd);
             var jsData;
 
@@ -330,6 +350,85 @@ angular.module('tNovaApp')
         }, true);
 
 
+
+        $scope.generic_monitoring_parameters = [
+            {
+                metric: "cpuidle",
+                desc: "CPU Idle",
+                unit: '%'
+            },
+            {
+                metric: "cpu_util",
+                desc: "CPU Utilization",
+                unit: '%'
+            },
+            {
+                metric: "fsfree",
+                desc: "Free Storage",
+                unit: 'GB'
+            },
+            {
+                metric: "memfree",
+                desc: "Free Memory",
+                unit: 'MB'
+            },
+            {
+                metric: "network_incoming",
+                desc: "Network Incoming",
+                unit: 'Mbps'
+            },
+            {
+                metric: "network_outgoing",
+                desc: "Network Outgoing",
+                unit: 'Mbps'
+            },
+            {
+                metric: "load_shortterm",
+                desc: "Load Average (1 Minute)",
+                unit: '%'
+            },
+            {
+                metric: "load_midterm",
+                desc: "Load Average (5 Minutes)",
+                unit: '%'
+            },
+            {
+                metric: "load_longterm",
+                desc: "Load Average (15 Minutes)",
+                unit: '%'
+            },
+            {
+                metric: "processes_blocked",
+                desc: "Blocked Processes",
+                unit: 'INT'
+            },
+            {
+                metric: "processes_paging",
+                desc: "Paging Processes",
+                unit: 'INT'
+            },
+            {
+                metric: "processes_running",
+                desc: "Running Processes",
+                unit: 'INT'
+            },
+            {
+                metric: "processes_sleeping",
+                desc: "Sleeping Processes",
+                unit: 'INT'
+            },
+            {
+                metric: "processes_stopped",
+                desc: "Stopped Processes",
+                unit: 'INT'
+            },
+            {
+                metric: "processes_zombie",
+                desc: "Zombie Processes",
+                unit: 'INT'
+            }
+    ];
+
         $scope.vnfs = [
             {
                 "name": "TEMP",
@@ -498,5 +597,10 @@ angular.module('tNovaApp')
                 }
         }
     ];
+
+
+        _.each($scope.vnfs, function (d) {
+            d.vnfd.id = "" + d.vnfd.id;
+        })
 
     });
