@@ -158,4 +158,13 @@ class NsCatalogue < Sinatra::Application
     ns.destroy
     return 200
   end
+
+  get '/network-services/vnf/:vnf_id' do
+    begin
+      nss = Ns.find_by({"nsd.vnfds" => params[:vnf_id]})
+    rescue Mongoid::Errors::DocumentNotFound => e
+      halt 404
+    end
+    return 200, nss.to_json
+  end
 end
