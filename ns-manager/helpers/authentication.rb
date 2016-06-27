@@ -85,7 +85,7 @@ module AuthenticationHelper
 			puts e
 		end
 		if response.nil?
-			halt 500, "Gatekeeper response is null when login."
+			#halt 500, "Gatekeeper response is null when login."
 		end
 		metadata = JSON.parse(response)
     Sinatra::Application.settings.gk_token =  metadata["token"]["id"]

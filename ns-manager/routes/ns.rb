@@ -72,17 +72,42 @@ class Catalogue < TnovaManager
   # Save a new Network Service
   post '/' do
 
+    # Validate JSON format
+    ns, errors = parse_json(request.body.read)
+    return 400, errors.to_json if errors
+
     # Return if content-type is invalid
     return 415 unless request.content_type == 'application/json'
+
+    # Validate NS
+    return 400, 'ERROR: NSD not found' unless ns.has_key?('nsd')
 
     begin
       @service = ServiceModel.find_by(name: "ns_catalogue")
     rescue Mongoid::Errors::DocumentNotFound => e
-      halt 500, {'Content-Type' => "text/plain"}, "Microservice unrechable."
+      halt 500, {'Content-Type' => "text/plain"}, "NS Catalogue Microservice unrechable."
     end
 
     begin
-      response = RestClient.post  @service.host + ":" + @service.port.to_s + request.fullpath, request.body.read, 'X-Auth-Token' => @client_token, :content_type => :json
+      @vnf_service = ServiceModel.find_by(name: "vnf_catalogue")
+    rescue Mongoid::Errors::DocumentNotFound => e
+      halt 500, {'Content-Type' => "text/plain"}, "VNF Catalogue Microservice unrechable."
+    end
+
+    #check if the VNFDs defined in the NSD are defined
+    ns['nsd']['vnfds'].each do |vnf|
+      begin
+        response = RestClient.get @vnf_service.host + ":" + @vnf_service.port.to_s + '/vnfs/' + vnf, 'X-Auth-Token' => @client_token, :content_type => :json
+      rescue Errno::ECONNREFUSED
+        halt 500, 'VNF Catalogue unreachable'
+      rescue => e
+        logger.error e.response
+        halt e.response.code, e.response.body
+      end
+    end
+
+    begin
+      response = RestClient.post  @service.host + ":" + @service.port.to_s + request.fullpath, ns.to_json, 'X-Auth-Token' => @client_token, :content_type => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Catalogue unreachable'
     rescue => e

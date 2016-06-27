@@ -81,7 +81,6 @@ class NsCatalogue < Sinatra::Application
       halt e.response.code, e.response.body
     end
 
-    #vnfExists(ns['nsd']['vnfds'])
     begin
       ns = Ns.find_by({"nsd.id" => ns['nsd']['id'], "nsd.version" => ns['nsd']['version'], "nsd.vendor" => ns['nsd']['vendor']})
       logger.error ns
@@ -158,5 +157,14 @@ class NsCatalogue < Sinatra::Application
     end
     ns.destroy
     return 200
+  end
+
+  get '/network-services/vnf/:vnf_id' do
+    begin
+      nss = Ns.find_by({"nsd.vnfds" => params[:vnf_id]})
+    rescue Mongoid::Errors::DocumentNotFound => e
+      halt 404
+    end
+    return 200, nss.to_json
   end
 end

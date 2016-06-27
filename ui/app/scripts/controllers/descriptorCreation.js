@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('tNovaApp')
-    .controller('descriptionCreationController', function ($scope, $filter, $alert) {
+    .controller('descriptionCreationController', function ($scope, $filter, $alert, tenorService) {
 
         //load NSD schema in tv4
         $.getJSON('../../schemas/nsd_schema.json', function (response) {
@@ -55,9 +55,18 @@ angular.module('tNovaApp')
                 'constituent_vnfs': []
             });
         };
+
         $scope.addConstituentVnf = function (sla_index) {
             var newItemNo = $scope.nsd.sla[sla_index].constituent_vnfs.length + 1;
             $scope.nsd.sla[sla_index].constituent_vnfs.push({});
+        };
+
+        $scope.addvLink = function () {
+            var newItemNo = $scope.nsd.vld.virtual_links.length + 1;
+            $scope.nsd.vld.virtual_links.push({
+                'id': 'vld' + newItemNo,
+                'connections': []
+            });
         };
 
         $scope.addNew = function (type) {
@@ -73,10 +82,13 @@ angular.module('tNovaApp')
             });
         };
 
+        $scope.addConnection = function (virtual_link_id) {
+            $scope.nsd.vld.virtual_links[virtual_link_id].connections.push();
+        };
+
         $scope.showAddChoice = function (choice) {
             return choice.id === $scope.choices[$scope.choices.length - 1].id;
         };
-
 
         $scope.removeItems = function (type) {
             $scope.nsd[type].pop();
@@ -157,6 +169,14 @@ angular.module('tNovaApp')
                 console.log(res);
                 $scope.registerForm.sla[res[1]].sla_key = true;
             }
+
+
+            console.log("NSD Correct...");
+
+            tenorService.post('network-services', $scope.registerForm).then(function (data) {
+                console.log(data);
+                //window.location = "#!/nsInstances/";
+            });
         };
 
         $scope.nsd = {
@@ -170,7 +190,9 @@ angular.module('tNovaApp')
             },
             "vnf_depedency": [],
             "monitoring_parameters": [],
-            "vld": {},
+            "vld": {
+                "virtual_links": []
+            },
             "sla": []
         }
 
@@ -262,28 +284,12 @@ angular.module('tNovaApp')
                             }
                         ]
                     ]
-                },
-                    {
-                        "type": "item",
-                        "id": "4"
-                },
-                    {
-                        "type": "item",
-                        "id": "5"
-                },
-                    {
-                        "type": "item",
-                        "id": "6"
                 }
             ],
                 "B": [
                     {
                         "type": "item",
                         "id": 7
-                },
-                    {
-                        "type": "item",
-                        "id": "8"
                 },
                     {
                         "type": "container",
@@ -293,14 +299,6 @@ angular.module('tNovaApp')
                                 {
                                     "type": "item",
                                     "id": "9"
-                            },
-                                {
-                                    "type": "item",
-                                    "id": "10"
-                            },
-                                {
-                                    "type": "item",
-                                    "id": "11"
                             }
                         ],
                         [
@@ -317,22 +315,12 @@ angular.module('tNovaApp')
                                                 "type": "item",
                                                 "id": "13"
                                         }
-                                    ],
-                                    [
-                                            {
-                                                "type": "item",
-                                                "id": "14"
-                                        }
                                     ]
                                 ]
                             },
                                 {
                                     "type": "item",
                                     "id": "15"
-                            },
-                                {
-                                    "type": "item",
-                                    "id": "16"
                             }
                         ]
                     ]
@@ -349,6 +337,25 @@ angular.module('tNovaApp')
             $scope.modelAsJson = angular.toJson(model, true);
         }, true);
 
+
+        tenorService.get('vnfs?limit=1000').then(function (data) {
+            $scope.vnfs = data;
+        });
+
+        $scope.connection_link_types = [
+            {
+                type: 'E-LINE',
+                description: 'Point-2-Point (E-LINE)'
+            },
+            {
+                type: 'E-TREE',
+                description: 'Point-2-Multipoint (E-TREE)'
+            },
+            {
+                type: 'E-LAN',
+                description: 'Lan (E-LAN)'
+            }
+         ];
 
 
         $scope.generic_monitoring_parameters = [
@@ -428,177 +435,6 @@ angular.module('tNovaApp')
                 unit: 'INT'
             }
     ];
-
-        $scope.vnfs = [
-            {
-                "name": "TEMP",
-                "version": 1,
-                "vnf-manager": "TEMP",
-                "vnfd": {
-                    "vdu": [
-                        {
-                            "resource_requirements": {
-                                "network_interface_bandwidth_unit": "",
-                                "hypervisor_parameters": {
-                                    "version": "10002|12001|2.6.32-358.el6.x86_64",
-                                    "type": "QEMU-KVM"
-                                },
-                                "memory_unit": "GB",
-                                "network_interface_card_capabilities": {
-                                    "SR-IOV": true,
-                                    "mirroring": false
-                                },
-                                "storage": {
-                                    "size_unit": "GB",
-                                    "persistence": false,
-                                    "size": 11
-                                },
-                                "network_interface_bandwidth": "",
-                                "platform_pcie_parameters": {
-                                    "SR-IOV": true,
-                                    "device_pass_through": true
-                                },
-                                "vcpus": 1,
-                                "vswitch_capabilities": {
-                                    "version": "2.0",
-                                    "type": "ovs",
-                                    "overlay_tunnel": "GRE"
-                                },
-                                "data_processing_acceleration_library": "",
-                                "memory": 2,
-                                "memory_parameters": {
-                                    "large_pages_required": false,
-                                    "numa_allocation_policy": ""
-                                },
-                                "cpu_support_accelerator": "AES-NI"
-                            },
-                            "bootstrap_script": "",
-                            "alias": "controller",
-                            "networking_resources": "",
-                            "monitoring_parameters_specific": [],
-                            "id": "vdu0",
-                            "vm_image": "http://download.cirros-cloud.net/0.3.4/cirros-0.3.4-x86_64-disk.img",
-                            "controller": true,
-                            "connection_points": [
-                                {
-                                    "vlink_ref": "vl0",
-                                    "id": "CP3plm"
-                    }
-                ],
-                            "monitoring_parameters": [],
-                            "scale_in_out": {
-                                "minimum": 1,
-                                "maximum": 1
-                            },
-                            "vm_image_md5": "a78c7c73ceb2feeb20d8cd82a4f97da3",
-                            "vm_image_format": "qcow2"
-            }
-        ],
-                    "name": "2016-12-05-10-10-vhg",
-                    "created_at": "2016-05-13T08:40:48Z",
-                    "modified_at": "2016-05-13T08:40:48Z",
-                    "provider_id": 7,
-                    "trade": false,
-                    "descriptor_version": "1",
-                    "deployment_flavours": [
-                        {
-                            "vdu_reference": [
-                    "vdu0"
-                ],
-                            "constraint": "",
-                            "flavour_key": "gold",
-                            "vlink_reference": [
-                    "vl0",
-                    "vl1"
-                ],
-                            "id": "flavor0",
-                            "assurance_parameters": [
-                                {
-                                    "violation": [
-                                        {
-                                            "interval": 360,
-                                            "breaches_count": 2
-                            }
-                        ],
-                                    "value": 95,
-                                    "penalty": {
-                                        "type": "Discount",
-                                        "expression": 10,
-                                        "validity": "P1D",
-                                        "unit": "%"
-                                    },
-                                    "formula": "load_longterm GE 95",
-                                    "rel_id": "param0",
-                                    "id": "load_longterm",
-                                    "unit": "%"
-                    }
-                ]
-            }
-        ],
-                    "version": "1",
-                    "vnf_lifecycle_events": [
-                        {
-                            "authentication_username": "root",
-                            "driver": "ssh",
-                            "authentication_type": "PubKeyAuthentication",
-                            "authentication": "",
-                            "authentication_port": 22,
-                            "flavor_id_ref": "flavor0",
-                            "events": {
-                                "start": {
-                                    "command": "/root/start",
-                                    "template_file": "{\"controller\":\"get_attr[vdu0, networks, net0, 0]\"}",
-                                    "template_file_format": "JSON"
-                                },
-                                "stop": {
-                                    "command": "/root/stop",
-                                    "template_file": "{}",
-                                    "template_file_format": "JSON"
-                                }
-                            },
-                            "vnf_container": "/root"
-            }
-        ],
-                    "billing_model": {
-                        "model": "RS",
-                        "price": {
-                            "min_per_period": 1,
-                            "max_per_period": 1,
-                            "setup": 1,
-                            "unit": "EUR"
-                        },
-                        "period": ""
-                    },
-                    "provider": "viotech",
-                    "release": "T-NOVA",
-                    "vlinks": [
-                        {
-                            "leaf_requirement": "Unlimited",
-                            "connectivity_type": "E-LINE",
-                            "vdu_reference": [
-                    "vdu0"
-                ],
-                            "external_access": true,
-                            "connection_points_reference": [
-                    "CP3plm",
-                    "CPqzat"
-                ],
-                            "access": true,
-                            "alias": "mgnt",
-                            "dhcp": true,
-                            "root_requirement": "Unlimited",
-                            "qos": "",
-                            "id": "vl0"
-            }
-        ],
-                    "type": "test",
-                    "description": "test sample vnfd",
-                    "id": 1618
-                }
-        }
-    ];
-
-
         _.each($scope.vnfs, function (d) {
             d.vnfd.id = "" + d.vnfd.id;
         })

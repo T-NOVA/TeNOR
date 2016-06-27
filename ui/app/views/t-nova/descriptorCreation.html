@@ -153,6 +153,44 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="panel panel-default">
+                                <div class="panel-heading" role="tab" ng-class="{ 'panel-header-error' : registerForm.lifecycle_events }">
+                                    <h4 class="panel-title"><a bs-collapse-toggle>Virtual links (>=1)</a></h4>
+                                </div>
+                                <div class="panel-collapse" role="tabpanel" bs-collapse-target>
+                                    <div class="panel-body">
+                                        SLA
+                                        <button class="btn btn-default pull-right" ng-click="addvLink('vld')">Add start</button>
+
+                                        FOr each SLA
+                                        <fieldset data-ng-repeat="vlink in nsd.vld.virtual_links track by $index">
+                                            <b>Alias:</b>
+                                            <input type="text" ng-model="nsd.alias" value="Name" ng-change="" class="form-control">
+                                            <b>Link-Type:</b>
+                                            <button type="button" class="btn btn-default" ng-model="vlink.connectivity_type" data-html="1" bs-options="vnf.type as vnf.description for vnf in connection_link_types" bs-select required placeholder="choose">
+                                                Select <span class="caret" style="position: relative; z-index: 5000"></span>
+                                            </button>
+                                            <b>Connection Points:</b>
+                                            <div class="form-group col-md-12 col-sm-12">
+                                                <h5>Constituent VNFs:</h5>
+                                                <button type="button" class="btn btn-success" ng-click="addConnection($index)"><span class="glyphicon glyphicon-plus"></span></button>
+                                                <hr/>
+                                                <div class="form-group col-md-12 col-sm-12" ng-repeat="connection in vlink.connections track by $index">
+                                                    <button type="button" class="btn btn-default" ng-model="connection.connection" data-html="1" bs-options="vnf for vnf in nsd.vnfds" bs-select required placeholder="choose">
+                                                        Select <span class="caret" style="position: relative; z-index: 5000"></span>
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <b>External Access:</b>
+                                            <input type="checkbox" ng-model="nsd.external_access">
+
+
+
+                                        </fieldset>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </form>
                 </div>

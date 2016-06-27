@@ -127,10 +127,32 @@ class VNFCatalogueController < TnovaManager
   # @param [string]
   delete '/:vnf_id' do
 
+    #check if some NSD is using it
+
+    begin
+      @service = ServiceModel.find_by(name: "ns_catalogue")
+    rescue Mongoid::Errors::DocumentNotFound => e
+      halt 500, {'Content-Type' => "text/plain"}, "NS Catalogue Microservice unrechable."
+    end
+
+    begin
+      response = RestClient.get @service.host + ":" + @service.port.to_s + '/network-services/vnf/' + params[:vnf_id], 'X-Auth-Token' => @client_token, :content_type => :json
+      nss, errors = parse_json(response)
+      if nss.size > 0
+        halt 400, nss.size + 'Network Services are using this VNF.'
+      end
+    rescue Errno::ECONNREFUSED
+      halt 500, 'NS Catalogue unreachable'
+    rescue => e
+      logger.error e.response
+      #halt e.response.code, e.response.body
+      logger.error "Any network service is using this VNF."
+    end
+
     begin
       @service = ServiceModel.find_by(name: "vnf_manager")
     rescue Mongoid::Errors::DocumentNotFound => e
-      halt 500, {'Content-Type' => "text/plain"}, "Microservice unrechable."
+      halt 500, {'Content-Type' => "text/plain"}, "VNF Manager Microservice unrechable."
     end
 
     begin
