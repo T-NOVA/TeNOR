@@ -52,7 +52,7 @@ class VnfdToHot
     vlinks.each do |vlink|
       vlink_json = vnfd['vlinks'].detect { |vl| vl['id'] == vlink }
       net_name = create_networks(vlink_json, '8.8.8.8', routers_id[0]['id'])
-      networks_id << { 'alias' => vlink_json['alias'] , 'heat' => net_name}
+      networks_id << {'alias' => vlink_json['alias'], 'heat' => net_name}
     end
 
     deployment_information['vdu_reference'].each do |vdu_ref|
@@ -62,7 +62,7 @@ class VnfdToHot
       image_name = create_image(vdu)
       flavor_name = create_flavor(vdu)
 
-      ports = create_ports(vdu['connection_points'], vnfd['vlinks'], networks_id, security_group_id)
+      ports = create_ports(vdu['id'], vdu['connection_points'], vnfd['vlinks'], networks_id, security_group_id)
       #ports = create_ports(vdu_ref, vdu['vnfc']['id'], vdu['vnfc']['networking'])
 
       create_server(vdu, image_name, flavor_name, ports, key)
@@ -91,7 +91,7 @@ class VnfdToHot
 
   def create_subnet(network_name, dns_server, cidr)
     name = get_resource_name
-    @hot.resources_list << Subnet.new(name,  {get_resource: network_name}, dns_server, cidr)
+    @hot.resources_list << Subnet.new(name, {get_resource: network_name}, dns_server, cidr)
     name
   end
 
@@ -106,22 +106,15 @@ class VnfdToHot
   # @param [Hash] events the VNF lifecycle events
   def parse_outputs(events)
     outputs = []
+
     events.each do |event, event_info|
       unless event_info.nil? || event_info['template_file'].nil?
         raise CustomException::InvalidTemplateFileFormat, "Template file format not supported" unless event_info['template_file_format'].downcase == 'json'
-
-#        parsed_event, errors = parse_json(event_info['template_file'])
-#        return 400, errors.to_json if errors
-        parsed_event = JSON.parse(event_info['template_file'])
-
-        parsed_event.each do |id, output|
+        JSON.parse(event_info['template_file']).each do |id, output|
           unless outputs.include?(output)
             outputs << output
-            #match = output.match(/^get_attr\[(.*), *(.*)\]$/i).to_a
-            match = output.match(/^get_attr\[(.*)\]$/i).to_a
-            if match.size == 0
-              match = output.match(/^get_attr \[(.*)\]$/i).to_a
-            end
+
+            match = output.delete(' ').match(/^get_attr\[(.*)\]$/i).to_a
             if match.size == 0
               puts output
               puts "The match is null."
@@ -146,8 +139,12 @@ class VnfdToHot
                 end
                 puts "Outputs:"
                 puts @outputs
+                if string[1] == 'PublicIp'
+                  puts "PublicIp, do nothing"
+                else
 #                @hot.outputs_list << Output.new(id, "", {get_attr: [match[2], "#{match[1]}"]})
-                @hot.outputs_list << Output.new(id, "", get_attr)
+                  @hot.outputs_list << Output.new(id, "", get_attr)
+                end
               end
             end
           end
@@ -190,7 +187,7 @@ class VnfdToHot
   # @param [Array] networks_id the IDs of the networks created by NS Manager
   # @param [String] security_group_id the ID of the T-NOVA security group
   # @return [Array] a list of ports
-  def create_ports(connection_points, vlinks, networks_id, security_group_id)
+  def create_ports(id, connection_points, vlinks, networks_id, security_group_id)
     ports = []
 
     connection_points.each do |connection_point|
@@ -291,7 +288,7 @@ class VnfdToHot
   def add_wait_condition(vdu)
     wc_handle_name = get_resource_name
     @hot.resources_list << WaitConditionHandle.new(wc_handle_name)
-    @hot.resources_list << WaitCondition.new(get_resource_name, wc_handle_name, 600)
+    @hot.resources_list << WaitCondition.new(get_resource_name, wc_handle_name, 1200)
     bootstrap_script = vdu.has_key?('bootstrap_script') ? vdu['bootstrap_script'] : "#!/bin/bash"
     {
         str_replace: {
