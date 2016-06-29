@@ -75,12 +75,12 @@ class Provisioning < VnfProvisioning
 
     # Convert VNF to HOT (call HOT Generator)
     halt 400, 'No T-NOVA flavour defined.' unless instantiation_info.has_key?('flavour')
-    logger.debug  "Send VNFD to Hot Generator"
+    logger.debug "Send VNFD to Hot Generator"
     hot_generator_message = {
-      vnf: vnf,
-      networks_id: instantiation_info['networks'],
-      routers_id: instantiation_info['routers'],
-      security_group_id: instantiation_info['security_group_id']
+        vnf: vnf,
+        networks_id: instantiation_info['networks'],
+        routers_id: instantiation_info['routers'],
+        security_group_id: instantiation_info['security_group_id']
     }
     begin
       hot = parse_json(RestClient.post settings.hot_generator + '/hot/' + vnf_flavour, hot_generator_message.to_json, :content_type => :json, :accept => :json)
@@ -94,11 +94,11 @@ class Provisioning < VnfProvisioning
     logger.debug "HEAT template generated"
     logger.debug hot
     vim_info = {
-      'keystone' => instantiation_info['auth']['url']['keystone'],
-      'tenant' => instantiation_info['auth']['tenant'],
-      'username' => instantiation_info['auth']['username'],
-      'password' => instantiation_info['auth']['password'],
-      'heat' => instantiation_info['auth']['url']['orch']
+        'keystone' => instantiation_info['auth']['url']['keystone'],
+        'tenant' => instantiation_info['auth']['tenant'],
+        'username' => instantiation_info['auth']['username'],
+        'password' => instantiation_info['auth']['password'],
+        'heat' => instantiation_info['auth']['url']['orch']
     }
     logger.debug 'VIM info: ' + vim_info.to_json
 
@@ -116,21 +116,21 @@ class Provisioning < VnfProvisioning
     # Build the VNFR and store it
     begin
       vnfr = Vnfr.create!(
-        deployment_flavour: instantiation_info['flavour'],
-        nsr_instance: Array(instantiation_info['ns_id']),
-        vnfd_reference: vnf['vnfd']['id'],
-        vim_id: instantiation_info['vim_id'],
-        vlr_instances: nil,
-        vnf_addresses: nil,
-        vnf_status: 3,
-        notifications: [instantiation_info['callback_url']],
-        lifecycle_event_history: Array('CREATE_IN_PROGRESS'),
-        audit_log: nil,
-        vdu: vdu,
-        stack_url: response['stack']['links'][0]['href'],
-        vms_id: nil,
-        lifecycle_info: vnf['vnfd']['vnf_lifecycle_events'].find{|lifecycle| lifecycle['flavor_id_ref'].downcase == vnf_flavour.downcase},
-        lifecycle_events_values: nil)
+          deployment_flavour: instantiation_info['flavour'],
+          nsr_instance: Array(instantiation_info['ns_id']),
+          vnfd_reference: vnf['vnfd']['id'],
+          vim_id: instantiation_info['vim_id'],
+          vlr_instances: nil,
+          vnf_addresses: nil,
+          vnf_status: 3,
+          notifications: [instantiation_info['callback_url']],
+          lifecycle_event_history: Array('CREATE_IN_PROGRESS'),
+          audit_log: nil,
+          vdu: vdu,
+          stack_url: response['stack']['links'][0]['href'],
+          vms_id: nil,
+          lifecycle_info: vnf['vnfd']['vnf_lifecycle_events'].find { |lifecycle| lifecycle['flavor_id_ref'].downcase == vnf_flavour.downcase },
+          lifecycle_events_values: nil)
     rescue Moped::Errors::OperationFailure => e
       return 400, 'ERROR: Duplicated VNF ID' if e.message.include? 'E11000'
       return 400, e.message
@@ -171,10 +171,10 @@ class Provisioning < VnfProvisioning
 
     # Request an auth token from the VIM
     vim_info = {
-      'keystone' => destroy_info['auth']['url']['keystone'],
-      'tenant' => destroy_info['auth']['tenant'],
-      'username' => destroy_info['auth']['username'],
-      'password' => destroy_info['auth']['password']
+        'keystone' => destroy_info['auth']['url']['keystone'],
+        'tenant' => destroy_info['auth']['tenant'],
+        'username' => destroy_info['auth']['username'],
+        'password' => destroy_info['auth']['password']
     }
     token_info = request_auth_token(vim_info)
     auth_token = token_info['access']['token']['id']
@@ -209,7 +209,7 @@ class Provisioning < VnfProvisioning
     rescue => e
       logger.error e.response
       #halt e.response.code, e.response.body
-    end  
+    end
 
     # Delete the VNFR from the database
     vnfr.destroy
@@ -241,9 +241,9 @@ class Provisioning < VnfProvisioning
 
     # Build mAPI request
     mapi_request = {
-      event: config_info['event'],
-      vnf_controller: vnfr.vnf_addresses['controller'],
-      parameters: vnfr.lifecycle_events_values[config_info['event']]
+        event: config_info['event'],
+        vnf_controller: vnfr.vnf_addresses['controller'],
+        parameters: vnfr.lifecycle_events_values[config_info['event']]
     }
     logger.debug 'mAPI request: ' + mapi_request.to_json
 
@@ -260,7 +260,6 @@ class Provisioning < VnfProvisioning
       logger.error e.response
       halt e.response.code, e.response.body
     end
-
     # Update the VNFR event history
     vnfr.push(lifecycle_event_history: "Executed a #{mapi_request[:event]}")
 
@@ -295,12 +294,12 @@ class Provisioning < VnfProvisioning
       begin
         response = RestClient.post "#{settings.mapi}/vnf_api/", mapi_request.to_json, :content_type => :json, :accept => :json
       rescue Errno::ECONNREFUSED
-        message = { status: "mAPI_unreachable", vnfd_id: vnfr.vnfd_reference, vnfr_id: vnfr.id}
+        message = {status: "mAPI_unreachable", vnfd_id: vnfr.vnfd_reference, vnfr_id: vnfr.id}
         nsmanager_callback(stack_info['ns_manager_callback'], message)
-        #halt 500, 'mAPI unreachable'
+          #halt 500, 'mAPI unreachable'
       rescue => e
         logger.error e.response
-        message = { status: "mAPI_error", vnfd_id: vnfr.vnfd_reference, vnfr_id: vnfr.id}
+        message = {status: "mAPI_error", vnfd_id: vnfr.vnfd_reference, vnfr_id: vnfr.id}
         nsmanager_callback(stack_info['ns_manager_callback'], message)
         #halt e.response.code, e.response.body
       end
@@ -310,6 +309,8 @@ class Provisioning < VnfProvisioning
       logger.debug "Output recevied from Openstack:"
       logger.debug stack_info['stack']['outputs']
 
+      sleep(2)
+
       vms_id = {}
       lifecycle_events_values = {}
       vnf_addresses = {}
@@ -318,9 +319,50 @@ class Provisioning < VnfProvisioning
         if output['output_key'] =~ /^.*#id$/i
           vms_id[output['output_key'].match(/^(.*)#id$/i)[1]] = output['output_value']
         else
+
+          if output['output_key'] =~ /^.*#PublicIp$/i
+            vnf_addresses['controller'] = output['output_value']
+          end
+
+
+          #other parameters
+          vnfr.lifecycle_info['events'].each do |event, event_info|
+            unless event_info.nil?
+              JSON.parse(event_info['template_file']).each do |id, parameter|
+
+                parameter_match = parameter.delete(' ').match(/^get_attr\[(.*)\]$/i).to_a
+                string = parameter_match[1].split(",").map(&:strip)
+                key_string = string.join("#")
+
+                if string[1] == "PublicIp"
+                  if key_string == output['output_key']
+                    if output['output_key'] =~ /^.*#PublicIp$/i #output['output_key'] =~ /^.*#floating_ip$/i
+                      vnf_addresses['controller'] = output['output_value']
+                      vnf_addresses[output['output_key']] = output['output_value']
+                    end
+                    lifecycle_events_values[event] = {} unless lifecycle_events_values.has_key?(event)
+                    lifecycle_events_values[event][id] = output['output_value']
+                  end
+                elsif output['output_key'] =~ /^#{parameter_match[1]}##{parameter_match[2]}$/i
+                  vnf_addresses["#{parameter_match[1]}"] = output['output_value'] if parameter_match[2] == 'ip' && !vnf_addresses.has_key?("#{parameter_match[1]}") # Only to populate VNF Ad$
+                  lifecycle_events_values[event] = {} unless lifecycle_events_values.has_key?(event)
+                  lifecycle_events_values[event]["#{parameter_match[1]}##{parameter_match[2]}"] = output['output_value']
+                elsif output['output_key'] == id #'controller'
+                  lifecycle_events_values[event] = {} unless lifecycle_events_values.has_key?(event)
+                  lifecycle_events_values[event][key_string] = output['output_value']
+#lifecycle_events_values[event][output['output_key']] = output['output_value']
+                end
+              end
+            end
+          end
+        end
+
+      end
+
+=begin
           # If the output is a Floating IP
           if output['output_key'] =~ /^.*#floating_ip$/i
-            #vnf_addresses['controller'] = output['output_value']
+            vnf_addresses['controller'] = output['output_value']
             vnf_addresses[output['output_key']] = output['output_value']
           else # Else look for the output on the lifecycle events
             vnfr.lifecycle_info['events'].each do |event, event_info|
@@ -330,17 +372,26 @@ class Provisioning < VnfProvisioning
                   parameter_match = parameter.match(/^get_attr\[(.*)\]$/i).to_a
 
                   string = parameter_match[1].split(",").map(&:strip)
+                  #key_string = parameter_match[1].gsub(", ", '#')
+                  #join array to string with #
+                  key_string = string.join("#")
 
-                  puts parameter_match[1]
-                  puts parameter_match[2]
-		  puts string
-                  puts string
+                  logger.error  parameter_match[1]
+                  logger.error  parameter_match[2]
+                  logger.error string
 
-                  #              vnf_addresses["#{string[0]}"] = output['output_value'] if string[1] == 'networks' && !vnf_addresses.has_key?("#{string[1]}") # Only to populate VNF Addresses specified by ETSI
-#@                  vnf_addresses["#{string[0]}"] = output['output_value']
+                  vnf_addresses["#{parameter_match[1]}"] = output['output_value'] if parameter_match[2] == 'controller'
                   lifecycle_events_values[event] = {} unless lifecycle_events_values.has_key?(event)
-                  #                lifecycle_events_values[event]["#{string[1]}##{string[2]}"] = output['output_value']
-                  lifecycle_events_values[event][output['output_key']] = output['output_value']
+                  lifecycle_events_values[event][key_string] = output['output_value']
+                  puts "Ctrl:"+id
+                  puts output['output_key']
+                  if output['output_key'] == 'controller' && !vnf_addresses.key?('controller')
+                    logger.error "controller:"
+                    logger.error output['output_value']
+                    vnf_addresses['controller'] = output['output_value']
+                  end
+
+                  #                  lifecycle_events_values[event][output['output_key']] = output['output_value']
 
                   if output['output_key'] =~ /^#{parameter_match[1]}##{parameter_match[2]}$/i
                     vnf_addresses["#{parameter_match[1]}"] = output['output_value'] if parameter_match[2] == 'ip' && !vnf_addresses.has_key?("#{parameter_match[1]}") # Only to populate VNF Addresses specified by ETSI 
@@ -348,7 +399,7 @@ class Provisioning < VnfProvisioning
                     lifecycle_events_values[event]["#{parameter_match[1]}##{parameter_match[2]}"] = output['output_value']
                     if id == 'controller' && !vnf_addresses.key?('controller')
                       vnf_addresses['controller'] = output['output_value']
-		    end
+                    end
                   end
                   if output['output_key'] =~ /^#{parameter_match[1]}##{parameter_match[2]}$/i
                     vnf_addresses["#{parameter_match[1]}"] = output['output_value'] if parameter_match[2] == 'PublicIp' && !vnf_addresses.has_key?("#{parameter_match[1]}") # Only to populate VNF Addresses specified by ETSI
@@ -361,6 +412,7 @@ class Provisioning < VnfProvisioning
           end
         end
       end
+=end
       logger.debug 'VMs ID: ' + vms_id.to_json
       logger.debug 'VNF Addresses: ' + vnf_addresses.to_json
       logger.debug 'Lifecycle events values: ' + lifecycle_events_values.to_json
@@ -368,15 +420,15 @@ class Provisioning < VnfProvisioning
       # Update the VNFR
       vnfr.push(lifecycle_event_history: stack_info['stack']['stack_status'])
       vnfr.update_attributes!(
-        vnf_addresses: vnf_addresses,
-        vnf_status: 1,
-        vms_id: vms_id,
-        lifecycle_events_values: lifecycle_events_values)
+          vnf_addresses: vnf_addresses,
+          vnf_status: 1,
+          vms_id: vms_id,
+          lifecycle_events_values: lifecycle_events_values)
 
       # Build message to send to the NS Manager callback
       vnfi_id = []
-      vnfr.vms_id.each {|key, value| vnfi_id << value}
-      message = { vnfd_id: vnfr.vnfd_reference, vnfi_id: vnfi_id, vnfr_id: vnfr.id}
+      vnfr.vms_id.each { |key, value| vnfi_id << value }
+      message = {vnfd_id: vnfr.vnfd_reference, vnfi_id: vnfi_id, vnfr_id: vnfr.id}
       nsmanager_callback(stack_info['ns_manager_callback'], message)
     else
       # If the stack has failed to create
@@ -408,7 +460,7 @@ class Provisioning < VnfProvisioning
         end
         logger.debug 'Response from VIM to destroy allocated resources: ' + response.to_json
 
-        message = { status: "ERROR_CREATING", vnfd_id: vnfr.vnfd_reference, vnfr_id: vnfr.id}
+        message = {status: "ERROR_CREATING", vnfd_id: vnfr.vnfd_reference, vnfr_id: vnfr.id}
         nsmanager_callback(stack_info['ns_manager_callback'], message)
 
         # Delete the VNFR from the database
