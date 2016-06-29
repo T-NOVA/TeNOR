@@ -538,7 +538,7 @@ module NsProvisioner
       vnf_info[:vnfr_id] = vnfr['_id']
       vnfrs << vnf_info
 
-      @instance.update_attribute('vnfr', vnfrs)
+      @instance.update_attribute('vnfrs', vnfrs)
 
     end
   end

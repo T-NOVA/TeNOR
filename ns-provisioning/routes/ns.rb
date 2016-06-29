@@ -64,9 +64,9 @@ class Provisioner < NsProvisioning
       #generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", error))
     end
 
-#    if settings.dependencies.all? { |x| @tenor_modules.detect { |el| el['name'] == x } }
-#      halt 400, "The orchestrator has not the correct dependencies"
-#    end
+    #    if settings.dependencies.all? { |x| @tenor_modules.detect { |el| el['name'] == x } }
+    #      halt 400, "The orchestrator has not the correct dependencies"
+    #    end
 
     instance = {
         :nsd_id => nsd['id'],
@@ -158,19 +158,20 @@ class Provisioner < NsProvisioning
 
       #destroy vnf instances
       @instance['vnfrs'].each do |vnf|
-        auth = {:auth => {:tenant => @instance['vnf_info']['tenant_name'], :username => @instance['vnf_info']['username'], :password => @instance['vnf_info']['password'], :url => {:keystone => popUrls[:keystone]}}}
-        begin
-          response = RestClient.post settings.vnf_manager + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/destroy', auth.to_json, :content_type => :json
-        rescue Errno::ECONNREFUSED
-          halt 500, 'VNF Manager unreachable'
-        rescue RestClient::ResourceNotFound
-          puts "Already removed from the VIM."
-          logger.error "Already removed from the VIM."
-        rescue => e
-          logger.error e.response
-          halt e.response.code, e.response.body
+        if !vnf['vnfr_id'].nil?
+          auth = {:auth => {:tenant => @instance['vnf_info']['tenant_name'], :username => @instance['vnf_info']['username'], :password => @instance['vnf_info']['password'], :url => {:keystone => popUrls[:keystone]}}}
+          begin
+            response = RestClient.post settings.vnf_manager + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/destroy', auth.to_json, :content_type => :json
+          rescue Errno::ECONNREFUSED
+            halt 500, 'VNF Manager unreachable'
+          rescue RestClient::ResourceNotFound
+            puts "Already removed from the VIM."
+            logger.error "Already removed from the VIM."
+          rescue => e
+            logger.error e.response
+            halt e.response.code, e.response.body
+          end
         end
-
       end
 
       error = "Removing instance"
