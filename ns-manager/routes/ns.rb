@@ -89,7 +89,7 @@ class Catalogue < TnovaManager
     end
 
     begin
-      @vnf_service = ServiceModel.find_by(name: "vnf_catalogue")
+      @vnf_service = ServiceModel.find_by(name: "vnf_manager")
     rescue Mongoid::Errors::DocumentNotFound => e
       halt 500, {'Content-Type' => "text/plain"}, "VNF Catalogue Microservice unrechable."
     end
