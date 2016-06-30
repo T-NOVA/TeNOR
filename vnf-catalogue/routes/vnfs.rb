@@ -42,6 +42,7 @@ class VnfCatalogue < Sinatra::Application
 		halt 400, 'ERROR: VNF Name not found' unless vnf.has_key?('name')
 		halt 400, 'ERROR: VNFD not found' unless vnf.has_key?('vnfd')
 
+		logger.error "Trying to validate VNFD with id: " + vnf['vnfd']['id'].to_s
 		# Validate VNFD
 		begin
 			RestClient.post settings.vnfd_validator + '/vnfds', vnf['vnfd'].to_json, 'X-Auth-Token' => @client_token, :content_type => :json

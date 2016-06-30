@@ -50,7 +50,6 @@ if [ -z "$logstash_address" ]; then logstash_address=$LOGSTASH_ADDRESS; fi
 logstash_host=${logstash_address%%:*}
 logstash_port=${logstash_address##*:}
 
-
 printf "\nBundle install of each NS/VNF Module\n"
 
 declare -a tenor_ns_url=("ns_manager" "ns_provisioner" "nsd_validator" "ns_monitoring" "ns_catalogue" "sla_enforcement" )
