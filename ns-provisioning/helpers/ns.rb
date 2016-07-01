@@ -487,7 +487,13 @@ module NsProvisioner
       @instance.update_attribute('vnf_info', vnf_info)
 
       #needs to be migrated to the VNFGFD
-      vnf_flavour = slaInfo['constituent_vnf'].find { |cvnf| cvnf['vnf_reference'] == vnf_id }['vnf_flavour_id_reference']
+      sla_info = slaInfo['constituent_vnf'].find { |cvnf| cvnf['vnf_reference'] == vnf_id }
+      if sla_info.nil?
+        logger.error "NO SLA found with the VNF ID that has the NSD."
+        error = {"info" => "Error with the VNF ID. NO SLA found with the VNF ID that has the NSD."}
+        recoverState(popInfo, vnf_info, @instance, error)
+      end
+      vnf_flavour = sla_info['vnf_flavour_id_reference']
       logger.info "VNF Flavour: " + vnf_flavour
 
       vnf_provisioning_info = {

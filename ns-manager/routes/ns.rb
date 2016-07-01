@@ -97,10 +97,12 @@ class Catalogue < TnovaManager
     #check if the VNFDs defined in the NSD are defined
     ns['nsd']['vnfds'].each do |vnf|
       begin
+        logger.error "Check VNFD " + vnf
         response = RestClient.get @vnf_service.host + ":" + @vnf_service.port.to_s + '/vnfs/' + vnf, 'X-Auth-Token' => @client_token, :content_type => :json
       rescue Errno::ECONNREFUSED
         halt 500, 'VNF Catalogue unreachable'
       rescue => e
+        logger.error "VNFD not defined."
         logger.error e.response
         halt e.response.code, e.response.body
       end
