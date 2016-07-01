@@ -1,7 +1,8 @@
 FROM ruby:2.2
 
 MAINTAINER Josep Batallé "josep.batalle@i2cat.net"
-#docker run -itd -p 4000:4000 -p 8000:8000 tnova/tenor
+#docker build -t tnova/tenor .
+#docker run -itd -p 4000:4000 -p 8000:8000 -p 9000:9000 tnova/tenor
 #after run the docker, execute the following scripts:
 # ./development.sh
 # ./loadModules.sh
@@ -47,10 +48,8 @@ RUN git clone https://github.com/T-NOVA/TeNOR /root/TeNOR
 
 WORKDIR /root/TeNOR
 RUN cd /root/TeNOR && gem install bundle && bundle install && ./tenor_install.sh
-RUN cd /root/TeNOR/ui && npm install -g grunt grunt-cli bower && npm install && bower install && gem install compass
-#ADD development.sh /root/TeNOR/development.sh
-#RUN cd /root/TeNOR && ./development.sh
-#RUN cd /root/TeNOR && ./loadModules.sh
+RUN cd /root/TeNOR/ui && npm install -g grunt grunt-cli bower && npm install && bower install --allow-root && gem install compass
+RUN ln -s /usr/local/bundle/bin/compass /usr/local/bin/compass
 
 EXPOSE $TENOR_PORT
 EXPOSE $TENOR_UI_PORT
