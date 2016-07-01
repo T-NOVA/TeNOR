@@ -79,7 +79,7 @@ byobu send-keys "bundle exec rake start" C-m
 
 byobu -2 new-session -d -s $SESSION4
 echo "Starting User Interface..."
-byobu rename-window 'VNFMan'
+byobu rename-window 'UI'
 byobu send-keys "cd ui" C-m
 byobu send-keys "grunt serve" C-m
 
