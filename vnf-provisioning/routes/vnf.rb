@@ -324,7 +324,6 @@ class Provisioning < VnfProvisioning
             vnf_addresses['controller'] = output['output_value']
           end
 
-
           #other parameters
           vnfr.lifecycle_info['events'].each do |event, event_info|
             unless event_info.nil?
@@ -336,10 +335,12 @@ class Provisioning < VnfProvisioning
 
                 if string[1] == "PublicIp"
                   if key_string == output['output_key']
-                    if output['output_key'] =~ /^.*#PublicIp$/i #output['output_key'] =~ /^.*#floating_ip$/i
+#                    if output['output_key'] =~ /^.*#PublicIp$/i #output['output_key'] =~ /^.*#floating_ip$/i
+                    if id == 'controller'
                       vnf_addresses['controller'] = output['output_value']
-                      vnf_addresses[output['output_key']] = output['output_value']
+#                      vnf_addresses[output['output_key']] = output['output_value']
                     end
+                    vnf_addresses[output['output_key']] = output['output_value']
                     lifecycle_events_values[event] = {} unless lifecycle_events_values.has_key?(event)
                     lifecycle_events_values[event][id] = output['output_value']
                   end
@@ -359,60 +360,6 @@ class Provisioning < VnfProvisioning
 
       end
 
-=begin
-          # If the output is a Floating IP
-          if output['output_key'] =~ /^.*#floating_ip$/i
-            vnf_addresses['controller'] = output['output_value']
-            vnf_addresses[output['output_key']] = output['output_value']
-          else # Else look for the output on the lifecycle events
-            vnfr.lifecycle_info['events'].each do |event, event_info|
-              unless event_info.nil?
-                JSON.parse(event_info['template_file']).each do |id, parameter|
-                  parameter_match = parameter.match(/^get_attr\[(.*), *(.*)\]$/i).to_a
-                  parameter_match = parameter.match(/^get_attr\[(.*)\]$/i).to_a
-
-                  string = parameter_match[1].split(",").map(&:strip)
-                  #key_string = parameter_match[1].gsub(", ", '#')
-                  #join array to string with #
-                  key_string = string.join("#")
-
-                  logger.error  parameter_match[1]
-                  logger.error  parameter_match[2]
-                  logger.error string
-
-                  vnf_addresses["#{parameter_match[1]}"] = output['output_value'] if parameter_match[2] == 'controller'
-                  lifecycle_events_values[event] = {} unless lifecycle_events_values.has_key?(event)
-                  lifecycle_events_values[event][key_string] = output['output_value']
-                  puts "Ctrl:"+id
-                  puts output['output_key']
-                  if output['output_key'] == 'controller' && !vnf_addresses.key?('controller')
-                    logger.error "controller:"
-                    logger.error output['output_value']
-                    vnf_addresses['controller'] = output['output_value']
-                  end
-
-                  #                  lifecycle_events_values[event][output['output_key']] = output['output_value']
-
-                  if output['output_key'] =~ /^#{parameter_match[1]}##{parameter_match[2]}$/i
-                    vnf_addresses["#{parameter_match[1]}"] = output['output_value'] if parameter_match[2] == 'ip' && !vnf_addresses.has_key?("#{parameter_match[1]}") # Only to populate VNF Addresses specified by ETSI 
-                    lifecycle_events_values[event] = {} unless lifecycle_events_values.has_key?(event)
-                    lifecycle_events_values[event]["#{parameter_match[1]}##{parameter_match[2]}"] = output['output_value']
-                    if id == 'controller' && !vnf_addresses.key?('controller')
-                      vnf_addresses['controller'] = output['output_value']
-                    end
-                  end
-                  if output['output_key'] =~ /^#{parameter_match[1]}##{parameter_match[2]}$/i
-                    vnf_addresses["#{parameter_match[1]}"] = output['output_value'] if parameter_match[2] == 'PublicIp' && !vnf_addresses.has_key?("#{parameter_match[1]}") # Only to populate VNF Addresses specified by ETSI
-                    lifecycle_events_values[event] = {} unless lifecycle_events_values.has_key?(event)
-                    lifecycle_events_values[event]["#{parameter_match[1]}##{parameter_match[2]}"] = output['output_value']
-                  end
-                end
-              end
-            end
-          end
-        end
-      end
-=end
       logger.debug 'VMs ID: ' + vms_id.to_json
       logger.debug 'VNF Addresses: ' + vnf_addresses.to_json
       logger.debug 'Lifecycle events values: ' + lifecycle_events_values.to_json
@@ -470,6 +417,10 @@ class Provisioning < VnfProvisioning
 
     halt 200
 
+  end
+
+  def !(obj)
+    super
   end
 
 end

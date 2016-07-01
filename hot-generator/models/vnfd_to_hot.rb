@@ -25,6 +25,7 @@ class VnfdToHot
     @hot = Hot.new(description)
     @name = name
     @outputs = {}
+    @type = ""
   end
 
   # Converts VNFD to HOT
@@ -37,6 +38,8 @@ class VnfdToHot
   def build(vnfd, tnova_flavour, networks_id, routers_id, security_group_id)
     # Parse needed outputs
     parse_outputs(vnfd['vnf_lifecycle_events'].find { |lifecycle| lifecycle['flavor_id_ref'] == tnova_flavour }['events'])
+
+    @type = vnfd['type']
 
     key = create_key_pair(SecureRandom.urlsafe_base64(9))
 
@@ -187,7 +190,7 @@ class VnfdToHot
   # @param [Array] networks_id the IDs of the networks created by NS Manager
   # @param [String] security_group_id the ID of the T-NOVA security group
   # @return [Array] a list of ports
-  def create_ports(id, connection_points, vlinks, networks_id, security_group_id)
+  def create_ports(vdu_id, connection_points, vlinks, networks_id, security_group_id)
     ports = []
 
     connection_points.each do |connection_point|
@@ -213,7 +216,8 @@ class VnfdToHot
           # TODO: Receive the floating ip pool name?
           @hot.resources_list << FloatingIp.new(floating_ip_name, 'public')
           @hot.resources_list << FloatingIpAssociation.new(get_resource_name, {get_resource: floating_ip_name}, {get_resource: port_name})
-          @hot.outputs_list << Output.new("#{port_name}#floating_ip", "#{port_name} Floating IP", {get_attr: [floating_ip_name, 'floating_ip_address']})
+#          @hot.outputs_list << Output.new("#{port_name}#floating_ip", "#{port_name} Floating IP", {get_attr: [floating_ip_name, 'floating_ip_address']})
+          @hot.outputs_list << Output.new("#{vdu_id}#PublicIp", "#{port_name} Floating IP", {get_attr: [floating_ip_name, 'floating_ip_address']})
         end
       end
 
@@ -221,33 +225,6 @@ class VnfdToHot
 
     ports
   end
-
-=begin
-	def create_ports(vdu_id, vnfc_id, vnfcs)
-		ports = []
-
-		vnfcs.each do |vnfc|
-			port_name = "#{vnfc_id}:#{vnfc['connection_point_id']}"
-			ports << { port: {get_resource: port_name} }
-			@hot.resources_list << Port.new(port_name, vnfc['vitual_link_reference'])
-
-			# Check if is necessary to create an output for this resource
-			if @outputs.has_key?('ip') && @outputs['ip'].include?(port_name)
-				@hot.outputs_list << Output.new("#{vnfc_id}:#{vnfc['connection_point_id']}#ip", "#{vdu_id} IP address in #{vnfc['vitual_link_reference']} network", {get_attr: [port_name, 'fixed_ips', 0, 'ip_address']})
-			end
-			
-			if vnfc['type'].downcase == 'floating'
-				floating_ip_name = get_resource_name
-				# TODO: Receive the floating ip pool name?
-				@hot.resources_list << FloatingIp.new(floating_ip_name, 'public')
-				@hot.resources_list << FloatingIpAssociation.new(get_resource_name, {get_resource: floating_ip_name}, {get_resource: port_name})
-				@hot.outputs_list << Output.new("#{vdu_id}#floating_ip", "#{vdu_id} Floating IP", {get_attr: [floating_ip_name, 'floating_ip_address']})
-			end
-		end
-
-		ports
-	end
-=end
 
   # Creates an HEAT flavor resource from the VNFD
   #
@@ -288,7 +265,13 @@ class VnfdToHot
   def add_wait_condition(vdu)
     wc_handle_name = get_resource_name
     @hot.resources_list << WaitConditionHandle.new(wc_handle_name)
-    @hot.resources_list << WaitCondition.new(get_resource_name, wc_handle_name, 1200)
+    @hot.resources_list << WaitCondition.new(get_resource_name, wc_handle_name, 2000)
+
+    wc_notify = "\nwc_notify --data-binary '{\"status\": \"SUCCESS\"}'\n"
+    if @type == 'vBSC'
+      wc_notify = ""
+    end
+
     bootstrap_script = vdu.has_key?('bootstrap_script') ? vdu['bootstrap_script'] : "#!/bin/bash"
     {
         str_replace: {
@@ -297,7 +280,7 @@ class VnfdToHot
                     get_attr: [wc_handle_name, 'curl_cli']
                 }
             },
-            template: bootstrap_script + "\nwc_notify --data-binary '{\"status\": \"SUCCESS\"}'\n"
+            template: bootstrap_script + wc_notify
         }
     }
   end
