@@ -103,10 +103,10 @@ module VimHelper
 
   def deleteUser(keystoneUrl, user_id, token)
     begin
-      response = RestClient.delete keystoneUrl + '/users/'+user_id, :content_type => :json, :'X-Auth-Token' => token
+      response = RestClient.delete keystoneUrl + '/users/' + user_id, :content_type => :json, :'X-Auth-Token' => token
     rescue => e
       logger.error e
-      logger.error e.response.body
+      #logger.error e.response.body
     end
 
     return
@@ -136,13 +136,13 @@ module VimHelper
       logger.error e.response.body
     end
 
-    users = parse_json(response)
-    users['users'].each do |user|
-      logger.error user
-      if user['name'] == username
-        return user['id']
-      end
+    users, errors = parse_json(response)
+    user = users['users'].find { |user| user['username'] == username }
+    if !user.nil?
+      return user['id']
     end
+    raise 500
+    return
   end
 
   def getAdminRole(keystoneUrl, token)

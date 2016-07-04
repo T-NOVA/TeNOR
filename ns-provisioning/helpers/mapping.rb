@@ -25,6 +25,12 @@ module MappingHelper
   # @return [Hash, String] if the parsed message is an invalid JSON
   def callMapping(ms, nsd)
 
+	vnf_mapping = []
+        nsd['vnfds'].each do |vnf_id|
+                vnf_mapping << {"maps_to_PoP" => "/pop/default", "vnf" =>  "/" + vnf_id.to_s }
+        end
+
+
     #nsd, errors = parse_json(response)
     mapping = {
         "created_at" => "Thu Nov  5 10:13:25 2015",
@@ -35,13 +41,13 @@ module MappingHelper
                   "maps_to_link" => "/pop/link/85b0bc34-dff0-4399-8435-4fb2ed65790a"
               }
           ],
-        "vnf_mapping" =>
-            [
-                {
-                    "maps_to_PoP" => "/pop/default",
-                    "vnf" => "/" + nsd['vnfds'][0].to_s
-                }
-            ]
+        "vnf_mapping" => vnf_mapping
+#            [
+#                {
+#                    "maps_to_PoP" => "/pop/default",
+#                   "vnf" => "/" + nsd['vnfds'][0].to_s
+#                }
+#            ]
     }
 
     unsuccessfullMapping = {

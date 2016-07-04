@@ -119,7 +119,7 @@ module NsProvisioner
 #      deleteSecurityGroup(popUrls[:compute], vnf_info['tenant_id'], vnf_info['security_group_id'], tenant_token)
     end
 
-    logger.info "Removing user..."
+    logger.info "Removing user..." + vnf_info['user_id'].to_s
     deleteUser(popUrls[:keystone], vnf_info['user_id'], token)
     #deleteTenant(popUrls[:keystone], vnf_info['tenant_id'], token)
 
@@ -220,7 +220,8 @@ module NsProvisioner
           if (!settings.default_tenant_name.nil?)
             tenant_name = settings.default_tenant_name
             tenant_id = settings.default_tenant_id
-          elsif tenant_name = "tenor_instance_" + @instance['id'].to_s
+          else
+            tenant_name = "tenor_instance_" + @instance['id'].to_s
             tenant_id = createTenant(popUrls[:keystone], tenant_name, token)
           end
 
