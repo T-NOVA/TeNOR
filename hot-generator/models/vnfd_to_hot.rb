@@ -26,6 +26,7 @@ class VnfdToHot
     @name = name
     @outputs = {}
     @type = ""
+    @vnfr_id = ""
   end
 
   # Converts VNFD to HOT
@@ -35,11 +36,12 @@ class VnfdToHot
   # @param [Array] networks_id the IDs of the networks created by NS Manager
   # @param [String] security_group_id the ID of the T-NOVA security group
   # @return [HOT] returns an HOT object
-  def build(vnfd, tnova_flavour, networks_id, routers_id, security_group_id)
+  def build(vnfd, tnova_flavour, networks_id, routers_id, security_group_id, vnfr_id)
     # Parse needed outputs
     parse_outputs(vnfd['vnf_lifecycle_events'].find { |lifecycle| lifecycle['flavor_id_ref'] == tnova_flavour }['events'])
 
     @type = vnfd['type']
+    @vnfr_id = vnfr_id
 
     key = create_key_pair(SecureRandom.urlsafe_base64(9))
 
@@ -270,6 +272,8 @@ class VnfdToHot
     wc_notify = "\nwc_notify --data-binary '{\"status\": \"SUCCESS\"}'\n"
     if @type == 'vSBC'
       wc_notify = ""
+    elsif @type == 'vSA'
+      wc_notify = 'echo "http://10.10.1.61:4000/vnf-provisioning/'+ @vnfr_id +'/stack/create_complete" > /etc/tenor_url'
     end
 
     bootstrap_script = vdu.has_key?('bootstrap_script') ? vdu['bootstrap_script'] : "#!/bin/bash"

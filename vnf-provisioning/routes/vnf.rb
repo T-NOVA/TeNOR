@@ -73,11 +73,34 @@ class Provisioning < VnfProvisioning
     logger.debug 'Verifying VDU images'
     verify_vdu_images(vnf['vnfd']['vdu'])
 
+    begin
+      vnfr = Vnfr.create!(
+          deployment_flavour: instantiation_info['flavour'],
+          nsr_instance: Array(instantiation_info['ns_id']),
+          vnfd_reference: vnf['vnfd']['id'],
+          vim_id: instantiation_info['vim_id'],
+          vlr_instances: nil,
+          vnf_addresses: nil,
+          vnf_status: 3,
+          notifications: [instantiation_info['callback_url']],
+          lifecycle_event_history: Array('INIT'),
+          audit_log: nil,
+          vdu: vdu,
+          stack_url: nil,
+          vms_id: nil,
+          lifecycle_info: vnf['vnfd']['vnf_lifecycle_events'].find { |lifecycle| lifecycle['flavor_id_ref'].downcase == vnf_flavour.downcase },
+          lifecycle_events_values: nil)
+    rescue Moped::Errors::OperationFailure => e
+      return 400, 'ERROR: Duplicated VNF ID' if e.message.include? 'E11000'
+      return 400, e.message
+    end
+
     # Convert VNF to HOT (call HOT Generator)
     halt 400, 'No T-NOVA flavour defined.' unless instantiation_info.has_key?('flavour')
     logger.debug "Send VNFD to Hot Generator"
     hot_generator_message = {
         vnf: vnf,
+        vnfr_id: vnfr.id,
         networks_id: instantiation_info['networks'],
         routers_id: instantiation_info['routers'],
         security_group_id: instantiation_info['security_group_id']
@@ -114,30 +137,18 @@ class Provisioning < VnfProvisioning
     vdu << vdu0
 
     # Build the VNFR and store it
-    begin
-      vnfr = Vnfr.create!(
-          deployment_flavour: instantiation_info['flavour'],
-          nsr_instance: Array(instantiation_info['ns_id']),
-          vnfd_reference: vnf['vnfd']['id'],
-          vim_id: instantiation_info['vim_id'],
-          vlr_instances: nil,
-          vnf_addresses: nil,
-          vnf_status: 3,
-          notifications: [instantiation_info['callback_url']],
-          lifecycle_event_history: Array('CREATE_IN_PROGRESS'),
-          audit_log: nil,
-          vdu: vdu,
-          stack_url: response['stack']['links'][0]['href'],
-          vms_id: nil,
-          lifecycle_info: vnf['vnfd']['vnf_lifecycle_events'].find { |lifecycle| lifecycle['flavor_id_ref'].downcase == vnf_flavour.downcase },
-          lifecycle_events_values: nil)
-    rescue Moped::Errors::OperationFailure => e
-      return 400, 'ERROR: Duplicated VNF ID' if e.message.include? 'E11000'
-      return 400, e.message
-    end
 
-    create_thread_to_monitor_stack(vnfr.id, vnfr.stack_url, vim_info, instantiation_info['callback_url'])
-    logger.info 'Created thread to monitor stack'
+    #Update VNFR
+    vnfr.update_attribute()
+    vnfr.push(lifecycle_event_history: 'CREATE_IN_PROGRESS')
+    vnfr.update_attributes!(
+        stack_url: response['stack']['links'][0]['href'],
+        lifecycle_events_values: lifecycle_events_values)
+
+    if vnf['type'] != 'vSA'
+      create_thread_to_monitor_stack(vnfr.id, vnfr.stack_url, vim_info, instantiation_info['callback_url'])
+      logger.info 'Created thread to monitor stack'
+    end
 
     halt 201, vnfr.to_json
   end
