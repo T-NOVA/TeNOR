@@ -268,7 +268,7 @@ class VnfdToHot
     @hot.resources_list << WaitCondition.new(get_resource_name, wc_handle_name, 2000)
 
     wc_notify = "\nwc_notify --data-binary '{\"status\": \"SUCCESS\"}'\n"
-    if @type == 'vBSC'
+    if @type == 'vSBC'
       wc_notify = ""
     end
 
