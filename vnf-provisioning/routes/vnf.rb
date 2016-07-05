@@ -73,6 +73,7 @@ class Provisioning < VnfProvisioning
     logger.debug 'Verifying VDU images'
     verify_vdu_images(vnf['vnfd']['vdu'])
 
+    # Build the VNFR and store it
     begin
       vnfr = Vnfr.create!(
           deployment_flavour: instantiation_info['flavour'],
@@ -85,7 +86,7 @@ class Provisioning < VnfProvisioning
           notifications: [instantiation_info['callback_url']],
           lifecycle_event_history: Array('INIT'),
           audit_log: nil,
-          vdu: vdu,
+          vdu: [],
           stack_url: nil,
           vms_id: nil,
           lifecycle_info: vnf['vnfd']['vnf_lifecycle_events'].find { |lifecycle| lifecycle['flavor_id_ref'].downcase == vnf_flavour.downcase },
@@ -136,14 +137,13 @@ class Provisioning < VnfProvisioning
     vdu0['type'] = 0
     vdu << vdu0
 
-    # Build the VNFR and store it
 
-    #Update VNFR
-    vnfr.update_attribute()
+    # Update the VNFR
     vnfr.push(lifecycle_event_history: 'CREATE_IN_PROGRESS')
     vnfr.update_attributes!(
         stack_url: response['stack']['links'][0]['href'],
-        lifecycle_events_values: lifecycle_events_values)
+        vdu: vdu
+    )
 
     if vnf['type'] != 'vSA'
       create_thread_to_monitor_stack(vnfr.id, vnfr.stack_url, vim_info, instantiation_info['callback_url'])
