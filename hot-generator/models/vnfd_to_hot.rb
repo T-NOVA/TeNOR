@@ -78,7 +78,7 @@ class VnfdToHot
 
   def create_networks(vlink, dns_server, router_id)
     network_name = create_network(vlink['alias'])
-    if vlink['net_segment']
+    if vlink['net_segment'] && vlink['net_segment'] != ""
       cidr = vlink['net_segment']
     else
       cidr = "192." + rand(256).to_s + "." + rand(256).to_s + ".0/24"
@@ -269,11 +269,14 @@ class VnfdToHot
     @hot.resources_list << WaitConditionHandle.new(wc_handle_name)
     @hot.resources_list << WaitCondition.new(get_resource_name, wc_handle_name, 2000)
 
-    wc_notify = "\nwc_notify --data-binary '{\"status\": \"SUCCESS\"}'\n"
+    wc_notify = ""
+    if vdu['wc_notify']
+      wc_notify = "\nwc_notify --data-binary '{\"status\": \"SUCCESS\"}'\n"
+    end
     if @type == 'vSBC'
       wc_notify = ""
     elsif @type == 'vSA'
-      wc_notify = 'echo "http://10.10.1.61:4000/vnf-provisioning/'+ @vnfr_id +'/stack/create_complete" > /etc/tenor_url'
+      wc_notify = 'echo "tenor_url: http://10.10.1.61:4000/vnf-provisioning/'+ @vnfr_id +'/stack/create_complete" > /etc/tenor.cfg'
     end
 
     bootstrap_script = vdu.has_key?('bootstrap_script') ? vdu['bootstrap_script'] : "#!/bin/bash"
