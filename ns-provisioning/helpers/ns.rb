@@ -422,7 +422,7 @@ module NsProvisioner
       vnfrs = []
       vnf_info = {}
       vnf_info[:vnfd_id] = vnfr['vnfd_reference']
-      vnf_info[:vnfi_id] = nil
+      vnf_info[:vnfi_id] = []
       vnf_info[:vnfr_id] = vnfr['_id']
       vnfrs << vnf_info
 
