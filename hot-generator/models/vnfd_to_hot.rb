@@ -36,7 +36,7 @@ class VnfdToHot
   # @param [Array] networks_id the IDs of the networks created by NS Manager
   # @param [String] security_group_id the ID of the T-NOVA security group
   # @return [HOT] returns an HOT object
-  def build(vnfd, tnova_flavour, networks_id, routers_id, security_group_id, vnfr_id)
+  def build(vnfd, tnova_flavour, networks_id, routers_id, security_group_id, vnfr_id, dns)
     # Parse needed outputs
     parse_outputs(vnfd['vnf_lifecycle_events'].find { |lifecycle| lifecycle['flavor_id_ref'] == tnova_flavour }['events'])
 
@@ -56,7 +56,7 @@ class VnfdToHot
 
     vlinks.each do |vlink|
       vlink_json = vnfd['vlinks'].detect { |vl| vl['id'] == vlink }
-      net_name = create_networks(vlink_json, '8.8.8.8', routers_id[0]['id'])
+      net_name = create_networks(vlink_json, dns, routers_id[0]['id'])
       networks_id << {'alias' => vlink_json['alias'], 'heat' => net_name}
     end
 

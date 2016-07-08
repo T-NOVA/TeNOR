@@ -47,11 +47,11 @@ module CommonMethods
 	# @param [Array] networks_id the IDs of the networks created by the NS Manager
 	# @param [String] security_group_id the ID of the T-NOVA security group
 	# @return [Hash] the generated hot template
-	def self.generate_hot_template(vnfd, flavour_key, networks_id, routers_id, security_group_id, vnfr_id)
+	def self.generate_hot_template(vnfd, flavour_key, networks_id, routers_id, security_group_id, vnfr_id, dns)
 		hot = VnfdToHot.new(vnfd['name'], vnfd['description'])
 
 		begin
-			hot.build(vnfd, flavour_key, networks_id, routers_id, security_group_id, vnfr_id)
+			hot.build(vnfd, flavour_key, networks_id, routers_id, security_group_id, vnfr_id, dns)
 		rescue CustomException::NoExtensionError => e
 			logger.error e.message
 			halt 400, e.message
