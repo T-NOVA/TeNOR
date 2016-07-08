@@ -49,12 +49,13 @@ module MonitoringHelper
     }
     monitoring[:vnf_instances] = vnf_instances
 
-    logger.debug JSON.pretty_generate(monitoring)
+    puts JSON.pretty_generate(monitoring)
 
     begin
       response = RestClient.post settings.ns_monitoring + '/ns-monitoring/monitoring-parameters', monitoring.to_json, :content_type => :json
     rescue Errno::ECONNREFUSED
-      halt 500, 'NS Monitoring unreachable'
+      puts 'NS Monitoring unreachable'
+#      halt 500, 'NS Monitoring unreachable'
     rescue => e
       logger.error e.response
       #halt e.response.code, e.response.body

@@ -43,12 +43,17 @@ class HotGenerator < Sinatra::Application
 		security_group_id = provision_info['security_group_id']
 		halt 400, 'Security group ID not found' if security_group_id.nil?
 
+		vnfr_id = provision_info['vnfr_id']
+		halt 400, 'Networks ID not found' if vnfr_id.nil?
+
 		logger.debug 'Networks IDs: ' + networks_id.to_json
 		logger.debug 'Security Group ID: ' + security_group_id.to_json
 
+		dns = "10.30.0.11"
+
 		# Build a HOT template
 		logger.debug 'T-NOVA flavour: ' + params[:flavour]
-		hot = CommonMethods.generate_hot_template(vnf['vnfd'], params[:flavour], networks_id, routers_id, security_group_id)
+		hot = CommonMethods.generate_hot_template(vnf['vnfd'], params[:flavour], networks_id, routers_id, security_group_id, vnfr_id, dns)
 
 		halt 200, hot.to_json
 	end

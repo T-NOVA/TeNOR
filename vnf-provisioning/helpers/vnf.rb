@@ -182,4 +182,19 @@ module ProvisioningHelper
     end
   end
 
+  def deleteStack(stack_url, auth_token)
+    begin
+      response = RestClient.delete stack_url, 'X-Auth-Token' => auth_token, :accept => :json
+    rescue Errno::ECONNREFUSED
+      #halt 500, 'VIM unreachable'
+    rescue RestClient::ResourceNotFound
+      puts "Already removed from the VIM."
+      return
+    rescue => e
+      logger.error e.response
+      return
+      #halt e.response.code, e.response.body
+    end
+  end
+
 end

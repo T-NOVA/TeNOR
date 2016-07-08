@@ -105,4 +105,8 @@ for folder in $(find . -type d  \( -name "ns*" -o -name "vnf*" -o -name "hot-gen
     cd ../
 done
 
+
+printf "\n\nConfigure UI...\n\n"
+cp ui/app/config.js.sample ui/app/config.js
+
 printf "\n\nTeNOR installation script finished\n\n"

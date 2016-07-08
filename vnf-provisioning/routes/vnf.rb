@@ -73,11 +73,35 @@ class Provisioning < VnfProvisioning
     logger.debug 'Verifying VDU images'
     verify_vdu_images(vnf['vnfd']['vdu'])
 
+    # Build the VNFR and store it
+    begin
+      vnfr = Vnfr.create!(
+          deployment_flavour: instantiation_info['flavour'],
+          nsr_instance: Array(instantiation_info['ns_id']),
+          vnfd_reference: vnf['vnfd']['id'],
+          vim_id: instantiation_info['vim_id'],
+          vlr_instances: nil,
+          vnf_addresses: nil,
+          vnf_status: 3,
+          notifications: [instantiation_info['callback_url']],
+          lifecycle_event_history: Array('INIT'),
+          audit_log: nil,
+          vdu: [],
+          stack_url: nil,
+          vms_id: nil,
+          lifecycle_info: vnf['vnfd']['vnf_lifecycle_events'].find { |lifecycle| lifecycle['flavor_id_ref'].downcase == vnf_flavour.downcase },
+          lifecycle_events_values: nil)
+    rescue Moped::Errors::OperationFailure => e
+      return 400, 'ERROR: Duplicated VNF ID' if e.message.include? 'E11000'
+      return 400, e.message
+    end
+
     # Convert VNF to HOT (call HOT Generator)
     halt 400, 'No T-NOVA flavour defined.' unless instantiation_info.has_key?('flavour')
     logger.debug "Send VNFD to Hot Generator"
     hot_generator_message = {
         vnf: vnf,
+        vnfr_id: vnfr.id,
         networks_id: instantiation_info['networks'],
         routers_id: instantiation_info['routers'],
         security_group_id: instantiation_info['security_group_id']
@@ -113,31 +137,18 @@ class Provisioning < VnfProvisioning
     vdu0['type'] = 0
     vdu << vdu0
 
-    # Build the VNFR and store it
-    begin
-      vnfr = Vnfr.create!(
-          deployment_flavour: instantiation_info['flavour'],
-          nsr_instance: Array(instantiation_info['ns_id']),
-          vnfd_reference: vnf['vnfd']['id'],
-          vim_id: instantiation_info['vim_id'],
-          vlr_instances: nil,
-          vnf_addresses: nil,
-          vnf_status: 3,
-          notifications: [instantiation_info['callback_url']],
-          lifecycle_event_history: Array('CREATE_IN_PROGRESS'),
-          audit_log: nil,
-          vdu: vdu,
-          stack_url: response['stack']['links'][0]['href'],
-          vms_id: nil,
-          lifecycle_info: vnf['vnfd']['vnf_lifecycle_events'].find { |lifecycle| lifecycle['flavor_id_ref'].downcase == vnf_flavour.downcase },
-          lifecycle_events_values: nil)
-    rescue Moped::Errors::OperationFailure => e
-      return 400, 'ERROR: Duplicated VNF ID' if e.message.include? 'E11000'
-      return 400, e.message
-    end
 
-    create_thread_to_monitor_stack(vnfr.id, vnfr.stack_url, vim_info, instantiation_info['callback_url'])
-    logger.info 'Created thread to monitor stack'
+    # Update the VNFR
+    vnfr.push(lifecycle_event_history: 'CREATE_IN_PROGRESS')
+    vnfr.update_attributes!(
+        stack_url: response['stack']['links'][0]['href'],
+        vdu: vdu
+    )
+
+    if vnf['type'] != 'vSA'
+      create_thread_to_monitor_stack(vnfr.id, vnfr.stack_url, vim_info, instantiation_info['callback_url'])
+      logger.info 'Created thread to monitor stack'
+    end
 
     halt 201, vnfr.to_json
   end
@@ -187,16 +198,46 @@ class Provisioning < VnfProvisioning
     end
 
     # Requests the VIM to delete the stack
-    begin
-      response = RestClient.delete vnfr.stack_url, 'X-Auth-Token' => auth_token, :accept => :json
-    rescue Errno::ECONNREFUSED
-      halt 500, 'VIM unreachable'
-    rescue RestClient::ResourceNotFound
-      puts "Already removed from the VIM."
-    rescue => e
-      logger.error e.response
-      halt e.response.code, e.response.body
+
+    ##############################################
+    deleteStack(vnfr.stack_url, auth_token)
+
+    status = "DELETING"
+    count = 0
+    while (status != "DELETE_COMPLETE" && status != "DELETE_FAILED")
+      sleep(5)
+      begin
+        response = RestClient.get vnfr.stack_url, 'X-Auth-Token' => auth_token, :content_type => :json, :accept => :json
+        stack_info, error = parse_json(response)
+        status = stack_info['stack']['stack_status']
+      rescue Errno::ECONNREFUSED
+        error = {"info" => "VIM unrechable."}
+        return
+      rescue RestClient::ResourceNotFound
+        logger.info "Stack already removed."
+        status = "DELETE_COMPLETE"
+      rescue => e
+        puts "If no exists means that is deleted correctly"
+        status = "DELETE_COMPLETE"
+        logger.error e
+        logger.error e.response
+      end
+
+      logger.debug "Try: " + count.to_s + ", status: " + status.to_s
+      if (status == "DELETE_FAILED")
+        deleteStack(stack_url, tenant_token)
+        status = "DELETING"
+      end
+      count = count +1
+
+      if count > 10
+        logger.error "Stack can not be removed"
+        raise 400, "Stack can not be removed"
+      end
+      break if count > 20 #to remove
     end
+    ##############################################
+
     logger.debug 'VIM response to destroy: ' + response.to_json
 
     # Delete the VNFR from mAPI

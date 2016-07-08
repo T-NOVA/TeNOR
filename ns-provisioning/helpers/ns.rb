@@ -53,7 +53,7 @@ module NsProvisioner
 
   # Recover the state due to fail during the instatiation or when the instance should be removed
   #
-  # @param [JSON] message PoP information
+  # @param [JSON] message PoP sendStackrmation
   # @param [JSON] message VNF information
   # @param [JSON] message NSr
   # @return [Hash, nil] NS
@@ -119,7 +119,7 @@ module NsProvisioner
 #      deleteSecurityGroup(popUrls[:compute], vnf_info['tenant_id'], vnf_info['security_group_id'], tenant_token)
     end
 
-    logger.info "Removing user..."
+    logger.info "Removing user..." + vnf_info['user_id'].to_s
     deleteUser(popUrls[:keystone], vnf_info['user_id'], token)
     #deleteTenant(popUrls[:keystone], vnf_info['tenant_id'], token)
 
@@ -127,7 +127,7 @@ module NsProvisioner
     generateMarketplaceResponse(callbackUrl, generateError(ns_id, "INFO", "Removed correctly"))
   end
 
-  # Intantiate a Network Service, finally calls the VNF Manager
+  # Instantiate a Network Service, finally calls the VNF Manager
   #
   # @param [JSON] message Instance
   # @param [JSON] message NSD
@@ -220,7 +220,8 @@ module NsProvisioner
           if (!settings.default_tenant_name.nil?)
             tenant_name = settings.default_tenant_name
             tenant_id = settings.default_tenant_id
-          elsif tenant_name = "tenor_instance_" + @instance['id'].to_s
+          else
+            tenant_name = "tenor_instance_" + @instance['id'].to_s
             tenant_id = createTenant(popUrls[:keystone], tenant_name, token)
           end
 
@@ -284,56 +285,21 @@ module NsProvisioner
 
         # Request HOT Generator to build the WICM - SFC integration
         provider_info['physical_network'] = 'sfcvlan'
-        begin
-          response = RestClient.post settings.hot_generator + '/wicmhot', provider_info.to_json, :content_type => :json, :accept => :json
-        rescue Errno::ECONNREFUSED
-          error = {"info" => "HOT Generator unreachable."}
-          recoverState(popInfo, vnf_info, @instance, error)
-          return
-        rescue => e
-          logger.error e
-          logger.error e.response
-          error = {"info" => "Error creating the network stack."}
-          recoverState(popInfo, vnf_info, @instance, error)
-          return
-        end
-        hot_template, error = parse_json(response)
+        hot_template, errors = generateWicmHotTemplate(provider_info)
 
-        # Provision the WICM - SFC integration
-        template = {:stack_name => "WICM_SFC-" + @instance['id'].to_s, :template => hot_template}
-        begin
-          response = RestClient.post "#{popUrls[:orch]}/#{vnf_info['tenant_id']}/stacks", template.to_json, 'X-Auth-Token' => tenant_token, :content_type => :json, :accept => :json
-        rescue Errno::ECONNREFUSED
-          error = {"info" => "VIM unrechable."}
-          recoverState(popInfo, vnf_info, @instance, error)
-          return
-        rescue => e
-          logger.error e
-          logger.error e.response
-          error = {"info" => "Error creating the network stack."}
-          recoverState(popInfo, vnf_info, @instance, error)
-          return
-        end
+        logger.info "Send network template to HEAT Orchestration"
+        stack_name = "WICM_SFC-" + @instance['id'].to_s
+        template = {:stack_name => stack_name, :template => hot_template}
+        stack, errors = sendStack(popUrls[:orch], vnf_info['tenant_id'], template, tenant_token)
+
+        #save WICM stack info in NSR
 
         # Wait for the WICM - SFC provisioning to finish
         status = "CREATING"
         count = 0
         while (status != "CREATE_COMPLETE" && status != "CREATE_FAILED")
           sleep(5)
-          begin
-            response = RestClient.get "#{popUrls[:orch]}/#{vnf_info['tenant_id']}/stacks/#{"WICM_SFC-" + @instance['id'].to_s}", 'X-Auth-Token' => tenant_token
-          rescue Errno::ECONNREFUSED
-            error = {"info" => "VIM unrechable."}
-            recoverState(popInfo, vnf_info, @instance, error)
-            return
-          rescue => e
-            logger.error e
-            logger.error e.response
-            error = {"info" => "Error creating the network stack."}
-            recoverState(popInfo, vnf_info, @instance, error)
-            return
-          end
-          stack_info, error = parse_json(response)
+          stack_info, errors = getStackInfo(popUrls[:orch], vnf_info['tenant_id'], stack_name, tenant_token)
           status = stack_info['stack']['stack_status']
           count = count +1
           break if count > 10
@@ -355,61 +321,21 @@ module NsProvisioner
       }
 
       logger.info "Generating network HOT template..."
-      begin
-        response = RestClient.post settings.hot_generator + '/networkhot/' + sla_id, hot_generator_message.to_json, :content_type => :json, :accept => :json
-      rescue Errno::ECONNREFUSED
-        error = {"info" => "HOT Generator unrechable."}
-        recoverState(popInfo, vnf_info, @instance, error)
-        return
-      rescue => e
-        logger.error e.response
-        #recoverState(popInfo, vnf_info, @instance, e.response)
-        return
-      end
-      hot, error = parse_json(response)
+      hot, errors = generateNetworkHotTemplate(sla_id, hot_generator_message)
 
       logger.info "Send network template to HEAT Orchestration"
-      template = {:stack_name => "network-" + @instance['id'].to_s, :template => hot}
-      begin
-        response = RestClient.post "#{popUrls[:orch]}/#{vnf_info['tenant_id']}/stacks", template.to_json, 'X-Auth-Token' => tenant_token, :content_type => :json, :accept => :json
-      rescue Errno::ECONNREFUSED
-        error = {"info" => "VIM unrechable."}
-        logger.error error
-        #recoverState(popInfo, vnf_info, @instance, error)
-        return
-      rescue => e
-        logger.error e
-        error = {"info" => "Error creating the network stack."}
-        logger.error error
-        #recoverState(popInfo, vnf_info, @instance, error)
-        return
-      end
-      stack, error = parse_json(response)
+      stack_name = "network-" + @instance['id'].to_s
+      template = {:stack_name => stack_name, :template => hot}
+      stack, errors = sendStack(popUrls[:orch], vnf_info['tenant_id'], template, tenant_token)
       stack_id = stack['stack']['id']
-      #@instance['network_stack'] = stack
       @instance.update_attribute('network_stack', stack)
-      #instance.update_attributes(@instance)
 
       logger.info "Check network stack creation..."
-      #stack_status
       status = "CREATING"
       count = 0
       while (status != "CREATE_COMPLETE" && status != "CREATE_FAILED")
         sleep(5)
-        begin
-          response = RestClient.get "#{popUrls[:orch]}/#{vnf_info['tenant_id']}/stacks/#{"network-" + @instance['id'].to_s}", 'X-Auth-Token' => tenant_token
-        rescue Errno::ECONNREFUSED
-          error = {"info" => "VIM unrechable."}
-          recoverState(popInfo, vnf_info, @instance, error)
-          return
-        rescue => e
-          logger.error e
-          logger.error e.response
-          error = {"info" => "Error creating the network stack."}
-          recoverState(popInfo, vnf_info, @instance, error)
-          return
-        end
-        stack_info, error = parse_json(response)
+        stack_info, errors = getStackInfo(popUrls[:orch], vnf_info['tenant_id'], stack_name, tenant_token)
         status = stack_info['stack']['stack_status']
         count = count +1
         break if count > 10
@@ -420,68 +346,22 @@ module NsProvisioner
       end
 
       logger.info "Network stack CREATE_COMPLETE. Getting network information..."
-      #get network info to stack
       sleep(3)
-      begin
-        response = RestClient.get "#{popUrls[:orch]}/#{vnf_info['tenant_id']}/stacks/#{"network-" + @instance['id'].to_s}/resources", 'X-Auth-Token' => tenant_token
-      rescue Errno::ECONNREFUSED
-        error = {"info" => "VIM unrechable."}
-        recoverState(popInfo, vnf_info, @instance, error)
-        return
-      rescue => e
-        logger.error e
-        logger.error e.response
-        error = {"info" => "Error creating the network stack."}
-        recoverState(popInfo, vnf_info, @instance, error)
-        return
-      end
-      network_resources, error = parse_json(response)
+      network_resources, errors = getStackResources(popUrls[:orch], vnf_info['tenant_id'], stack_name, tenant_token)
       stack_networks = network_resources['resources'].find_all { |res| res['resource_type'] == 'OS::Neutron::Net' }
       stack_routers = network_resources['resources'].find_all { |res| res['resource_type'] == 'OS::Neutron::Router' }
 
-      logger.info "Reading network information from stack..."
+      logger.info "Reading networking information from stack..."
       networks = []
-      #for each network, get resource info
       stack_networks.each do |network|
-        begin
-          response = RestClient.get "#{popUrls[:orch]}/#{vnf_info['tenant_id']}/stacks/#{"network-" + @instance['id'].to_s}/#{stack_id}/resources/#{network['resource_name']}", 'X-Auth-Token' => tenant_token
-        rescue Errno::ECONNREFUSED
-          error = {"info" => "VIM unrechable."}
-          recoverState(popInfo, vnf_info, @instance, error)
-          return
-        rescue => e
-          logger.error e
-          logger.error e.response
-          error = {"info" => "Error creating the network stack."}
-          recoverState(popInfo, vnf_info, @instance, error)
-          return
-        end
-        net, error = parse_json(response)
+        net, errors = getStackResource(popUrls[:orch], vnf_info['tenant_id'], stack_name, stack_id, network['resource_name'], tenant_token)
         networks.push({:id => net['resource']['attributes']['id'], :alias => net['resource']['attributes']['name']})
       end
-
       routers = []
       stack_routers.each do |router|
-        begin
-          response = RestClient.get "#{popUrls[:orch]}/#{vnf_info['tenant_id']}/stacks/#{"network-" + @instance['id'].to_s}/#{stack_id}/resources/#{router['resource_name']}", 'X-Auth-Token' => tenant_token
-        rescue Errno::ECONNREFUSED
-          error = {"info" => "VIM unrechable."}
-          recoverState(popInfo, vnf_info, @instance, error)
-          return
-        rescue => e
-          logger.error e
-          logger.error e.response
-          error = {"info" => "Error creating the network stack."}
-          recoverState(popInfo, vnf_info, @instance, error)
-          return
-        end
-        router, error = parse_json(response)
+        router = getStackResource(popUrls[:orch], vnf_info['tenant_id'], stack_name, stack_id, router['resource_name'], tenant_token)
         routers.push({:id => router['resource']['attributes']['id'], :alias => router['resource']['attributes']['name']})
       end
-
-      #getStackResourceInfo(popUrls, vnf_info, resourceName)
-
-      stack['stack_name'] = "network-" + @instance['id'].to_s
 
       @instance.update_attribute('vlr', networks)
       @instance.update_attribute('vnf_info', vnf_info)
@@ -531,6 +411,8 @@ module NsProvisioner
           generateMarketplaceResponse(marketplaceUrl, generateError(instantiation_info['ns_id'], "FAILED", error))
           return
         end
+        logger.error "Handle error."
+        return
       end
 
       vnfr, error = parse_json(response)
@@ -540,30 +422,12 @@ module NsProvisioner
       vnfrs = []
       vnf_info = {}
       vnf_info[:vnfd_id] = vnfr['vnfd_reference']
-      vnf_info[:vnfi_id] = nil
+      vnf_info[:vnfi_id] = []
       vnf_info[:vnfr_id] = vnfr['_id']
       vnfrs << vnf_info
 
       @instance.update_attribute('vnfrs', vnfrs)
 
     end
-  end
-
-  def getStackResourceInfo(popUrls, vnf_info,  resourceName)
-    begin
-      response = RestClient.get "#{popUrls[:orch]}/#{vnf_info['tenant_id']}/stacks/#{"network-" + @instance['id'].to_s}/#{stack_id}/resources/#{network['resource_name']}", 'X-Auth-Token' => tenant_token
-    rescue Errno::ECONNREFUSED
-      error = {"info" => "VIM unrechable."}
-      recoverState(popInfo, vnf_info, @instance, error)
-      return
-    rescue => e
-      logger.error e
-      logger.error e.response
-      error = {"info" => "Error creating the network stack."}
-      recoverState(popInfo, vnf_info, @instance, error)
-      return
-    end
-    net, error = parse_json(response)
-    networks.push({:id => net['resource']['attributes']['id'], :alias => net['resource']['attributes']['name']})
   end
 end

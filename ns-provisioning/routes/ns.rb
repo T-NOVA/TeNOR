@@ -256,13 +256,16 @@ class Provisioner < NsProvisioning
 
     #vnf = {:vnf_id => vnf_id, :pop_id => pop_id}
     #extract vnfi_id from instantatieVNF response
+
+    @instance['vnfrs'].find { |vnf_info| vnf_info['vnfd_id'] == callback_response['vnfd_id']}['vnfi_id'] = callback_response['vnfi_id']
+
     vnf_info = {}
     vnf_info[:vnfd_id] = callback_response['vnfd_id']
     vnf_info[:vnfi_id] = callback_response['vnfi_id']
     vnf_info[:vnfr_id] = callback_response['vnfr_id']
     #@instance['vnfis'] << vnf_info
     #@instance['vnfrs'] = []
-    @instance['vnfrs'] << vnf_info
+    #@instance['vnfrs'] << vnf_info
 
     begin
       instance = Nsr.find(@instance["id"])
@@ -302,7 +305,7 @@ class Provisioner < NsProvisioning
     EM.defer do
       #send start command
       begin
-        response = RestClient.put settings.manager + '/ns-instances/'+nsr_id+'/start', {}.to_json, :content_type => :json
+        response = RestClient.put settings.manager + '/ns-instances/' + nsr_id + '/start', {}.to_json, :content_type => :json
       rescue Errno::ECONNREFUSED
         logger.error "Connection refused with the NS Manager"
           #halt 500, 'NS Manager unreachable'
