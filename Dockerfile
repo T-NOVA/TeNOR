@@ -2,7 +2,8 @@ FROM ruby:2.2
 
 MAINTAINER Josep Batallé "josep.batalle@i2cat.net"
 #docker build -t tnova/tenor .
-#docker run -itd -p 4000:4000 -p 8000:8000 -p 9000:9000 tnova/tenor
+#docker run -it -p 4000:4000 -p 8000:8000 -p 9000:9000 -v /opt/mongo:/var/lib/mongodb -v /opt/gatekeeper:/root/gatekeeper tnova/tenor_test bash
+#docker run -it -p 4000:4000 -p 8000:8000 -p 9000:9000 -v ~/opt/mongo:/var/lib/mongodb -v ~/opt/gatekeeper:/root/gatekeeper tnova/tenor_test bash
 #after run the docker, execute the following scripts:
 # ./development.sh
 # ./loadModules.sh
@@ -41,20 +42,26 @@ mkdir -p /usr/local/go && \
 COPY dependencies/install_gatekeeper.sh /root/install_gatekeeper.sh
 RUN sh install_gatekeeper.sh
 
-RUN cp /root/go/src/github.com/piyush82/auth-utils/gatekeeper.cfg /root/gatekeeper.cfg
+RUN mkdir /root/gatekeeper && cp /root/go/src/github.com/piyush82/auth-utils/gatekeeper.cfg /root/gatekeeper/gatekeeper.cfg
 
 # Clone the conf files into the docker container
 RUN git clone https://github.com/T-NOVA/TeNOR /root/TeNOR
 
 WORKDIR /root/TeNOR
 RUN cd /root/TeNOR && gem install bundle && bundle install && ./tenor_install.sh
-RUN cd /root/TeNOR/ui && npm install -g grunt grunt-cli bower && npm install && bower install --allow-root && gem install compass
+RUN cd /root/TeNOR/ui && npm install -g grunt grunt-cli bower && npm install
+RUN cd /root/TeNOR/ui && bower install --allow-root
+RUN cd /root/TeNOR/ui && gem install compass
 RUN ln -s /usr/local/bundle/bin/compass /usr/local/bin/compass
+
+RUN chown -R mongodb:mongodb /var/lib/mongodb
 
 EXPOSE $TENOR_PORT
 EXPOSE $TENOR_UI_PORT
 EXPOSE $GK_PORT
 EXPOSE $MONGODB_PORT
+
+ADD development.sh /root/TeNOR/development.sh
 
 #ENTRYPOINT ["sh", "development.sh"]
 ENV RAILS_ENV development
