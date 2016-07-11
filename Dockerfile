@@ -3,7 +3,7 @@ FROM ruby:2.2
 MAINTAINER Josep Batallé "josep.batalle@i2cat.net"
 #docker build -t tnova/tenor .
 #docker run -itd -p 4000:4000 -p 8000:8000 -p 9000:9000 -v /opt/mongo:/var/lib/mongodb -v /opt/gatekeeper:/root/gatekeeper tnova/tenor_test bash
-3docker exec -i -t f9ff694e0872 /bin/bash
+#docker exec -i -t f9ff694e0872 /bin/bash
 #after run the docker, execute the following scripts:
 # ./development.sh
 # ./loadModules.sh
