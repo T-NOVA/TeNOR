@@ -177,6 +177,7 @@ module ProvisioningHelper
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Manager callback down'
     rescue => e
+      puts e
       logger.error e.response
       halt e.response.code, e.response.body
     end

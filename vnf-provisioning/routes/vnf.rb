@@ -104,7 +104,8 @@ class Provisioning < VnfProvisioning
         vnfr_id: vnfr.id,
         networks_id: instantiation_info['networks'],
         routers_id: instantiation_info['routers'],
-        security_group_id: instantiation_info['security_group_id']
+        security_group_id: instantiation_info['security_group_id'],
+        dns_server: instantiation_info['dns_server']
     }
     begin
       hot = parse_json(RestClient.post settings.hot_generator + '/hot/' + vnf_flavour, hot_generator_message.to_json, :content_type => :json, :accept => :json)
@@ -136,7 +137,6 @@ class Provisioning < VnfProvisioning
     vdu0['id'] = response['stack']['id']
     vdu0['type'] = 0
     vdu << vdu0
-
 
     # Update the VNFR
     vnfr.push(lifecycle_event_history: 'CREATE_IN_PROGRESS')
@@ -198,8 +198,6 @@ class Provisioning < VnfProvisioning
     end
 
     # Requests the VIM to delete the stack
-
-    ##############################################
     deleteStack(vnfr.stack_url, auth_token)
 
     status = "DELETING"
@@ -225,7 +223,7 @@ class Provisioning < VnfProvisioning
 
       logger.debug "Try: " + count.to_s + ", status: " + status.to_s
       if (status == "DELETE_FAILED")
-        deleteStack(stack_url, tenant_token)
+        deleteStack(vnfr.stack_url, auth_token)
         status = "DELETING"
       end
       count = count +1
@@ -236,7 +234,6 @@ class Provisioning < VnfProvisioning
       end
       break if count > 20 #to remove
     end
-    ##############################################
 
     logger.debug 'VIM response to destroy: ' + response.to_json
 
@@ -362,7 +359,7 @@ class Provisioning < VnfProvisioning
         else
 
           if output['output_key'] =~ /^.*#PublicIp$/i
-            vnf_addresses['controller'] = output['output_value']
+#            vnf_addresses['controller'] = output['output_value']
           end
 
           #other parameters

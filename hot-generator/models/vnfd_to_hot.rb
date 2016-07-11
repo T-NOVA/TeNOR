@@ -270,6 +270,7 @@ class VnfdToHot
     @hot.resources_list << WaitCondition.new(get_resource_name, wc_handle_name, 2000)
 
     wc_notify = ""
+    wc_notify = "\nwc_notify --data-binary '{\"status\": \"SUCCESS\"}'\n"
     if vdu['wc_notify']
       wc_notify = "\nwc_notify --data-binary '{\"status\": \"SUCCESS\"}'\n"
     end

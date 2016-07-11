@@ -57,7 +57,7 @@ class VnfCatalogue < Sinatra::Application
 			vnfd = Vnf.find_by({"vnfd.id" => vnf['vnfd']['id'], "vnfd.descriptor_version" => vnf['vnfd']['descriptor_version'], "vnfd.release" => vnf['vnfd']['release']})
 			logger.error vnfd
 			if vnfd != nil
-				return 400, 'ERROR: Duplicated NS ID, Version or Vendor'
+				return 400, 'ERROR: Duplicated VNFD ID, Version or Vendor'
 			end
 		rescue Mongoid::Errors::DocumentNotFound => e
 		end
