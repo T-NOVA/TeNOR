@@ -234,6 +234,7 @@ module NsProvisioner
           roleAdminId = getAdminRole(popUrls[:keystone], token)
           putRole(popUrls[:keystone], vnf_info['tenant_id'], vnf_info['user_id'], roleAdminId, token)
           tenant_token = openstackAuthentication(popUrls[:keystone], vnf_info['tenant_id'], vnf_info['username'], vnf_info['password'])
+          vnf_info['token'] = tenant_token
           security_groups = getSecurityGroups(popUrls[:compute], vnf_info['tenant_id'], tenant_token)
           logger.info "Security Groups: " + security_groups['security_groups'][0].to_s
           if (!settings.default_tenant_name.nil?)
@@ -388,6 +389,7 @@ module NsProvisioner
               },
               :tenant => tenant_name,
               :username => vnf_info['username'],
+              :token => vnf_info['token'],
               :password => vnf_info['password']
           },
           :networks => networks,
