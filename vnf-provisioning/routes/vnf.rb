@@ -198,8 +198,6 @@ class Provisioning < VnfProvisioning
     end
 
     # Requests the VIM to delete the stack
-
-    ##############################################
     deleteStack(vnfr.stack_url, auth_token)
 
     status = "DELETING"
@@ -236,7 +234,6 @@ class Provisioning < VnfProvisioning
       end
       break if count > 20 #to remove
     end
-    ##############################################
 
     logger.debug 'VIM response to destroy: ' + response.to_json
 
@@ -362,7 +359,7 @@ class Provisioning < VnfProvisioning
         else
 
           if output['output_key'] =~ /^.*#PublicIp$/i
-            vnf_addresses['controller'] = output['output_value']
+#            vnf_addresses['controller'] = output['output_value']
           end
 
           #other parameters
