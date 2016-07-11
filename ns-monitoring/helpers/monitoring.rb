@@ -52,24 +52,19 @@ module MonitoringHelper
   # @param [JSON] message monitoring information
   def self.subcriptionThread(monitoring)
     logger.info "Subcription thread"
-    logger.error "NSr: " + monitoring['nsi_id'].to_s
+    logger.info "NSr: " + monitoring['nsi_id'].to_s
     nsr_id = monitoring['nsi_id'].to_s
     vnf_instances = monitoring['vnf_instances']
 
     ch = @channel
 
-    logger.debug " [*] Waiting for logs."
-
-    logger.debug vnf_instances
-
     vnf_instances.each do |vnf_instance|
-      puts "VNF_Instance_id:"
-      puts vnf_instance['vnfr_id'] #vnf_id
-      puts vnf_instance['vnfr_id']
+      logger.debug "VNF_Instance_id:"
+      logger.debug vnf_instance['vnfr_id'] #vnf_id
       begin
         puts "Create another subcription"
         t = ch.queue(vnf_instance['vnfr_id'], :exclusive => false).subscribe do |delivery_info, metadata, payload|
-          puts "Receving subcription data " + vnf_instance['vnfr_id'].to_s
+          logger.info "Receving subcription data " + vnf_instance['vnfr_id'].to_s
           measurements = JSON.parse(payload)
           puts measurements
           puts "Mon Metrics:"
@@ -127,17 +122,17 @@ module MonitoringHelper
   end
 
   def self.startSubcription()
-    puts "Getting list of instances..."
+    logger.info "Getting list of instances..."
     begin
       response = RestClient.get Sinatra::Application.settings.ns_provisioner + '/ns-instances', :content_type => :json
       #puts response
       @ns_instances = JSON.parse(response)
 
-      puts "Getting monitoring for each instance..."
+      logger.info "Getting monitoring for each instance..."
       #for each instance, create a thread for subcribe to monitoring
       @ns_instances.each do |instance|
         #get mnonitoring data for instance
-        puts instance['id']
+        logger.debug instance['id']
         begin
           monitoring = NsMonitoringParameter.find_by("nsi_id" => instance['id'])
           nsi_id = monitoring['nsi_id'].to_s
@@ -158,5 +153,14 @@ module MonitoringHelper
       puts "Error!"
       puts e
     end
+  end
+
+  def logger
+    Logging.logger
+  end
+
+  # Global, memoized, lazy initialized instance of a logger
+  def self.logger
+    @logger ||= Logger.new(STDOUT)
   end
 end
