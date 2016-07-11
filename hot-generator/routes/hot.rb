@@ -49,11 +49,12 @@ class HotGenerator < Sinatra::Application
 		logger.debug 'Networks IDs: ' + networks_id.to_json
 		logger.debug 'Security Group ID: ' + security_group_id.to_json
 
-		dns = "10.30.0.11"
+		dns_server = provision_info['dns_server']
+		halt 400, 'DNS server not found' if dns_server.nil?
 
 		# Build a HOT template
 		logger.debug 'T-NOVA flavour: ' + params[:flavour]
-		hot = CommonMethods.generate_hot_template(vnf['vnfd'], params[:flavour], networks_id, routers_id, security_group_id, vnfr_id, dns)
+		hot = CommonMethods.generate_hot_template(vnf['vnfd'], params[:flavour], networks_id, routers_id, security_group_id, vnfr_id, dns_server)
 
 		halt 200, hot.to_json
 	end

@@ -393,6 +393,7 @@ module NsProvisioner
           :networks => networks,
           :routers => routers,
           :security_group_id => vnf_info['security_group_id'],
+          :dns_server => settings.dns_server,
           :callback_url => settings.manager + "/ns-instances/" + @instance['id'] + "/instantiate"
       }
 
