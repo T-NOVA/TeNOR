@@ -21,9 +21,9 @@ class Network < Resource
   #
   # @param [String] resource_name the Network resource name
   # @param [String] name the name of the network
-  def initialize(resource_name, name)
+  def initialize(resource_name, name, port_security_enabled, shared)
     @type = 'OS::Neutron::Net'
-    @properties = {'name' => name}
+    @properties = {'name' => name, 'port_security_enabled' => port_security_enabled, 'shared' => shared}
     super(resource_name, @type, @properties)
   end
 end
