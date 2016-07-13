@@ -61,7 +61,7 @@ EXPOSE $TENOR_UI_PORT
 EXPOSE $GK_PORT
 EXPOSE $MONGODB_PORT
 
-ADD development.sh /root/TeNOR/development.sh
+ADD dependencies/development.sh /root/TeNOR/development.sh
 
 #ENTRYPOINT ["sh", "development.sh"]
 ENV RAILS_ENV development
