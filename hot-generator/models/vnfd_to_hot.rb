@@ -147,14 +147,17 @@ class VnfdToHot
                 else
                   @outputs[match[2]] = [match[1]]
                 end
-                puts "Outputs:"
-                puts @outputs
-                if string[1] == 'PublicIp'
-                  puts "PublicIp, do nothing"
-                else
-#                @hot.outputs_list << Output.new(id, "", {get_attr: [match[2], "#{match[1]}"]})
+#                puts "Outputs:"
+#                puts @outputs
+                if string[1] != 'PublicIp'
                   @hot.outputs_list << Output.new(id, "", get_attr)
                 end
+#                if string[1] == 'PublicIp'
+#                  puts "PublicIp, do nothing"
+#                else
+#                @hot.outputs_list << Output.new(id, "", {get_attr: [match[2], "#{match[1]}"]})
+#                  @hot.outputs_list << Output.new(id, "", get_attr)
+#                end
               end
             end
           end
@@ -275,10 +278,10 @@ class VnfdToHot
   def add_wait_condition(vdu)
     wc_handle_name = get_resource_name
 
-    if vdu['wc_notify']
+    #if vdu['wc_notify']
       @hot.resources_list << WaitConditionHandle.new(wc_handle_name)
       @hot.resources_list << WaitCondition.new(get_resource_name, wc_handle_name, 2000)
-    end
+    #end
 
     wc_notify = ""
     wc_notify = "\nwc_notify --data-binary '{\"status\": \"SUCCESS\"}'\n"
