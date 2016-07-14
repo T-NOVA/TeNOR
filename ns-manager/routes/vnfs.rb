@@ -136,7 +136,7 @@ class VNFCatalogueController < TnovaManager
     end
 
     begin
-      response = RestClient.get @service.host + ":" + @service.port.to_s + '/network-services/vnf/' + params[:vnf_id], 'X-Auth-Token' => @client_token, :content_type => :json
+      response = RestClient.get @service.host + ":" + @service.port.to_s + '/network-services/vnf/' + params[:vnf_id].to_s, 'X-Auth-Token' => @client_token, :content_type => :json
       nss, errors = parse_json(response)
       if nss.size > 0
         halt 400, nss.size + 'Network Services are using this VNF.'

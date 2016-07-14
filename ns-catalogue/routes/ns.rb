@@ -163,7 +163,7 @@ class NsCatalogue < Sinatra::Application
     begin
       nss = Ns.find_by({"nsd.vnfds" => params[:vnf_id]})
     rescue Mongoid::Errors::DocumentNotFound => e
-      halt 404
+      halt 404, "No services using this VNFD"
     end
     return 200, nss.to_json
   end
