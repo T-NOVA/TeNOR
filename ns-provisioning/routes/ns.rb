@@ -61,12 +61,7 @@ class Provisioner < NsProvisioning
     if instantiation_info['flavour'].nil?
       error = "Flavour is null"
       halt 400, "Failed creating instance. Flavour is null"
-      #generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", error))
     end
-
-    #    if settings.dependencies.all? { |x| @tenor_modules.detect { |el| el['name'] == x } }
-    #      halt 400, "The orchestrator has not the correct dependencies"
-    #    end
 
     instance = {
         :nsd_id => nsd['id'],
@@ -87,7 +82,7 @@ class Provisioner < NsProvisioning
         :runtime_policy_info => [],
         :status => "INIT",
         :notification => instantiation_info['callbackUrl'],
-        :lifecycle_event_history => [],
+        :lifecycle_event_history => ['INIT'],
         :audit_log => [],
         :marketplace_callback => instantiation_info['callbackUrl']
     }
@@ -132,10 +127,9 @@ class Provisioner < NsProvisioning
   # Update instance status
   # @param [JSON]
   put "/:id/:status" do
-
     body, errors = parse_json(request.body.read)
     @instance = body['instance']
-    popInfo = body['popInfo']
+    #popInfo = body['popInfo']
 
     begin
       @nsInstance = Nsr.find(params["id"])
@@ -143,46 +137,56 @@ class Provisioner < NsProvisioning
       halt 404
     end
 
-    if (popInfo.nil?)
-      puts "Pop Info is null"
-      @nsInstance.delete
-      halt 200, "Removed correctly."
-    end
-
-    logger.debug @instance
+    #if (popInfo.nil?)
+    #      puts "Pop Info is null"
+    #      @nsInstance.delete
+    #      halt 200, "Removed correctly."
+    #    end
 
     #popInfo = getPopInfo(@instance['vnf_info']['pop_id'])
-    popUrls = getPopUrls(popInfo['info'][0]['extrainfo'])
+    #popUrls = getPopUrls(popInfo['info'][0]['extrainfo'])
 
     if params[:status] === 'terminate'
+      logger.info "Starting thread for removing VNF and NS instances."
+      EM.defer do
+        @nsInstance['vnfrs'].each do |vnf|
+          logger.info "Terminate VNF " + vnf['vnfr_id'].to_s
 
-      #destroy vnf instances
-      @instance['vnfrs'].each do |vnf|
-        if !vnf['vnfr_id'].nil?
-          auth = {:auth => {:tenant => @instance['vnf_info']['tenant_name'], :username => @instance['vnf_info']['username'], :password => @instance['vnf_info']['password'], :url => {:keystone => popUrls[:keystone]}}}
-          begin
-            response = RestClient.post settings.vnf_manager + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/destroy', auth.to_json, :content_type => :json
-          rescue Errno::ECONNREFUSED
-            halt 500, 'VNF Manager unreachable'
-          rescue RestClient::ResourceNotFound
-            puts "Already removed from the VIM."
-            logger.error "Already removed from the VIM."
-          rescue => e
-            logger.error e.response
-            halt e.response.code, e.response.body
+          popInfo = getPopInfo(vnf['pop_id'])
+          if popInfo == 400
+            logger.error "Pop id no exists."
+            raise 400, "Pop id no exists."
+          end
+          popUrls = getPopUrls(popInfo['info'][0]['extrainfo'])
+
+          if !vnf['vnfr_id'].nil?
+            #auth = {:auth => {:tenant => @instance['vnf_info']['tenant_name'], :username => @instance['vnf_info']['username'], :password => @instance['vnf_info']['password'], :url => {:keystone => popUrls[:keystone]}}}
+            auth = {:auth => {:tenant => vnf['tenant_name'], :username => vnf['username'], :password => vnf['password'], :url => {:keystone => popUrls[:keystone]}}}
+            begin
+              response = RestClient.post settings.vnf_manager + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/destroy', auth.to_json, :content_type => :json
+            rescue Errno::ECONNREFUSED
+              #halt 500, 'VNF Manager unreachable'
+            rescue RestClient::ResourceNotFound
+              puts "Already removed from the VIM."
+              logger.error "Already removed from the VIM."
+            rescue => e
+              puts e
+              puts "HAALT???...."
+              logger.error e.response
+              #halt e.response.code, e.response.body
+            end
           end
         end
+
+        logger.info "VNFs removed correctly."
+        error = "Removing instance"
+        recoverState(@nsInstance, error)
+        logger.info "NSr removed."
+        #notify marketplace for correct removal?
+        #return 200, "Removed correctly"
       end
-
-      error = "Removing instance"
-      #terminate VNF
-      recoverState(popInfo, @instance['vnf_info'], @nsInstance, error)
-      @nsInstance.delete
-      halt 200, "Removed correctly"
     elsif params[:status] === 'start'
-
       @instance['vnfrs'].each do |vnf|
-        puts vnf
         event = {:event => "start"}
         begin
           response = RestClient.put settings.vnf_manager + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/config', event.to_json, :content_type => :json
@@ -199,7 +203,6 @@ class Provisioner < NsProvisioning
       @instance['status'] = params['status'].to_s.upcase
       @nsInstance.update_attributes(@instance)
     elsif params[:status] === 'stopped'
-
       @instance['vnfrs'].each do |vnf|
         logger.debug vnf
         event = {:event => "stop"}
@@ -219,7 +222,6 @@ class Provisioner < NsProvisioning
     end
 
     halt 200, "Updated correctly."
-
   end
 
   get "/ns-instances-mapping" do
@@ -247,17 +249,36 @@ class Provisioner < NsProvisioning
 
     callback_response = response['callback_response']
     @instance = response['instance']
-    popInfo = response['popInfo']
+    begin
+      instance = Nsr.find(@instance["id"])
+    rescue Mongoid::Errors::DocumentNotFound => e
+      logger.error e
+      return 404
+    end
+    #popInfo = response['popInfo']
     nsd = response['nsd']
     nsr_id = params['nsr_id']
 
     logger.debug "Callback response: " + callback_response.to_json
-    logger.debug "Instance: " + @instance.to_json
+    logger.info "Instance: " + @instance.to_json
+
+    if callback_response['status'] == 'ERROR_CREATING'
+      @instance['status'] = "ERROR_CREATING"
+      @Instance.push(lifecycle_event_history: "ERROR_CREATING")
+      instance.update_attributes(@instance)
+      #recoverState(popInfo, @instance['vnf_info'], @instance, error)
+      generateMarketplaceResponse(@instance['notification'], "Error creating VNF")
+      return 200
+    end
 
     #vnf = {:vnf_id => vnf_id, :pop_id => pop_id}
     #extract vnfi_id from instantatieVNF response
 
-    @instance['vnfrs'].find { |vnf_info| vnf_info['vnfd_id'] == callback_response['vnfd_id']}['vnfi_id'] = callback_response['vnfi_id']
+    @instance['lifecycle_event_history'].push("VNF " + callback_response['vnfd_id'].to_s + " INSTANTIATED")
+    @instance['vnfrs'].find { |vnf_info| vnf_info['vnfd_id'] == callback_response['vnfd_id'] }['vnfi_id'] = callback_response['vnfi_id']
+    @instance['vnfrs'].find { |vnf_info| vnf_info['vnfd_id'] == callback_response['vnfd_id'] }['status'] = "INSTANTIATED"
+
+    instance.update_attributes(@instance)
 
     vnf_info = {}
     vnf_info[:vnfd_id] = callback_response['vnfd_id']
@@ -267,30 +288,25 @@ class Provisioner < NsProvisioning
     #@instance['vnfrs'] = []
     #@instance['vnfrs'] << vnf_info
 
-    begin
-      instance = Nsr.find(@instance["id"])
-    rescue Mongoid::Errors::DocumentNotFound => e
-      logger.error e
-      return 404
+    nsd['vnfds'].each do |vnf|
+      puts vnf
+      vnf_instance = @instance['vnfrs'].find { |vnf_info| vnf_info['vnfd_id'] == vnf }
+      if vnf_instance['status'] != "INSTANTIATED"
+        logger.info "VNF " + vnf.to_s + " is not ready."
+        return
+      end
     end
 
-    if callback_response['status'] == 'ERROR_CREATING'
-      @instance['status'] = "ERROR_CREATING"
-      instance.update_attributes(@instance)
-      #recoverState(popInfo, @instance['vnf_info'], @instance, error)
-      generateMarketplaceResponse(@instance['notification'], "Error creating VNF")
-      return 200
-    else
-      @instance['status'] = "INSTANTIATED"
-    end
+    #instantiate only if all VNFS of the NS are instatiated
+    @instance['status'] = "INSTANTIATED"
+    @instance['lifecycle_event_history'].push("INSTANTIATED")
 
     @instance['instantiation_end_time'] = DateTime.now.iso8601(3)
     instance.update_attributes(@instance)
 
-    puts "Instantiation time: " + (DateTime.parse(@instance['instantiation_end_time']).to_time.to_f*1000 - DateTime.parse(@instance['created_at']).to_time.to_f*1000).to_s
-
-    logger.debug @instance
+    logger.info "Instantiation time: " + (DateTime.parse(@instance['instantiation_end_time']).to_time.to_f*1000 - DateTime.parse(@instance['created_at']).to_time.to_f*1000).to_s
     generateMarketplaceResponse(@instance['notification'], @instance)
+    logger.info "Notification to marketplace sent."
 
     #insert statistic information to NS Manager
     EM.defer do
@@ -301,7 +317,7 @@ class Provisioner < NsProvisioning
       end
     end
 
-    logger.debug "Sending start command"
+    logger.info "Sending start command"
     EM.defer do
       #send start command
       begin
@@ -316,7 +332,7 @@ class Provisioner < NsProvisioning
       end
     end
 
-    logger.debug "Starting monitoring workflow..."
+    logger.info "Starting monitoring workflow..."
     EM.defer do
       #start monitoring
       monitoringData(nsd, nsr_id, vnf_info)

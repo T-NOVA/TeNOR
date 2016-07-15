@@ -61,10 +61,7 @@ class NsProvisionerController < TnovaManager
       halt e.response.code, e.response.body
     end
     logger.error "Instantiation correct."
-    logger.error response.code
-
     updateStatistics('ns_instantiated_requests')
-
     return response.code, response.body
   end
 
@@ -168,6 +165,9 @@ class NsProvisionerController < TnovaManager
   # Update ns-instance status
   # @param [string] Instance id
   put '/:ns_instance_id/:status' do
+    logger.error "Change status request"
+    logger.error params[:status]
+    logger.error request.fullpath
     begin
       @service = ServiceModel.find_by(name: "ns_provisioner")
     rescue Mongoid::Errors::DocumentNotFound => e
@@ -185,9 +185,10 @@ class NsProvisionerController < TnovaManager
     @ns_instance, error = parse_json(response)
 
     #call popInfo Function
-    popInfo, errors = parse_json(getPopInfo(@ns_instance['vnf_info']['pop_id']))
-    return 400, errors if errors
-    info = { :instance => @ns_instance, :popInfo => popInfo }
+    #popInfo, errors = parse_json(getPopInfo(@ns_instance['vnf_info']['pop_id']))
+    #return 400, errors if errors
+    #info = { :instance => @ns_instance, :popInfo => popInfo }
+    info = { :instance => @ns_instance }
 
     begin
       response = RestClient.put @service.host + ":" + @service.port.to_s + request.fullpath, info.to_json, 'X-Auth-Token' => @client_token, :content_type => :json
@@ -206,6 +207,7 @@ class NsProvisionerController < TnovaManager
   # Delete a ns-instance
   # @param [string] Instance id
   delete '/:ns_instance_id' do
+    logger.info "Delete executed.... " + params[:ns_instance_id].to_s
     begin
       @service = ServiceModel.find_by(name: "ns_provisioner")
     rescue Mongoid::Errors::DocumentNotFound => e
@@ -222,6 +224,7 @@ class NsProvisionerController < TnovaManager
     end
     @ns_instance, error = parse_json(response)
 
+    logger.info "Calling PoP, required????"
     #call popInfo Function
     if(@ns_instance['vnf_info'].nil?)
       puts "PopInfo is null"
@@ -232,16 +235,18 @@ class NsProvisionerController < TnovaManager
       return 400, errors if errors
     end
 
+    logger.info "Calling NS Provisioner????"
     info = { :instance => @ns_instance, :popInfo => popInfo }
-
     begin
       response = RestClient.put @service.host + ":" + @service.port.to_s + request.fullpath.to_s + '/terminate', info.to_json, 'X-Auth-Token' => @client_token, :content_type => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Provisioning unreachable'
     rescue => e
+      logger.error e
       logger.error e.response
       halt e.response.code, e.response.body
     end
+    logger.info "Calling NS Provisioner done..."
 
     updateStatistics('ns_terminated_requests')
 
@@ -288,9 +293,10 @@ class NsProvisionerController < TnovaManager
     end
     nsd, error = parse_json(response)
 
-    popInfo, errors = parse_json(getPopInfo(@ns_instance['vnf_info']['pop_id']))
-    return 400, errors if errors
-    info = { :callback_response => callback_response, :instance => @ns_instance, :popInfo => popInfo , :nsd => nsd}
+    #popInfo, errors = parse_json(getPopInfo(@ns_instance['authentication']['pop_id']))
+    #return 400, errors if errors
+    #info = { :callback_response => callback_response, :instance => @ns_instance, :popInfo => popInfo , :nsd => nsd}
+    info = { :callback_response => callback_response, :instance => @ns_instance, :nsd => nsd}
 
     begin
       response = RestClient.post @service.host + ":" + @service.port.to_s + request.fullpath, info.to_json, 'X-Auth-Token' => @client_token, :content_type => :json
