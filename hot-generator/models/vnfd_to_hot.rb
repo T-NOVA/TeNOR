@@ -279,9 +279,12 @@ class VnfdToHot
     wc_handle_name = get_resource_name
 
     #if vdu['wc_notify']
+    if @type != 'vSA'
       @hot.resources_list << WaitConditionHandle.new(wc_handle_name)
       @hot.resources_list << WaitCondition.new(get_resource_name, wc_handle_name, 2000)
     #end
+    end
+
 
     wc_notify = ""
     wc_notify = "\nwc_notify --data-binary '{\"status\": \"SUCCESS\"}'\n"
@@ -292,21 +295,27 @@ class VnfdToHot
       wc_notify = ""
     elsif @type == 'vSA'
       wc_notify = '\n echo "tenor_url: http://10.10.1.61:4000/vnf-provisioning/'+ @vnfr_id +'/stack/create_complete" > /etc/tenor.cfg'
-      wc_notify = wc_notify + "\n curl -XPOST http://10.10.1.61:4000/vnf-provisioning/#{vnfr_id}/stack/create_complete -d 'info"
+#      wc_notify = wc_notify + "\n curl -XPOST http://10.10.1.61:4000/vnf-provisioning/#{vnfr_id}/stack/create_complete -d 'info"
       wc_notify = '\n echo curl -XPOST http://10.10.1.61:4000/vnf-provisioning/'+ @vnfr_id +'/stack/create_complete -d "aaa"'
+      wc_notify = ""
     end
 
-    bootstrap_script = vdu.has_key?('bootstrap_script') ? vdu['bootstrap_script'] : "#!/bin/bash"
-    {
-        str_replace: {
-            params: {
-                wc_notify: {
-                    get_attr: [wc_handle_name, 'curl_cli']
-                }
-            },
-            template: bootstrap_script + wc_notify
-        }
-    }
+    if @type != 'vSA'
+      bootstrap_script = vdu.has_key?('bootstrap_script') ? vdu['bootstrap_script'] : "#!/bin/bash"
+      {
+          str_replace: {
+              params: {
+                  wc_notify: {
+                      get_attr: [wc_handle_name, 'curl_cli']
+                  }
+              },
+              template: bootstrap_script + wc_notify
+          }
+      }
+    else
+      bootstrap_script = "#!/bin/bash"+ wc_notify
+    end
+
   end
 
   # Generates a new resource name
