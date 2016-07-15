@@ -77,7 +77,12 @@ class VnfdToHot
   end
 
   def create_networks(vlink, dns_server, router_id)
-    network_name = create_network(vlink['alias'])
+    if vlink['connectivity_type'] == 'E-LAN'
+      shared = true
+    else
+      shared = false
+    end
+    network_name = create_network(vlink['alias'], vlink['port_security_enabled'], shared)
     if vlink['net_segment'] && vlink['net_segment'] != ""
       cidr = vlink['net_segment']
     else
@@ -88,9 +93,9 @@ class VnfdToHot
     return network_name
   end
 
-  def create_network(network_name)
+  def create_network(network_name, port_security_enabled, shared)
     name = get_resource_name
-    @hot.resources_list << Network.new(name, network_name)
+    @hot.resources_list << Network.new(name, network_name, port_security_enabled, shared)
     name
   end
 
@@ -142,14 +147,17 @@ class VnfdToHot
                 else
                   @outputs[match[2]] = [match[1]]
                 end
-                puts "Outputs:"
-                puts @outputs
-                if string[1] == 'PublicIp'
-                  puts "PublicIp, do nothing"
-                else
-#                @hot.outputs_list << Output.new(id, "", {get_attr: [match[2], "#{match[1]}"]})
+#                puts "Outputs:"
+#                puts @outputs
+                if string[1] != 'PublicIp'
                   @hot.outputs_list << Output.new(id, "", get_attr)
                 end
+#                if string[1] == 'PublicIp'
+#                  puts "PublicIp, do nothing"
+#                else
+#                @hot.outputs_list << Output.new(id, "", {get_attr: [match[2], "#{match[1]}"]})
+#                  @hot.outputs_list << Output.new(id, "", get_attr)
+#                end
               end
             end
           end
@@ -204,8 +212,11 @@ class VnfdToHot
         network_id = network['alias']
         port_name = "#{connection_point['id']}"
         ports << {port: {get_resource: port_name}}
-        #@hot.resources_list << Port.new(port_name, network_id, security_group_id)
-        @hot.resources_list << Port.new(port_name, {get_resource: network['heat']}, security_group_id)
+        if vlink['port_security_enabled']
+          @hot.resources_list << Port.new(port_name, {get_resource: network['heat']}, security_group_id)
+        else
+          @hot.resources_list << Port.new(port_name, {get_resource: network['heat']})
+        end
 
         # Check if it's necessary to create an output for this resource
         if @outputs.has_key?('ip') && @outputs['ip'].include?(port_name)
@@ -266,8 +277,14 @@ class VnfdToHot
   # @return [Hash] the user_data script with the Wait Condition
   def add_wait_condition(vdu)
     wc_handle_name = get_resource_name
-    @hot.resources_list << WaitConditionHandle.new(wc_handle_name)
-    @hot.resources_list << WaitCondition.new(get_resource_name, wc_handle_name, 2000)
+
+    #if vdu['wc_notify']
+    if @type != 'vSA'
+      @hot.resources_list << WaitConditionHandle.new(wc_handle_name)
+      @hot.resources_list << WaitCondition.new(get_resource_name, wc_handle_name, 2000)
+    #end
+    end
+
 
     wc_notify = ""
     wc_notify = "\nwc_notify --data-binary '{\"status\": \"SUCCESS\"}'\n"
@@ -277,20 +294,28 @@ class VnfdToHot
     if @type == 'vSBC'
       wc_notify = ""
     elsif @type == 'vSA'
-      wc_notify = 'echo "tenor_url: http://10.10.1.61:4000/vnf-provisioning/'+ @vnfr_id +'/stack/create_complete" > /etc/tenor.cfg'
+      wc_notify = '\n echo "tenor_url: http://10.10.1.61:4000/vnf-provisioning/'+ @vnfr_id +'/stack/create_complete" > /etc/tenor.cfg'
+#      wc_notify = wc_notify + "\n curl -XPOST http://10.10.1.61:4000/vnf-provisioning/#{vnfr_id}/stack/create_complete -d 'info"
+      wc_notify = '\n echo curl -XPOST http://10.10.1.61:4000/vnf-provisioning/'+ @vnfr_id +'/stack/create_complete -d "aaa"'
+      wc_notify = ""
     end
 
-    bootstrap_script = vdu.has_key?('bootstrap_script') ? vdu['bootstrap_script'] : "#!/bin/bash"
-    {
-        str_replace: {
-            params: {
-                wc_notify: {
-                    get_attr: [wc_handle_name, 'curl_cli']
-                }
-            },
-            template: bootstrap_script + wc_notify
-        }
-    }
+    if @type != 'vSA'
+      bootstrap_script = vdu.has_key?('bootstrap_script') ? vdu['bootstrap_script'] : "#!/bin/bash"
+      {
+          str_replace: {
+              params: {
+                  wc_notify: {
+                      get_attr: [wc_handle_name, 'curl_cli']
+                  }
+              },
+              template: bootstrap_script + wc_notify
+          }
+      }
+    else
+      bootstrap_script = "#!/bin/bash"+ wc_notify
+    end
+
   end
 
   # Generates a new resource name

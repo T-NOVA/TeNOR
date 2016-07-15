@@ -83,6 +83,8 @@ module AuthenticationHelper
 			response = RestClient.post Sinatra::Application.settings.gatekeeper + '/token/', "", :"X-Auth-Password" => Sinatra::Application.settings.gk_pass, :"X-Auth-Uid" => Sinatra::Application.settings.gk_user_id
 		rescue => e
 			puts e
+			logger.error "Error with the login to Gatekeeper"
+			return
 		end
 		if response.nil?
 			#halt 500, "Gatekeeper response is null when login."

@@ -28,10 +28,12 @@ class OrchestratorMonitoring < Sinatra::Application
       response = RestClient.get settings.api_source
       return JSON.parse(response)
     rescue => e
+      puts e
       if (defined?(e.response)).nil?
         return nil
       end
-      return e.response.code, e.response.body
+      return nil
+      #return e.response.code, e.response.body
     end
   end
 

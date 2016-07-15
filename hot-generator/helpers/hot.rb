@@ -18,10 +18,6 @@
 # @see OrchestratorHotGenerator
 module CommonMethods
 
-  class <<self
-    attr_accessor :logger
-  end
-
 	# Checks if a JSON message is valid
 	#
 	# @param [JSON] message the JSON message
@@ -122,11 +118,20 @@ module CommonMethods
 		hot = WicmToHot.new('WICM', 'Resources for WICM and SFC integration')
 
 		hot.build(provider_info)
-	end
+  end
 
 	def self.is_num?(str)
 		!!Integer(str)
 	rescue ArgumentError, TypeError
 		false
 	end
+
+  def self.logger
+    Logging.logger
+  end
+
+  # Global, memoized, lazy initialized instance of a logger
+  def self.logger
+    @logger ||= Logger.new(STDOUT)
+  end
 end
