@@ -36,7 +36,7 @@ class NsProvisioning < Sinatra::Application
 	require_relative 'models/init'
 
 	register Sinatra::ConfigFile
-# Load configurations
+	# Load configurations
 	config_file 'config/config.yml'
 
 	configure do
@@ -62,6 +62,7 @@ class NsProvisioning < Sinatra::Application
 	helpers PopHelper
 	#helpers UtilsHelper
 	helpers VimHelper
+	helpers HotHelper
 
 	Mongoid.load!('config/mongoid.yml')
 end

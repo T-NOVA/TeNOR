@@ -25,6 +25,7 @@ module HotHelper
       error = {"info" => "HOT Generator unrechable."}
       return 500, error
     rescue => e
+      puts e
       logger.error e.response
       return 500, e
     end
