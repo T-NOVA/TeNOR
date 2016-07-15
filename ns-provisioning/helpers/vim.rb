@@ -159,7 +159,8 @@ module VimHelper
     return role['id']
   end
 
-  def putRole(keystoneUrl, tenant_id, user_id, role_id, token)
+  def putRoleAdmin(keystoneUrl, tenant_id, user_id, token)
+    role_id = getAdminRole(keystoneUrl, token)
     begin
       response = RestClient.put keystoneUrl + '/tenants/'+tenant_id+'/users/'+user_id+'/roles/OS-KSADM/'+role_id, "", :content_type => :json, :'X-Auth-Token' => token
     rescue => e
@@ -251,6 +252,20 @@ module VimHelper
       logger.error e.response
       return
     end
+  end
+
+  def configureSecurityGroups(computeUrl, tenant_id, token)
+    vim_security_groups = getSecurityGroups(computeUrl, tenant_id, token)
+    security_group_id = nil
+    if (!settings.default_tenant_name.nil?)
+      security_group_id = vim_security_groups['security_groups'][0]['id']
+    elsif secuGroupId = createSecurityGroup(computeUrl, tenant_id, token)
+      security_group_id = secuGroupId
+      addRulesToTenant(computeUrl, tenant_id, secuGroupId, 'TCP', token, 1, 65535)
+      addRulesToTenant(computeUrl, tenant_id, secuGroupId, 'UDP', token, 1, 65535)
+      addRulesToTenant(computeUrl, tenant_id, secuGroupId, 'ICMP', token, -1, -1)
+    end
+    return security_group_id
   end
 
 end
