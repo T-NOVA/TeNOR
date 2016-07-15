@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# @see OrchestratorVnfMonitoring
+# @see VnfMonitoringRepository
 class VnfMonitoringRepository < Sinatra::Application
 
   # @method get_vnf_monitoring_data
@@ -56,7 +56,7 @@ class VnfMonitoringRepository < Sinatra::Application
     return 400, errors.to_json if errors
 
     instance_id = params[:instance_id]
-    OrchestratorVnfMonitoring.save_monitoring(instance_id, json)
+    VnfMonitoringHelper.save_monitoring(instance_id, json)
     halt 200
   end
 

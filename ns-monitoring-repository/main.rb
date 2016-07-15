@@ -67,7 +67,7 @@ before do
 	@db = CassandraCQL::Database.new("#{cassandra_config['host']}:9160", {username: cassandra_config['username'], password: cassandra_config['password']})
 	@db.execute("USE #{cassandra_config['keyspace']}")
 
-	env['rack.logger'] = logger
+	#env['rack.logger'] = logger
 end
 
 class NsMonitoringRepository < Sinatra::Application

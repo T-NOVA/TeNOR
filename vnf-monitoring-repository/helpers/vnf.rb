@@ -34,7 +34,8 @@ module VnfMonitoringHelper
       parsed_message = JSON.parse(message) # parse json message
     rescue JSON::ParserError => e
       # If JSON not valid, return with errors
-      logger.error "JSON parsing: #{e.to_s}"
+      puts "JSON parsing: #{e.to_s}"
+      #logger.error "JSON parsing: #{e.to_s}"
       return message, e.to_s + "\n"
     end
 
@@ -59,7 +60,7 @@ module VnfMonitoringHelper
         puts "Receving subcription data "
         json = JSON.parse(payload)
         array = [json]
-        VnfMonitoringRepository.save_monitoring(json['instance_id'], array)
+        VnfMonitoringHelper.save_monitoring(json['instance_id'], array)
       end
 
     }

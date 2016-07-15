@@ -53,6 +53,7 @@ module MonitoringHelper
 			ch = @channel
 			puts " [*] Waiting for monitoring data."
 			t = ch.queue("ns_monitoring", :exclusive => false).subscribe do |delivery_info, metadata, payload|
+				puts "saving..."
 				json = JSON.parse(payload)
 				MonitoringHelper.save_monitoring(json['instance_id'], json)
 			end

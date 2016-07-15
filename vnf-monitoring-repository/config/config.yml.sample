@@ -14,4 +14,4 @@ logstash_port: 5228
 gk:
 service_key:
 
-dependencies: [ns_catalogue, ns_instance_repository, ns_monitoring, wicm, mAPI, mapping, hot_generator, infr_repository]
+dependencies: []

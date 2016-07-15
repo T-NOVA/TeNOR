@@ -35,8 +35,8 @@ class VNFMonitoring < Sinatra::Application
     vnfr = @json['vnfr']#should not being saved
     #@json.delete('vnfr')
 
-    puts "VNFR:"
-    puts @json['vnfr']
+    logger.info "VNFR: "
+    logger.info @json['vnfr']
 
     MonitoringMetric.new(@json).save!
 
@@ -53,7 +53,7 @@ class VNFMonitoring < Sinatra::Application
     end
     @json['vnfr']['vms_id'].each { |key, value| instances << value }
 
-    puts "Creating subcription message"
+    logger.info "Creating subcription message"
     subscribe = {
         :types => types,
         :instances => instances,
