@@ -25,8 +25,6 @@ class MonitoringController < TnovaManager
   # @param [string] instance_id
   # @param [string] metric
   get '/:instance_id/monitoring-data/' do
-    logger.debug params
-    logger.debug request.fullpath
     if params['instance_type'] == 'ns'
       begin
         @service = ServiceModel.find_by(name: "ns_monitoring")
@@ -46,8 +44,6 @@ class MonitoringController < TnovaManager
     if (params["metric"])
       #composedUrl = composedUrl + "/" + params["metric"]
     end
-    logger.debug composedUrl
-    logger.debug @service.host.to_s + ":" + @service.port.to_s + composedUrl.to_s
     begin
       response = RestClient.get @service.host.to_s + ":" + @service.port.to_s + composedUrl.to_s, 'X-Auth-Token' => @client_token, :content_type => :json
     rescue Errno::ECONNREFUSED
@@ -93,8 +89,6 @@ class MonitoringController < TnovaManager
       composedUrl = "/vnf-monitoring/"+params['instance_id'].to_s+"/monitoring-data/last100/?"+request.env['QUERY_STRING']
     end
 
-    logger.debug composedUrl
-    logger.debug @service.host.to_s + ":" + @service.port.to_s + composedUrl.to_s
     begin
       response = RestClient.get @service.host.to_s + ":" + @service.port.to_s + composedUrl.to_s, 'X-Auth-Token' => @client_token, :content_type => :json
     rescue Errno::ECONNREFUSED
