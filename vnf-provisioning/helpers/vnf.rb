@@ -78,10 +78,17 @@ module ProvisioningHelper
     begin
       response = RestClient.post "#{vim_info['keystone']}/tokens", request.to_json, :content_type => :json, :accept => :json
     rescue Errno::ECONNREFUSED
-      halt 500, 'VIM unreachable'
+      raise 500, "Reserved stack can not be removed"
+#      halt 500, 'VIM unreachable'
     rescue => e
+      logger.error e
       logger.error e.response
-      halt e.response.code, e.response.body
+      if e.response == nil
+        raise 400, "Reserved stack can not be removed"
+#        halt 500, e
+      end
+
+#      halt e.response.code, e.response.body
     end
 
     parse_json(response)
@@ -196,6 +203,16 @@ module ProvisioningHelper
       return
       #halt e.response.code, e.response.body
     end
+  end
+
+  def recoverMonitoredInstances()
+
+    #get list of VNF instances and filter for INIT instances
+
+    #request to NS Manager for credentials
+
+    #create thread
+    #create_thread_to_monitor_stack(vnfr_id, stack_url, vim_info, ns_manager_callback)
   end
 
 end

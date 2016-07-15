@@ -251,7 +251,6 @@ class Provisioning < VnfProvisioning
 
     # Delete the VNFR from the database
     vnfr.destroy
-
     halt 200, response.body
   end
 
