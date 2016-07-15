@@ -128,7 +128,6 @@ class VNFCatalogueController < TnovaManager
   delete '/:vnf_id' do
 
     #check if some NSD is using it
-
     begin
       @service = ServiceModel.find_by(name: "ns_catalogue")
     rescue Mongoid::Errors::DocumentNotFound => e
@@ -139,7 +138,7 @@ class VNFCatalogueController < TnovaManager
       response = RestClient.get @service.host + ":" + @service.port.to_s + '/network-services/vnf/' + params[:vnf_id].to_s, 'X-Auth-Token' => @client_token, :content_type => :json
       nss, errors = parse_json(response)
       if nss.size > 0
-        halt 400, nss.size + 'Network Services are using this VNF.'
+        halt 400, nss.size.to_s + ' Network Services are using this VNF.'
       end
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Catalogue unreachable'
