@@ -39,7 +39,7 @@ class Nsr
   field :vnffgr, type: Array
   field :pnfr, type: Array
   field :descriptor_reference, type: String
-  field :descriptor_reservartion, type: Array
+  field :resource_reservation, type: Array
   field :runtime_policy_info, type: Array
   field :status, type: String
   field :notification, type: String
