@@ -54,9 +54,7 @@ class NSMonitoring < Sinatra::Application
       end
     end
     set :logger, logger
-
   end
-
 
   helpers MonitoringHelper
 

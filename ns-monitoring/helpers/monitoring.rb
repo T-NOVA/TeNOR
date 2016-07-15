@@ -155,7 +155,7 @@ module MonitoringHelper
     end
   end
 
-  def logger
+  def self.logger
     Logging.logger
   end
 
