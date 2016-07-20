@@ -15,9 +15,15 @@
             <th data-title="'actions'" class="col-sm-3 col-md-3 col-lg-3">Actions</th>
         </tr>
         <tr>
-            <th colspan="2">
-                <input st-search="" class="form-control" placeholder="global search ..." type="text" />
-            </th>
+			<th colspan="1">
+                                <input st-search="_id" class="form-control" placeholder="search by id ..." type="text" />
+                            </th>
+                            <th colspan="2">
+                                <input st-search="vnfd_reference" class="form-control" placeholder="search by vnfd ..." type="text" />
+                            </th>
+                            <th colspan="4">
+                                <input st-search="" class="form-control" placeholder="global search ..." type="text" />
+                            </th>
         </tr>
     </thead>
     <tbody>

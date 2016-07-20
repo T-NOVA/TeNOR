@@ -5,7 +5,10 @@ angular.module('tNovaApp')
 
         $scope.getServiceList = function () {
             tenorService.get('network-services?limit=1000').then(function (data) {
-                $scope.dataCollection = data;
+                $scope.dataCollection = _.sortBy(data, function (o) {
+                    var dt = new Date(o.created_at);
+                    return -dt;
+                });
             });
         };
 
@@ -89,7 +92,10 @@ angular.module('tNovaApp')
         $scope.updateInstanceList = function () {
             tenorService.get("ns-instances").then(function (data) {
                 data = data.reverse();
-                $scope.dataCollection = data;
+                $scope.dataCollection = _.sortBy(data, function (o) {
+                    var dt = new Date(o.created_at);
+                    return -dt;
+                });
             });
         };
 

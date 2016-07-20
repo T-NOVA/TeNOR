@@ -4,8 +4,11 @@ angular.module('tNovaApp')
     .controller('vnfController', function ($scope, $stateParams, $filter, tenorService, $interval, $modal) {
 
         $scope.getVnfList = function () {
-            tenorService.get('vnfs?limit=1000').then(function (data) {
-                $scope.dataCollection = data;
+            tenorService.get('vnfs?limit=10000').then(function (data) {
+                $scope.dataCollection = _.sortBy(data, function (o) {
+                    var dt = new Date(o.created_at);
+                    return -dt;
+                });
             });
         };
 
@@ -58,7 +61,10 @@ angular.module('tNovaApp')
         $scope.updateInstanceList = function () {
             tenorService.get("vnf-provisioning/vnf-instances").then(function (data) {
                 $scope.data = data;
-                $scope.dataCollection = data;
+                $scope.dataCollection = _.sortBy(data, function (o) {
+                    var dt = new Date(o.created_at);
+                    return -dt;
+                });
             });
         };
 
