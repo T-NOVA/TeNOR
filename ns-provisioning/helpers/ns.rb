@@ -257,7 +257,7 @@ module NsProvisioner
             pop_auth['tenant_id'] = settings.default_tenant_id
           else
             pop_auth['tenant_name'] = "tenor_instance_" + @instance['id'].to_s
-            pop_auth['tenant_id'] = createTenant(popUrls[:keystone], tenant_name, token)
+            pop_auth['tenant_id'] = createTenant(popUrls[:keystone], pop_auth['tenant_name'], token)
           end
 
           pop_auth['username'] = "user_" + @instance['id'].to_s
@@ -397,11 +397,14 @@ module NsProvisioner
         sleep(5)
         stack_info, errors = getStackInfo(popUrls[:orch], pop_auth['tenant_id'], stack_name, tenant_token)
         status = stack_info['stack']['stack_status']
-        count = count +1
+        count = count + 1
         break if count > 10
       end
       if (status == "CREATE_FAILED")
-        recoverState(@instance, error)
+        logger.error "Error creating the stack."
+        logger.error stack_info
+        logger.error errors
+        #recoverState(@instance, error)
         return
       end
 
