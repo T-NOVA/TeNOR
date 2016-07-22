@@ -43,7 +43,7 @@ module VnfMonitoringHelper
   end
 
   def self.save_monitoring(instance_id, json)
-    @db = settings.db
+    @db = Sinatra::Application.settings.db
     json.each do |item|
       puts "Inserting"
       @db.execute("INSERT INTO vnfmonitoring (instanceid, date, metricname, unit, value) VALUES ('#{instance_id.to_s}', #{item['timestamp']}, '#{item['type']}', '#{item['unit']}', '#{item['value']}' )")
