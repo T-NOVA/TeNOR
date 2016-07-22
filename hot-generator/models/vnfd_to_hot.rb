@@ -64,7 +64,12 @@ class VnfdToHot
       # Get VDU for deployment
       vdu = vnfd['vdu'].detect { |vdu| vdu['id'] == vdu_ref }
 
-      image_name = create_image(vdu)
+      if vdu['vm_image_format'] == 'openstack_id'
+        image_name = vdu['vm_image']
+      else
+        image_name = create_image(vdu)
+        image_name = { get_resource: create_image(vdu) }
+      end
       flavor_name = create_flavor(vdu)
 
       ports = create_ports(vdu['id'], vdu['connection_points'], vnfd['vlinks'], networks_id, security_group_id)
@@ -260,11 +265,11 @@ class VnfdToHot
   # @param [String] image_name the image resource name
   # @param [String] flavour_name the flavour resource name
   # @param [Array] ports list of the ports resource
-  def create_server(vdu, image_name, flavour_name, ports, key_name)
+  def create_server(vdu, image, flavour_name, ports, key_name)
     @hot.resources_list << Server.new(
         vdu['id'],
         {get_resource: flavour_name},
-        {get_resource: image_name},
+        image,
         ports,
         add_wait_condition(vdu),
         {get_resource: key_name})

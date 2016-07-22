@@ -412,7 +412,7 @@ class Provisioning < VnfProvisioning
       # Build message to send to the NS Manager callback
       vnfi_id = []
       vnfr.vms_id.each { |key, value| vnfi_id << value }
-      message = {vnfd_id: vnfr.vnfd_reference, vnfi_id: vnfi_id, vnfr_id: vnfr.id}
+      message = {vnfd_id: vnfr.vnfd_reference, vnfi_id: vnfi_id, vnfr_id: vnfr.id, vnf_addresses: vnf_addresses}
       nsmanager_callback(stack_info['ns_manager_callback'], message)
     else
       # If the stack has failed to create

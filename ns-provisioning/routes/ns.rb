@@ -148,14 +148,22 @@ class Provisioner < NsProvisioning
 
     if params[:status] === 'terminate'
       logger.info "Starting thread for removing VNF and NS instances."
-      EM.defer do
+#      EM.defer do
+      operation = poc {
         @nsInstance['vnfrs'].each do |vnf|
           logger.info "Terminate VNF " + vnf['vnfr_id'].to_s
+          puts vnf
+
+          puts "Pop_id: " + vnf['pop_id'].to_s
+          if vnf['pop_id'].nil?
+            raise "VNF not defined"
+          end
 
           popInfo = getPopInfo(vnf['pop_id'])
           if popInfo == 400
             logger.error "Pop id no exists."
-            raise 400, "Pop id no exists."
+            return
+             raise "Pop id no exists."
           end
           popUrls = getPopUrls(popInfo['info'][0]['extrainfo'])
 
@@ -184,7 +192,13 @@ class Provisioner < NsProvisioning
         logger.info "NSr removed."
         #notify marketplace for correct removal?
         #return 200, "Removed correctly"
-      end
+      }
+      errback = proc {
+        puts "Error with the removing process..."
+      }
+      EventMachine.defer(operation, callback, errback)
+
+#      end
     elsif params[:status] === 'start'
       @instance['vnfrs'].each do |vnf|
         event = {:event => "start"}
@@ -266,28 +280,19 @@ class Provisioner < NsProvisioning
       @instance['status'] = "ERROR_CREATING"
       @Instance.push(lifecycle_event_history: "ERROR_CREATING")
       instance.update_attributes(@instance)
-      #recoverState(popInfo, @instance['vnf_info'], @instance, error)
       generateMarketplaceResponse(@instance['notification'], "Error creating VNF")
       return 200
     end
 
-    #vnf = {:vnf_id => vnf_id, :pop_id => pop_id}
-    #extract vnfi_id from instantatieVNF response
-
     @instance['lifecycle_event_history'].push("VNF " + callback_response['vnfd_id'].to_s + " INSTANTIATED")
-    @instance['vnfrs'].find { |vnf_info| vnf_info['vnfd_id'] == callback_response['vnfd_id'] }['vnfi_id'] = callback_response['vnfi_id']
-    @instance['vnfrs'].find { |vnf_info| vnf_info['vnfd_id'] == callback_response['vnfd_id'] }['status'] = "INSTANTIATED"
+    @vnfr = @instance['vnfrs'].find { |vnf_info| vnf_info['vnfd_id'] == callback_response['vnfd_id'] }
+    @vnfr['vnfi_id'] = callback_response['vnfi_id']
+    @vnfr['status'] = "INSTANTIATED"
+    @vnfr['vnf_addresses'] = callback_response['vnf_addresses']
 
     instance.update_attributes(@instance)
 
-    vnf_info = {}
-    vnf_info[:vnfd_id] = callback_response['vnfd_id']
-    vnf_info[:vnfi_id] = callback_response['vnfi_id']
-    vnf_info[:vnfr_id] = callback_response['vnfr_id']
-    #@instance['vnfis'] << vnf_info
-    #@instance['vnfrs'] = []
-    #@instance['vnfrs'] << vnf_info
-
+    logger.info "Checking if all the VNFs are instantiated."
     nsd['vnfds'].each do |vnf|
       puts vnf
       vnf_instance = @instance['vnfrs'].find { |vnf_info| vnf_info['vnfd_id'] == vnf }
@@ -297,10 +302,9 @@ class Provisioner < NsProvisioning
       end
     end
 
-    #instantiate only if all VNFS of the NS are instatiated
+    logger.info "Service is ready. All VNFs are instantiated"
     @instance['status'] = "INSTANTIATED"
     @instance['lifecycle_event_history'].push("INSTANTIATED")
-
     @instance['instantiation_end_time'] = DateTime.now.iso8601(3)
     instance.update_attributes(@instance)
 
@@ -308,7 +312,7 @@ class Provisioner < NsProvisioning
     generateMarketplaceResponse(@instance['notification'], @instance)
     logger.info "Notification to marketplace sent."
 
-    #insert statistic information to NS Manager
+    logger.info "Sending statistic information to NS Manager"
     EM.defer do
       begin
         response = RestClient.post settings.manager + '/performance-stats', @instance.to_json, :content_type => :json
@@ -319,23 +323,20 @@ class Provisioner < NsProvisioning
 
     logger.info "Sending start command"
     EM.defer do
-      #send start command
+      sleep(5)
       begin
         response = RestClient.put settings.manager + '/ns-instances/' + nsr_id + '/start', {}.to_json, :content_type => :json
       rescue Errno::ECONNREFUSED
         logger.error "Connection refused with the NS Manager"
-          #halt 500, 'NS Manager unreachable'
       rescue => e
         logger.error e.response
         logger.error "Error with the start command"
-        #halt e.response.code, e.response.body
       end
     end
 
     logger.info "Starting monitoring workflow..."
     EM.defer do
-      #start monitoring
-      monitoringData(nsd, nsr_id, vnf_info)
+      monitoringData(nsd, nsr_id, @instance)
     end
 
     return 200

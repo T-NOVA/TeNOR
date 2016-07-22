@@ -22,10 +22,10 @@ module MonitoringHelper
   #
   # @param [JSON] message the NSD
   # @param [JSON] message the NSR id
-  # @param [JSON] message the VNF information
+  # @param [JSON] message the ns instance
   # @return [Hash, nil] if the parsed message is a valid JSON
   # @return [Hash, String] if the parsed message is an invalid JSON
-  def monitoringData(nsd, nsi_id, vnf_info)
+  def monitoringData(nsd, nsi_id, instance)
 
     monitoring = {:nsi_id => nsi_id}
 
@@ -44,12 +44,13 @@ module MonitoringHelper
     }
     monitoring[:parameters] = paramsNs
     vnf_instances = []
-    vnfs.each {|x|
-      vnf_instances << {:id => x, :parameters => paramsVnf, :vnfr_id => vnf_info[:vnfr_id]}
+#    vnfs.each {|x|
+    instance['vnfrs'].each {|x|
+      vnf_instances << {:id => x[:vnfd_id], :parameters => paramsVnf, :vnfr_id => x[:vnfr_id]}
     }
     monitoring[:vnf_instances] = vnf_instances
 
-    puts JSON.pretty_generate(monitoring)
+    #puts JSON.pretty_generate(monitoring)
 
     begin
       response = RestClient.post settings.ns_monitoring + '/ns-monitoring/monitoring-parameters', monitoring.to_json, :content_type => :json
