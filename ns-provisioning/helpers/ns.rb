@@ -145,8 +145,14 @@ module NsProvisioner
 
     end
 
+    message = {
+        :code => 200,
+        :info => "Removed correctly",
+        :nsr_id => @instance['id'],
+        :vnfrs => @instance['vnfrs']
+    }
+    generateMarketplaceResponse(callbackUrl, message)
     @instance.delete
-    generateMarketplaceResponse(callbackUrl, generateError(ns_id, "INFO", "Removed correctly"))
   end
 
   # Instantiate a Network Service, finally calls the VNF Manager
@@ -266,17 +272,6 @@ module NsProvisioner
 
           logger.info "Configuring Security Groups"
           pop_auth['security_group_id'] = configureSecurityGroups(popUrls[:compute], pop_auth['tenant_id'], pop_auth['token'])
-
-#          security_groups = getSecurityGroups(popUrls[:compute], pop_auth['tenant_id'], pop_auth['token'])
-#          logger.info "Security Groups: " + security_groups['security_groups'][0].to_s
-#          if (!settings.default_tenant_name.nil?)
-#            pop_auth['security_group_id'] = security_groups['security_groups'][0]['id']
-#          elsif secuGroupId = createSecurityGroup(popUrls[:compute], pop_auth['tenant_id'], pop_auth['token'])
-#            pop_auth['security_group_id'] = secuGroupId
-#            addRulesToTenant(popUrls[:compute], pop_auth['tenant_id'], secuGroupId, 'TCP', pop_auth['token'], 1, 65535)
-#            addRulesToTenant(popUrls[:compute], pop_auth['tenant_id'], secuGroupId, 'UDP', pop_auth['token'], 1, 65535)
-#            addRulesToTenant(popUrls[:compute], pop_auth['tenant_id'], secuGroupId, 'ICMP', pop_auth['token'], -1, -1)
-#          end
 
           logger.info "Tenant id: " + pop_auth['tenant_id']
           logger.info "Username: " + pop_auth['username']
@@ -481,7 +476,7 @@ module NsProvisioner
 
       logger.info "Starting the instantiation of a VNF..."
       logger.debug vnf_provisioning_info
-      @instance.push(lifecycle_event_history: "VNF " + vnf_id.to_s + " STARTED")
+      @instance.push(lifecycle_event_history: "INSTANTIATING " + vnf_id.to_s + " VNF")
       @instance.update_attribute('instantiation_start_time', DateTime.now.iso8601(3).to_s)
 
       begin
@@ -518,261 +513,5 @@ module NsProvisioner
     #each service_deployment_flavour has one or more assurance_parameters
     #sla_enforcement(nsd, @instance['id'].to_s)
 
-
-
-
-    #to remove....
-=begin
-    mapping['vnf_mapping'].each do |vnf|
-      logger.info "Start instatination process of " + vnf.to_s
-      pop_id = vnf['maps_to_PoP'].gsub('/pop/', '')
-      vnf_id = vnf['vnf'].delete('/')
-      vnf_info = {}
-
-      begin
-        popInfo = getPopInfo(pop_id)
-      rescue => e
-        error = "Internal error: error getting pop information."
-        logger.error error
-        generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", error))
-        return
-      end
-      extra_info = popInfo['info'][0]['extrainfo']
-      vnf_info['pop_id'] = pop_id
-      popUrls = getPopUrls(extra_info)
-
-      token = ""
-      tenant_token = ""
-
-      if popUrls[:keystone].nil? || popUrls[:orch].nil? || popUrls[:tenant].nil?
-        logger.error 'Keystone and/or openstack urls missing'
-        generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", "Internal error: Keystone and/or openstack urls missing."))
-        return
-      end
-
-      if @instance['project'].nil?
-        begin
-
-          tenantName = "t-nova"
-          token = openstackAdminAuthentication(popUrls[:keystone], popUrls[:tenant], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
-
-          if (!settings.default_tenant_name.nil?)
-            tenant_name = settings.default_tenant_name
-            tenant_id = settings.default_tenant_id
-          else
-            tenant_name = "tenor_instance_" + @instance['id'].to_s
-            tenant_id = createTenant(popUrls[:keystone], tenant_name, token)
-          end
-
-          vnf_info['tenant_id'] = tenant_id
-          vnf_info['tenant_name'] = tenant_name
-          vnf_info['username'] = "user_" + @instance['id'].to_s
-          vnf_info['password'] = "secretsecret"
-          vnf_info['user_id'] = createUser(popUrls[:keystone], vnf_info['tenant_id'], vnf_info['username'], vnf_info['password'], token)
-
-          roleAdminId = getAdminRole(popUrls[:keystone], token)
-          putRole(popUrls[:keystone], vnf_info['tenant_id'], vnf_info['user_id'], roleAdminId, token)
-          tenant_token = openstackAuthentication(popUrls[:keystone], vnf_info['tenant_id'], vnf_info['username'], vnf_info['password'])
-          vnf_info['token'] = tenant_token
-          security_groups = getSecurityGroups(popUrls[:compute], vnf_info['tenant_id'], tenant_token)
-          logger.info "Security Groups: " + security_groups['security_groups'][0].to_s
-          if (!settings.default_tenant_name.nil?)
-            vnf_info['security_group_id'] = security_groups['security_groups'][0]['id']
-          elsif secuGroupId = createSecurityGroup(popUrls[:compute], vnf_info['tenant_id'], tenant_token)
-            vnf_info['security_group_id'] = secuGroupId
-            addRulesToTenant(popUrls[:compute], vnf_info['tenant_id'], secuGroupId, 'TCP', tenant_token, 1, 65535)
-            addRulesToTenant(popUrls[:compute], vnf_info['tenant_id'], secuGroupId, 'UDP', tenant_token, 1, 65535)
-            addRulesToTenant(popUrls[:compute], vnf_info['tenant_id'], secuGroupId, 'ICMP', tenant_token, -1, -1)
-          end
-
-          logger.info "Tenant id: " + vnf_info['tenant_id']
-          logger.info "Username: " + vnf_info['username']
-
-        rescue => e
-          logger.error e
-          error = {"info" => "Error creating the Openstack credentials."}
-          logger.error error
-          recoverState(popInfo, vnf_info, @instance, error)
-          return
-        end
-      end
-
-      logger.debug @instance
-
-      if false
-        # Request WICM to create a service
-        wicm_message = {
-            ns_instance_id: nsd['id'],
-            client_mkt_id: '1',
-            nap_mkt_id: '1',
-            nfvi_mkt_id: '1'
-        }
-
-        begin
-          response = RestClient.post settings.wicm + '/vnf-connectivity', wicm_message.to_json, :content_type => :json, :accept => :json
-        rescue Errno::ECONNREFUSED
-          error = {"info" => "WICM unreachable."}
-          recoverState(popInfo, vnf_info, @instance, error)
-          return
-        rescue => e
-          logger.error e
-          logger.error e.response
-          error = {"info" => "Error with the WICM module."}
-          recoverState(popInfo, vnf_info, @instance, error)
-          return
-        end
-        provider_info, error = parse_json(response)
-
-        # Request HOT Generator to build the WICM - SFC integration
-        provider_info['physical_network'] = 'sfcvlan'
-        hot_template, errors = generateWicmHotTemplate(provider_info)
-
-        logger.info "Send network template to HEAT Orchestration"
-        stack_name = "WICM_SFC-" + @instance['id'].to_s
-        template = {:stack_name => stack_name, :template => hot_template}
-        stack, errors = sendStack(popUrls[:orch], vnf_info['tenant_id'], template, tenant_token)
-
-        #save WICM stack info in NSR
-
-        # Wait for the WICM - SFC provisioning to finish
-        status = "CREATING"
-        count = 0
-        while (status != "CREATE_COMPLETE" && status != "CREATE_FAILED")
-          sleep(5)
-          stack_info, errors = getStackInfo(popUrls[:orch], vnf_info['tenant_id'], stack_name, tenant_token)
-          status = stack_info['stack']['stack_status']
-          count = count +1
-          break if count > 10
-        end
-        if (status == "CREATE_FAILED")
-          logger.error "CREATE_FAILED"
-          logger.error response
-          recoverState(popInfo, vnf_info, @instance, error)
-          return
-        end
-      end
-
-      publicNetworkId = publicNetworkId(popUrls[:neutron], tenant_token)
-
-      hot_generator_message = {
-          nsd: nsd,
-          public_net_id: publicNetworkId,
-          dns_server: settings.dns_server
-      }
-
-      logger.info "Generating network HOT template..."
-      hot, errors = generateNetworkHotTemplate(sla_id, hot_generator_message)
-
-      logger.info "Send network template to HEAT Orchestration"
-      stack_name = "network-" + @instance['id'].to_s
-      template = {:stack_name => stack_name, :template => hot}
-      stack, errors = sendStack(popUrls[:orch], vnf_info['tenant_id'], template, tenant_token)
-      stack_id = stack['stack']['id']
-      @instance.update_attribute('network_stack', stack)
-
-      logger.info "Check network stack creation..."
-      status = "CREATING"
-      count = 0
-      while (status != "CREATE_COMPLETE" && status != "CREATE_FAILED")
-        sleep(5)
-        stack_info, errors = getStackInfo(popUrls[:orch], vnf_info['tenant_id'], stack_name, tenant_token)
-        status = stack_info['stack']['stack_status']
-        count = count +1
-        break if count > 10
-      end
-      if (status == "CREATE_FAILED")
-        recoverState(@instance, error)
-        return
-      end
-
-      logger.info "Network stack CREATE_COMPLETE. Getting network information..."
-      sleep(3)
-      network_resources, errors = getStackResources(popUrls[:orch], vnf_info['tenant_id'], stack_name, tenant_token)
-      stack_networks = network_resources['resources'].find_all { |res| res['resource_type'] == 'OS::Neutron::Net' }
-      stack_routers = network_resources['resources'].find_all { |res| res['resource_type'] == 'OS::Neutron::Router' }
-
-      logger.info "Reading networking information from stack..."
-      networks = []
-      stack_networks.each do |network|
-        net, errors = getStackResource(popUrls[:orch], vnf_info['tenant_id'], stack_name, stack_id, network['resource_name'], tenant_token)
-        networks.push({:id => net['resource']['attributes']['id'], :alias => net['resource']['attributes']['name']})
-      end
-      routers = []
-      stack_routers.each do |router|
-        router = getStackResource(popUrls[:orch], vnf_info['tenant_id'], stack_name, stack_id, router['resource_name'], tenant_token)
-        routers.push({:id => router['resource']['attributes']['id'], :alias => router['resource']['attributes']['name']})
-      end
-
-      @instance.push(lifecycle_event_history: "NETWORK CREATED")
-      @instance.update_attribute('vlr', networks)
-      @instance.update_attribute('vnf_info', vnf_info)
-
-      #needs to be migrated to the VNFGFD
-      sla_info = slaInfo['constituent_vnf'].find { |cvnf| cvnf['vnf_reference'] == vnf_id }
-      if sla_info.nil?
-        logger.error "NO SLA found with the VNF ID that has the NSD."
-        error = {"info" => "Error with the VNF ID. NO SLA found with the VNF ID that has the NSD."}
-        recoverState(@instance, error)
-      end
-      vnf_flavour = sla_info['vnf_flavour_id_reference']
-      logger.info "VNF Flavour: " + vnf_flavour
-
-      vnf_provisioning_info = {
-          :ns_id => nsd['id'],
-          :vnf_id => vnf_id,
-          :flavour => vnf_flavour,
-          :vim_id => popInfo['info'][0]['dcname'],
-          :auth => {
-              :url => {
-                  :keystone => popUrls[:keystone],
-                  :orch => popUrls[:orch]
-              },
-              :tenant => tenant_name,
-              :username => vnf_info['username'],
-              :token => vnf_info['token'],
-              :password => vnf_info['password']
-          },
-          :networks => networks,
-          :routers => routers,
-          :security_group_id => vnf_info['security_group_id'],
-          :dns_server => settings.dns_server,
-          :callback_url => settings.manager + "/ns-instances/" + @instance['id'] + "/instantiate"
-      }
-
-      logger.info "Starting the instantiation of a VNF..."
-      logger.debug vnf_provisioning_info
-      @instance.push(lifecycle_event_history: "VNF " + vnf_id.to_s + " STARTED")
-      @instance.update_attribute('instantiation_start_time', DateTime.now.iso8601(3).to_s)
-
-      begin
-        response = RestClient.post settings.vnf_manager + '/vnf-provisioning/vnf-instances', vnf_provisioning_info.to_json, :content_type => :json
-      rescue => e
-        logger.error "Rescue instatiation"
-        logger.error e
-        if (defined?(e.response)).nil?
-          puts e.response.body
-          error = "Instantiation error. Response from the VNF Manager: " + e.response.body
-          generateMarketplaceResponse(marketplaceUrl, generateError(instantiation_info['ns_id'], "FAILED", error))
-          return
-        end
-        logger.error "Handle error."
-        return
-      end
-
-      vnfr, error = parse_json(response)
-      logger.debug vnfr
-      logger.debug "VNFr id: " + vnfr['_id'].to_s
-
-      vnfrs = []
-      vnf_info = {}
-      vnf_info[:vnfd_id] = vnfr['vnfd_reference']
-      vnf_info[:vnfi_id] = []
-      vnf_info[:vnfr_id] = vnfr['_id']
-      vnfrs << vnf_info
-
-      @instance.update_attribute('vnfrs', vnfrs)
-
-    end
-=end
   end
 end
