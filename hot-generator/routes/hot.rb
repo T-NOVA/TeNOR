@@ -44,7 +44,7 @@ class HotGenerator < Sinatra::Application
 		halt 400, 'Security group ID not found' if security_group_id.nil?
 
 		vnfr_id = provision_info['vnfr_id']
-		halt 400, 'Networks ID not found' if vnfr_id.nil?
+		halt 400, 'Vnfr ID not found' if vnfr_id.nil?
 
 		logger.debug 'Networks IDs: ' + networks_id.to_json
 		logger.debug 'Security Group ID: ' + security_group_id.to_json
