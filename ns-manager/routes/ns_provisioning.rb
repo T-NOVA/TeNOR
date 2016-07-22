@@ -288,6 +288,10 @@ class NsProvisionerController < TnovaManager
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Provisioning unreachable'
     rescue => e
+      logger.error e
+      if e.response == nil
+        halt 500, {'Content-Type' => 'text/plain'}, "Error getting the NSD: " + e.to_s
+      end
       logger.error e.response
       halt e.response.code, e.response.body
     end
