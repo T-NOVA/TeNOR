@@ -106,7 +106,7 @@ angular.module('tNovaApp')
         }, 120000);
 
         $scope.stop = function (id) { //change status in the repo
-            tenorService.put("ns-instances/" + id + '/stopped', '').then(function (data) {});
+            tenorService.put("ns-instances/" + id + '/stop', '').then(function (data) {});
         };
 
         $scope.start = function (id) { //change status in the repo
