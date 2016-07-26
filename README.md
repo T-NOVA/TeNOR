@@ -69,6 +69,19 @@ The PoP information is saved in Gatekeeper. This can be inserted in two manners:
  - Using the TeNOR User Interface:
  `Configuration -> PoPs`
  - Using the CLI:
+
+ Define the following variables:
+ 
+```
+ GATEKEEPER_IP=localhost
+ GATEKEEPER_PASS=Eq7K8h9gpg
+ GATEKEEPER_USER_ID=1
+ OPENSTACK_IP=localhost
+ admin_tenant_name=tenantName
+ keystonePass=password
+ keystoneUser=admin
+```
+ 
  Get the Gatekeeper token:
 
 ```
@@ -79,7 +92,7 @@ Post PoP Information:
 ```
  curl -X POST http://$GATEKEEPER_IP:8000/admin/dc/ \
    -H 'X-Auth-Token: '$tokenId'' \
-   -d '{"msg": "PoP Testbed", "dcname":"default", "adminid":"keystoneUser","password":"keystonePass", "extrainfo":"pop-ip='$OPENSTACK_IP' tenant-name=tenantName keystone-endpoint=http://'$OPENSTACK_IP':35357/v2.0 orch-endpoint=http://'$OPENSTACK_IP':8004/v1 compute-endpoint=http://'$OPENSTACK_IP':8774/v2.1 neutron-endpoint=http://'$OPENSTACK_IP':9696/v2.0"}'
+   -d '{"msg": "PoP Testbed", "dcname":"default", "adminid":"'$keystonePass'","password":"'$keystoneUser'", "extrainfo":"pop-ip='$OPENSTACK_IP' tenant-name='$admin_tenant_name' keystone-endpoint=http://'$OPENSTACK_IP':35357/v2.0 orch-endpoint=http://'$OPENSTACK_IP':8004/v1 compute-endpoint=http://'$OPENSTACK_IP':8774/v2.1 neutron-endpoint=http://'$OPENSTACK_IP':9696/v2.0"}'
 ```
 
 ##User interface (UI)
