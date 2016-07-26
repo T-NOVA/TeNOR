@@ -67,13 +67,11 @@ class VnfdToHot
       if vdu['vm_image_format'] == 'openstack_id'
         image_name = vdu['vm_image']
       else
-        image_name = create_image(vdu)
         image_name = { get_resource: create_image(vdu) }
       end
       flavor_name = create_flavor(vdu)
 
       ports = create_ports(vdu['id'], vdu['connection_points'], vnfd['vlinks'], networks_id, security_group_id)
-      #ports = create_ports(vdu_ref, vdu['vnfc']['id'], vdu['vnfc']['networking'])
 
       create_server(vdu, image_name, flavor_name, ports, key)
     end
@@ -152,17 +150,9 @@ class VnfdToHot
                 else
                   @outputs[match[2]] = [match[1]]
                 end
-#                puts "Outputs:"
-#                puts @outputs
                 if string[1] != 'PublicIp'
                   @hot.outputs_list << Output.new(id, "", get_attr)
                 end
-#                if string[1] == 'PublicIp'
-#                  puts "PublicIp, do nothing"
-#                else
-#                @hot.outputs_list << Output.new(id, "", {get_attr: [match[2], "#{match[1]}"]})
-#                  @hot.outputs_list << Output.new(id, "", get_attr)
-#                end
               end
             end
           end
@@ -213,8 +203,8 @@ class VnfdToHot
       #detect, and return error if not.
       network = networks_id.detect { |network| network['alias'] == vlink['alias'] }
       if network != nil
-        network_id = network['id']
-        network_id = network['alias']
+#        network_id = network['id']
+#        network_id = network['alias']
         port_name = "#{connection_point['id']}"
         ports << {port: {get_resource: port_name}}
         if vlink['port_security_enabled']
@@ -300,8 +290,7 @@ class VnfdToHot
       wc_notify = ""
     elsif @type == 'vSA'
       wc_notify = '\n echo "tenor_url: http://10.10.1.61:4000/vnf-provisioning/'+ @vnfr_id +'/stack/create_complete" > /etc/tenor.cfg'
-#      wc_notify = wc_notify + "\n curl -XPOST http://10.10.1.61:4000/vnf-provisioning/#{vnfr_id}/stack/create_complete -d 'info"
-      wc_notify = '\n echo curl -XPOST http://10.10.1.61:4000/vnf-provisioning/'+ @vnfr_id +'/stack/create_complete -d "aaa"'
+      wc_notify = '\n echo curl -XPOST http://10.10.1.61:4000/vnf-provisioning/'+ @vnfr_id +'/stack/create_complete -d "info" '
       wc_notify = ""
     end
 
