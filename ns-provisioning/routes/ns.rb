@@ -149,7 +149,7 @@ class Provisioner < NsProvisioning
     if params[:status] === 'terminate'
       logger.info "Starting thread for removing VNF and NS instances."
 #      EM.defer do
-      operation = poc {
+      operation = proc {
         @nsInstance['vnfrs'].each do |vnf|
           logger.info "Terminate VNF " + vnf['vnfr_id'].to_s
           puts vnf
@@ -179,7 +179,6 @@ class Provisioner < NsProvisioning
               logger.error "Already removed from the VIM."
             rescue => e
               puts e
-              puts "HAALT???...."
               logger.error e.response
               #halt e.response.code, e.response.body
             end
@@ -194,7 +193,10 @@ class Provisioner < NsProvisioning
         #return 200, "Removed correctly"
       }
       errback = proc {
-        puts "Error with the removing process..."
+        logger.error "Error with the removing process..."
+      }
+      callback = proc {
+        logger.info "Removing finished correctly."
       }
       EventMachine.defer(operation, callback, errback)
 
@@ -216,7 +218,7 @@ class Provisioner < NsProvisioning
 
       @instance['status'] = params['status'].to_s.upcase
       @nsInstance.update_attributes(@instance)
-    elsif params[:status] === 'stopped'
+    elsif params[:status] === 'stop'
       @instance['vnfrs'].each do |vnf|
         logger.debug vnf
         event = {:event => "stop"}
