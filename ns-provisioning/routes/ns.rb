@@ -178,6 +178,7 @@ class Provisioner < NsProvisioning
               puts "Already removed from the VIM."
               logger.error "Already removed from the VIM."
             rescue => e
+              puts "Probably and error with mAPI"
               puts e
               logger.error e.response
               #halt e.response.code, e.response.body
@@ -280,7 +281,7 @@ class Provisioner < NsProvisioning
 
     if callback_response['status'] == 'ERROR_CREATING'
       @instance['status'] = "ERROR_CREATING"
-      @Instance.push(lifecycle_event_history: "ERROR_CREATING")
+      @instance.push(lifecycle_event_history: "ERROR_CREATING")
       instance.update_attributes(@instance)
       generateMarketplaceResponse(@instance['notification'], "Error creating VNF")
       return 200
