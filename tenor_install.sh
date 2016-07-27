@@ -32,7 +32,27 @@ show_menus() {
 }
 
 installTenor(){
-	echo "Installing TeNOR"
+	echo "Installing TeNOR..."
+
+	echo "Checking if the Ruby version"
+	ruby_version=`ruby -e "print(RUBY_VERSION < '2.3.0' ? '1' : '0' )"`
+	if [[ ! `which ruby` ]]; then
+        echo "Ruby is not installed, please install a version higer than 2.3.0."
+        pause
+        return
+    fi
+    if [ $ruby_version -eq 1 ]; then
+        echo "Ruby version: " $RUBY_VERSION
+        echo "Please, install a ruby version higher or equal to 2.3.0"
+        pause
+        return
+    fi
+    if [[ ! `which bundle` ]]; then
+        echo "Bundler is not installed, please install it."
+        pause
+        return
+    fi
+
     printf "\n\nStarting TeNOR installation script\n\n"
 
     RAILS_ENV=development
