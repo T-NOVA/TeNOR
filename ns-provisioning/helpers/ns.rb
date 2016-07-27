@@ -181,6 +181,17 @@ module NsProvisioner
       infr_repo_url = settings.infr_repository
     end
 
+    #if PoP list has only one PoP, avoid execute ServiceMapping
+    pops = getPops()
+=begin
+    if pops.size > 1
+
+
+    else
+
+    end
+=end
+
     ms = {
         :NS_id => nsd['id'],
         :tenor_api => settings.manager,
@@ -246,7 +257,6 @@ module NsProvisioner
       end
 
       token = ""
-#      tenant_token = ""
 
       if @instance['project'].nil?
         begin
@@ -264,10 +274,8 @@ module NsProvisioner
           pop_auth['password'] = "secretsecret"
           pop_auth['user_id'] = createUser(popUrls[:keystone], pop_auth['tenant_id'], pop_auth['username'], pop_auth['password'], token)
 
-#          roleAdminId = getAdminRole(popUrls[:keystone], token)
           logger.info "Created user with admin role."
           putRoleAdmin(popUrls[:keystone], pop_auth['tenant_id'], pop_auth['user_id'], token)
-#          tenant_token = openstackAuthentication(popUrls[:keystone], pop_auth['tenant_id'], pop_auth['username'], pop_auth['password'])
           pop_auth['token'] = openstackAuthentication(popUrls[:keystone], pop_auth['tenant_id'], pop_auth['username'], pop_auth['password'])
 
           logger.info "Configuring Security Groups"

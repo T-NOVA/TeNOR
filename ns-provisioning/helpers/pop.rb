@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# @see OrchestratorNsProvisioner
+# @see NsProvisioner
 module PopHelper
 
   # Returns the information of PoPs
@@ -29,6 +29,8 @@ module PopHelper
       response = RestClient.get "#{settings.manager}/gatekeeper/dc/#{pop_id}", :content_type => :json
     rescue => e
       logger.error e
+      puts "Raise...."
+      return 400, "no exists"
       raise 'Pop id no exists'
     end
     popInfo, errors = parse_json(response.body)
@@ -63,6 +65,26 @@ module PopHelper
     end
 
     return popUrls
+  end
+
+  # Returns all the registered PoPs
+  #
+  # @return [Hash, nil] if the parsed message is a valid JSON
+  # @return [Hash, String] if the parsed message is an invalid JSON
+  def getPops()
+
+    begin
+      response = RestClient.get "#{settings.manager}/gatekeeper/dc", :content_type => :json
+    rescue => e
+      logger.error e
+      puts "Raise...."
+      return 400, "no exists"
+      raise 'Pop id no exists'
+    end
+    popInfo, errors = parse_json(response.body)
+    return 400, errors if errors
+
+    return popInfo
   end
 
 end

@@ -36,4 +36,7 @@ cd
 echo "starting the auth-service next, you can start using it at port :8000"
 echo "use Ctrl+c to stop it. The executable is located at: $GOPATH/bin/auth-utils"
 
-#auth-utils
+cd $HOME
+cp go/src/github.com/piyush82/auth-utils/gatekeeper.cfg .
+
+auth-utils &
