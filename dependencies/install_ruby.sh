@@ -8,9 +8,9 @@ echo "Installation of RVM done."
 cd ~
 . ~/.rvm/scripts/rvm
 
-echo "Installing Ruby 2.3.0..."
-rvm install 2.3
-echo "Installation of Ruby 2.3.0 done."
+echo "Installing Ruby 2.2.0..."
+rvm install 2.2
+echo "Installation of Ruby 2.2.0 done."
 
 echo "Installing Bundler..."
 gem install bundler

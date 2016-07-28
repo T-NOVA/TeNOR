@@ -108,7 +108,7 @@ installTenor(){
     configureFiles
 
     printf "\n\nTeNOR installation script finished\n\n"
-    pause
+    exit
 }
 
 configureFiles(){
