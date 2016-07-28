@@ -35,15 +35,15 @@ installTenor(){
 	echo "Installing TeNOR..."
 
 	echo "Checking if the Ruby version"
-	ruby_version=`ruby -e "print(RUBY_VERSION < '2.3.0' ? '1' : '0' )"`
+	ruby_version=`ruby -e "print(RUBY_VERSION < '2.2.0' ? '1' : '0' )"`
 	if [[ ! `which ruby` ]]; then
-        echo "Ruby is not installed, please install a version higer than 2.3.0."
+        echo "Ruby is not installed, please install a version higer than 2.2.0."
         pause
         return
     fi
     if [ $ruby_version -eq 1 ]; then
         echo "Ruby version: " $RUBY_VERSION
-        echo "Please, install a ruby version higher or equal to 2.3.0"
+        echo "Please, install a ruby version higher or equal to 2.2.0"
         pause
         return
     fi
@@ -199,8 +199,15 @@ registerMicroservice(){
 }
 
 read_options(){
-	local choice
-	read -p "Enter choice [ 1 - 5] " choice
+
+    if [ -n "$1" ]; then
+        choice=$1
+    else
+        local choice
+	    read -p "Enter choice [ 1 - 5 ] " choice
+        echo "Not defined"
+    fi
+
 	case $choice in
 		1) installTenor ;;
 		2) configureFiles ;;
@@ -219,9 +226,10 @@ trap '' SIGINT SIGQUIT SIGTSTP
 # -----------------------------------
 # Step #4: Main logic - infinite loop
 # ------------------------------------
+
 while true
 do
 	show_menus
-	read_options
+	read_options $1
 done
 
