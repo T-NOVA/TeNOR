@@ -27,6 +27,7 @@ class NsdValidator < Sinatra::Application
 	# 		Content-Type: application/json
 	# @overload post '/nsds'
 	# 	Post a NSD in XML format
+	# 	@deprecated XML support is deprecated. Use JSON instead.
 	# 	@param [XML]
 	# 	@example Header for XML
 	# 		Content-Type: application/xml
@@ -38,31 +39,28 @@ class NsdValidator < Sinatra::Application
 		body = request.body.read
 
 		# Return if content-type is invalid
-		return 415 unless ( (content_type == 'application/json') or (content_type == 'application/xml') )
+		halt 415 unless ( (content_type == 'application/json') or (content_type == 'application/xml') )
 
 		# If message in JSON format
 		if content_type == 'application/json'
-			# Check if message is a valid JSON
-			nsd, errors = parse_json(body)
-			return 400, errors if errors
+			# Parse body as a JSON
+			nsd = parse_json(body)
+			logger.debug 'Parsed JSON NSD'
 
-			# Check if message is a valid NSD
-			nsd, errors = validate_json_nsd(nsd)
-			return 400, errors if errors
+			# Validate NSD
+			nsd = validate_json_nsd(nsd)
+			logger.debug 'Validated VNFD with JSON schema'
 		end
 
 		# Parse XML format
 		if content_type == 'application/xml'
-			# Check if message is a valid XML
-			nsd, errors = parse_xml(request.body.read)
-			return 400, errors.to_json if errors
+			# Parse body as a XML
+			nsd = parse_xml(request.body.read)
 
-			# Check if message is a valid NSD
-			nsd, errors = validate_xml_nsd(nsd)
-			return 400, errors if errors
+			# Validate NSD
+			nsd = validate_xml_nsd(nsd)
 		end
 
-		return 200
+		halt 200
 	end
-
 end

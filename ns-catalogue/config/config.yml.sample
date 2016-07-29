@@ -15,6 +15,4 @@ logstash_port: 5228
 gk:
 service_key:
 
-gk:
-service_key:
 dependencies: [nsd_validator]

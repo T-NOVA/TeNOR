@@ -1,5 +1,5 @@
 #
-# TeNOR - VNFD Validator
+# TeNOR - NSD Validator
 #
 # Copyright 2014-2016 i2CAT Foundation, Portugal Telecom Inovação
 #
@@ -17,14 +17,14 @@
 #
 require_relative 'spec_helper'
 
-RSpec.describe VnfdValidator do
+RSpec.describe NsdValidator do
 	def app
-		VnfdValidator
-	end
+		NsdValidator
+  end
 
-	describe 'POST /vnfds' do
+	describe 'POST /nsds' do
 		context 'given an invalid content type' do
-			let(:response) { post '/vnfds', {vendor: 'ptin'}.to_json, rack_env={'CONTENT_TYPE' => 'application/x-www-form-urlencoded'} }
+			let(:response) { post '/nsds', {vendor: 'ptin'}.to_json, rack_env={'CONTENT_TYPE' => 'application/x-www-form-urlencoded'} }
 
 			it 'responds with a 415' do
 				expect(response.status).to eq 415
@@ -35,8 +35,8 @@ RSpec.describe VnfdValidator do
 			end
 		end
 
-		context 'given an invalid VNFD' do
-			let(:response) { post '/vnfds', {vendor: 'ptin'}.to_json, rack_env={'CONTENT_TYPE' => 'application/json'} }
+		context 'given an invalid NSD' do
+			let(:response) { post '/nsds', {nsd: {vendor: 'ptin'}}.to_json, rack_env={'CONTENT_TYPE' => 'application/json'} }
 
 			it 'responds with a 400' do
 				expect(response.status).to eq 400
@@ -48,10 +48,11 @@ RSpec.describe VnfdValidator do
 
 		end
 
-		context 'given a valid VNFD' do
-			let(:response) { post '/vnfds', JSON.parse(File.read(File.expand_path("../../assets/samples/vnfd_example.json", __FILE__))).to_json, rack_env={'CONTENT_TYPE' => 'application/json'} }
+		context 'given a valid NSD' do
+			let(:response) { post '/nsds', JSON.parse(File.read(File.expand_path("../../assets/samples/nsd_example.json", __FILE__))).to_json, rack_env={'CONTENT_TYPE' => 'application/json'} }
 
 			it 'responds with a 200' do
+        puts response.body
 				expect(response.status).to eq 200
 			end
 

@@ -1,8 +1,4 @@
 {
-  "name": "TEMP",
-  "version": 1,
-  "vnf-manager": "TEMP",
-  "vnfd": {
     "vdu": [
       {
         "resource_requirements": {
@@ -204,5 +200,4 @@
     "type": "vPXAAS",
     "description": "Test VNF example",
     "id": 1100
-  }
 }
