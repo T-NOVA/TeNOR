@@ -245,7 +245,9 @@ class Provisioning < VnfProvisioning
     rescue RestClient::ResourceNotFound
       puts "Already removed from the mAPI."
     rescue => e
-      logger.error e.response
+      puts e
+      logger.error e
+      #logger.error e.response
       #halt e.response.code, e.response.body
     end
 
@@ -331,18 +333,21 @@ class Provisioning < VnfProvisioning
       begin
         response = RestClient.post "#{settings.mapi}/vnf_api/", mapi_request.to_json, :content_type => :json, :accept => :json
       rescue Errno::ECONNREFUSED
+        logger.error "mAPI -> Connection Refused."
         message = {status: "mAPI_unreachable", vnfd_id: vnfr.vnfd_reference, vnfr_id: vnfr.id}
-        nsmanager_callback(stack_info['ns_manager_callback'], message)
+        logger.info "mAPI is not rechable"
+        #nsmanager_callback(stack_info['ns_manager_callback'], message)
           #halt 500, 'mAPI unreachable'
       rescue => e
         logger.error e.response
         message = {status: "mAPI_error", vnfd_id: vnfr.vnfd_reference, vnfr_id: vnfr.id}
-        nsmanager_callback(stack_info['ns_manager_callback'], message)
+        logger.error message
+        logger.info "mAPI is not rechable"
+#        nsmanager_callback(stack_info['ns_manager_callback'], message)
         #halt e.response.code, e.response.body
       end
 
       # Read from VIM outputs and map with parameters
-
       logger.debug "Output recevied from Openstack:"
       logger.debug stack_info['stack']['outputs']
 
