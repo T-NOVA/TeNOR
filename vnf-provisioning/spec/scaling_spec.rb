@@ -19,7 +19,7 @@ require_relative 'spec_helper'
 
 RSpec.describe VnfProvisioning do
   def app
-    Provisioning
+    Scaling
   end
 
   before do
@@ -30,22 +30,15 @@ RSpec.describe VnfProvisioning do
     end
   end
 
-  describe 'POST /vnf-provisioning/vnf-instances' do
-    context 'given an invalid content type' do
-      it 'responds with a 415' do
-        post '/vnf-instances', {}.to_json, 'CONTENT_TYPE' => 'application/x-www-form-urlencoded'
-        expect(last_response.status).to eq 415
-      end
-    end
+  describe 'POST /vnf-instances/scaling/:vnfr_id/scale_in' do
+
     context 'given a valid request' do
+
       it 'provisions a new VNF in the VIM' do
-        response = post '/vnf-instances', File.read(File.expand_path("../fixtures/instantiation_info.json", __FILE__)), 'CONTENT_TYPE' => 'application/json'
-        expect(last_response.status).to eq 201
+        response = post '/vnfr_id/scale_in', {vnfd: {id: 1}}.to_json, 'CONTENT_TYPE' => 'application/json'
+        expect(last_response.status).to eq 200
       end
     end
   end
 
-  describe 'post /vnf-provisioning/vnf-instances/:id/destroy' do
-    pending
-  end
 end
