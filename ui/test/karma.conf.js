@@ -54,6 +54,7 @@ module.exports = function(config) {
       'bower_components/checklist-model/checklist-model.js',
       'bower_components/angular-resizable/src/angular-resizable.js',
       'bower_components/tv4/tv4.js',
+      'bower_components/angular-fullscreen/src/angular-fullscreen.js',
       'bower_components/angular-mocks/angular-mocks.js',
       // endbower
       "app/scripts/**/*.js",

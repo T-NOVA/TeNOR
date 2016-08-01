@@ -1,52 +1,60 @@
-<h3>Virtual Network Functions</h3>
+<h3 class="page-header">Virtual Network Functions</h3>
 <ol class="breadcrumb">
     <li class="active"><i class="fa fa-list"></i> <a ui-sref="root.vnf">Virtual Network Functions</a>
     </li>
     <li><i class="fa fa-list-ul"></i> <a ui-sref="root.ns">Network Services</a>
     </li>
 </ol>
-<table st-table="displayedCollection" st-safe-src="dataCollection" class="table table-striped">
-    <thead>
-        <tr>
-            <th st-sort="vnfd.vnfd.id" data-title="'name'" class="col-sm-1 col-md-1 col-lg-1">Id</th>
-            <th st-sort="vnfd.name" data-title="'name'" class="col-sm-2 col-md-2 col-lg-2">Name</th>
-            <th st-sort="vnfd.version" data-title="'version'" class="col-sm-1 col-md-1 col-lg-1">Version</th>
-            <th data-title="'provider'" class="col-sm-1 col-md-1 col-lg-1">Provider</th>
-            <th data-title="'release'" class="col-sm-1 col-md-1 col-lg-1">Release</th>
-            <th st-sort="vnfd.vnf_manager" data-title="'manager'" class="col-sm-2 col-md-2 col-lg-2">Manager</th>
-            <th st-sort="vnfd.created_at" data-title="'Add VI'" class="col-sm-2 col-md-2 col-lg-2">Creation date</th>
-            <th data-title="'actions'" class="col-sm-3 col-md-3 col-lg-3">Actions</th>
-        </tr>
-        <tr>
-            <th colspan="1">
-                <input st-search="name" class="form-control" placeholder="search by name ..." type="text" />
-            </th>
-            <th colspan="1">
-                <input st-search="vnfd.id" class="form-control" placeholder="search by id ..." type="text" />
-            </th>
-            <th colspan="4">
-                <input st-search="" class="form-control" placeholder="global search ..." type="text" />
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr ng-repeat="row in displayedCollection">
-            <td><a ng-click="showDescriptor(row)">{{row.name}}</a></td>
-            <td>{{row.vnfd.id}}</td>
-            <td>{{row.version}}</td>
-            <td>{{row.vnfd.provider}}</td>
-            <td>{{row.vnfd.release}}</td>
-            <td>{{row.vnf_manager}}</td>
-            <td>{{row.created_at| date:'yyyy-MM-dd HH:mm:ss'}}</td>
-            <td>
-                <button ng-click="deleteDialog(row.vnfd.id)" class="btn btn-danger btn-xs">Delete</button>
-            </td>
-        </tr>
-    </tbody>
-    <tfoot>
-        <tr>
-            <td class="text-center" st-pagination="" st-items-by-page="10" colspan="7">
-            </td>
-        </tr>
-    </tfoot>
-</table>
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="x_panel">
+            <div class="x_title">
+                <table st-table="displayedCollection" st-safe-src="dataCollection" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th st-sort="vnfd.name" data-title="'name'" class="col-sm-2 col-md-2 col-lg-2">Name</th>
+                            <th st-sort="vnfd.vnfd.id" data-title="'name'" class="col-sm-1 col-md-1 col-lg-1">Id</th>
+                            <th st-sort="vnfd.version" data-title="'version'" class="col-sm-1 col-md-1 col-lg-1">Version</th>
+                            <th data-title="'provider'" class="col-sm-1 col-md-1 col-lg-1">Provider</th>
+                            <th data-title="'release'" class="col-sm-1 col-md-1 col-lg-1">Release</th>
+                            <th st-sort="vnfd.vnf_manager" data-title="'manager'" class="col-sm-2 col-md-2 col-lg-2">Manager</th>
+                            <th st-sort="vnfd.created_at" data-title="'Add VI'" class="col-sm-2 col-md-2 col-lg-2">Creation date</th>
+                            <th data-title="'actions'" class="col-sm-3 col-md-3 col-lg-3">Actions</th>
+                        </tr>
+                        <tr>
+                            <th colspan="1">
+                                <input st-search="name" class="form-control" placeholder="search by name ..." type="text" />
+                            </th>
+                            <th colspan="1">
+                                <input st-search="vnfd.id" class="form-control" placeholder="search by id ..." type="text" />
+                            </th>
+                            <th colspan="4">
+                                <input st-search="" class="form-control" placeholder="global search ..." type="text" />
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="row in displayedCollection">
+                            <td><a ng-click="showDescriptor(row)">{{row.name}}</a></td>
+                            <td>{{row.vnfd.id}}</td>
+                            <td>{{row.version}}</td>
+                            <td>{{row.vnfd.provider}}</td>
+                            <td>{{row.vnfd.release}}</td>
+                            <td>{{row.vnf_manager}}</td>
+                            <td>{{row.created_at| date:'yyyy-MM-dd HH:mm:ss'}}</td>
+                            <td>
+                                <button ng-click="deleteDialog(row.vnfd.id)" class="btn btn-danger btn-xs">Delete</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td class="text-center" st-pagination="" st-items-by-page="10" colspan="8">
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

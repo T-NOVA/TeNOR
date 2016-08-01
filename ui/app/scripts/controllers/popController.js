@@ -7,22 +7,34 @@ angular.module('tNovaApp')
         AuthService.get($window.localStorage.token, "admin/dc/").then(function (d) {
             console.log(d);
             $scope.registeredDcList = d.dclist;
-        });
+            console.log($scope.registeredDcList)
 
-        var url = 'pop/';
-        infrRepoService.get(url).then(function (_data) {
-            $scope.pops = _data;
-            $scope.availableDcList = [];
-            angular.forEach(_data, function (pop, index, array) {
-                url = pop.identifier.slice(1);
-                infrRepoService.get(url).then(function (_data) {
-                    $scope.availableDcList.push(_data.attributes);
+
+            var url = 'pop/';
+            infrRepoService.get(url).then(function (_data) {
+                $scope.pops = _data;
+                $scope.availableDcList = [];
+                angular.forEach(_data, function (pop, index, array) {
+                    url = pop.identifier.slice(1);
+                    infrRepoService.get(url).then(function (_data) {
+
+                        var exist = _.some($scope.registeredDcList, function (c) {
+                            return _data.attributes['occi.epa.popuuid'] !== c;
+                        });
+                        console.log(exist);
+                        if (!exist) {
+                            $scope.availableDcList.push(_data.attributes);
+                        }
+                    });
                 });
             });
         });
 
         $scope.addDialog = function (id) {
-            console.log("Dialog");
+            console.log("dasda2" + id + "1dasda");
+            if (id === "") {
+                $scope.emptyId = true;
+            }
             $scope.object = {};
             $scope.object.id = id;
             $modal({
@@ -52,6 +64,7 @@ angular.module('tNovaApp')
             AuthService.post($window.localStorage.token, "admin/dc/", pop).then(function (d) {
                 console.log(d);
                 $scope.registeredDcList = d.dclist;
+                this.$hide();
             });
         };
 
@@ -69,6 +82,13 @@ angular.module('tNovaApp')
                     show: true,
                     scope: $scope,
                 });
+            });
+        };
+
+        $scope.removePop = function (popId) {
+            popId = popId + 1;
+            AuthService.delete($window.localStorage.token, "admin/dc/" + popId).then(function (data) {
+                console.log(data);
             });
         };
 

@@ -10,48 +10,48 @@
                     <div class="box-body">
                         <div class="form-group">
                             <label for="tenantName">Pop id</label>
-                            <input ng-model="object.id" type="text" class="form-control" id="pop_id" readonly>
+                            <input ng-model="object.id" type="text" class="form-control" id="pop_id" ng-readonly="emptyId">
                         </div>
                     </div>
-                    <div class="box-body">
-                        <div class="form-group">
-                            <label for="tenantName">Description</label>
-                            <input ng-model="object.msg" type="text" class="form-control" id="message" value="">
+                    <div class="box-body ">
+                        <div class="form-group ">
+                            <label for="tenantName ">Description</label>
+                            <input ng-model="object.msg " type="text " class="form-control " id="message " value=" ">
                         </div>
                     </div>
-                    <div class="box-body">
-                        <div class="form-group">
-                            <label for="tenantName">Tenant name</label>
-                            <input ng-model="object.tenantName" type="text" class="form-control" id="message" value="">
+                    <div class="box-body ">
+                        <div class="form-group ">
+                            <label for="tenantName ">Tenant name</label>
+                            <input ng-model="object.tenantName " type="text " class="form-control " id="message " value=" ">
                         </div>
                     </div>
-                    <div class="box-body">
-                        <div class="form-group">
-                            <label for="tenantName">Admin user</label>
-                            <input ng-model="object.adminName" type="text" class="form-control" id="adminuser" value="admin">
+                    <div class="box-body ">
+                        <div class="form-group ">
+                            <label for="tenantName ">Admin user</label>
+                            <input ng-model="object.adminName " type="text " class="form-control " id="adminuser " value="admin ">
                         </div>
                     </div>
-                    <div class="box-body">
-                        <div class="form-group">
-                            <label for="tenantName">Admin pass</label>
-                            <input ng-model="object.adminPass" type="password" class="form-control" id="adminpass" value="">
+                    <div class="box-body ">
+                        <div class="form-group ">
+                            <label for="tenantName ">Admin pass</label>
+                            <input ng-model="object.adminPass " type="password " class="form-control " id="adminpass " value=" ">
                         </div>
                     </div>
-                    <div class="box-body">
-                        <div class="form-group">
-                            <label for="tenantName">Openstack IP</label>
-                            <input ng-model="object.openstack_ip" type="text" class="form-control" id="openstack_ip" value="8.8.8.8">
+                    <div class="box-body ">
+                        <div class="form-group ">
+                            <label for="tenantName ">Openstack IP</label>
+                            <input ng-model="object.openstack_ip " type="text " class="form-control " id="openstack_ip " value="8.8.8.8 ">
                         </div>
                     </div>
-                    <div class="box-body">
-                        <div class="form-group">
-                            <button ng-click="registerDc(object)" type="submit" class="btn btn-primary">Submit</button>
+                    <div class="box-body ">
+                        <div class="form-group ">
+                            <button ng-click="registerDc(object) " type="submit " class="btn btn-primary ">Submit</button>
                         </div>
                     </div>
                 </form>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="$hide()">Close</button>
+            <div class="modal-footer ">
+                <button type="button " class="btn btn-default " data-dismiss="modal " ng-click="$hide() ">Close</button>
             </div>
         </div>
     </div>

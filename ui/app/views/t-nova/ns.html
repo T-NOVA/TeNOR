@@ -1,60 +1,66 @@
-<h3>Network Services</h3>
+<h3 class="page-header">Network Services</h3>
 <ol class="breadcrumb">
     <li><i class="fa fa-list"></i> <a ui-sref="root.vnf">Virtual Network Functions</a>
     </li>
     <li class="active"><i class="fa fa-list-ul"></i> <a ui-sref="root.ns">Network Services</a>
     </li>
 </ol>
-<div class="pull-right">
-    <button ng-click="go('/nsd_creation')" class="btn btn-success">Add NSD</button>
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="x_panel">
+            <div class="x_title">
+                <div class="pull-right">
+                    <button ng-click="go('/nsd_creation')" class="btn btn-success">Add NSD</button>
+                </div>
+                <table st-table="displayedCollection" st-safe-src="dataCollection" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th st-sort="nsd.id" class="col-sm-1 col-md-1 col-lg-1">Id</th>
+                            <th st-sort="nsd.name" data-title="'name'" class="col-sm-1 col-md-1 col-lg-1">Name</th>
+                            <th class="col-sm-3 col-md-3 col-lg-3">Description</th>
+                            <th data-title="'VI List'" class="col-sm-1 col-md-1 col-lg-1">Version</th>
+                            <th st-sort="created_at" data-title="'Add VI'" class="col-sm-1 col-md-1 col-lg-1">Creation date</th>
+                            <th st-sort="name" data-title="'Remove VI'" class="col-sm-2 col-md-2 col-lg-2">VNF List</th>
+                            <th st-sort="name" data-title="'actions'" class="col-sm-1 col-md-1 col-lg-1">Actions</th>
+                        </tr>
+                        <tr>
+                            <th colspan="1">
+                                <input st-search="nsd.id" class="form-control" placeholder="search by id..." type="text" />
+                            </th>
+                            <th colspan="1">
+                                <input st-search="nsd.name" class="form-control" placeholder="search by name..." type="text" />
+                            </th>
+                            <th colspan="2">
+                                <input st-search="" class="form-control" placeholder="global search ..." type="text" />
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="row in displayedCollection">
+                            <td><a ng-click="showDescriptor(row.nsd)">{{row.nsd.id}}</a></td>
+                            <td>{{row.nsd.name}}</td>
+                            <td>{{row.nsd.description}}</td>
+                            <td>{{row.nsd.version}}</td>
+                            <td>{{row.created_at| date:'yyyy-MM-dd HH:mm:ss'}}</td>
+                            <td data-title="'VI List'">
+                                <select name="viList" size="2" style="width:70%">
+                                    <option ng-repeat="item in row.nsd.vnfds">{{item}}{{$last ? '' : ', '}}</option>
+                                </select>
+                            </td>
+                            <td>
+                                <button ng-click="instantiateDialog(row.nsd)" class="btn btn-primary btn-xs" ng-disabled="row.state === '0'">Instantiate</button>
+                                <button ng-click="deleteDialog(row.nsd.id)" class="btn btn-danger btn-xs">Delete</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td class="text-center" st-pagination="" st-items-by-page="10" colspan="7">
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
-<table st-table="displayedCollection" st-safe-src="dataCollection" class="table table-striped">
-    <thead>
-    <tr>
-        <th st-sort="nsd.id" class="col-sm-1 col-md-1 col-lg-1">NS id</th>
-        <th st-sort="nsd.name" data-title="'name'" class="col-sm-1 col-md-1 col-lg-1">Name</th>
-        <th class="col-sm-3 col-md-3 col-lg-3">Description</th>
-        <th data-title="'VI List'" class="col-sm-1 col-md-1 col-lg-1">Version</th>
-        <th st-sort="created_at" data-title="'Add VI'" class="col-sm-1 col-md-1 col-lg-1">Creation date</th>
-        <th st-sort="name" data-title="'Remove VI'" class="col-sm-2 col-md-2 col-lg-2">VNF List</th>
-        <th st-sort="name" data-title="'actions'" class="col-sm-1 col-md-1 col-lg-1">Actions</th>
-    </tr>
-    <tr>
-        <th colspan="1">
-            <input st-search="nsd.id" class="form-control" placeholder="search by id..." type="text"/>
-        </th>
-        <th colspan="1">
-            <input st-search="nsd.name" class="form-control" placeholder="search by name..." type="text"/>
-        </th>
-        <th colspan="2">
-            <input st-search="" class="form-control" placeholder="global search ..." type="text"/>
-        </th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr ng-repeat="row in displayedCollection">
-        <td><a ng-click="showDescriptor(row.nsd)">{{row.nsd.id}}</a></td>
-        <td>{{row.nsd.name}}</td>
-        <td>{{row.nsd.description}}</td>
-        <td>{{row.nsd.version}}</td>
-        <td>{{row.created_at| date:'yyyy-MM-dd HH:mm:ss'}}</td>
-        <td data-title="'VI List'">
-            <select name="viList" size="2" style="width:70%">
-                <option ng-repeat="item in row.nsd.vnfds">{{item}}{{$last ? '' : ', '}}</option>
-            </select>
-        </td>
-        <td>
-            <button ng-click="instantiateDialog(row.nsd)" class="btn btn-primary btn-xs"
-                    ng-disabled="row.state === '0'">Instantiate
-            </button>
-            <button ng-click="deleteDialog(row.nsd.id)" class="btn btn-danger btn-xs">Delete</button>
-        </td>
-    </tr>
-    </tbody>
-    <tfoot>
-    <tr>
-        <td class="text-center" st-pagination="" st-items-by-page="10" colspan="7">
-        </td>
-    </tr>
-    </tfoot>
-</table>

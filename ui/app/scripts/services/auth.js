@@ -94,7 +94,28 @@ angular.module('tNovaApp')
             return deferred.promise;
         };
 
-        var post = function (token, path, object) {
+        var post = function (token, path) {
+            var deferred = $q.defer();
+            var url = 'rest/gk/api/' + path;
+            $http.delete(url, {
+                headers: {
+                    'X-Auth-Token': token,
+                    'X-host': AUTHENTICATION
+                }
+            }).then(
+                function (response) {
+                    console.log(response);
+                    deferred.resolve(response.data);
+                },
+                function (response) {
+                    console.log(response);
+                    deferred.resolve(response.data);
+                }
+            );
+            return deferred.promise;
+        };
+
+        var remove = function (token, path, object) {
             var deferred = $q.defer();
             var url = 'rest/gk/api/' + path;
             $http.post(url, object, {
@@ -130,6 +151,9 @@ angular.module('tNovaApp')
             },
             post: function (token, path, object) {
                 return post(token, path, object);
+            },
+            delete: function (token, path) {
+                return remove(token, path);
             }
         };
 

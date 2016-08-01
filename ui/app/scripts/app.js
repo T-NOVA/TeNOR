@@ -9,7 +9,7 @@
  * Main module of the application.
  */
 
-angular.module('tNovaApp', ['ui.router', 'ngSanitize', 'tNovaApp.config', 'tNovaApp.controllers', 'tNovaApp.directives', 'tNovaApp.services', 'smart-table', 'mgcrea.ngStrap', 'LocalStorageModule', 'cb.x2js', 'darthwade.dwLoading', 'checklist-model', 'angularResizable'])
+angular.module('tNovaApp', ['ui.router', 'ngSanitize', 'tNovaApp.config', 'tNovaApp.controllers', 'tNovaApp.directives', 'tNovaApp.services', 'smart-table', 'mgcrea.ngStrap', 'LocalStorageModule', 'cb.x2js', 'darthwade.dwLoading', 'checklist-model', 'angularResizable', 'FBAngular'])
     .config(function (localStorageServiceProvider) {
         localStorageServiceProvider
             .setPrefix('tNovaApp')
@@ -260,6 +260,7 @@ angular.module('tNovaApp', ['ui.router', 'ngSanitize', 'tNovaApp.config', 'tNova
     ).run(function ($window, $rootScope, $location, $state, AuthService) {
         if ($window.localStorage.userId) $rootScope.username = $window.localStorage.username;
         if ($window.localStorage.user) $rootScope.user = JSON.parse($window.localStorage.user);
+        $rootScope.$state = $state;
 
         $rootScope.logout = function () {
             console.log('logout');
@@ -298,6 +299,9 @@ angular.module('tNovaApp', ['ui.router', 'ngSanitize', 'tNovaApp.config', 'tNova
                 }
             });
 
+        $rootScope.sideBar = function () {
+            $rootScope.sidebarCollapse = !$rootScope.sidebarCollapse;
+        }
     });
 
 var services = angular.module('tNovaApp.services', ['ngResource']);
