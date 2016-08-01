@@ -1,76 +1,85 @@
-<h3>PoPs</h3>
+<h3 class="page-header">PoPs</h3>
 <div class="row">
-    <div class="col-md-4">
-        <div class="content-box-large">
-            <div class="panel-heading">
-                <div class="panel-title">Registered Openstacks</div>
-            </div>
-            <div class="panel-body">
-                List of registered Openstacks in Gatekeeper.
-                <br/>
-                <table st-table="displayedCollection" st-safe-src="registeredDcList" class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th st-sort="id">Id</th>
-                            <th st-sort="id">Action</th>
-                        </tr>
-                        <tr>
-                            <th colspan="2">
-                                <input st-search="" class="form-control" placeholder="global search ..." type="text" />
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr ng-repeat="row in displayedCollection track by $index">
-                            <td><a ng-click="getPopInfo($index)">{{row}}</a></td>
-                            <td>Remove</td>
-                        </tr>
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td class="text-center" st-pagination="" st-items-by-page="10" colspan="4">
-                            </td>
-                        </tr>
-                    </tfoot>
-                </table>
+    <div class="col-md-4 col-sm-4 col-xs-4">
+        <div class="x_panel">
+            <div class="x_title">
+                <h3>Registered Openstacks  <small></small></h3>
+
+                <div class="panel-body">
+                    List of registered Openstacks in Gatekeeper.
+                    <br/>
+                    <table st-table="displayedCollection" st-safe-src="registeredDcList" class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th st-sort="id">Id</th>
+                                <th st-sort="id">Action</th>
+                            </tr>
+                            <tr>
+                                <th colspan="2">
+                                    <input st-search="" class="form-control" placeholder="global search ..." type="text" />
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="row in displayedCollection track by $index">
+                                <td><a ng-click="getPopInfo($index)">{{row}}</a></td>
+                                <td><a ng-click="removePop($index)">Remove</a></td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td class="text-center" st-pagination="" st-items-by-page="10" colspan="4">
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-md-8">
-        <div class="content-box-large">
-            <div class="panel-heading">
-                <div class="panel-title">Available openstacks</div>
-            </div>
-            <div class="panel-body">
-                <table st-table="displayedCollection2" st-safe-src="availableDcList" class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th st-sort="name" class="col-sm-2 col-md-2 col-lg-2">Id</th>
-                            <th data-title="'ip'" class="col-sm-1 col-md-1 col-lg-1">Name</th>
-                            <th data-title="'action'" class="col-sm-1 col-md-1 col-lg-1">Actions</th>
-                        </tr>
-                        <tr>
-                            <th colspan="2">
-                                <input st-search="" class="form-control" placeholder="global search ..." type="text" />
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr ng-repeat="row in displayedCollection2">
-                            <td>{{row['occi.epa.popuuid']}}</td>
-                            <td>{{row['occi.epa.pop.lon']}}</td>
-                            <td>
-                                <button ng-click="addDialog(row['occi.epa.popuuid'])" class="btn btn-primary btn-xs" ng-disabled="row.state === '0'">Add</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td class="text-center" st-pagination="" st-items-by-page="10" colspan="4">
-                            </td>
-                        </tr>
-                    </tfoot>
-                </table>
+    <div class="col-md-8 col-sm-8 col-xs-8">
+        <div class="x_panel">
+            <div class="x_title">
+                <h3>Available openstacks  <small>Reading information from Infrastructure Repository</small></h3>
+                <div class="pull-right">
+                    <button ng-click="addDialog()" class="btn btn-success">Add Openstack</button>
+                </div>
+                <div class="content-box-large">
+                    <div class="panel-heading">
+                        <div class="panel-title"></div>
+                    </div>
+                    <div class="panel-body">
+                        <table st-table="displayedCollection2" st-safe-src="availableDcList" class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th st-sort="name" class="col-sm-2 col-md-2 col-lg-2">Id</th>
+                                    <th data-title="'ip'" class="col-sm-1 col-md-1 col-lg-1">Name</th>
+                                    <th data-title="'action'" class="col-sm-1 col-md-1 col-lg-1">Actions</th>
+                                </tr>
+                                <tr>
+                                    <th colspan="2">
+                                        <input st-search="" class="form-control" placeholder="global search ..." type="text" />
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="row in displayedCollection2">
+                                    <td>{{row['occi.epa.popuuid']}}</td>
+                                    <td>{{row['occi.epa.pop.lon']}}</td>
+                                    <td>
+                                        <button ng-click="addDialog(row['occi.epa.popuuid'])" class="btn btn-primary btn-xs" ng-disabled="row.state === '0'">Add</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td class="text-center" st-pagination="" st-items-by-page="10" colspan="4">
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

@@ -185,10 +185,7 @@ module NsProvisioner
     pops = getPops()
 =begin
     if pops.size > 1
-
-
     else
-
     end
 =end
 
@@ -238,8 +235,14 @@ module NsProvisioner
       pop_auth['pop_id'] = pop_id
 
       begin
-        popInfo = getPopInfo(pop_id)
+        popInfo, error = getPopInfo(pop_id)
       rescue => e
+        error = "Internal error: error getting pop information."
+        logger.error error
+        generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", error))
+        return
+      end
+      if popInfo == 400
         error = "Internal error: error getting pop information."
         logger.error error
         generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", error))

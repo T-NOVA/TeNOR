@@ -1,0 +1,155 @@
+{"nsd":{
+  "id": "578e2db5e4b0356a4eb0d2b1",
+  "name": "testnsd",
+  "vendor": "1",
+  "version": "1",
+  "vnfds": [
+    "1100"
+  ],
+  "vnffgd": {
+    "vnffgs": [
+      {
+        "vnffg_id": "vnffg0",
+        "number_of_endpoints": 1,
+        "number_of_virtual_links": 1,
+        "dependent_virtual_links": [
+          "vld1"
+        ],
+        "network_forwarding_path": [
+          {
+            "nfp_id": "nfp0",
+            "graph": [
+              "vld1"
+            ],
+            "connection_points": [
+              "ns_ext_data_in",
+              "VNF#1100:ext_data"
+            ],
+            "constituent_vnfs": [
+              {
+                "vnf_ref_id": "1100",
+                "vnf_flavor_key_ref": "gold"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "lifecycle_events": {
+    "start": [
+      {
+        "vnf_id": "1100",
+        "vnf_event": "start",
+        "event_rel_id": "rel_le0",
+        "event_id": "le0",
+        "sla_ref_id": "sla0"
+      }
+    ],
+    "stop": [],
+    "scale_out": [],
+    "scale_in": []
+  },
+  "vnf_depedency": [],
+  "monitoring_parameters": [
+    {
+      "desc": "Availability",
+      "metric": "availability",
+      "unit": "%"
+    }
+  ],
+  "vld": {
+    "number_of_endpoints": 0,
+    "virtual_links": [
+      {
+        "vld_id": "vld0",
+        "alias": "management",
+        "root_requirements": "Unlimited",
+        "leaf_requirement": "Unlimited",
+        "qos": {
+          "average": "",
+          "peak": "",
+          "burst": ""
+        },
+        "connections": [
+          "VNF#1100:ext_management"
+        ],
+        "connectivity_type": "E-LINE",
+        "external_access": true,
+        "merge": true,
+        "sla_ref_id": "sla0"
+      },
+      {
+        "vld_id": "vld1",
+        "alias": "data_in",
+        "root_requirements": "Unlimited",
+        "leaf_requirement": "Unlimited",
+        "qos": {
+          "average": "",
+          "peak": "",
+          "burst": ""
+        },
+        "connections": [
+          "VNF#1100:ext_data"
+        ],
+        "connectivity_type": "E-LINE",
+        "external_access": true,
+        "merge": true,
+        "sla_ref_id": "sla0"
+      }
+    ]
+  },
+  "sla": [
+    {
+      "id": "sla0",
+      "assurance_parameters": [
+        {
+          "formula": "MAX(VNF:1100.cpu_util)",
+          "id": "cpu_util",
+          "name": "cpu_util",
+          "penalty": {
+            "type": "Discount",
+            "unit": "%",
+            "validity": "P1D",
+            "value": 1
+          },
+          "unit": "%",
+          "value": "LE(10)",
+          "violations": [
+            {
+              "breaches_count": 2,
+              "interval": 60
+            }
+          ]
+        }
+      ],
+      "billing": {
+        "model": "PAYG",
+        "price": {
+          "price_per_period": 1,
+          "setup": 4,
+          "unit": "EUR"
+        }
+      },
+      "constituent_vnf": [
+        {
+          "number_of_instances": 1,
+          "redundancy_model": "Active",
+          "vnf_flavour_id_reference": "gold",
+          "vnf_reference": "1100"
+        }
+      ],
+      "sla_key": "basic"
+    }
+  ],
+  "auto_scale_policy": {
+    "criteria": []
+  },
+  "connection_points": [],
+  "vnf_dependency": [],
+  "provider": "T-Nova",
+  "description": "test nsd",
+  "provider_id": "1",
+  "descriptor_version": "1"
+}
+}

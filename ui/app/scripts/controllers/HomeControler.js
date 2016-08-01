@@ -32,9 +32,7 @@ angular.module('tNovaApp')
         tenorService.get('statistics').then(function (data) {
             if (data) {
                 data.forEach(function (d) {
-                    console.log(d);
                     $scope.summaryData[d.name] = d.value;
-                    console.log($scope.summaryData);
                 });
             }
         });

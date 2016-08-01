@@ -21,17 +21,22 @@
 
     <!--link href="bower_components/bootstrap/dist/css/bootstrap.css" rel="stylesheet"-->
     <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="styles/custom.css">
-    <link rel="stylesheet" href="styles/styles.css">
-    <link rel="stylesheet" href="styles/nested.css">
+    <!--link rel="stylesheet" href="styles/custom.css">
+    <link rel="stylesheet" href="styles/styles.css"-->
+
     <link rel="stylesheet" href="bower_components/angular-resizable/angular-resizable.min.css">
+
+    <link rel="stylesheet" href="styles/custom.css">
+    <link rel="stylesheet" href="styles/utils.css">
     <link rel="stylesheet" href="styles/resize.css">
+    <link rel="stylesheet" href="styles/nested.css">
+    <link rel="stylesheet" href="styles/json_style.css">
 
 </head>
 
 <body ng-app="tNovaApp" class="fixed">
 
-    <div ui-view=""></div>
+    <div ui-view="" ng-class="sidebarCollapse ? 'nav-sm' : 'nav-md' "></div>
 
     <!-- build:js(.) scripts/vendor.js -->
     <!-- bower:js -->
@@ -66,6 +71,7 @@
     <script src="bower_components/checklist-model/checklist-model.js"></script>
     <script src="bower_components/angular-resizable/src/angular-resizable.js"></script>
     <script src="bower_components/tv4/tv4.js"></script>
+    <script src="bower_components/angular-fullscreen/src/angular-fullscreen.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
 

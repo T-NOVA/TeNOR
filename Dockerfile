@@ -2,7 +2,7 @@ FROM ruby:2.2
 
 MAINTAINER Josep Batallé "josep.batalle@i2cat.net"
 #docker build -t tnova/tenor .
-#docker run -itd -p 4000:4000 -p 8000:8000 -p 9000:9000 -v /opt/mongo:/var/lib/mongodb -v /opt/gatekeeper:/root/gatekeeper tnova/tenor_test bash
+#docker run -itd -p 4000:4000 -p 8000:8000 -p 9000:9000 -v /opt/mongo:/var/lib/mongodb -v /opt/gatekeeper:/root/gatekeeper tnova/tenor bash
 #docker exec -i -t f9ff694e0872 /bin/bash
 #after run the docker, execute the following scripts:
 # ./development.sh
@@ -20,7 +20,7 @@ ENV GPG_KEYS \
 	492EAFE8CD016A07919F1D2B9ECBEC467F0CEB10
 RUN set -ex \
 	&& for key in $GPG_KEYS; do \
-		apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys "$key"; \
+	apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys "$key"; \
 	done
 RUN echo "deb http://repo.mongodb.org/apt/debian wheezy/mongodb-org/3.2 main" > /etc/apt/sources.list.d/mongodb-org.list
 RUN apt-get update
@@ -48,7 +48,7 @@ RUN mkdir /root/gatekeeper && cp /root/go/src/github.com/piyush82/auth-utils/gat
 RUN git clone https://github.com/T-NOVA/TeNOR /root/TeNOR
 
 WORKDIR /root/TeNOR
-RUN cd /root/TeNOR && gem install bundle && bundle install && ./tenor_install.sh
+RUN cd /root/TeNOR && gem install bundle && bundle install && ./tenor_install.sh 1
 RUN cd /root/TeNOR/ui && npm install -g grunt grunt-cli bower && npm install
 RUN cd /root/TeNOR/ui && bower install --allow-root
 RUN cd /root/TeNOR/ui && gem install compass
@@ -61,7 +61,7 @@ EXPOSE $TENOR_UI_PORT
 EXPOSE $GK_PORT
 EXPOSE $MONGODB_PORT
 
-ADD dependencies/tenor_development.sh /root/TeNOR/tenor_development.sh
+ADD dependencies/tenor_dev.sh /root/TeNOR/tenor_development.sh
 
 #ENTRYPOINT ["sh", "tenor_development.sh"]
 ENV RAILS_ENV development

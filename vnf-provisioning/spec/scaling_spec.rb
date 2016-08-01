@@ -1,5 +1,5 @@
 #
-# TeNOR - VNF Catalogue
+# TeNOR - VNF Provisioning
 #
 # Copyright 2014-2016 i2CAT Foundation, Portugal Telecom Inovação
 #
@@ -15,11 +15,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-FactoryGirl.define do
-	factory :vnf do
-		sequence(:_id) { |n| n }
-		sequence(:name) { |n| 'Firewall_' + n.to_s }
-		sequence(:vnf_manager) { |n| 'Manager_' + n.to_s }
-		sequence(:vnfd) { |n| {test: 'test_' + n.to_s, id: n} }
-	end
+require_relative 'spec_helper'
+
+RSpec.describe VnfProvisioning do
+  def app
+    Scaling
+  end
+
+  before do
+    begin
+      DatabaseCleaner.start
+    ensure
+      DatabaseCleaner.clean
+    end
+  end
+
+  describe 'POST /vnf-instances/scaling/:vnfr_id/scale_in' do
+
+    context 'given a valid request' do
+
+      it 'provisions a new VNF in the VIM' do
+        response = post '/vnfr_id/scale_in', {vnfd: {id: 1}}.to_json, 'CONTENT_TYPE' => 'application/json'
+        expect(last_response.status).to eq 200
+      end
+    end
+  end
+
 end

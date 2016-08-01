@@ -17,9 +17,9 @@
 #
 require_relative 'spec_helper'
 
-RSpec.describe OrchestratorVnfCatalogue do
+RSpec.describe VnfCatalogue do
 	def app
-		OrchestratorVnfCatalogue
+		VnfCatalogue
 	end
 
 	before do
@@ -72,7 +72,7 @@ RSpec.describe OrchestratorVnfCatalogue do
 		end
 
 		context 'given a valid VNF' do
-			let(:response) { post '/vnfs', {id: 1, name: 'teste', vnfd:{vendor: 'ptin'}}.to_json, rack_env={'CONTENT_TYPE' => 'application/json'} }
+			let(:response) { post '/vnfs', {id: 1, name: 'teste', vnfd:{id: 11, vendor: 'ptin'}}.to_json, rack_env={'CONTENT_TYPE' => 'application/json'} }
 
 			it 'responds with a 200' do
 				expect(response.status).to eq 200
@@ -139,7 +139,7 @@ RSpec.describe OrchestratorVnfCatalogue do
 		end
 
 		context 'when the VNF is found' do
-			let(:response_found) { get '/vnfs/' + vnf._id }
+			let(:response_found) { get '/vnfs/' + vnf._id.to_s }
 
 			it 'response body should not be empty' do
 				expect(JSON response_found.body).to_not be_empty
@@ -171,7 +171,7 @@ RSpec.describe OrchestratorVnfCatalogue do
 		end
 
 		context 'when the VNF is found' do
-			let(:response_found) { delete '/vnfs/' + vnf._id }
+			let(:response_found) { delete '/vnfs/' + vnf._id.to_s }
 
 			it 'responds with an empty body' do
 				expect(response_found.body).to be_empty

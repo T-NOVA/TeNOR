@@ -60,6 +60,4 @@ class VnfdValidator < Sinatra::Application
 
 	helpers VnfdValidatorHelper
 
-
-
 end

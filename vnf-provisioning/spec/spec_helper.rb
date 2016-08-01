@@ -29,9 +29,6 @@ RSpec.configure do |config|
   FactoryGirl.find_definitions
 
   config.before(:each) do
-    stub_request(:get, /api.github.com/).
-        with(headers: {'Accept'=>'*/*', 'User-Agent'=>'Ruby'}).
-        to_return(status: 200, body: "stubbed response", headers: {})
     stub_request(:post, "http://localhost/stackurl").
         with(headers: {'Accept'=>'*/*', 'User-Agent'=>'Ruby'}).
         to_return(status: 200, body: "stubbed response", headers: {})

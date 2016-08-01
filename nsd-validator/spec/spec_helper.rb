@@ -1,5 +1,5 @@
 #
-# TeNOR - NS Catalogue
+# TeNOR - NSD Validator
 #
 # Copyright 2014-2016 i2CAT Foundation, Portugal Telecom Inovação
 #
@@ -36,24 +36,10 @@
 ENV['RACK_ENV'] = 'test'
 
 require './main'
-require 'webmock/rspec'
 
 RSpec.configure do |config|
   config.include Rack::Test::Methods
-  WebMock.disable_net_connect!(allow_localhost: true)
-  config.include FactoryGirl::Syntax::Methods
-  FactoryGirl.definition_file_paths = %w{./spec/factories}
-  FactoryGirl.find_definitions
-
-  config.before do
-    Mongoid.purge!
-    #Mongoid.raise_not_found_error = false
-  end
-
-  config.before(:each) do
-    stub_request(:post, "localhost:4015/nsds").to_return(status: 200, body: "")
-  end
-
+  
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest
   # assertions if you prefer.

@@ -36,13 +36,24 @@
 ENV['RACK_ENV'] = 'test'
 
 require './main'
+require 'webmock/rspec'
 
 RSpec.configure do |config|
   config.include Rack::Test::Methods
+  WebMock.disable_net_connect!(allow_localhost: true)
   config.include FactoryGirl::Syntax::Methods
   FactoryGirl.definition_file_paths = %w{./spec/factories}
   FactoryGirl.find_definitions
-  
+
+  config.before do
+    Mongoid.purge!
+    #Mongoid.raise_not_found_error = false
+  end
+
+  config.before(:each) do
+    stub_request(:post, "localhost:4570/vnfds").to_return(status: 200, body: "")
+  end
+
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest
   # assertions if you prefer.
@@ -68,7 +79,7 @@ RSpec.configure do |config|
 
 # The settings below are suggested to provide a good initial experience
 # with RSpec, but feel free to customize to your heart's content.
-
+=begin
   # These two settings work together to allow you to limit a spec run
   # to individual examples or groups you care about by tagging them with
   # `:focus` metadata. When nothing is tagged with `:focus`, all examples
@@ -79,7 +90,7 @@ RSpec.configure do |config|
   # Allows RSpec to persist some state between runs in order to support
   # the `--only-failures` and `--next-failure` CLI options. We recommend
   # you configure your source control system to ignore this file.
-  #config.example_status_persistence_file_path = "spec/examples.txt"
+  config.example_status_persistence_file_path = "spec/examples.txt"
 
   # Limits the available syntax to the non-monkey patched syntax that is
   # recommended. For more details, see:
@@ -118,5 +129,5 @@ RSpec.configure do |config|
   # test failures related to randomization by passing the same `--seed` value
   # as the one that triggered the failure.
   Kernel.srand config.seed
-
+=end
 end

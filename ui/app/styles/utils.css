@@ -1,0 +1,106 @@
+a {
+    cursor: pointer;
+}
+.modal-backdrop {
+    opacity: .5
+}
+
+/** easy pie chart **/
+
+.chart {
+    position: relative;
+    display: inline-block;
+    width: 110px;
+    height: 110px;
+    /*margin-top: 50px;
+  margin-bottom: 50px;*/
+    text-align: center;
+}
+.chart canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+.percent {
+    display: inline-block;
+    line-height: 110px;
+    z-index: 2;
+}
+.percent:after {
+    content: '%';
+    margin-left: 0.1em;
+    font-size: .8em;
+}
+
+/** end easy pie chart **/
+
+
+/** Login **/
+
+.login-box,
+.register-box {
+    width: 360px;
+    margin: 7% auto;
+}
+@media (max-width: 768px) {
+    .login-box,
+    .register-box {
+        width: 90%;
+        margin-top: 20px;
+    }
+}
+.login-box-body,
+.register-box-body {
+    background: #fff;
+    padding: 20px;
+    border-top: 0;
+    color: #666;
+}
+.login-box-body .form-control-feedback,
+.register-box-body .form-control-feedback {
+    color: #777;
+}
+.login-box-msg,
+.register-box-msg {
+    margin: 0;
+    text-align: center;
+    padding: 0 20px 20px 20px;
+}
+.fullscreen-wrapper {
+    top: 0;
+    left: 0;
+    position: absolute;
+    z-index: 99999;
+    background-color: #d2d6de;
+    height: 100%;
+    width: 100%;
+    /* overflow: hidden; */
+    background-image: url("../images/datacenter.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/** end login **/
+
+
+/** table ascendent and descendent arrows when sort  **/
+
+.st-sort-ascent:before {
+    content: '\25B2';
+}
+.st-sort-descent:before {
+    content: '\25BC';
+}
+
+/** end table ascendent and descendent arrows when sort  **/
+
+.custom-line-style {
+    fill: #00f201;
+    fill-opacity: 0;
+    stroke-width: 2px;
+    stroke: #029200;
+}
+.panel-heading.panel-header-error {
+    background-color: #f2dede;
+}

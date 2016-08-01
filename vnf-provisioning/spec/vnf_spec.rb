@@ -17,9 +17,9 @@
 #
 require_relative 'spec_helper'
 
-RSpec.describe OrchestratorVnfProvisioning do
+RSpec.describe VnfProvisioning do
   def app
-    OrchestratorVnfProvisioning
+    Provisioning
   end
 
   before do
@@ -30,40 +30,17 @@ RSpec.describe OrchestratorVnfProvisioning do
     end
   end
 
-  describe 'GET /' do
-    it 'returns the interface list description' do
-      c = OrchestratorVnfProvisioning.new
-      get '/'
-      expect(last_response.status).to eq 200
-      expect(last_response.body).to eq c.helpers.interfaces_list.to_json
-    end
-  end
-
   describe 'POST /vnf-provisioning/vnf-instances' do
     context 'given an invalid content type' do
       it 'responds with a 415' do
-        post '/vnf-provisioning/vnf-instances', {}.to_json, 'CONTENT_TYPE' => 'application/x-www-form-urlencoded'
+        post '/vnf-instances', {}.to_json, 'CONTENT_TYPE' => 'application/x-www-form-urlencoded'
         expect(last_response.status).to eq 415
       end
     end
     context 'given a valid request' do
       it 'provisions a new VNF in the VIM' do
-        puts "Provisioning to VIM;"
-        response = post '/vnf-provisioning/vnf-instances', File.read(File.expand_path("../fixtures/instantiation_info.json", __FILE__)), 'CONTENT_TYPE' => 'application/json'
+        response = post '/vnf-instances', File.read(File.expand_path("../fixtures/instantiation_info.json", __FILE__)), 'CONTENT_TYPE' => 'application/json'
         expect(last_response.status).to eq 201
-
-        puts last_response.body
-      end
-    end
-  end
-
-  describe 'POST /vnf-instances/scaling/:vnfr_id/scale_in' do
-
-    context 'given a valid request' do
-
-      it 'provisions a new VNF in the VIM' do
-        response = post '/vnf-instances/scaling/vnfr_id/scale_in', {vnfd: {id: 1}}.to_json, 'CONTENT_TYPE' => 'application/json'
-        expect(last_response.status).to eq 200
       end
     end
   end

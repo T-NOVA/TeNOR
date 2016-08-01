@@ -10,18 +10,15 @@ gem 'rest-client', '~>1.8'
 gem 'logstash-logger'
 gem 'bunny'
 
-group :development do
+group :development, :test do
 	gem 'rerun'
+	gem 'rspec'
+	gem 'rack-test'
+	gem "webmock"
 end
 
 group :doc do
 	gem 'yard', '~>0.8'
-end
-
-group :test do
-	gem 'rspec'
-  gem 'rack-test'
-	gem "webmock"
 end
 
 gem 'mongoid', '~>4.0' # MongoDB driver

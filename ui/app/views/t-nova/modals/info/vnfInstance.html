@@ -35,6 +35,20 @@
                     </div>
                 </div>
                 <div class="row">
+                    <div class="col-md-6 col-xs-6">
+                        <div class="form-group">
+                            <label for="node_os_version">VDU:</label>
+                            <input type="text" readonly class="form-control" id="status" value="{{d.vms_id.vdu0}}">
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-xs-6">
+                        <div class="form-group">
+                            <label for="node_fog_agent_version">Controller ip:</label>
+                            <input type="text" readonly class="form-control" id="node_fog_agent_version" value="{{d.vnf_addresses.controller}}">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
                     <div class="col-md-12 col-xs-12">
                         <div class="form-group">
                             <label for="node_platform">Stack url:</label>

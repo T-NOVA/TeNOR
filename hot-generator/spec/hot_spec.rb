@@ -24,7 +24,7 @@ RSpec.describe HotGenerator do
 
   describe 'POST /hot/:flavour' do
     context 'given an invalid content type' do
-      let(:response) { post '/hot/flavor0', {vnfd: {}, networks_id: 'network_id', security_group_id: "security_group_id"}.to_json, rack_env={'CONTENT_TYPE' => 'application/x-www-form-urlencoded'} }
+      let(:response) { post '/hot/flavor0', {vnfd: {}, networks_id: 'network_id', security_group_id: "security_group_id", vnfr_id: "vnfr_id"}.to_json, rack_env={'CONTENT_TYPE' => 'application/x-www-form-urlencoded'} }
 
       it 'responds with a 415' do
         expect(response.status).to eq 415
@@ -48,7 +48,7 @@ RSpec.describe HotGenerator do
 
       vnfd = File.read(File.expand_path("../fixtures/vnfd.json", __FILE__))
       networks_id = []
-      instance_info = {:vnf => JSON.parse(vnfd), :networks_id => networks_id, :security_group_id => "security_group_id"}
+      instance_info = {:vnf => JSON.parse(vnfd), :networks_id => networks_id, :security_group_id => "security_group_id", routers_id: "routers_id", vnfr_id: "vnfr_id", dns_server: "dns_server"}
 
       let(:response) { post '/hot/flavor0', instance_info.to_json, rack_env={'CONTENT_TYPE' => 'application/json'} }
 

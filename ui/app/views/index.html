@@ -1,218 +1,148 @@
+<h3 class="page-header">Dashboard
+    <small>Information Overview</small>
+</h3>
+<!-- page content -->
+<!-- top tiles -->
+<div class="row tile_count">
+    <div class="col-md-4 col-sm-4 col-xs-6 tile_stats_count">
+        <span class="count_top"><i class="fa fa-tasks"></i> Network Services</span>
+        <div class="count">{{nsSize}}</div>
+        <a ui-sref="root.ns">View Details</a>
+    </div>
+    <div class="col-md-4 col-sm-4 col-xs-6 tile_stats_count">
+        <span class="count_top"><i class="fa fa-tasks"></i> Virtual NF</span>
+        <div class="count">{{vnfSize}}</div>
+        <a ui-sref="root.vnf">View Details</a>
+    </div>
+    <div class="col-md-4 col-sm-4 col-xs-6 tile_stats_count">
+        <span class="count_top"><i class="fa fa-caret-square-o-right"></i> Instances</span>
+        <div class="count green">{{instancesSize}}</div>
+        <a ui-sref="root.nsInstances">View Details</a>
+    </div>
+</div>
 <div class="row">
-    <div class="col-md-9">
-        <h2 class="page-header">Dashboard
-            <small>Information Overview</small>
-        </h2>
-        <div class="row">
-            <div class="col-lg-4 col-md-6">
-                <div class="panel panel-primary">
-                    <div class="panel-heading">
-                        <div class="row">
-                            <div class="col-xs-3">
-                                <i class="fa fa-cog fa-5x"></i>
-                            </div>
-                            <div class="col-xs-9 text-right">
-                                <div class="huge">{{nsSize}}</div>
-                                <div>Network Services</div>
-                            </div>
-                        </div>
-                    </div>
-                    <a ui-sref="root.ns">
-                        <div class="panel-footer">
-                            <span class="pull-left">View Details</span>
-                            <span class="pull-right">
-                                <i class="fa fa-arrow-circle-right"></i>
-                            </span>
-                            <div class="clearfix"></div>
-                        </div>
-                    </a>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6">
-                <div class="panel panel-green">
-                    <div class="panel-heading">
-                        <div class="row">
-                            <div class="col-xs-3">
-                                <i class="fa fa-cloud fa-5x"></i>
-                            </div>
-                            <div class="col-xs-9 text-right">
-                                <div class="huge">{{vnfSize}}</div>
-                                <div>Virtual NF</div>
-                            </div>
-                        </div>
-                    </div>
-                    <a ui-sref="root.vnf">
-                        <div class="panel-footer">
-                            <span class="pull-left">View Details</span>
-                            <span class="pull-right">
-                                <i class="fa fa-arrow-circle-right"></i>
-                            </span>
-                            <div class="clearfix"></div>
-                        </div>
-                    </a>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6">
-                <div class="panel panel-yellow">
-                    <div class="panel-heading">
-                        <div class="row">
-                            <div class="col-xs-3">
-                                <i class="fa fa-tasks fa-5x"></i>
-                            </div>
-                            <div class="col-xs-9 text-right">
-                                <div class="huge">{{instancesSize}}</div>
-                                <div>Instances</div>
-                            </div>
-                        </div>
-                    </div>
-                    <a ui-sref="root.nsInstances">
-                        <div class="panel-footer">
-                            <span class="pull-left">View Details</span>
-                            <span class="pull-right">
-                                <i class="fa fa-arrow-circle-right"></i>
-                            </span>
-                            <div class="clearfix"></div>
-                        </div>
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title"><i class="fa fa-image fa-fw"></i>Summary monitoring data</h3>
-                    </div>
-                    <div class="panel-body">
-                        <table id="metrics_monitoring" class="table">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Count</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Created NS requests</td>
-                                    <td>{{summaryData.ns_created_requests}}</td>
-                                    <td>
-                                        <button ng-click="reset('ns_created_requests')" class="btn btn-danger btn-xs">Reset</button>
-                                        <button template="{{tooltipUrl}}" class="btn btn-info btn-xs" data-trigger="click" data-title="{{ns_created.title}}" bs-tooltip>Information</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Instantiate NS requests</td>
-                                    <td>{{summaryData.ns_instantiated_requests}}</td>
-                                    <td>
-                                        <button ng-click="reset('ns_instantiated_requests')" class="btn btn-danger btn-xs">Reset</button>
-                                        <button template="{{tooltipUrl}}" class="btn btn-info btn-xs" data-trigger="click" data-title="{{ns_instantiated.title}}" bs-tooltip>Information</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Terminate NS requests</td>
-                                    <td>{{summaryData.ns_terminated_requests}}</td>
-                                    <td>
-                                        <button ng-click="reset('ns_terminated_requests')" class="btn btn-danger btn-xs">Reset</button>
-                                        <button template="{{tooltipUrl}}" class="btn btn-info btn-xs" data-trigger="click" data-title="{{ns_terminated.title}}" bs-tooltip>Information</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Update NS requests</td>
-                                    <td>{{summaryData.ns_updated_requests}}</td>
-                                    <td>
-                                        <button ng-click="reset('ns_updated_requests')" class="btn btn-danger btn-xs">Reset</button>
-                                        <button template="{{tooltipUrl}}" class="btn btn-info btn-xs" data-trigger="click" data-title="{{ns_updated.title}}" bs-tooltip>Information</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Created VNF requests</td>
-                                    <td>{{summaryData.vnf_created_requests}}</td>
-                                    <td>
-                                        <button ng-click="reset('vnf_created_requests')" class="btn btn-danger btn-xs">Reset</button>
-                                        <button template="{{tooltipUrl}}" class="btn btn-info btn-xs" data-trigger="click" data-title="{{vnf_created.title}}" bs-tooltip>Information</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>NS Scaling requests</td>
-                                    <td>{{summaryData.ns_scaling_requests}}</td>
-                                    <td>
-                                        <button ng-click="reset('ns_scaling_requests')" class="btn btn-danger btn-xs">Reset</button>
-                                        <button template="{{tooltipUrl}}" class="btn btn-info btn-xs" data-trigger="click" data-title="{{ns_scaling_requests.title}}" bs-tooltip>Information</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>NS Scaling actions</td>
-                                    <td>{{summaryData.ns_scaling_actions}}</td>
-                                    <td>
-                                        <button ng-click="reset('ns_scaling_actions')" class="btn btn-danger btn-xs">Reset</button>
-                                        <button template="{{tooltipUrl}}" class="btn btn-info btn-xs" data-trigger="click" data-title="{{ns_scaling_actions.title}}" bs-tooltip>Information</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>SLA breaches</td>
-                                    <td>{{summaryData.SLA_breaches}}</td>
-                                    <td>
-                                        <button ng-click="reset('SLA_breaches')" class="btn btn-danger btn-xs">Reset</button>
-                                        <button template="{{tooltipUrl}}" class="btn btn-info btn-xs" data-trigger="click" data-title="{{SLA_breaches.title}}" bs-tooltip>Information</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>SM Request</td>
-                                    <td>{{summaryData.SM_request}}</td>
-                                    <td>
-                                        <button ng-click="reset('SM_request')" class="btn btn-danger btn-xs">Reset</button>
-                                        <button template="{{tooltipUrl}}" class="btn btn-info btn-xs" data-trigger="click" data-title="{{SM_request.title}}" bs-tooltip>Information</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>SM Rate</td>
-                                    <td>{{summaryData.SM_rate}}%</td>
-                                    <td>
-                                        <button ng-click="reset('SM_rate')" class="btn btn-danger btn-xs">Reset</button>
-                                        <button template="{{tooltipUrl}}" class="btn btn-info btn-xs" data-trigger="click" data-title="{{SM_rate.title}}" bs-tooltip>Information</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>SM Execution Time</td>
-                                    <td>{{summaryData.SM_execution_time}}ms</td>
-                                    <td>
-                                        <button ng-click="reset('SM_execution_time')" class="btn btn-danger btn-xs">Reset</button>
-                                        <button template="{{tooltipUrl}}" class="btn btn-info btn-xs" data-trigger="click" data-title="{{SM_execution_time.title}}" bs-tooltip>Information</button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="x_panel">
+            <div class="x_title">
+                <h3>Summary  <small>Monitoring data</small></h3>
+                <table id="metrics_monitoring" class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Count</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Created NS requests</td>
+                            <td>{{summaryData.ns_created_requests}}</td>
+                            <td>
+                                <button ng-click="reset('ns_created_requests')" class="btn btn-danger btn-xs">Reset</button>
+                                <button template="{{tooltipUrl}}" class="btn btn-info btn-xs" data-trigger="click" data-title="{{ns_created.title}}" bs-tooltip>Information</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Instantiate NS requests</td>
+                            <td>{{summaryData.ns_instantiated_requests}}</td>
+                            <td>
+                                <button ng-click="reset('ns_instantiated_requests')" class="btn btn-danger btn-xs">Reset</button>
+                                <button template="{{tooltipUrl}}" class="btn btn-info btn-xs" data-trigger="click" data-title="{{ns_instantiated.title}}" bs-tooltip>Information</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Terminate NS requests</td>
+                            <td>{{summaryData.ns_terminated_requests}}</td>
+                            <td>
+                                <button ng-click="reset('ns_terminated_requests')" class="btn btn-danger btn-xs">Reset</button>
+                                <button template="{{tooltipUrl}}" class="btn btn-info btn-xs" data-trigger="click" data-title="{{ns_terminated.title}}" bs-tooltip>Information</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Update NS requests</td>
+                            <td>{{summaryData.ns_updated_requests}}</td>
+                            <td>
+                                <button ng-click="reset('ns_updated_requests')" class="btn btn-danger btn-xs">Reset</button>
+                                <button template="{{tooltipUrl}}" class="btn btn-info btn-xs" data-trigger="click" data-title="{{ns_updated.title}}" bs-tooltip>Information</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Created VNF requests</td>
+                            <td>{{summaryData.vnf_created_requests}}</td>
+                            <td>
+                                <button ng-click="reset('vnf_created_requests')" class="btn btn-danger btn-xs">Reset</button>
+                                <button template="{{tooltipUrl}}" class="btn btn-info btn-xs" data-trigger="click" data-title="{{vnf_created.title}}" bs-tooltip>Information</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>NS Scaling requests</td>
+                            <td>{{summaryData.ns_scaling_requests}}</td>
+                            <td>
+                                <button ng-click="reset('ns_scaling_requests')" class="btn btn-danger btn-xs">Reset</button>
+                                <button template="{{tooltipUrl}}" class="btn btn-info btn-xs" data-trigger="click" data-title="{{ns_scaling_requests.title}}" bs-tooltip>Information</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>NS Scaling actions</td>
+                            <td>{{summaryData.ns_scaling_actions}}</td>
+                            <td>
+                                <button ng-click="reset('ns_scaling_actions')" class="btn btn-danger btn-xs">Reset</button>
+                                <button template="{{tooltipUrl}}" class="btn btn-info btn-xs" data-trigger="click" data-title="{{ns_scaling_actions.title}}" bs-tooltip>Information</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>SLA breaches</td>
+                            <td>{{summaryData.SLA_breaches}}</td>
+                            <td>
+                                <button ng-click="reset('SLA_breaches')" class="btn btn-danger btn-xs">Reset</button>
+                                <button template="{{tooltipUrl}}" class="btn btn-info btn-xs" data-trigger="click" data-title="{{SLA_breaches.title}}" bs-tooltip>Information</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>SM Request</td>
+                            <td>{{summaryData.SM_request}}</td>
+                            <td>
+                                <button ng-click="reset('SM_request')" class="btn btn-danger btn-xs">Reset</button>
+                                <button template="{{tooltipUrl}}" class="btn btn-info btn-xs" data-trigger="click" data-title="{{SM_request.title}}" bs-tooltip>Information</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>SM Rate</td>
+                            <td>{{summaryData.SM_rate}}%</td>
+                            <td>
+                                <button ng-click="reset('SM_rate')" class="btn btn-danger btn-xs">Reset</button>
+                                <button template="{{tooltipUrl}}" class="btn btn-info btn-xs" data-trigger="click" data-title="{{SM_rate.title}}" bs-tooltip>Information</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>SM Execution Time</td>
+                            <td>{{summaryData.SM_execution_time}}ms</td>
+                            <td>
+                                <button ng-click="reset('SM_execution_time')" class="btn btn-danger btn-xs">Reset</button>
+                                <button template="{{tooltipUrl}}" class="btn btn-info btn-xs" data-trigger="click" data-title="{{SM_execution_time.title}}" bs-tooltip>Information</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
-    <div class="col-md-3">
-        <h2 class="page-header">
-            <small>
-                <br/>
-            </small>
-        </h2>
-        <div class="col-lg-14">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">
-                        <i class="fa fa-clock-o fa-fw"></i>Last history entries</h3>
+    <div class="col-md-10">
+        <div class="dashboard_graph">
+            <div class="row x_title">
+                <div class="col-md-6">
+                    <h3>Last history entries</h3>
                 </div>
-                <div class="panel-body">
-                    <div class="list-group">
-                        <a href="#" class="list-group-item" ng-repeat="history in lastHistory">
-                            <span class="badge">{{history._source['@timestamp']| date:'yyyy-MM-dd HH:mm:ss'}}</span>
-                            <i class="fa fa-fw fa-calendar"></i>{{history._source.severity}} - {{history._source.module}} - {{history._source.message}}
-                        </a>
-                    </div>
-                    <div class="text-right">
-                        <a ui-sref="root.modules">View All Activity
-                            <i class="fa fa-arrow-circle-right"></i>
-                        </a>
-                    </div>
+                <div class="list-group">
+                    <a href="#" class="list-group-item" ng-repeat="history in lastHistory">
+                        <span class="badge">{{history._source['@timestamp']| date:'yyyy-MM-dd HH:mm:ss'}}</span>
+                        <i class="fa fa-fw fa-calendar"></i>{{history._source.severity}} - {{history._source.module}} - {{history._source.message}}
+                    </a>
+                </div>
+                <div class="text-right">
+                    <a ui-sref="root.modules">View All Activity
+                        <i class="fa fa-arrow-circle-right"></i>
+                    </a>
                 </div>
             </div>
         </div>

@@ -1,34 +1,63 @@
-<section class="sidebar content-box" style="display: block;">
-    <ul class="nav">
-        <!-- Main menu -->
-        <li class="current"><a ui-sref="root.dashboard"><i class="glyphicon glyphicon-home"></i> Dashboard</a></li>
-        <li class="nav-header">
-            <a data-toggle="collapse" data-target="#menuCatalogue" aria-expanded="false"> <i class="glyphicon glyphicon-list"></i> Catalogue <span class="caret pull-right"></span></a>
-            <!-- Sub menu -->
-            <ul class="collapse" id="menuCatalogue">
-                <li><a ui-sref="root.vnf">VNF</a></li>
-                <li><a ui-sref="root.ns">NS</a></li>
+<div class="left_col scroll-view">
+    <div class="navbar nav_title" style="border: 0;">
+        <a ui-sref="root.dashboard" class="site_title hidden-small" style="text-align: center;" ><img width="150px" src="images/tenor_logo_white.png" /></a>
+    </div>
+    <div class="clearfix"></div>
+    <br />
+
+    <!-- sidebar menu -->
+    <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+        <div class="menu_section">
+            <ul class="nav side-menu">
+                <li ng-class="{'active': $state.current.name === 'root.dashboard'}">
+                    <a ui-sref="root.dashboard"><i class="glyphicon glyphicon-home"></i> Dashboard</a>
+                </li>
+                <li ng-class="{'active': $state.current.name === 'root.ns' || $state.current.name === 'root.vnf'}">
+                    <a data-toggle="collapse" data-target="#menuCatalogue" aria-expanded="false"> <i class="glyphicon glyphicon-list"></i> Catalogue <span class="caret pull-right"></span></a>
+                    <ul class="nav child_menu collapse" id="menuCatalogue">
+                        <li ng-class="{'active': $state.current.name === 'root.vnf'}"><a ui-sref="root.vnf">VNF</a></li>
+                        <li ng-class="{'active': $state.current.name === 'root.ns'}"><a ui-sref="root.ns">NS</a></li>
+                    </ul>
+                </li>
+                <li class="" ng-class="{'active': $state.current.name === 'root.vnfInstances' || $state.current.name === 'root.nsInstances'}">
+                    <a data-toggle="collapse" data-target="#menuInstances" aria-expanded="false"> <i class="glyphicon glyphicon-tasks"></i> Instances Repository <span class="caret pull-right"></span></a>
+                    <ul class="nav child_menu collapse" id="menuInstances">
+                        <li ng-class="{'active': $state.current.name === 'root.vnfInstances'}"><a ui-sref="root.vnfInstances">VNF instances</a></li>
+                        <li ng-class="{'active': $state.current.name === 'root.nsInstances'}"><a ui-sref="root.nsInstances">NS instances</a></li>
+                    </ul>
+                </li>
+                <li ng-class="{'active': $state.current.name === 'root.mappingAlgorithm'}">
+                    <a ui-sref="root.mappingAlgorithm"><i class="glyphicon glyphicon-transfer"></i> Instantiation Performance</a>
+                </li>
+                <li ng-class="{'active': $state.current.name === 'root.mappingAlgorithm'}">
+                    <a ui-sref="root.mappingAlgorithm"><i class="glyphicon glyphicon-transfer"></i> Service Mapping</a>
+                </li>
+                <li ng-class="{'active': $state.current.name === 'root.infrastructureRepository'}">
+                    <a ui-sref="root.infrastructureRepository"><i class="glyphicon glyphicon-hdd"></i> Infrastructure Repository</a>
+                </li>
+                <li class="nav-header" ng-class="{'active': $state.current.name === 'root.configuration' || $state.current.name === 'root.modules' || $state.current.name === 'root.pops'}">
+                    <a data-toggle="collapse" data-target="#menuConfig" aria-expanded="false"> <i class="glyphicon glyphicon-tasks"></i> Configuration <span class="caret pull-right"></span></a>
+                    <ul class="nav child_menu collapse" id="menuConfig">
+                        <li ng-class="{'active': $state.current.name === 'root.configuration'}"><a ui-sref="root.configuration">General configuration</a></li>
+                        <li ng-class="{'active': $state.current.name === 'root.modules'}"><a ui-sref="root.modules">Modules</a></li>
+                        <li ng-class="{'active': $state.current.name === 'root.pops'}"><a ui-sref="root.pops">PoPs</a></li>
+                    </ul>
+                </li>
             </ul>
-        </li>
-        <li class="nav-header">
-            <a data-toggle="collapse" data-target="#menuInstances" aria-expanded="false"> <i class="glyphicon glyphicon-tasks"></i> Instances Repository <span class="caret pull-right"></span></a>
-            <!-- Sub menu -->
-            <ul class="collapse" id="menuInstances">
-                <li><a ui-sref="root.vnfInstances">VNF instances</a></li>
-                <li><a ui-sref="root.nsInstances">NS instances</a></li>
-            </ul>
-        </li>
-        <li><a ui-sref="root.mappingAlgorithm"><i class="glyphicon glyphicon-transfer"></i> Instantiation Performance</a></li>
-        <li><a ui-sref="root.mappingAlgorithm"><i class="glyphicon glyphicon-transfer"></i> Service Mapping</a></li>
-        <li><a ui-sref="root.infrastructureRepository"><i class="glyphicon glyphicon-hdd"></i> Infrastructure Repository</a></li>
-        <li class="nav-header">
-            <a data-toggle="collapse" data-target="#menuConfig" aria-expanded="false"> <i class="glyphicon glyphicon-tasks"></i> Configuration <span class="caret pull-right"></span></a>
-            <!-- Sub menu -->
-            <ul class="collapse" id="menuConfig">
-                <li><a ui-sref="root.configuration">General configuration</a></li>
-                <li><a ui-sref="root.modules">Modules</a></li>
-                <li><a ui-sref="root.pops">PoPs</a></li>
-            </ul>
-        </li>
-    </ul>
-</section>
+        </div>
+    </div>
+
+    <!-- /menu footer buttons -->
+    <div class="sidebar-footer hidden-small">
+        <a ng-click="root.configuration" data-toggle="tooltip" data-placement="top" title="Settings">
+            <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+        </a>
+        <a ng-click="goFullscreen()" data-toggle="tooltip" data-placement="top" title="FullScreen">
+            <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
+        </a>
+        <a ng-click="logout()" data-toggle="tooltip" data-placement="top" title="Logout">
+            <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
+        </a>
+    </div>
+    <!-- /menu footer buttons -->
+</div>

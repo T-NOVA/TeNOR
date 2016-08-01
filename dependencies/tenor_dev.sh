@@ -18,7 +18,6 @@ sleep 5
 echo "Done"
 #wait until gatekeeper port is listening
 
-
 byobu -2 new-session -d -s $SESSION4
 echo "Starting User Interface..."
 byobu rename-window 'UI'
