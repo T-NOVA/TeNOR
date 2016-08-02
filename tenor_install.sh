@@ -42,6 +42,8 @@ installTenor(){
         return
     fi
     if [ $ruby_version -eq 1 ]; then
+        ruby --version > /dev/null 2>&1
+        RUBY_IS_INSTALLED=$?
         echo "Ruby version: " $RUBY_VERSION
         echo "Please, install a ruby version higher or equal to 2.2.0"
         pause
@@ -227,9 +229,12 @@ trap '' SIGINT SIGQUIT SIGTSTP
 # Step #4: Main logic - infinite loop
 # ------------------------------------
 
+choice=$1
+
 while true
 do
 	show_menus
-	read_options $1
+	read_options $choice
+	choice=5
 done
 

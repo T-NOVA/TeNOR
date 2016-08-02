@@ -71,7 +71,7 @@ echo "Checking if ruby is installed"
 ruby --version > /dev/null 2>&1
 RUBY_IS_INSTALLED=$?
 if [ $RUBY_IS_INSTALLED -eq 0 ]; then
-    ruby_version=`ruby -e "print(RUBY_VERSION < '2.2.0' ? '1' : '0' )"`
+    ruby_version=`ruby -e "print(RUBY_VERSION <= '2.2.0' ? '1' : '0' )"`
     if [ $ruby_version -eq 1 ]; then
         echo "Ruby version: " $RUBY_VERSION
         echo "Please, install a ruby version higher or equal to 2.2.0"
