@@ -5,8 +5,7 @@ MAINTAINER Josep Batallé "josep.batalle@i2cat.net"
 #docker run -itd -p 4000:4000 -p 8000:8000 -p 9000:9000 -v /opt/mongo:/var/lib/mongodb -v /opt/gatekeeper:/root/gatekeeper tnova/tenor bash
 #docker exec -i -t f9ff694e0872 /bin/bash
 #after run the docker, execute the following scripts:
-# ./development.sh
-# ./loadModules.sh
+# ./dependencies/tenor_dev.sh
 
 ENV TENOR_PORT 4000
 ENV TENOR_UI_PORT 9000
@@ -41,7 +40,6 @@ mkdir -p /usr/local/go && \
 
 COPY dependencies/install_gatekeeper.sh /root/install_gatekeeper.sh
 RUN sh install_gatekeeper.sh
-
 RUN mkdir /root/gatekeeper && cp /root/go/src/github.com/piyush82/auth-utils/gatekeeper.cfg /root/gatekeeper/gatekeeper.cfg
 
 # Clone the conf files into the docker container
