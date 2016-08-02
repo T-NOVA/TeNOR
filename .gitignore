@@ -2,3 +2,7 @@
 **/log/*.log
 **/Gemfile.lock
 Gemfile.lock
+Cheffile.lock
+cookbooks
+tmp
+site-books
