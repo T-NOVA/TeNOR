@@ -203,8 +203,6 @@ class VnfdToHot
       #detect, and return error if not.
       network = networks_id.detect { |network| network['alias'] == vlink['alias'] }
       if network != nil
-#        network_id = network['id']
-#        network_id = network['alias']
         port_name = "#{connection_point['id']}"
         ports << {port: {get_resource: port_name}}
         if vlink['port_security_enabled']
@@ -292,10 +290,15 @@ class VnfdToHot
       wc_notify = '\n echo "tenor_url: http://10.10.1.61:4000/vnf-provisioning/'+ @vnfr_id +'/stack/create_complete" > /etc/tenor.cfg'
       wc_notify = '\n echo curl -XPOST http://10.10.1.61:4000/vnf-provisioning/'+ @vnfr_id +'/stack/create_complete -d "info" '
       wc_notify = ""
+      wc_notify = wc_notify + "\nwc_notify --data-binary '{\"status\": \"SUCCESS\"}'\n"
     end
 
+    shell =  "#!/bin/bash"
+    if @type == 'vSA'
+      shell = "#!/bin/tcsh"
+    end
     if @type != 'vSA'
-      bootstrap_script = vdu.has_key?('bootstrap_script') ? vdu['bootstrap_script'] : "#!/bin/bash"
+      bootstrap_script = vdu.has_key?('bootstrap_script') ? vdu['bootstrap_script'] : shell
       {
           str_replace: {
               params: {
@@ -307,7 +310,7 @@ class VnfdToHot
           }
       }
     else
-      bootstrap_script = "#!/bin/bash"+ wc_notify
+      bootstrap_script = "#!/bin/bash" + wc_notify
     end
 
   end

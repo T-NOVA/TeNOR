@@ -145,10 +145,10 @@ class Provisioning < VnfProvisioning
         vdu: vdu
     )
 
-    if vnf['type'] != 'vSA'
+#    if vnf['type'] != 'vSA'
       create_thread_to_monitor_stack(vnfr.id, vnfr.stack_url, vim_info, instantiation_info['callback_url'])
       logger.info 'Created thread to monitor stack'
-    end
+#    end
 
     halt 201, vnfr.to_json
   end
@@ -328,24 +328,7 @@ class Provisioning < VnfProvisioning
       logger.debug 'Create complete'
 
       # Send the VNFR to the mAPI
-      mapi_request = {id: vnfr.id.to_s, vnfd: {vnf_lifecycle_events: vnfr.lifecycle_info}}
-      logger.debug 'mAPI request: ' + mapi_request.to_json
-      begin
-        response = RestClient.post "#{settings.mapi}/vnf_api/", mapi_request.to_json, :content_type => :json, :accept => :json
-      rescue Errno::ECONNREFUSED
-        logger.error "mAPI -> Connection Refused."
-        message = {status: "mAPI_unreachable", vnfd_id: vnfr.vnfd_reference, vnfr_id: vnfr.id}
-        logger.info "mAPI is not rechable"
-        #nsmanager_callback(stack_info['ns_manager_callback'], message)
-          #halt 500, 'mAPI unreachable'
-      rescue => e
-        logger.error e.response
-        message = {status: "mAPI_error", vnfd_id: vnfr.vnfd_reference, vnfr_id: vnfr.id}
-        logger.error message
-        logger.info "mAPI is not rechable"
-#        nsmanager_callback(stack_info['ns_manager_callback'], message)
-        #halt e.response.code, e.response.body
-      end
+      registerRequestmAPI(vnfr)
 
       # Read from VIM outputs and map with parameters
       logger.debug "Output recevied from Openstack:"
@@ -384,7 +367,8 @@ class Provisioning < VnfProvisioning
                     end
                     vnf_addresses[output['output_key']] = output['output_value']
                     lifecycle_events_values[event] = {} unless lifecycle_events_values.has_key?(event)
-                    lifecycle_events_values[event][id] = output['output_value']
+                    #lifecycle_events_values[event][id] = output['output_value']
+                    lifecycle_events_values[event][key_string] = output['output_value']
                   end
                 elsif output['output_key'] =~ /^#{parameter_match[1]}##{parameter_match[2]}$/i
                   vnf_addresses["#{parameter_match[1]}"] = output['output_value'] if parameter_match[2] == 'ip' && !vnf_addresses.has_key?("#{parameter_match[1]}") # Only to populate VNF Ad$
@@ -449,11 +433,16 @@ class Provisioning < VnfProvisioning
         end
         logger.debug 'Response from VIM to destroy allocated resources: ' + response.to_json
 
+        vnfr.push(lifecycle_event_history: stack_info['stack']['stack_status'])
+        vnfr.update_attributes!(
+            vnf_status: 2,
+            notifications: response.to_json)
+
         message = {status: "ERROR_CREATING", vnfd_id: vnfr.vnfd_reference, vnfr_id: vnfr.id}
         nsmanager_callback(stack_info['ns_manager_callback'], message)
 
         # Delete the VNFR from the database
-        vnfr.destroy
+        #vnfr.destroy
       end
     end
 
