@@ -218,7 +218,6 @@ module ProvisioningHelper
   end
 
   def registerRequestmAPI(vnfr)
-
       logger.debug 'Registring VNF to mAPI...'
 
       # Send the VNFR to the mAPI

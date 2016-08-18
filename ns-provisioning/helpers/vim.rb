@@ -242,19 +242,6 @@ module VimHelper
     return sec
   end
 
-  def deleteStack(stack_url, tenant_token)
-    begin
-      response = RestClient.delete stack_url, 'X-Auth-Token' => tenant_token, :content_type => :json, :accept => :json
-    rescue Errno::ECONNREFUSED
-      error = {"info" => "VIM unrechable."}
-      return
-    rescue => e
-      logger.error e
-      logger.error e.response
-      return
-    end
-  end
-
   def configureSecurityGroups(computeUrl, tenant_id, token)
     vim_security_groups = getSecurityGroups(computeUrl, tenant_id, token)
     security_group_id = nil
