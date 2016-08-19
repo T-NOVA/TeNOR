@@ -9,5 +9,5 @@ sudo npm install -g grunt grunt-cli bower
 echo "Installation of Grunt and Bower done."
 
 echo "Installing Compass..."
-sudo gem install compass
+gem install compass
 echo "Installation of Compass done."

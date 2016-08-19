@@ -32,6 +32,7 @@ Vagrant.configure(2) do |config|
     source /home/vagrant/.rvm/scripts/rvm
     #rvm install 2.2.2
     gem install bundler
+    gem install compass
     rvm group add rvm vagrant
     rvm fix-permissions
     cd ~
@@ -42,7 +43,13 @@ Vagrant.configure(2) do |config|
     cd ../
     #. ~/.rvm/scripts/rvm
     ./tenor_install.sh 1
-    ~/go/bin/auth-utils &
+    echo -e '#!/bin/bash \ncd /home/vagrant \ngo/bin/auth-utils &' > ~/gatekeeperd
+    sudo mv ~/gatekeeperd /etc/init.d/gatekeeperd
+    sudo chmod +x /etc/init.d/gatekeeperd
+    sudo chown root:root /etc/init.d/gatekeeperd
+    sudo update-rc.d gatekeeperd defaults
+    sudo update-rc.d gatekeeperd enable
+    sudo service gatekeeperd start
   SCRIPT
 
   config.vm.provision "shell", inline: $script, privileged: false
