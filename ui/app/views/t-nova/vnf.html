@@ -35,7 +35,7 @@
                     </thead>
                     <tbody>
                         <tr ng-repeat="row in displayedCollection">
-                            <td><a ng-click="showDescriptor(row)">{{row.name}}</a></td>
+                            <td><a ng-click="showDescriptor(row)">{{row.vnfd.name}}</a></td>
                             <td>{{row.vnfd.id}}</td>
                             <td>{{row.version}}</td>
                             <td>{{row.vnfd.provider}}</td>
