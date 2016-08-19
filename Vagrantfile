@@ -10,7 +10,6 @@ Vagrant.configure(2) do |config|
     vb.customize ["modifyvm", :id, "--cpus", "2"] # is not required, but recommended
     vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
     vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
-#    vb.customize ["modifyvm", :id, "--nictype1", "virtio"]
   end
 
 	config.vm.network :forwarded_port, guest: 4000, host: 4000 # tenor port
@@ -27,26 +26,26 @@ Vagrant.configure(2) do |config|
     echo "export rvm_max_time_flag=20" >> ~/.rvmrc
 
     echo "[[ -s '${HOME}/.rvm/scripts/rvm' ]] && source '${HOME}/.rvm/scripts/rvm'" >> ~/.bashrc
+    gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
     curl -L https://get.rvm.io | bash -s stable --ruby
-    sudo gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
 
-    #source /home/vagrant/.rvm/scripts/rvm
-    source /usr/local/rvm/scripts/rvm
-    sudo rvm --default use 2.2.2
+    source /home/vagrant/.rvm/scripts/rvm
+    #rvm install 2.2.2
+    gem install bundler
+    rvm group add rvm vagrant
+    rvm fix-permissions
     cd ~
     git clone https://github.com/jbatalle/TeNOR.git
     cd TeNOR/dependencies
     ./install_dependencies.sh
-    sudo rvm group add rvm vagrant
-    sudo rvm fix-permissions
+
     cd ../
-    . ~/.rvm/scripts/rvm
+    #. ~/.rvm/scripts/rvm
     ./tenor_install.sh 1
+    ~/go/bin/auth-utils &
   SCRIPT
 
   config.vm.provision "shell", inline: $script, privileged: false
-
-  # config.vm.network "forwarded_port", guest: 80, host: 8080
 
   # Create a public network, which generally matched to bridged network.
   # Bridged networks make the machine appear as another physical device on
@@ -66,11 +65,4 @@ Vagrant.configure(2) do |config|
   #   push.app = "YOUR_ATLAS_USERNAME/YOUR_APPLICATION_NAME"
   # end
 
-  # Enable provisioning with a shell script. Additional provisioners such as
-  # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
-  # documentation for more information about their specific syntax and use.
-  # config.vm.provision "shell", inline: <<-SHELL
-  #   sudo apt-get update
-  #   sudo apt-get install -y apache2
-  # SHELL
 end
