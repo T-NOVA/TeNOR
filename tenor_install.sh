@@ -63,8 +63,6 @@ installTenor(){
 
     printf "\n\nStarting TeNOR installation script\n\n"
 
-    configureIps
-
     printf "\nBundle install of each NS/VNF Module\n"
 
     declare -a tenor_ns_url=("ns_manager" "ns_provisioner" "nsd_validator" "ns_monitoring" "ns_catalogue" "sla_enforcement" )
