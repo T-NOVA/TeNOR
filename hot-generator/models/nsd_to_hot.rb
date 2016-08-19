@@ -58,8 +58,8 @@ class NsdToHot
           #TODO
         end
 
-        network_name = create_network(vlink['id'], vlink['alias'], shared)
-        subnet_name = create_subnet(network_name, dns_server, cidr)
+        network_name = create_network(vlink['vld_id'], vlink['alias'], shared)
+        subnet_name = create_subnet(vlink['vld_id'], dns_server, cidr)
         create_router_interface(router_name, subnet_name)
 
 =begin
