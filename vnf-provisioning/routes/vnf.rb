@@ -57,7 +57,6 @@ class Provisioning < VnfProvisioning
 
     # Validate JSON format
     instantiation_info = parse_json(request.body.read)
-    logger.debug 'Instantiation info: ' + instantiation_info.to_json
     halt 400, 'NS Manager callback URL not found' unless instantiation_info.has_key?('callback_url')
 
     vnf = instantiation_info['vnf']
@@ -67,7 +66,8 @@ class Provisioning < VnfProvisioning
     rescue NoMethodError => e
       halt 400, "Deployment flavour #{instantiation_info['flavour']} not found"
     end
-    puts "Flavour: " + vnf_flavour
+
+    logger.debug 'Instantiation info: nsd_id -> ' + instantiation_info['ns_id'].to_s + ' Vnf_id -> ' + instantiation_info['vnf_id'].to_s + ' Flavour -> ' + vnf_flavour
 
     # Verify if the VDU images are accessible to download
     logger.debug 'Verifying VDU images'
@@ -81,6 +81,7 @@ class Provisioning < VnfProvisioning
           vnfd_reference: vnf['vnfd']['id'],
           vim_id: instantiation_info['vim_id'],
           vlr_instances: nil,
+          port_instances: nil,
           vnf_addresses: nil,
           vnf_status: 3,
           notifications: [instantiation_info['callback_url']],
@@ -102,10 +103,11 @@ class Provisioning < VnfProvisioning
     hot_generator_message = {
         vnf: vnf,
         vnfr_id: vnfr.id,
-        networks_id: instantiation_info['networks'],
-        routers_id: instantiation_info['routers'],
         security_group_id: instantiation_info['security_group_id'],
-        dns_server: instantiation_info['dns_server']
+        networks_id: instantiation_info['reserved_resources']['networks'],
+        routers_id: instantiation_info['reserved_resources']['routers'],
+        public_network_id: instantiation_info['reserved_resources']['public_network_id'],
+        dns_server: instantiation_info['reserved_resources']['dns_server']
     }
     begin
       hot = parse_json(RestClient.post settings.hot_generator + '/hot/' + vnf_flavour, hot_generator_message.to_json, :content_type => :json, :accept => :json)
@@ -117,7 +119,6 @@ class Provisioning < VnfProvisioning
     end
 
     logger.debug "HEAT template generated"
-    logger.debug hot
     vim_info = {
         'keystone' => instantiation_info['auth']['url']['keystone'],
         'tenant' => instantiation_info['auth']['tenant'],
@@ -125,10 +126,9 @@ class Provisioning < VnfProvisioning
         'password' => instantiation_info['auth']['password'],
         'heat' => instantiation_info['auth']['url']['orch']
     }
-    logger.debug 'VIM info: ' + vim_info.to_json
 
     # Request VIM to provision a VNF
-    response = provision_vnf(vim_info, vnf['name'] + SecureRandom.hex, hot)
+    response = provision_vnf(vim_info, vnf['vnfd']['name'] + "_" + vnfr.id, hot)
     logger.debug 'Provision response: ' + response.to_json
 
     vdu = []
@@ -144,6 +144,18 @@ class Provisioning < VnfProvisioning
         stack_url: response['stack']['links'][0]['href'],
         vdu: vdu
     )
+    vlrs = []
+    vnf['vnfd']['vlinks'].each do |vlink|
+      vlrs << {:id => vlink['id'], :alias=> vlink['alias']}
+    end
+    vnfr.update_attributes!(vlr_instances: vlrs)
+    ports = []
+    vnf['vnfd']['vdu'].each do |vdu|
+      vdu['connection_points'].each do |port|
+        ports << {:id => port['id'], :vlink_ref=> port['vlink_ref']}
+      end
+    end
+    vnfr.update_attributes!(port_instances: ports)
 
 #    if vnf['type'] != 'vSA'
       create_thread_to_monitor_stack(vnfr.id, vnfr.stack_url, vim_info, instantiation_info['callback_url'])
@@ -316,6 +328,10 @@ class Provisioning < VnfProvisioning
     stack_info = parse_json(request.body.read)
     logger.debug 'Stack info: ' + stack_info.to_json
 
+    # Request an auth token
+    token_info = request_auth_token(stack_info['vim_info'])
+    auth_token = token_info['access']['token']['id']
+
     begin
       vnfr = Vnfr.find(params[:vnfr_id])
     rescue Mongoid::Errors::DocumentNotFound => e
@@ -326,6 +342,23 @@ class Provisioning < VnfProvisioning
     # If stack is in create complete state
     if params[:status] == 'create_complete'
       logger.debug 'Create complete'
+
+      begin
+        response = parse_json(RestClient.get vnfr.stack_url + "/resources", 'X-Auth-Token' => auth_token, :content_type => :json)
+      rescue Errno::ECONNREFUSED
+        halt 500, 'VIM unreachable'
+      rescue => e
+        logger.error e.response
+        halt e.response.code, e.response.body
+      end
+
+      #map ports to openstack_port_id
+
+      resources = response['resources']
+      vnfr.port_instances.each do |port|
+        port['physical_resource_id'] = resources.find { |res| res['resource_name'] == port['id'] }['physical_resource_id']
+      end
+
 
       # Send the VNFR to the mAPI
       registerRequestmAPI(vnfr)
@@ -401,15 +434,12 @@ class Provisioning < VnfProvisioning
       # Build message to send to the NS Manager callback
       vnfi_id = []
       vnfr.vms_id.each { |key, value| vnfi_id << value }
-      message = {vnfd_id: vnfr.vnfd_reference, vnfi_id: vnfi_id, vnfr_id: vnfr.id, vnf_addresses: vnf_addresses}
+      message = {vnfd_id: vnfr.vnfd_reference, vnfi_id: vnfi_id, vnfr_id: vnfr.id, vnf_addresses: vnf_addresses, stack_resources: vnfr}
       nsmanager_callback(stack_info['ns_manager_callback'], message)
     else
       # If the stack has failed to create
       if params[:status] == 'create_failed'
         logger.debug 'Created failed'
-        # Request an auth token
-        token_info = request_auth_token(stack_info['vim_info'])
-        auth_token = token_info['access']['token']['id']
 
         # Request VIM information about the error
         begin
@@ -432,13 +462,12 @@ class Provisioning < VnfProvisioning
           halt e.response.code, e.response.body
         end
         logger.debug 'Response from VIM to destroy allocated resources: ' + response.to_json
-
+puts response.to_json
         vnfr.push(lifecycle_event_history: stack_info['stack']['stack_status'])
         vnfr.update_attributes!(
-            vnf_status: 2,
-            notifications: response.to_json)
+            vnf_status: 2)
 
-        message = {status: "ERROR_CREATING", vnfd_id: vnfr.vnfd_reference, vnfr_id: vnfr.id}
+        message = {status: "ERROR_CREATING", vnfd_id: vnfr.vnfd_reference, vnfr_id: vnfr.id, stack_resources: response}
         nsmanager_callback(stack_info['ns_manager_callback'], message)
 
         # Delete the VNFR from the database

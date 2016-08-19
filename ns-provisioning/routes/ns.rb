@@ -163,13 +163,17 @@ class Provisioner < NsProvisioning
           if popInfo == 400
             logger.error "Pop id no exists."
             return
-             raise "Pop id no exists."
+            raise "Pop id no exists."
           end
-          popUrls = getPopUrls(popInfo['info'][0]['extrainfo'])
+#          popUrls = getPopUrls(popInfo['info'][0]['extrainfo'])
+
+          pop_auth = @nsInstance['authentication'].find { |pop| pop['pop_id'] == vnf['pop_id'] }
+          popUrls = pop_auth['urls']
+
 
           if !vnf['vnfr_id'].nil?
             #auth = {:auth => {:tenant => @instance['vnf_info']['tenant_name'], :username => @instance['vnf_info']['username'], :password => @instance['vnf_info']['password'], :url => {:keystone => popUrls[:keystone]}}}
-            auth = {:auth => {:tenant => vnf['tenant_name'], :username => vnf['username'], :password => vnf['password'], :url => {:keystone => popUrls[:keystone]}}}
+            auth = {:auth => {:tenant => pop_auth['tenant_name'], :username => pop_auth['username'], :password => pop_auth['password'], :url => {:keystone => popUrls[:keystone]}}}
             begin
               response = RestClient.post settings.vnf_manager + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/destroy', auth.to_json, :content_type => :json
             rescue Errno::ECONNREFUSED
@@ -204,6 +208,7 @@ class Provisioner < NsProvisioning
 #      end
     elsif params[:status] === 'start'
       @instance['vnfrs'].each do |vnf|
+        logger.info "Starting VNF " +vnf['vnfr_id'].to_s
         event = {:event => "start"}
         begin
           response = RestClient.put settings.vnf_manager + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/config', event.to_json, :content_type => :json
@@ -276,12 +281,12 @@ class Provisioner < NsProvisioning
     nsd = response['nsd']
     nsr_id = params['nsr_id']
 
-    logger.debug "Callback response: " + callback_response.to_json
-    logger.info "Instance: " + @instance.to_json
+    #logger.debug "Callback response: " + callback_response.to_json
+    #logger.info "Instance: " + @instance.to_json
 
     if callback_response['status'] == 'ERROR_CREATING'
       @instance['status'] = "ERROR_CREATING"
-      @instance.push(lifecycle_event_history: "ERROR_CREATING")
+      @instance['lifecycle_event_history'].push("ERROR_CREATING")
       instance.update_attributes(@instance)
       generateMarketplaceResponse(@instance['notification'], "Error creating VNF")
       return 200
@@ -295,12 +300,36 @@ class Provisioner < NsProvisioning
 
     instance.update_attributes(@instance)
 
+    #for each VNF instantiated, read the connection point in the NSD and extract the resource id
+    EM.defer do
+
+      logger.error 'VNFR Stack Resources: ' + callback_response['stack_resources'].to_s
+      vnfr = callback_response['stack_resources']
+      nsd['vld']['virtual_links'].each do |vl|
+        vl['connections'].each do |conn|
+          vnf_net = conn.split("#")[1]
+          vnf_id = vnf_net.split(":")[0]
+          net = vnf_net.split(":ext_")[1]
+
+          if (vnf_id == vnfr['vnfd_reference'])
+            vlr = vnfr['vlr_instances'].find { |vlr| vlr['alias'] == net }
+            vnf_ports = vnfr['port_instances'].find_all { |port| port['vlink_ref'] == vlr['id'] }
+            ports = {}
+            ports['ns_network'] = conn
+            ports['vnf_ports'] = vnf_ports
+            @instance['resource_reservation'][:ports] << ports
+            instance.update_attributes(@instance)
+          end
+        end
+      end
+    end
+
     logger.info "Checking if all the VNFs are instantiated."
     nsd['vnfds'].each do |vnf|
-      puts vnf
       vnf_instance = @instance['vnfrs'].find { |vnf_info| vnf_info['vnfd_id'] == vnf }
       if vnf_instance['status'] != "INSTANTIATED"
         logger.info "VNF " + vnf.to_s + " is not ready."
+        logger.info vnf_instance['status']
         return
       end
     end
@@ -313,7 +342,7 @@ class Provisioner < NsProvisioning
 
     logger.info "Instantiation time: " + (DateTime.parse(@instance['instantiation_end_time']).to_time.to_f*1000 - DateTime.parse(@instance['created_at']).to_time.to_f*1000).to_s
     generateMarketplaceResponse(@instance['notification'], @instance)
-    logger.info "Notification to marketplace sent."
+    logger.info "Marketplace is notified"
 
     logger.info "Sending statistic information to NS Manager"
     EM.defer do

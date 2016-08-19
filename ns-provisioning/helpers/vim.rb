@@ -43,7 +43,6 @@ module VimHelper
       logger.error e
       logger.error e.response.body
       raise 500,  e.response.body
-      #halt 500, e.response.body
     end
 
     authentication, errors = parse_json(response)
