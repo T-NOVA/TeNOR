@@ -17,7 +17,7 @@
           "storage": {
             "size_unit": "GB",
             "persistence": false,
-            "size": 2
+            "size": 3
           },
           "network_interface_bandwidth": "",
           "platform_pcie_parameters": {
