@@ -301,25 +301,23 @@ class Provisioner < NsProvisioning
     instance.update_attributes(@instance)
 
     #for each VNF instantiated, read the connection point in the NSD and extract the resource id
-    EM.defer do
+    logger.error 'VNFR Stack Resources: ' + callback_response['stack_resources'].to_s
+    vnfr_resources = callback_response['stack_resources']
+    nsd['vld']['virtual_links'].each do |vl|
+      vl['connections'].each do |conn|
+        vnf_net = conn.split("#")[1]
+        vnf_id = vnf_net.split(":")[0]
+        net = vnf_net.split(":ext_")[1]
 
-      logger.error 'VNFR Stack Resources: ' + callback_response['stack_resources'].to_s
-      vnfr = callback_response['stack_resources']
-      nsd['vld']['virtual_links'].each do |vl|
-        vl['connections'].each do |conn|
-          vnf_net = conn.split("#")[1]
-          vnf_id = vnf_net.split(":")[0]
-          net = vnf_net.split(":ext_")[1]
-
-          if (vnf_id == vnfr['vnfd_reference'])
-            vlr = vnfr['vlr_instances'].find { |vlr| vlr['alias'] == net }
-            vnf_ports = vnfr['port_instances'].find_all { |port| port['vlink_ref'] == vlr['id'] }
-            ports = {}
-            ports['ns_network'] = conn
-            ports['vnf_ports'] = vnf_ports
-            @instance['resource_reservation'][:ports] << ports
-            instance.update_attributes(@instance)
-          end
+        if (vnf_id == vnfr_resources['vnfd_reference'])
+          vlr = vnfr_resources['vlr_instances'].find { |vlr| vlr['alias'] == net }
+          vnf_ports = vnfr_resources['port_instances'].find_all { |port| port['vlink_ref'] == vlr['id'] }
+          ports = {}
+          ports['ns_network'] = conn
+          ports['vnf_ports'] = vnf_ports
+          #@instance['resource_reservation'][@vnfr['pop_id']][:ports] << ports
+          @instance['resource_reservation'].find { |res| res['pop_id'] == @vnfr['pop_id'] }['ports'] << ports
+          instance.update_attributes(@instance)
         end
       end
     end
@@ -370,6 +368,7 @@ class Provisioner < NsProvisioning
     EM.defer do
       monitoringData(nsd, nsr_id, @instance)
     end
+
 
     return 200
   end
