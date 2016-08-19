@@ -21,12 +21,13 @@ class VnfdToHot
   #
   # @param [String] name the name for the HOT
   # @param [String] description the description for the HOT
-  def initialize(name, description)
+  def initialize(name, description,public_network_id)
     @hot = Hot.new(description)
     @name = name
     @outputs = {}
     @type = ""
     @vnfr_id = ""
+    @public_network_id = public_network_id
   end
 
   # Converts VNFD to HOT
@@ -220,7 +221,7 @@ class VnfdToHot
         if vlink['access']
           floating_ip_name = get_resource_name
           # TODO: Receive the floating ip pool name?
-          @hot.resources_list << FloatingIp.new(floating_ip_name, 'public')
+          @hot.resources_list << FloatingIp.new(floating_ip_name, @public_network_id)
           @hot.resources_list << FloatingIpAssociation.new(get_resource_name, {get_resource: floating_ip_name}, {get_resource: port_name})
 #          @hot.outputs_list << Output.new("#{port_name}#floating_ip", "#{port_name} Floating IP", {get_attr: [floating_ip_name, 'floating_ip_address']})
           @hot.outputs_list << Output.new("#{vdu_id}#PublicIp", "#{port_name} Floating IP", {get_attr: [floating_ip_name, 'floating_ip_address']})
