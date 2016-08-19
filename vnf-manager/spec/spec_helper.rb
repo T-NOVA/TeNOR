@@ -36,6 +36,7 @@
 ENV['RACK_ENV'] = 'test'
 
 require './main'
+require 'webmock/rspec'
 settings = YAML.load_file('./config/config.yml')
 
 RSpec.configure do |config|
@@ -51,11 +52,20 @@ RSpec.configure do |config|
       RestClient.delete settings['vnf_catalogue'] + '/vnfs/' + vnf['_id']
     end
   end
+
+  config.before(:each) do
+    stub_request(:get, "http://localhost:4000/configs/services/publish/vnf_manager").
+        with(:headers => {'Accept'=>'*/*; q=0.5, application/xml', 'Accept-Encoding'=>'gzip, deflate', 'Content-Type'=>'application/json', 'User-Agent'=>'Ruby'}).
+        to_return(:status => 200, :body => "", :headers => {})
+    stub_request(:get, "http://localhost:4012/vnfs").
+        with(:headers => {'Accept'=>'*/*; q=0.5, application/xml', 'Accept-Encoding'=>'gzip, deflate', 'Content-Type'=>'application/json', 'User-Agent'=>'Ruby'}).
+        to_return(:status => 200, :body => "", :headers => {})
+  end
   
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest
   # assertions if you prefer.
-  config.expect_with :spec do |expectations|
+  config.expect_with :rspec do |expectations|
     # This option will default to `true` in RSpec 4. It makes the `description`
     # and `failure_message` of custom matchers include text for helper methods
     # defined using `chain`, e.g.:
@@ -68,7 +78,7 @@ RSpec.configure do |config|
 
   # rspec-mocks config goes here. You can use an alternate test double
   # library (such as bogus or mocha) by changing the `mock_with` option here.
-  config.mock_with :spec do |mocks|
+  config.mock_with :rspec do |mocks|
     # Prevents you from mocking or stubbing a method that does not exist on
     # a real object. This is generally recommended, and will default to
     # `true` in RSpec 4.

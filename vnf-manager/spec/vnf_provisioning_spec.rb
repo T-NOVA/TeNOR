@@ -17,9 +17,9 @@
 #
 require_relative 'spec_helper'
 
-RSpec.describe OrchestratorVnfManager do
+RSpec.describe VNFManager do
 	def app
-		OrchestratorVnfManager
+		VNFManager
 	end
 
 	describe 'POST /vnf-instances' do
