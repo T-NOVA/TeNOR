@@ -36,7 +36,7 @@ Vagrant.configure(2) do |config|
     rvm group add rvm vagrant
     rvm fix-permissions
     cd ~
-    git clone https://github.com/jbatalle/TeNOR.git
+    git clone https://github.com/T-NOVA/TeNOR.git
     cd TeNOR/dependencies
     ./install_dependencies.sh
 
