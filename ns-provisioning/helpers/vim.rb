@@ -177,8 +177,10 @@ module VimHelper
       logger.error e.response.body
     end
     networks, errors = parse_json(response)
-    #network = networks['networks'].find { |role| role['name'] == 'public' }
-    network = networks['networks'].find { |role| role['router:external'] }
+    network = networks['networks'].find { |role| role['name'] == 'public' }
+    if networks.nil?
+      network = networks['networks'].find { |role| role['router:external'] }
+    end
     return network['id']
   end
 
