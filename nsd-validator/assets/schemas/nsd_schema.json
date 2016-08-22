@@ -245,6 +245,10 @@
                       "id": "/nsd/vld/virtual_links/0/vld_id",
                       "type": "string"
                     },
+                    "alias": {
+                      "id": "/nsd/vld/virtual_links/0/alias",
+                      "type": "string"
+                    },
                     "root_requirements": {
                       "id": "/nsd/vld/virtual_links/0/root_requirements",
                       "type": "string"
