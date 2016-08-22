@@ -1,5 +1,11 @@
 #!/bin/bash
 
+declare tenor_ip
+declare mongo_ip
+declare gatekeeper
+declare dns
+declare logstash_address
+
 pause(){
   read -p "Press [Enter] key to continue..." fackEnterKey
 }
@@ -34,7 +40,7 @@ show_menus() {
 installTenor(){
 	echo "Installing TeNOR..."
 
-	echo "Checking if the Ruby version"
+	echo "Checking the Ruby version"
 	ruby_version=`ruby -e "print(RUBY_VERSION < '2.2.0' ? '1' : '0' )"`
 	if [[ ! `which ruby` ]]; then
         echo "Ruby is not installed, please install a version higer than 2.2.0."
@@ -42,6 +48,8 @@ installTenor(){
         return
     fi
     if [ $ruby_version -eq 1 ]; then
+        ruby --version > /dev/null 2>&1
+        RUBY_IS_INSTALLED=$?
         echo "Ruby version: " $RUBY_VERSION
         echo "Please, install a ruby version higher or equal to 2.2.0"
         pause
@@ -55,6 +63,33 @@ installTenor(){
 
     printf "\n\nStarting TeNOR installation script\n\n"
 
+    printf "\nBundle install of each NS/VNF Module\n"
+
+    declare -a tenor_ns_url=("ns_manager" "ns_provisioner" "nsd_validator" "ns_monitoring" "ns_catalogue" "sla_enforcement" )
+    declare -a tenor_vnf_url=("vnf_manager" "vnf_provisioner" "vnfd_validator" "vnf_monitoring" "vnf_catalogue" )
+
+    bundle install --quiet
+
+    for folder in $(find . -type d \( -name "ns*" -o -name "vnf*" -o -name "hot-generator" \) ); do
+        printf "$folder\n"
+        cd $folder
+
+        if [ "$folder" = "./ns-manager" ]; then
+            cd default/monitoring
+            bundle install --quiet
+            cd ../../
+        fi
+        bundle install --quiet
+        cd ../
+    done
+
+    configureFiles
+
+    printf "\n\nTeNOR installation script finished\n\n"
+    exit
+}
+
+configureIps(){
     RAILS_ENV=development
     TENOR_IP="127.0.0.1"
     MONGODB_IP="127.0.0.1:27017"
@@ -84,35 +119,11 @@ installTenor(){
 
     logstash_host=${logstash_address%%:*}
     logstash_port=${logstash_address##*:}
-
-    printf "\nBundle install of each NS/VNF Module\n"
-
-    declare -a tenor_ns_url=("ns_manager" "ns_provisioner" "nsd_validator" "ns_monitoring" "ns_catalogue" "sla_enforcement" )
-    declare -a tenor_vnf_url=("vnf_manager" "vnf_provisioner" "vnfd_validator" "vnf_monitoring" "vnf_catalogue" )
-
-    bundle install --quiet
-
-    for folder in $(find . -type d \( -name "ns*" -o -name "vnf*" -o -name "hot-generator" \) ); do
-        printf "$folder\n"
-        cd $folder
-
-        if [ "$folder" = "./ns-manager" ]; then
-            cd default/monitoring
-            bundle install --quiet
-            cd ../../
-        fi
-        bundle install --quiet
-        cd ../
-    done
-
-    configureFiles
-
-    printf "\n\nTeNOR installation script finished\n\n"
-    exit
 }
-
 configureFiles(){
     printf "\nConfigure NS/VNF modules\n"
+
+    configureIps
 
     for folder in $(find . -type d  \( -name "ns*" -o -name "vnf*" -o -name "hot-generator" \) ); do
         printf "$folder\n"
@@ -227,9 +238,12 @@ trap '' SIGINT SIGQUIT SIGTSTP
 # Step #4: Main logic - infinite loop
 # ------------------------------------
 
+choice=$1
+
 while true
 do
 	show_menus
-	read_options $1
+	read_options $choice
+	choice=5
 done
 

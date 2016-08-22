@@ -133,4 +133,17 @@ module HotHelper
     return resources
   end
 
+  def deleteStack(stack_url, tenant_token)
+    begin
+      response = RestClient.delete stack_url, 'X-Auth-Token' => tenant_token, :content_type => :json, :accept => :json
+    rescue Errno::ECONNREFUSED
+      error = {"info" => "VIM unrechable."}
+      return
+    rescue => e
+      logger.error e
+      logger.error e.response
+      return
+    end
+  end
+
 end

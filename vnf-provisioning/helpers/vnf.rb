@@ -217,4 +217,28 @@ module ProvisioningHelper
     #create_thread_to_monitor_stack(vnfr_id, stack_url, vim_info, ns_manager_callback)
   end
 
+  def registerRequestmAPI(vnfr)
+      logger.debug 'Registring VNF to mAPI...'
+
+      # Send the VNFR to the mAPI
+      mapi_request = {id: vnfr.id.to_s, vnfd: {vnf_lifecycle_events: vnfr.lifecycle_info}}
+      logger.debug 'mAPI request: ' + mapi_request.to_json
+      begin
+        response = RestClient.post "#{settings.mapi}/vnf_api/", mapi_request.to_json, :content_type => :json, :accept => :json
+      rescue Errno::ECONNREFUSED
+        logger.error "mAPI -> Connection Refused."
+        message = {status: "mAPI_unreachable", vnfd_id: vnfr.vnfd_reference, vnfr_id: vnfr.id}
+        logger.info "mAPI is not rechable"
+#        nsmanager_callback(stack_info['ns_manager_callback'], message)
+#        halt 500, 'mAPI unreachable'
+      rescue => e
+        logger.error e.response
+        message = {status: "mAPI_error", vnfd_id: vnfr.vnfd_reference, vnfr_id: vnfr.id}
+        logger.error message
+        logger.info "mAPI is not rechable"
+#        nsmanager_callback(stack_info['ns_manager_callback'], message)
+#        halt e.response.code, e.response.body
+      end
+  end
+
 end

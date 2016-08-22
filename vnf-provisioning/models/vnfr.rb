@@ -37,6 +37,7 @@ class Vnfr
 	field :vnfd_reference, type: String
 	field :vim_id, type: String
 	field :vlr_instances, type: Array
+	field :port_instances, type: Array
 	field :vnf_addresses, type: Hash
 	field :vnf_status, type: String
 	field :notifications, type: Array

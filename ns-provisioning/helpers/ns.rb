@@ -59,7 +59,6 @@ module NsProvisioner
   #def recoverState(popInfo, vnf_info, instance, error)
   def recoverState(instance, error)
     logger.info "Recover state executed."
-    puts Time.new
     @instance = instance
     callbackUrl = @instance['notification']
     ns_id = @instance['nsd_id']
@@ -67,6 +66,11 @@ module NsProvisioner
     #reserved_resources for the instance
     logger.info "Removing reserved resources..."
     @instance['resource_reservation'].each do |resource|
+
+      if resource['pop_id'].nil?
+        break
+      end
+
       auth_info = @instance['authentication'].find { |auth| auth['pop_id'] == resource['pop_id']}
       popInfo = getPopInfo(resource['pop_id'])
       popUrls = getPopUrls(popInfo['info'][0]['extrainfo'])
@@ -123,11 +127,13 @@ module NsProvisioner
 
     logger.info "Removing users and tenants..."
     @instance['vnfrs'].each do |vnf|
-      puts vnf
       logger.error "Delete users for VNFR: " + vnf['vnfr_id'].to_s + " from PoP: " + vnf['pop_id'].to_s
 
       popInfo = getPopInfo(vnf['pop_id'])
       popUrls = getPopUrls(popInfo['info'][0]['extrainfo'])
+
+      auth_info = @instance['authentication'].find { |auth| auth['pop_id'] == vnf['pop_id']}
+      puts popInfo
 
       begin
         token = openstackAdminAuthentication(popUrls[:keystone], popUrls[:tenant], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
@@ -139,10 +145,13 @@ module NsProvisioner
 #      deleteSecurityGroup(popUrls[:compute], vnf_info['tenant_id'], vnf_info['security_group_id'], tenant_token)
       end
 
-      logger.info "Removing user '" + vnf['user_id'].to_s + "'..."
-      deleteUser(popUrls[:keystone], vnf['user_id'], token)
-      #deleteTenant(popUrls[:keystone], vnf_info['tenant_id'], token)
+      logger.info "Removing user '" + auth_info['user_id'].to_s + "'..."
+      deleteUser(popUrls[:keystone], auth_info['user_id'], token)
 
+      if !settings.default_tenant_id.nil?
+        logger.info "Removing tenant '" + auth_info['tenant_id'].to_s + "'..."
+        #deleteTenant(popUrls[:keystone], auth_info['tenant_id'], token)
+      end
     end
 
     message = {
@@ -343,7 +352,7 @@ module NsProvisioner
         popUrls = pop_auth['urls']
 
         logger.info "Send WICM template to HEAT Orchestration"
-        stack_name = "WICM_SFC-" + @instance['id'].to_s
+        stack_name = "WICM_SFC_" + @instance['id'].to_s
         template = {:stack_name => stack_name, :template => hot_template}
         stack, errors = sendStack(popUrls[:orch], vnf_info['tenant_id'], template, tenant_token)
         logger.error errors
@@ -367,6 +376,7 @@ module NsProvisioner
           return
         end
 
+        resource_reservation = @instance['resource_reservation']
         resource_reservation << {:wicm_stack => stack, :pop_id => pop_auth['pop_id']}
         @instance.update_attribute('resource_reservation', resource_reservation)
       end
@@ -392,10 +402,10 @@ module NsProvisioner
       return 400, errors.to_json if errors
 
       logger.info "Send network template to HEAT Orchestration"
-      stack_name = "network-" + @instance['id'].to_s
+      stack_name = "network_" + @instance['id'].to_s
       template = {:stack_name => stack_name, :template => hot}
       stack, errors = sendStack(popUrls[:orch], pop_auth['tenant_id'], template, tenant_token)
-      logger.error errors
+      logger.error errors if errors
       return 400, errors.to_json if errors
 
       stack_id = stack['stack']['id']
@@ -422,7 +432,7 @@ module NsProvisioner
       logger.info "Network stack CREATE_COMPLETE. Reading network information from stack..."
       sleep(3)
       network_resources, errors = getStackResources(popUrls[:orch], pop_auth['tenant_id'], stack_name, tenant_token)
-      logger.error errors
+      logger.error errors if errors
       return 400, errors.to_json if errors
       stack_networks = network_resources['resources'].find_all { |res| res['resource_type'] == 'OS::Neutron::Net' }
       stack_routers = network_resources['resources'].find_all { |res| res['resource_type'] == 'OS::Neutron::Router' }
@@ -439,15 +449,18 @@ module NsProvisioner
       end
       @instance.push(lifecycle_event_history: "NETWORK CREATED")
       @instance.update_attribute('vlr', networks)
-      @instance.update_attribute('routers', routers)
+      #@instance.update_attribute('routers', routers)
+
+      #resource_reservation = @instance['resource_reservation']
+      puts @instance['resource_reservation']
       resource_reservation = []
-      resource_reservation << {:network_stack => stack, :pop_id => pop_auth['pop_id']}
+      resource_reservation << {:ports => [], :network_stack => stack, :routers => routers, :networks => networks, :public_network_id => publicNetworkId, :dns_server => settings.dns_server, :pop_id => pop_auth['pop_id']}
+      puts "Resouirce reservation"
+      puts resource_reservation
       @instance.update_attribute('resource_reservation', resource_reservation)
     end
 
-
     vnfrs = []
-
     #for each VNF, instantiate
     mapping['vnf_mapping'].each do |vnf|
       logger.info "Start instantiation process of " + vnf.to_s
@@ -481,14 +494,11 @@ module NsProvisioner
               :token => pop_auth['token'],
               :password => pop_auth['password']
           },
-          :networks => @instance['vlr'],
-          :routers => @instance['routers'],
+          :reserved_resources => @instance['resource_reservation'].find { |resources| resources[:pop_id] == pop_id},
           :security_group_id => pop_auth['security_group_id'],
-          :dns_server => settings.dns_server,
           :callback_url => settings.manager + "/ns-instances/" + @instance['id'] + "/instantiate"
       }
 
-      logger.info "Starting the instantiation of a VNF..."
       logger.debug vnf_provisioning_info
       @instance.push(lifecycle_event_history: "INSTANTIATING " + vnf_id.to_s + " VNF")
       @instance.update_attribute('instantiation_start_time', DateTime.now.iso8601(3).to_s)
@@ -508,24 +518,18 @@ module NsProvisioner
         return
       end
 
-      vnfr, error = parse_json(response)
-      logger.debug vnfr
-      logger.debug "VNFr id: " + vnfr['_id'].to_s
-      puts pop_auth
+      vnfr, errors = parse_json(response)
+      logger.error errors if errors
 
-      pop_auth[:vnfd_id] = vnfr['vnfd_reference']
-      pop_auth[:vnfi_id] = []
-      pop_auth[:vnfr_id] = vnfr['_id']
-      vnfrs << pop_auth
-
+      new_vnfr = {}
+      new_vnfr[:vnfd_id] = vnfr['vnfd_reference']
+      new_vnfr[:vnfi_id] = []
+      new_vnfr[:vnfr_id] = vnfr['_id']
+      new_vnfr[:pop_id] = pop_id
+      vnfrs << new_vnfr
       @instance.update_attribute('vnfrs', vnfrs)
-
     end
+    logger.info "Creating VNFs for the NS instance " + nsd['id'].to_s  + "..."
     return
-
-    #logger.debug "Calling SLA Enforcement"
-    #each service_deployment_flavour has one or more assurance_parameters
-    #sla_enforcement(nsd, @instance['id'].to_s)
-
   end
 end

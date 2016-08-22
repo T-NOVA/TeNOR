@@ -23,7 +23,7 @@ TeNOR is the NFV Orchestrator platform developed by the [T-NOVA](http://www.t-no
 
 ##Steps
 
-1. Install and run the requirements (Gatekeeper and MongoDB). Installation scripts are provided in the `dependencies` folder.
+1. Install and run the requirements (Gatekeeper and MongoDB). Installation scripts are provided in the `dependencies` folder. Use the `install_dependencies.sh` script if you want to install all the dependencies.
 2. Install TeNOR (internal dependencies and configurations)
 3. Start TeNOR
 4. Register the internal modules (each microservice) and external modules (Mapping, mAPI, WICM, VIMMonitoring, Netfloc...)
@@ -43,7 +43,11 @@ Once the installation finishes, TeNOR needs to be [started](#execution)
 
 ## Docker (alternative installation)
 
-A Dockerfile is provided that provides a container with TeNOR and Gatekeeper installed.
+A Dockerfile is provided that generates a container with TeNOR and Gatekeeper and a mongodb installed.
+
+## Vagrant (alternative installation)
+
+A Vagrantfile is provided with TeNOR, Gatekeeper and a mongodb installed.
 
 ## Execution
 
@@ -138,11 +142,11 @@ The next step is add the dummy descriptors to TeNOR system using the API. This s
 In order to test TeNOR functionallity, you can follow the next steps (you can copy and paste in the command prompt):
 
 1. Add the VNFD in the catalogue
-` curl -XPOST localhost:4000/vnfs -H "Content-Type: application/json" --data-binary @TeNOR/vnfd-validator/assets/samples/vnfd_example.json `
+` curl -XPOST localhost:4000/vnfs -H "Content-Type: application/json" --data-binary @vnfd-validator/assets/samples/vnfd_example.json `
 2. Add the NSD in the catalogue
-` curl -XPOST localhost:4000/network-services -H "Content-Type: application/json" --data-binary @TeNOR/nsd-validator/assets/samples/nsd_example.json `
+` curl -XPOST localhost:4000/network-services -H "Content-Type: application/json" --data-binary @nsd-validator/assets/samples/nsd_example.json `
 3. Get the NSD from the NS Catalogue (getting the first NSD)
-` ns_id=$(curl -XGET localhost:4000/network-services | python -c 'import json,sys;obj=json.load(sys.stdin);print obj[0]["nsd"]["id"]')`
+` ns_id=$(curl -XGET localhost:4000/network-services | python -c 'import json,sys;obj=json.load(sys.stdin);print obj[0]["nsd"]["id"]') `
 4. Instantiate the NSD using the NSD ID extracted from the catalogue
 ` curl -XPOST localhost:4000/ns-instances -H "Content-Type: application/json" --data '{"ns_id": "'$ns_id'", "callbackUrl": "https://httpbin.org/post", "flavour": "basic"}' `
 

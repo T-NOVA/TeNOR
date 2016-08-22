@@ -72,7 +72,6 @@ module PopHelper
   # @return [Hash, nil] if the parsed message is a valid JSON
   # @return [Hash, String] if the parsed message is an invalid JSON
   def getPops()
-
     begin
       response = RestClient.get "#{settings.manager}/gatekeeper/dc", :content_type => :json
     rescue => e

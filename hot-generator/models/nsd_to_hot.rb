@@ -58,8 +58,8 @@ class NsdToHot
           #TODO
         end
 
-        network_name = create_network(vlink['alias'], shared)
-        subnet_name = create_subnet(network_name, dns_server, cidr)
+        network_name = create_network(vlink['vld_id'], vlink['alias'], shared)
+        subnet_name = create_subnet(vlink['vld_id'], dns_server, cidr)
         create_router_interface(router_name, subnet_name)
 
 =begin
@@ -101,9 +101,9 @@ class NsdToHot
   #
   # @param [String] network_name the network name
   # @return [String] the name of the created resource
-  def create_network(network_name, shared)
+  def create_network(vld_id, network_name, shared)
     name = get_resource_name
-    @hot.resources_list << Network.new(name, network_name, false, shared)
+    @hot.resources_list << Network.new(vld_id, network_name, false, shared)
     name
   end
 
@@ -111,7 +111,7 @@ class NsdToHot
   #
   # @param [String] network_name the network name
   # @param [String] dns_server the DNS server to use
-  # @param [Integer] index the id used for the CIDR
+  # @param [String] cidr the CIDR
   # @return [String] the name of the created resource
   def create_subnet(network_name, dns_server, cidr)
     name = get_resource_name

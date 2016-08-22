@@ -21,12 +21,13 @@ class VnfdToHot
   #
   # @param [String] name the name for the HOT
   # @param [String] description the description for the HOT
-  def initialize(name, description)
+  def initialize(name, description,public_network_id)
     @hot = Hot.new(description)
     @name = name
     @outputs = {}
     @type = ""
     @vnfr_id = ""
+    @public_network_id = public_network_id
   end
 
   # Converts VNFD to HOT
@@ -203,8 +204,6 @@ class VnfdToHot
       #detect, and return error if not.
       network = networks_id.detect { |network| network['alias'] == vlink['alias'] }
       if network != nil
-#        network_id = network['id']
-#        network_id = network['alias']
         port_name = "#{connection_point['id']}"
         ports << {port: {get_resource: port_name}}
         if vlink['port_security_enabled']
@@ -222,7 +221,7 @@ class VnfdToHot
         if vlink['access']
           floating_ip_name = get_resource_name
           # TODO: Receive the floating ip pool name?
-          @hot.resources_list << FloatingIp.new(floating_ip_name, 'public')
+          @hot.resources_list << FloatingIp.new(floating_ip_name, @public_network_id)
           @hot.resources_list << FloatingIpAssociation.new(get_resource_name, {get_resource: floating_ip_name}, {get_resource: port_name})
 #          @hot.outputs_list << Output.new("#{port_name}#floating_ip", "#{port_name} Floating IP", {get_attr: [floating_ip_name, 'floating_ip_address']})
           @hot.outputs_list << Output.new("#{vdu_id}#PublicIp", "#{port_name} Floating IP", {get_attr: [floating_ip_name, 'floating_ip_address']})
@@ -292,10 +291,15 @@ class VnfdToHot
       wc_notify = '\n echo "tenor_url: http://10.10.1.61:4000/vnf-provisioning/'+ @vnfr_id +'/stack/create_complete" > /etc/tenor.cfg'
       wc_notify = '\n echo curl -XPOST http://10.10.1.61:4000/vnf-provisioning/'+ @vnfr_id +'/stack/create_complete -d "info" '
       wc_notify = ""
+      wc_notify = wc_notify + "\nwc_notify --data-binary '{\"status\": \"SUCCESS\"}'\n"
     end
 
+    shell =  "#!/bin/bash"
+    if @type == 'vSA'
+      shell = "#!/bin/tcsh"
+    end
     if @type != 'vSA'
-      bootstrap_script = vdu.has_key?('bootstrap_script') ? vdu['bootstrap_script'] : "#!/bin/bash"
+      bootstrap_script = vdu.has_key?('bootstrap_script') ? vdu['bootstrap_script'] : shell
       {
           str_replace: {
               params: {
@@ -307,7 +311,7 @@ class VnfdToHot
           }
       }
     else
-      bootstrap_script = "#!/bin/bash"+ wc_notify
+      bootstrap_script = "#!/bin/bash" + wc_notify
     end
 
   end

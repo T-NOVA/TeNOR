@@ -43,7 +43,6 @@ module VimHelper
       logger.error e
       logger.error e.response.body
       raise 500,  e.response.body
-      #halt 500, e.response.body
     end
 
     authentication, errors = parse_json(response)
@@ -178,8 +177,10 @@ module VimHelper
       logger.error e.response.body
     end
     networks, errors = parse_json(response)
-    #network = networks['networks'].find { |role| role['name'] == 'public' }
-    network = networks['networks'].find { |role| role['router:external'] }
+    network = networks['networks'].find { |role| role['name'] == 'public' }
+    if networks.nil?
+      network = networks['networks'].find { |role| role['router:external'] }
+    end
     return network['id']
   end
 
@@ -240,19 +241,6 @@ module VimHelper
     end
     sec, error = parse_json(response)
     return sec
-  end
-
-  def deleteStack(stack_url, tenant_token)
-    begin
-      response = RestClient.delete stack_url, 'X-Auth-Token' => tenant_token, :content_type => :json, :accept => :json
-    rescue Errno::ECONNREFUSED
-      error = {"info" => "VIM unrechable."}
-      return
-    rescue => e
-      logger.error e
-      logger.error e.response
-      return
-    end
   end
 
   def configureSecurityGroups(computeUrl, tenant_id, token)

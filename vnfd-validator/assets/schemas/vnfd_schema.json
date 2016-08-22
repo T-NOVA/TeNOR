@@ -349,11 +349,15 @@
           "existing_net_id":{
             "id": "http://www.t-nova.eu/vlinks/3/existing_net_id",
             "type": "String"
-          }, "existing_net":{
+          },
+          "existing_net":{
             "id": "http://www.t-nova.eu/vlinks/3/existing_net",
             "type": "String"
           }
         },
+        "required": [
+          "alias"
+        ],
         "additionalProperties": false
       }
     },
@@ -583,39 +587,39 @@
                 },
                 "additionalProperties": false
               },
-              "scale-in": {
-                "id": "http://www.t-nova.eu/vnf_lifecycle_events/1/events/scale-in",
+              "scaling_in": {
+                "id": "http://www.t-nova.eu/vnf_lifecycle_events/1/events/scaling_in",
                 "type": "object",
                 "properties": {
                   "command": {
-                    "id": "http://www.t-nova.eu/vnf_lifecycle_events/1/events/scale-in/command",
+                    "id": "http://www.t-nova.eu/vnf_lifecycle_events/1/events/scaling_in/command",
                     "type": "string"
                   },
                   "template_file": {
-                    "id": "http://www.t-nova.eu/vnf_lifecycle_events/1/events/scale-in/template_file",
+                    "id": "http://www.t-nova.eu/vnf_lifecycle_events/1/events/scaling_in/template_file",
                     "type": "string"
                   },
                   "template_file_format": {
-                    "id": "http://www.t-nova.eu/vnf_lifecycle_events/1/events/scale-in/template_file_format",
+                    "id": "http://www.t-nova.eu/vnf_lifecycle_events/1/events/scaling_in/template_file_format",
                     "type": "string"
                   }
                 },
                 "additionalProperties": false
               },
-              "scale-out": {
-                "id": "http://www.t-nova.eu/vnf_lifecycle_events/1/events/scale-out",
+              "scaling_out": {
+                "id": "http://www.t-nova.eu/vnf_lifecycle_events/1/events/scaling_out",
                 "type": "object",
                 "properties": {
                   "command": {
-                    "id": "http://www.t-nova.eu/vnf_lifecycle_events/1/events/scale-out/command",
+                    "id": "http://www.t-nova.eu/vnf_lifecycle_events/1/events/scaling_out/command",
                     "type": "string"
                   },
                   "template_file": {
-                    "id": "http://www.t-nova.eu/vnf_lifecycle_events/1/events/scale-out/template_file",
+                    "id": "http://www.t-nova.eu/vnf_lifecycle_events/1/events/scaling_out/template_file",
                     "type": "string"
                   },
                   "template_file_format": {
-                    "id": "http://www.t-nova.eu/vnf_lifecycle_events/1/events/scale-out/template_file_format",
+                    "id": "http://www.t-nova.eu/vnf_lifecycle_events/1/events/scaling_out/template_file_format",
                     "type": "string"
                   }
                 },

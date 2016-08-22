@@ -18,24 +18,6 @@
 # @see OrchestratorHotGenerator
 module CommonMethods
 
-	# Checks if a JSON message is valid
-	#
-	# @param [JSON] message the JSON message
-	# @return [Hash] if the parsed message is a valid JSON
-=begin	def self.parse_json(message)
-		# Check JSON message format
-		begin
-			parsed_message = JSON.parse(message) # parse json message
-		rescue JSON::ParserError => e
-			# If JSON not valid, return with errors
-      puts logger
-			logger.error "JSON parsing: #{e.to_s}"
-			halt 400, e.to_s + "\n"
-		end
-
-		return parsed_message, nil
-=end
-
 	# Generate a HOT template
 	#
 	# @param [Hash] vnfd the VNFD
@@ -43,8 +25,8 @@ module CommonMethods
 	# @param [Array] networks_id the IDs of the networks created by the NS Manager
 	# @param [String] security_group_id the ID of the T-NOVA security group
 	# @return [Hash] the generated hot template
-	def self.generate_hot_template(vnfd, flavour_key, networks_id, routers_id, security_group_id, vnfr_id, dns)
-		hot = VnfdToHot.new(vnfd['name'], vnfd['description'])
+	def self.generate_hot_template(vnfd, flavour_key, networks_id, routers_id, security_group_id, vnfr_id, dns, public_network_id)
+		hot = VnfdToHot.new(vnfd['name'], vnfd['description'], public_network_id)
 
 		begin
 			hot.build(vnfd, flavour_key, networks_id, routers_id, security_group_id, vnfr_id, dns)
@@ -118,7 +100,8 @@ module CommonMethods
 		hot = WicmToHot.new('WICM', 'Resources for WICM and SFC integration')
 
 		hot.build(provider_info)
-  end
+	end
+
 
 	def self.is_num?(str)
 		!!Integer(str)

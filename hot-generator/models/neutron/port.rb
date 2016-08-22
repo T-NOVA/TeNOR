@@ -25,7 +25,6 @@ class Port < Resource
 	def initialize(resource_name, network, security_group_id = nil)
 		@type = 'OS::Neutron::Port'
 		security_group_id.nil? ? @properties = {'network' => network} : @properties = {'network' => network, 'security_groups' => [security_group_id]}
-#		security_group_id.nil? ? @properties = {'network' => network} : @properties = {'network' => network}
 		super(resource_name, @type, @properties)
 	end
 end

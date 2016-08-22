@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "Installing NodeJS and NPM..."
-sudo apt-get install nodejs-legacy npm
+sudo apt-get install -y nodejs-legacy npm
 echo "Installation of NodeJS and NPM done."
 
 echo "Installing Grunt and Bower..."
