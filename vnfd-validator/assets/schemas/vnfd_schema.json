@@ -349,11 +349,15 @@
           "existing_net_id":{
             "id": "http://www.t-nova.eu/vlinks/3/existing_net_id",
             "type": "String"
-          }, "existing_net":{
+          },
+          "existing_net":{
             "id": "http://www.t-nova.eu/vlinks/3/existing_net",
             "type": "String"
           }
         },
+        "required": [
+          "alias"
+        ],
         "additionalProperties": false
       }
     },
