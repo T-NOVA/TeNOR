@@ -59,7 +59,6 @@ module NsProvisioner
   #def recoverState(popInfo, vnf_info, instance, error)
   def recoverState(instance, error)
     logger.info "Recover state executed."
-    puts Time.new
     @instance = instance
     callbackUrl = @instance['notification']
     ns_id = @instance['nsd_id']
@@ -67,6 +66,11 @@ module NsProvisioner
     #reserved_resources for the instance
     logger.info "Removing reserved resources..."
     @instance['resource_reservation'].each do |resource|
+
+      if resource['pop_id'].nil?
+        break
+      end
+
       auth_info = @instance['authentication'].find { |auth| auth['pop_id'] == resource['pop_id']}
       popInfo = getPopInfo(resource['pop_id'])
       popUrls = getPopUrls(popInfo['info'][0]['extrainfo'])
@@ -123,11 +127,13 @@ module NsProvisioner
 
     logger.info "Removing users and tenants..."
     @instance['vnfrs'].each do |vnf|
-      puts vnf
       logger.error "Delete users for VNFR: " + vnf['vnfr_id'].to_s + " from PoP: " + vnf['pop_id'].to_s
 
       popInfo = getPopInfo(vnf['pop_id'])
       popUrls = getPopUrls(popInfo['info'][0]['extrainfo'])
+
+      auth_info = @instance['authentication'].find { |auth| auth['pop_id'] == vnf['pop_id']}
+      puts popInfo
 
       begin
         token = openstackAdminAuthentication(popUrls[:keystone], popUrls[:tenant], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
@@ -139,9 +145,13 @@ module NsProvisioner
 #      deleteSecurityGroup(popUrls[:compute], vnf_info['tenant_id'], vnf_info['security_group_id'], tenant_token)
       end
 
-      logger.info "Removing user '" + vnf['user_id'].to_s + "'..."
-      deleteUser(popUrls[:keystone], vnf['user_id'], token)
-      #deleteTenant(popUrls[:keystone], vnf_info['tenant_id'], token)
+      logger.info "Removing user '" + auth_info['user_id'].to_s + "'..."
+      deleteUser(popUrls[:keystone], auth_info['user_id'], token)
+
+      if !settings.default_tenant_id.nil?
+        logger.info "Removing tenant '" + auth_info['tenant_id'].to_s + "'..."
+        #deleteTenant(popUrls[:keystone], auth_info['tenant_id'], token)
+      end
     end
 
     message = {

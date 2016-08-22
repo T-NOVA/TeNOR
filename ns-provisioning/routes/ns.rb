@@ -182,7 +182,7 @@ class Provisioner < NsProvisioning
               puts "Already removed from the VIM."
               logger.error "Already removed from the VIM."
             rescue => e
-              puts "Probably and error with mAPI"
+              puts "Probably an error with mAPI"
               puts e
               logger.error e.response
               #halt e.response.code, e.response.body
@@ -310,13 +310,15 @@ class Provisioner < NsProvisioning
         net = vnf_net.split(":ext_")[1]
 
         if (vnf_id == vnfr_resources['vnfd_reference'])
+          logger.debug "Searching ports for network " + net.to_s
+          next if  net == "undefined"
           vlr = vnfr_resources['vlr_instances'].find { |vlr| vlr['alias'] == net }
           vnf_ports = vnfr_resources['port_instances'].find_all { |port| port['vlink_ref'] == vlr['id'] }
           ports = {}
           ports['ns_network'] = conn
           ports['vnf_ports'] = vnf_ports
-          #@instance['resource_reservation'][@vnfr['pop_id']][:ports] << ports
-          @instance['resource_reservation'].find { |res| res['pop_id'] == @vnfr['pop_id'] }['ports'] << ports
+          resources = @instance['resource_reservation'].find { |res| res['pop_id'] == @vnfr['pop_id'] }
+          resources['ports'] << ports
           instance.update_attributes(@instance)
         end
       end
@@ -368,7 +370,6 @@ class Provisioner < NsProvisioning
     EM.defer do
       monitoringData(nsd, nsr_id, @instance)
     end
-
 
     return 200
   end
