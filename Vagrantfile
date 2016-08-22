@@ -30,7 +30,7 @@ Vagrant.configure(2) do |config|
     curl -L https://get.rvm.io | bash -s stable --ruby
 
     source /home/vagrant/.rvm/scripts/rvm
-    #rvm install 2.2.2
+    #rvm install 2.2.5
     gem install bundler
     gem install compass
     rvm group add rvm vagrant

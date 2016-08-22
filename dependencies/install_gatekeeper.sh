@@ -39,4 +39,12 @@ echo "use Ctrl+c to stop it. The executable is located at: $GOPATH/bin/auth-util
 cd $HOME
 cp go/src/github.com/piyush82/auth-utils/gatekeeper.cfg .
 
-auth-utils &
+#auth-utils &
+
+echo -e '#!/bin/bash \ncd /home/vagrant \ngo/bin/auth-utils &' > ~/gatekeeperd
+    sudo mv ~/gatekeeperd /etc/init.d/gatekeeperd
+    sudo chmod +x /etc/init.d/gatekeeperd
+    sudo chown root:root /etc/init.d/gatekeeperd
+    sudo update-rc.d gatekeeperd defaults
+    sudo update-rc.d gatekeeperd enable
+    sudo service gatekeeperd start

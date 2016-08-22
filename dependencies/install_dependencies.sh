@@ -42,58 +42,59 @@ function echo_if {
   fi
 }
 
-echo "Checking if mongodb is installed"
+echo -e -n "\033[1;36mChecking if mongodb is installed"
 mongod --version > /dev/null 2>&1
 MONGO_IS_INSTALLED=$?
 if [ $MONGO_IS_INSTALLED -eq 0 ]; then
     echo ">>> MongoDB already installed"
     #service mongod restart
 else
-    echo "Mongodb is not installed... Installing..."
+    echo -e -n "\033[1;31mMongodb is not installed... Installing..."
     ./install_mongodb.sh
     #bash -c "$(curl -fsSL https://raw.githubusercontent.com/steveneaston/Vaprobash/master/scripts/mongodb.sh)" bash $1 $2
 fi
 
-echo "Checking if gatekeeper is installed"
+echo -e -n "\033[1;36mChecking if gatekeeper is installed"
 if [ -f ~/go/bin/auth-utils ]; then
   echo ">>> Gatekeeper already installed."
   if [ ! -f ~/gatekeeper.cfg ]; then
     cp go/src/github.com/piyush82/auth-utils/gatekeeper.cfg ~
   fi
 else
-    echo "Gatekeeper is not installed. Installing..."
+    echo -e -n "\033[1;31mGatekeeper is not installed. Installing..."
     sudo apt-get install gcc -y
     ./install_gatekeeper.sh
 fi
 
-echo "Checking if ruby is installed"
+echo -e -n "\033[1;36mChecking if ruby is installed"
 . ~/.rvm/scripts/rvm
 ruby --version > /dev/null 2>&1
 RUBY_IS_INSTALLED=$?
 if [ $RUBY_IS_INSTALLED -eq 0 ]; then
-    ruby_version=`ruby -e "print(RUBY_VERSION <= '2.2.0' ? '1' : '0' )"`
+    ruby_version=`ruby -e "print(RUBY_VERSION <= '2.2.5' ? '1' : '0' )"`
     if [ $ruby_version -eq 1 ]; then
         echo "Ruby version: " $RUBY_VERSION
-        echo "Please, install a ruby version higher or equal to 2.2.0"
+        echo "Please, install a ruby version higher or equal to 2.2.5"
     else
         echo ">>> Ruby is already installed"
     fi
 else
-    echo "Ruby is not installed."
+    echo -e -n "\033[1;31mRuby is not installed."
     ./install_ruby.sh
     . ~/.rvm/scripts/rvm
 fi
 
+echo -e -n "\033[1;36mChecking if nodejs is installed"
 npm --version > /dev/null 2>&1
 NPM_IS_INSTALLED=$?
 if [ $NPM_IS_INSTALLED -eq 0 ]; then
     echo ">>> NPM is already installed"
 else
-    echo "NPM is not installed."
+    echo -e -n "\033[1;31mNPM is not installed."
     ./install_npm.sh
 fi
 
-echo "Checking if dependencies are installed"
+echo -e -n "\033[1;36mChecking if dependencies are installed"
 echo "mongod          $(echo_if $(program_is_installed mongo))"
 echo "ruby            $(echo_if $(program_is_installed ruby))"
 echo "bundler         $(echo_if $(program_is_installed bundler))"
