@@ -44,9 +44,8 @@ module MonitoringHelper
     }
     monitoring[:parameters] = paramsNs
     vnf_instances = []
-#    vnfs.each {|x|
     instance['vnfrs'].each {|x|
-      vnf_instances << {:id => x[:vnfd_id], :parameters => paramsVnf, :vnfr_id => x[:vnfr_id]}
+      vnf_instances << {:id => x['vnfd_id'], :parameters => paramsVnf, :vnfr_id => x['vnfr_id']}
     }
     monitoring[:vnf_instances] = vnf_instances
 
