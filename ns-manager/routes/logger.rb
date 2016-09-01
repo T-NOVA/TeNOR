@@ -26,7 +26,7 @@ class LoggerController < TnovaManager
   	begin
   		response = RestClient::Request.new(
 		    :method => :get,
-		    :url => settings.logstash_host + request.fullpath.split("elastic")[1].to_s,
+		    :url => settings.elasticsearch + request.fullpath.split("elastic")[1].to_s,
 				:user => settings.logstash_user,
 		    :password => settings.logstash_password,
 		    :headers => { :accept => :json,
