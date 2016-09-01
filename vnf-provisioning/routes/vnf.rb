@@ -128,7 +128,7 @@ class Provisioning < VnfProvisioning
     }
 
     # Request VIM to provision a VNF
-    response = provision_vnf(vim_info, vnf['vnfd']['name'] + "_" + vnfr.id, hot)
+    response = provision_vnf(vim_info, vnf['vnfd']['name'].delete(' ') + "_" + vnfr.id, hot)
     logger.debug 'Provision response: ' + response.to_json
 
     vdu = []
@@ -359,7 +359,6 @@ class Provisioning < VnfProvisioning
         port['physical_resource_id'] = resources.find { |res| res['resource_name'] == port['id'] }['physical_resource_id']
       end
 
-
       # Send the VNFR to the mAPI
       registerRequestmAPI(vnfr)
 
@@ -443,14 +442,15 @@ class Provisioning < VnfProvisioning
 
         # Request VIM information about the error
         begin
-          response = RestClient.get vnfr.stack_url, 'X-Auth-Token' => auth_token, :accept => :json
+          response = JSON.parse(RestClient.get vnfr.stack_url, 'X-Auth-Token' => auth_token, :accept => :json)
         rescue Errno::ECONNREFUSED
           halt 500, 'VIM unreachable'
         rescue => e
           logger.error e.response
           halt e.response.code, e.response.body
         end
-        logger.error 'Response from the VIM about the error: ' + response
+        puts response
+        logger.error 'Response from the VIM about the error: ' + response.to_s
 
         # Request VIM to delete the stack
         begin
@@ -462,7 +462,7 @@ class Provisioning < VnfProvisioning
           halt e.response.code, e.response.body
         end
         logger.debug 'Response from VIM to destroy allocated resources: ' + response.to_json
-puts response.to_json
+        logger.error 'VIM ERROR: ' + response['stack']['stack_status_reason'].to_s
         vnfr.push(lifecycle_event_history: stack_info['stack']['stack_status'])
         vnfr.update_attributes!(
             vnf_status: 2)

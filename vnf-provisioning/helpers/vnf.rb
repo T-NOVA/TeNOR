@@ -184,6 +184,7 @@ module ProvisioningHelper
     begin
       response = RestClient.post "#{ns_manager_callback}", message.to_json, 'X-Auth-Token' => @client_token, :content_type => :json, :accept => :json
     rescue Errno::ECONNREFUSED
+      logger.error 'NS Manager callback down'
       halt 500, 'NS Manager callback down'
     rescue => e
       puts e
