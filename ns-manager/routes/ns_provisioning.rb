@@ -68,7 +68,7 @@ class NsProvisionerController < TnovaManager
   # @method get_ns_instances_id
   # @overload get "/ns-instances/:ns_instance_id"
   # Get a ns-instance
-  # @param [string]
+  # @param [string] Instance id
   get "/:ns_instance_id" do
     begin
       @service = ServiceModel.find_by(name: "ns_provisioner")
@@ -117,7 +117,8 @@ class NsProvisionerController < TnovaManager
   # @method get_ns_instance_status
   # @overload get "/ns-instances/:ns_instance_id/status"
   # Get a ns-instance status
-  # @param [string]
+  # @param [string] Instance id
+  # @param [string] Status
   get '/:ns_instance_id/status' do
     begin
       @service = ServiceModel.find_by(name: "ns_provisioner")
@@ -164,10 +165,9 @@ class NsProvisionerController < TnovaManager
   # @overload put "/ns-instances/:ns_instance_id/:status"
   # Update ns-instance status
   # @param [string] Instance id
+  # @param [string] Status
   put '/:ns_instance_id/:status' do
-    logger.error "Change status request"
-    logger.error params[:status]
-    logger.error request.fullpath
+    logger.info "Change status request of " + params[:ns_instance_id].to_s + " to " + params[:status].to_s
     begin
       @service = ServiceModel.find_by(name: "ns_provisioner")
     rescue Mongoid::Errors::DocumentNotFound => e
@@ -184,12 +184,7 @@ class NsProvisionerController < TnovaManager
     end
     @ns_instance, error = parse_json(response)
 
-    #call popInfo Function
-    #popInfo, errors = parse_json(getPopInfo(@ns_instance['vnf_info']['pop_id']))
-    #return 400, errors if errors
-    #info = { :instance => @ns_instance, :popInfo => popInfo }
     info = { :instance => @ns_instance }
-
     begin
       response = RestClient.put @service.host + ":" + @service.port.to_s + request.fullpath, info.to_json, 'X-Auth-Token' => @client_token, :content_type => :json
     rescue Errno::ECONNREFUSED
@@ -224,19 +219,8 @@ class NsProvisionerController < TnovaManager
     end
     @ns_instance, error = parse_json(response)
 
-    logger.info "Calling PoP, required????"
-    #call popInfo Function
-    if(@ns_instance['vnf_info'].nil?)
-      puts "PopInfo is null"
-      popInfo = nil
-    else
-      puts @ns_instance['vnf_info']
-      popInfo, errors = parse_json(getPopInfo(@ns_instance['vnf_info']['pop_id']))
-      return 400, errors if errors
-    end
-
-    logger.info "Calling NS Provisioner????"
-    info = { :instance => @ns_instance, :popInfo => popInfo }
+    logger.info "Sending terminate request to NS Provisioning"
+    info = { :instance => @ns_instance }
     begin
       response = RestClient.put @service.host + ":" + @service.port.to_s + request.fullpath.to_s + '/terminate', info.to_json, 'X-Auth-Token' => @client_token, :content_type => :json
     rescue Errno::ECONNREFUSED
@@ -297,11 +281,7 @@ class NsProvisionerController < TnovaManager
     end
     nsd, error = parse_json(response)
 
-    #popInfo, errors = parse_json(getPopInfo(@ns_instance['authentication']['pop_id']))
-    #return 400, errors if errors
-    #info = { :callback_response => callback_response, :instance => @ns_instance, :popInfo => popInfo , :nsd => nsd}
     info = { :callback_response => callback_response, :instance => @ns_instance, :nsd => nsd}
-
     begin
       response = RestClient.post @service.host + ":" + @service.port.to_s + request.fullpath, info.to_json, 'X-Auth-Token' => @client_token, :content_type => :json
     rescue Errno::ECONNREFUSED
