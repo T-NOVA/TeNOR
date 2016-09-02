@@ -34,7 +34,8 @@ show_menus() {
 	echo "2. Reconfigure configuration files"
 	echo "3. Register microservices"
 	echo "4. Add new PoP"
-	echo "5. Exit"
+	echo "5. Inserting sample VNF and NS"
+	echo "6. Exit"
 }
 
 installTenor(){
@@ -180,6 +181,11 @@ addNewPop(){
     ADMIN_TENANT_NAME=admin
     KEYSTONEPASS=password
     KEYSTONEUSER=admin
+
+    echo "Type the Gatekeeper hosts (localhost:8000), followed by [ENTER]:"
+    read gatekeeper_host
+    if [ -z "$gatekeeper_host" ]; then gatekeeper_host=$GATEKEEPER_HOST; fi
+
     echo "Type the Openstack IP, followed by [ENTER]:"
     read openstack_ip
     if [ -z "$openstack_ip" ]; then openstack_ip=$OPENSTACK_IP; fi
@@ -196,10 +202,10 @@ addNewPop(){
     read admin_tenant_name
     if [ -z "$admin_tenant_name" ]; then admin_tenant_name=$ADMIN_TENANT_NAME; fi
 
-    tokenId=$(curl -XPOST http://$GATEKEEPER_HOST/token/ -H "X-Auth-Password:$GATEKEEPER_PASS" -H "X-Auth-Uid:$GATEKEEPER_USER_ID" | python -c 'import json,sys;obj=json.load(sys.stdin);print obj["token"]["id"]')
-    curl -X POST http://$GATEKEEPER_IP:8000/admin/dc/ \
+    tokenId=$(curl -XPOST http://gatekeeper_host/token/ -H "X-Auth-Password:$GATEKEEPER_PASS" -H "X-Auth-Uid:$GATEKEEPER_USER_ID" | python -c 'import json,sys;obj=json.load(sys.stdin);print obj["token"]["id"]')
+    curl -X POST http://gatekeeper_host:8000/admin/dc/ \
     -H 'X-Auth-Token: '$tokenId'' \
-    -d '{"msg": "PoP Testbed", "dcname":"default", "adminid":"'$keystoneUser'","password":"'$keystonePass'", "extrainfo":"pop-ip='$OPENSTACK_IP' tenant-name='$admin_tenant_name' keystone-endpoint=http://'$OPENSTACK_IP':35357/v2.0 orch-endpoint=http://'$OPENSTACK_IP':8004/v1 compute-endpoint=http://'$OPENSTACK_IP':8774/v2.1 neutron-endpoint=http://'$OPENSTACK_IP':9696/v2.0"}'
+    -d '{"msg": "PoP Testbed", "dcname":"default", "adminid":"'$keystoneUser'","password":"'$keystonePass'", "extrainfo":"pop-ip='$openstack_ip' tenant-name='$admin_tenant_name' keystone-endpoint=http://'$openstack_ip':35357/v2.0 orch-endpoint=http://'$openstack_ip':8004/v1 compute-endpoint=http://'$openstack_ip':8774/v2.1 neutron-endpoint=http://'$openstack_ip':9696/v2.0"}'
 
     pause
 }
@@ -210,6 +216,18 @@ registerMicroservice(){
     pause
 }
 
+insertSamples(){
+    echo "Inserting VNF..."
+    curl -XPOST localhost:4000/vnfs -H "Content-Type: application/json" --data-binary @vnfd-validator/assets/samples/vnfd_example.json
+    vnf_id=$(curl -XGET localhost:4000/vnfs | python -c 'import json,sys;obj=json.load(sys.stdin);print obj[0]["vnfd"]["id"]')
+    echo "Inserting NS..."
+    curl -XPOST localhost:4000/network-services -H "Content-Type: application/json" --data-binary @nsd-validator/assets/samples/nsd_example.json
+    ns_id=$(curl -XGET localhost:4000/network-services | python -c 'import json,sys;obj=json.load(sys.stdin);print obj[0]["nsd"]["id"]')
+    echo "NSD id: " $ns_id
+    echo "VNFD id: " $vnf_id
+
+    pause
+}
 read_options(){
 
     if [ -n "$1" ]; then
@@ -224,7 +242,8 @@ read_options(){
 		2) configureFiles ;;
 		3) registerMicroservice ;;
 		4) addNewPop ;;
-		5) exit 0;;
+		5) insertSamples ;;
+		6) exit 0;;
 		*) echo -e "${RED}Error...${STD}" && sleep 2
 	esac
 }
@@ -244,6 +263,6 @@ while true
 do
 	show_menus
 	read_options $choice
-	choice=5
+	exit 0
 done
 
