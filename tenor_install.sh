@@ -142,6 +142,7 @@ configureFiles(){
             sed -i -e 's/\(logstash_host:\).*/\1 '$logstash_host'/' config/config.yml
             sed -i -e 's/\(logstash_port:\).*/\1 '$logstash_port'/' config/config.yml
             sed -i -e 's/\(dns_server:\).*/\1 '$dns'/' config/config.yml
+            sed -i -e 's/\(gatekeeper:\).*/\1 '$gatekeeper'/' config/config.yml
             for i in "${tenor_ns_url[@]}"
             do
                 sed  -i -e  's/\('$i':\).*\:\(.*\)/\1 '$tenor_ip':\2/' config/config.yml
@@ -172,7 +173,7 @@ configureFiles(){
 
 addNewPop(){
     echo "Adding new PoP..."
-    GATEKEEPER_IP=localhost
+    GATEKEEPER_HOST=localhost:8000
     GATEKEEPER_PASS=Eq7K8h9gpg
     GATEKEEPER_USER_ID=1
     OPENSTACK_IP=localhost
@@ -195,10 +196,10 @@ addNewPop(){
     read admin_tenant_name
     if [ -z "$admin_tenant_name" ]; then admin_tenant_name=$ADMIN_TENANT_NAME; fi
 
-    tokenId=$(curl -XPOST http://$GATEKEEPER_IP:8000/token/ -H "X-Auth-Password:$GATEKEEPER_PASS" -H "X-Auth-Uid:$GATEKEEPER_USER_ID" | python -c 'import json,sys;obj=json.load(sys.stdin);print obj["token"]["id"]')
+    tokenId=$(curl -XPOST http://$GATEKEEPER_HOST/token/ -H "X-Auth-Password:$GATEKEEPER_PASS" -H "X-Auth-Uid:$GATEKEEPER_USER_ID" | python -c 'import json,sys;obj=json.load(sys.stdin);print obj["token"]["id"]')
     curl -X POST http://$GATEKEEPER_IP:8000/admin/dc/ \
     -H 'X-Auth-Token: '$tokenId'' \
-    -d '{"msg": "PoP Testbed", "dcname":"default", "adminid":"'$keystonePass'","password":"'$keystoneUser'", "extrainfo":"pop-ip='$OPENSTACK_IP' tenant-name='$admin_tenant_name' keystone-endpoint=http://'$OPENSTACK_IP':35357/v2.0 orch-endpoint=http://'$OPENSTACK_IP':8004/v1 compute-endpoint=http://'$OPENSTACK_IP':8774/v2.1 neutron-endpoint=http://'$OPENSTACK_IP':9696/v2.0"}'
+    -d '{"msg": "PoP Testbed", "dcname":"default", "adminid":"'$keystoneUser'","password":"'$keystonePass'", "extrainfo":"pop-ip='$OPENSTACK_IP' tenant-name='$admin_tenant_name' keystone-endpoint=http://'$OPENSTACK_IP':35357/v2.0 orch-endpoint=http://'$OPENSTACK_IP':8004/v1 compute-endpoint=http://'$OPENSTACK_IP':8774/v2.1 neutron-endpoint=http://'$OPENSTACK_IP':9696/v2.0"}'
 
     pause
 }
@@ -216,7 +217,6 @@ read_options(){
     else
         local choice
 	    read -p "Enter choice [ 1 - 5 ] " choice
-        echo "Not defined"
     fi
 
 	case $choice in
