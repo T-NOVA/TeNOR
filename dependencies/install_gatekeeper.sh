@@ -41,7 +41,7 @@ cp go/src/github.com/piyush82/auth-utils/gatekeeper.cfg .
 
 #auth-utils &
 
-echo -e '#!/bin/bash \ncd /home/vagrant \ngo/bin/auth-utils &' > ~/gatekeeperd
+echo -e '#!/bin/bash \ncd '$(pwd)' \ngo/bin/auth-utils &' > ~/gatekeeperd
     sudo mv ~/gatekeeperd /etc/init.d/gatekeeperd
     sudo chmod +x /etc/init.d/gatekeeperd
     sudo chown root:root /etc/init.d/gatekeeperd
