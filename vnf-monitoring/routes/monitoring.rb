@@ -81,6 +81,14 @@ class VNFMonitoring < Sinatra::Application
     return 200, subscription_response.to_json
   end
 
+  delete '/vnf-monitoring/subcription/:id' do
+    begin
+      response = RestClient.delete settings.vim_monitoring + "/api/subscriptions/" + params['id'], :accept => :json
+    rescue => e
+      puts e
+      halt 400, "VIM Monitoring Module not available"
+    end
+  end
 
   #store data in VNF-Monitoring-Repository
 =begin
@@ -115,7 +123,6 @@ class VNFMonitoring < Sinatra::Application
     json.each do |instance|
       metrics = []
       instance['measurements'].each do |measurement|
-        puts measurement['units']
         metric = {
             :instance_id => vnfr_id,
             :type => measurement['type'],
