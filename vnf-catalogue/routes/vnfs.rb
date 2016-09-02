@@ -55,8 +55,8 @@ class VnfCatalogue < Sinatra::Application
 
 		begin
 			vnfd = Vnf.find_by({"vnfd.id" => vnf['vnfd']['id'], "vnfd.descriptor_version" => vnf['vnfd']['descriptor_version'], "vnfd.release" => vnf['vnfd']['release']})
-			logger.error vnfd
 			if vnfd != nil
+				logger.error 'Duplicated VNFD with id: ' + vnf['vnfd']['id'].to_s
 				logger.error 'ERROR: Duplicated VNFD ID, Version or Vendor'
 				return 400, 'ERROR: Duplicated VNFD ID, Version or Vendor'
 			end
