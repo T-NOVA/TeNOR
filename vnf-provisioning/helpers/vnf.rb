@@ -180,7 +180,6 @@ module ProvisioningHelper
 
   def nsmanager_callback(ns_manager_callback, message)
     logger.debug 'NS Manager message: ' + message.to_json
-    logger.debug 'NS Manager callback: ' + ns_manager_callback.to_json
     begin
       response = RestClient.post "#{ns_manager_callback}", message.to_json, 'X-Auth-Token' => @client_token, :content_type => :json, :accept => :json
     rescue Errno::ECONNREFUSED
@@ -199,7 +198,7 @@ module ProvisioningHelper
     rescue Errno::ECONNREFUSED
       #halt 500, 'VIM unreachable'
     rescue RestClient::ResourceNotFound
-      puts "Already removed from the VIM."
+      logger.error "Already removed from the VIM."
       return
     rescue => e
       logger.error e.response
