@@ -63,7 +63,7 @@ In the case of using Byobu, you'll see three sessions, one for the NS manager, o
 How to test if TeNOR is installed [Test if TeNOR is installed and running](#test-if-tenor-is-installed-and-running)
 
 ## Registering modules in TeNOR and Gatekeeper
-TeNOR has a microservice architecture and requires a registration of each microservices to the system. The NS Manager (API gateway) is the responsible to manage this registration.
+TeNOR has a microservice architecture and requires a registration of each microservices to the system. The NS Manager (API gateway) is the responsible to manage this registration. The interal TeNOR modules are managed automatically, but external modules like Gatekeeper, mAPI, WICM needs to be registered.
 
 The registration of modules can be done with in two ways:
 
@@ -72,7 +72,9 @@ The registration of modules can be done with in two ways:
  - Using the following script:
  `./loadModules.sh`
 
-The content of the loadModules.sh is a set of CuRL request to the NS Manager inserting the IP and PORT of each microservice. Automatically, the NS Manager register each module into Gatekeeper in order to generate a microservice-token.
+The content of the loadModules.sh is a set of CuRL request to the NS Manager inserting the IP and PORT of each microservice. When the NS Manager recevies the requests, automatically register each module into Gatekeeper in order to generate a microservice-token.
+
+Make sure to pu
 
 ## Loading PoP information in Gatekeeper
 
