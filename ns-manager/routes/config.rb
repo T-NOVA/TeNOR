@@ -79,8 +79,11 @@ class ServiceConfigurationController < TnovaManager
   # @method get_configs_services_publish_microservice
   # @overload get '/configs/services/:name/status'
   # Get dependencies for specific microservice, asyncrhonous call
-	get '/services/publish/:microservice' do
+	post '/services/publish/:microservice' do
     name =  params[:microservice]
+
+		registerService(request.body.read)
+
     EM.defer do
       ServiceConfigurationHelper.publishService(name)
     end
