@@ -116,11 +116,20 @@ angular.module('tNovaApp')
                     vnfd.vnfd.vdu.forEach(function (vdu) {
                         vdu.monitoring_parameters.forEach(function (m) {
                             $scope.tableData.push({
+                                vdu: vdu['id'],
                                 type: m.desc,
                                 value: 0,
                                 valueType: m.metric
                             });
-                        })
+                        });
+                        vdu.monitoring_parameters_specific.forEach(function (m) {
+                            $scope.tableData.push({
+                                vdu: vdu['id'],
+                                type: m.desc,
+                                value: 0,
+                                valueType: m.metric
+                            });
+                        });
                     });
                 });
             });
@@ -145,7 +154,7 @@ angular.module('tNovaApp')
             var lastStartDate = Math.floor(new Date().getTime() / 1000);
             var lastEndDate = Math.floor(new Date().getTime() / 1000);
             var url;
-            var promise1 = $interval(function () {
+            promise1 = $interval(function () {
                 url = "instances/" + $stateParams.id + "/monitoring-data/?instance_type=vnf&metric=" + type + "&end=" + lastEndDate;
                 tenorService.get(url).then(function (data) {
                     if (data.length == 0) {
@@ -160,7 +169,7 @@ angular.module('tNovaApp')
                     lastEndDate = data[data.length - 1].date - 1;
                 });
             }, historicInterval);
-            var promise2 = $interval(function () {
+            promise2 = $interval(function () {
                 url = "instances/" + $stateParams.id + "/monitoring-data/?instance_type=vnf&metric=" + type + "&start=" + lastStartDate;
                 tenorService.get(url).then(function (data) {
                     if (data.length == 0) return
@@ -172,50 +181,6 @@ angular.module('tNovaApp')
                     lastStartDate = data[data.length - 1].date;
                 });
             }, realTimeInterval);
-        };
-
-        //unused
-        $scope.reloadGraph2 = function (type) {
-            $interval.cancel(promise);
-            $scope.graph_name = type;
-            //$scope.monitoringData.clear();
-            var interval = 1000; //seconds
-            var lastDate = null;
-            console.log($scope.monitoringData);
-
-            var loop = function () {
-                console.log("Interval");
-                var url;
-                if ($scope.monitoringData.length === 0) url = "instances/" + $stateParams.id + "/monitoring-data/?instance_type=vnf&metric=" + type;
-                else {
-                    url = "instances/" + $stateParams.id + "/monitoring-data/?instance_type=vnf&metric=" + type + "&start=" + $scope.monitoringData.get($scope.monitoringData.length - 1).date;
-                    if (lastDate == null) lastDate = $scope.monitoringData.get($scope.monitoringData.length - 1).date;
-                    else {
-                        if (lastDate == $scope.monitoringData.get($scope.monitoringData.length - 1).date)
-                            interval = 61000;
-                        else lastDate = $scope.monitoringData.get($scope.monitoringData.length - 1).date
-                        console.log(interval);
-                        console.log($scope.monitoringData);
-                    }
-                }
-
-                tenorService.get(url).then(function (data) {
-                    var i = $scope.monitoringData.length;
-                    _.each(data, function (t) {
-                        //console.log(t);
-                        t['id'] = i;
-                        t['x'] = t.date * 1000;
-                        t['y'] = Math.floor(t.value);
-                        i++;
-                    });
-                    $scope.monitoringData.add(data);
-
-                });
-                if ($scope.newType == type) {
-                    $scope.reload = $timeout(loop, interval);
-                }
-            };
-            loop();
         };
 
         $scope.graph_name = "";
