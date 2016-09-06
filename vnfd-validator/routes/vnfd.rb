@@ -50,6 +50,9 @@ class VnfdValidator < Sinatra::Application
 			# Validate VNFD
 			vnfd = validate_json_vnfd(vnfd)
 			logger.debug 'Validated VNFD with JSON schema'
+
+      vnfd = validate_lifecycle_events(vnfd)
+			logger.debug 'Validated Lifecycle Events'
 		end
 
 		# Parse XML format
