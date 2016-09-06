@@ -57,8 +57,12 @@ class VnfdToHot
 
     vlinks.each do |vlink|
       vlink_json = vnfd['vlinks'].detect { |vl| vl['id'] == vlink }
-      net_name = create_networks(vlink_json, dns, routers_id[0]['id'])
-      networks_id << {'id' => vlink, 'alias' => vlink_json['alias'], 'heat' => net_name}
+      if !vlink_json['existing_net_id'].nil?
+        networks_id << {'id' => vlink, 'alias' => vlink_json['alias'], 'heat_id' => vlink_json['existing_net_id']}
+      else
+        net_name = create_networks(vlink_json, dns, routers_id[0]['id'])
+        networks_id << {'id' => vlink, 'alias' => vlink_json['alias'], 'heat' => net_name}
+      end
     end
 
     deployment_information['vdu_reference'].each do |vdu_ref|
@@ -85,11 +89,16 @@ class VnfdToHot
         auto_scale_group = create_autoscale_group(60, vdu['scale_in_out']['maximum'], vdu['scale_in_out']['minimum'], 1, server)
         create_scale_policy(auto_scale_group, 1)
         create_scale_policy(auto_scale_group, -1)
+        puts server
         @hot.outputs_list << Output.new("#{vdu['id']}#id", "#{vdu['id']} ID", {get_resource: auto_scale_group})
+        @hot.outputs_list << Output.new("#{vdu['id']}#size", "Size of #{vdu['id']}", {get_attr: [auto_scale_group, 'current_size']})
+        @hot.outputs_list << Output.new("#{vdu['id']}#ServiceList", "ServiceList of #{vdu['id']}", {get_attr: [auto_scale_group, 'outputs_list', 'name']})
       else
         create_server(vdu, image_name, flavor_name, ports, key, false)
       end
     end
+
+    puts @hot.to_json
 
     @hot
   end
@@ -220,10 +229,20 @@ class VnfdToHot
       if network != nil
         port_name = "#{connection_point['id']}"
         ports << {port: {get_resource: port_name}}
-        if vlink['port_security_enabled']
-          @hot.resources_list << Port.new(port_name, {get_resource: network['heat']}, security_group_id)
+        if vlink['existing_net_id']
+          puts "NETWORK HEAT"
+          puts network['heat_id']
+          if vlink['port_security_enabled']
+            @hot.resources_list << Port.new(port_name, network['heat_id'], security_group_id)
+          else
+            @hot.resources_list << Port.new(port_name, network['heat_id'])
+          end
         else
-          @hot.resources_list << Port.new(port_name, {get_resource: network['heat']})
+          if vlink['port_security_enabled']
+            @hot.resources_list << Port.new(port_name, {get_resource: network['heat']}, security_group_id)
+          else
+            @hot.resources_list << Port.new(port_name, {get_resource: network['heat']})
+          end
         end
 
         # Check if it's necessary to create an output for this resource
@@ -277,7 +296,6 @@ class VnfdToHot
           ports,
           add_wait_condition(vdu),
           {get_resource: key_name})
-
     else
       @hot.resources_list << Server.new(
           vdu['id'],

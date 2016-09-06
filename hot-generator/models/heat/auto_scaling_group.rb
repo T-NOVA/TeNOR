@@ -24,7 +24,7 @@ class AutoScalingGroup < Resource
   # @param [Integer] count the number of seconds to wait for the correct number of signals to arrive
   def initialize(resource_name, cooldown, max_size, min_size, desired_capacity, resource)
     @type = 'OS::Heat::AutoScalingGroup'
-    @properties = {'cooldown' => cooldown, 'max_size' => max_size, 'min_size' => min_size, 'resource' => resource, desired_capacity: desired_capacity}
+    @properties = {'cooldown' => cooldown, 'max_size' => max_size, 'min_size' => min_size, 'resource' => resource, 'desired_capacity'=> desired_capacity}
     super(resource_name, @type, @properties)
   end
 end

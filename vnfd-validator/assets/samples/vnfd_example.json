@@ -137,7 +137,7 @@
         "events": {
           "start": {
             "command": "/home/vagrant/scripts/start",
-            "template_file": "{\"controller\":\"get_attr[vdu0,PublicIp]\", \"vdu0\":\"get_attr[vdu1,PublicIp]\"}",
+            "template_file": "{\"controller\":\"get_attr[vdu0,CPfs0h,PublicIp]\"}",
             "template_file_format": "JSON"
           },
           "stop": {
