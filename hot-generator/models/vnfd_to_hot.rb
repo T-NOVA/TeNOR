@@ -89,16 +89,13 @@ class VnfdToHot
         auto_scale_group = create_autoscale_group(60, vdu['scale_in_out']['maximum'], vdu['scale_in_out']['minimum'], 1, server)
         create_scale_policy(auto_scale_group, 1)
         create_scale_policy(auto_scale_group, -1)
-        puts server
         @hot.outputs_list << Output.new("#{vdu['id']}#id", "#{vdu['id']} ID", {get_resource: auto_scale_group})
-        @hot.outputs_list << Output.new("#{vdu['id']}#size", "Size of #{vdu['id']}", {get_attr: [auto_scale_group, 'current_size']})
         @hot.outputs_list << Output.new("#{vdu['id']}#ServiceList", "ServiceList of #{vdu['id']}", {get_attr: [auto_scale_group, 'outputs_list', 'name']})
+        @hot.outputs_list << Output.new("#{vdu['id']}#Networks", "ServiceList of #{vdu['id']}", {get_attr: [auto_scale_group, 'outputs', 'networks']})
       else
         create_server(vdu, image_name, flavor_name, ports, key, false)
       end
     end
-
-    puts @hot.to_json
 
     @hot
   end
