@@ -178,7 +178,7 @@ module VimHelper
     end
     networks, errors = parse_json(response)
     network = networks['networks'].find { |role| role['name'] == 'public' }
-    if networks.nil?
+    if network.nil?
       network = networks['networks'].find { |role| role['router:external'] }
     end
     return network['id']

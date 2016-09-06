@@ -10,7 +10,7 @@ TeNOR is the NFV Orchestrator platform developed by the [T-NOVA](http://www.t-no
 - VIM Monitoring (https://github.com/T-NOVA/vim-monitoring) (optional)
 
 ## Requirements
-- Ruby >= 2.2
+- Ruby >= 2.2.5
 - Bundler
 - MongoDB
 - Apache Cassandra (optional, used for monitoring)
@@ -21,7 +21,7 @@ TeNOR is the NFV Orchestrator platform developed by the [T-NOVA](http://www.t-no
 
 #Getting started
 
-##Steps
+## Steps
 
 1. Install and run the requirements (Gatekeeper and MongoDB). Installation scripts are provided in the `dependencies` folder. Use the `install_dependencies.sh` script if you want to install all the dependencies.
 2. Install TeNOR (internal dependencies and configurations)
@@ -53,15 +53,17 @@ A Vagrantfile is provided with TeNOR, Gatekeeper and a mongodb installed.
 
 TeNOR can be executed in two ways:
 
-1. Using Foreman
-`foreman start`
-2. Using Byobu (modern Tmux). Useful for development purposes.
-`./tenor_development.sh`
+1. Using Byobu (modern Tmux). Useful for development purposes.
+   `./tenor_development.sh`
+2. Using Foreman
+   `foreman start`
 
 In the case of using Byobu, you'll see three sessions, one for the NS manager, one for the VNF manager and one for the UI. Inside each session use use F3 and F4 keys for navigate through the windows.
 
-##Registering modules in TeNOR and Gatekeeper
-TeNOR has a microservice architecture and requires a registration of each microservices to the system. The NS Manager (API gateway) is the responsible to manage this registration.
+How to test if TeNOR is installed [Test if TeNOR is installed and running](#test-if-tenor-is-installed-and-running)
+
+## Registering modules in TeNOR and Gatekeeper
+TeNOR has a microservice architecture and requires a registration of each microservices to the system. The NS Manager (API gateway) is the responsible to manage this registration. The interal TeNOR modules are managed automatically, but external modules like Gatekeeper, mAPI, WICM needs to be registered.
 
 The registration of modules can be done with in two ways:
 
@@ -70,9 +72,11 @@ The registration of modules can be done with in two ways:
  - Using the following script:
  `./loadModules.sh`
 
-The content of the loadModules.sh is a set of CuRL request to the NS Manager inserting the IP and PORT of each microservice. Automatically, the NS Manager register each module into Gatekeeper in order to generate a microservice-token.
+The content of the loadModules.sh is a set of CuRL request to the NS Manager inserting the IP and PORT of each microservice. When the NS Manager recevies the requests, automatically register each module into Gatekeeper in order to generate a microservice-token.
 
-##Loading PoP information in Gatekeeper
+Make sure to pu
+
+## Loading PoP information in Gatekeeper
 
 The PoP information is saved in Gatekeeper. This can be inserted in three manners:
 
@@ -113,7 +117,7 @@ TeNOR has a User Interface that provides a global view of the all the orchestrat
 
 This user interface is located in the `ui` folder and contains their own README file with the installation guide.
 
-# Initial steps
+#Initial steps
 
 ## Test if TeNOR is installed and running
 
@@ -168,7 +172,6 @@ Each microservice is listening in different port. This port is configured in the
 |    HOT Generator    |    4571    |
 |    VNF Catalogue    |    4572    |
 |    VNF Monitoring    |    4573    |
-
 
 
 # License

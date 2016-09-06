@@ -7,12 +7,13 @@ module Sinatra
 
       def initialize
         puts "Initializing gem GK..."
+
+        service_info = {:name => settings.servicename, :host => "localhost", :port => settings.port, :path => "" }
         begin
-          RestClient.get settings.manager + '/configs/services/publish/' + settings.servicename, :content_type => :json
+          RestClient.post settings.manager + '/configs/services/publish/' + settings.servicename, service_info.to_json, :accept => :json, :content_type => :json
         rescue => e
-          puts "error"
+          puts "Error registring or receiving dependencies from NS Manager"
           puts e
-          #halt 400, {'Content-Type' => 'text/plain'}, e.response
         end
 
         return
@@ -74,13 +75,8 @@ module Sinatra
 
       app.helpers Gk_Auth::Helpers
 
-      #Gk_Auth::Helpers.initializer()
-
-
       app.before do
-
-        env['rack.logger'] = settings.logger
-
+        #env['rack.logger'] = app.settings.logger
         if request.path_info == '/gk_credentials'
           return
         end
@@ -120,7 +116,7 @@ module Sinatra
         end
         services.each do |service|
           if !settings.dependencies.detect{ |sv| sv == service['name'] }.nil?
-            app.set service['name'], service['host']+":"+service['port']
+            app.set service['name'], service['host'] + ":" + service['port']# unless service['name'] == 'logstash'
           end
         end
 

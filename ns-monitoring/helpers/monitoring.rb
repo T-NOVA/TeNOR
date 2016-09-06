@@ -80,12 +80,8 @@ module MonitoringHelper
           begin
             @list_vnfs_parameters = VnfQueue.where(:nsi_id => nsi_id, :parameter_id => measurements['type'])
             if @list_vnfs_parameters.length == vnf_instances.length
-              puts "Lisf of vnfs_params is equal."
-              puts "Send to Expression Evaluator."
-
-              puts @queue['value']
-              puts @queue
-              puts @queue['parameter_id']
+              logger.debug "Lisf of vnfs_params is equal."
+              logger.debug "Send to Expression Evaluator."
 
               expression_response = 10
 
@@ -99,7 +95,7 @@ module MonitoringHelper
               puts ns_measurement
 
               q = ch.queue("ns_monitoring")
-              puts "Publishing...."
+              logger.info "Publishing values...."
               q.publish(ns_measurement.to_json, :persistent => true)
 
               #remove database
@@ -112,10 +108,10 @@ module MonitoringHelper
           end
 
         end
-        puts "Adding queue????"
+        logger.debug "Adding to queue"
         @@testThreads << {:vnfi_id => vnf_instance['vnfr_id'], :queue => t}
       rescue Interrupt => _
-        puts "INTERRUPTION.........."
+        logger.error "THREAD INTERRUPTION ..."
         conn.close
       end
     end
@@ -136,8 +132,8 @@ module MonitoringHelper
         begin
           monitoring = NsMonitoringParameter.find_by("nsi_id" => instance['id'])
           nsi_id = monitoring['nsi_id'].to_s
-          puts "Creating thread..."
-          puts monitoring
+          logger.info "Creating thread for NS instance " + nsi_id.to_s
+          logger.debug monitoring
 
           Thread.new {
             Thread.current["name"] = nsi_id;
@@ -145,7 +141,7 @@ module MonitoringHelper
             Thread.stop
           }
         rescue Mongoid::Errors::DocumentNotFound => e
-          puts "No monitoring data in the BD"
+          logger.debug "No monitoring data in the BD"
           #halt 400, "Monitoring Metric instance no exists"
         end
       end

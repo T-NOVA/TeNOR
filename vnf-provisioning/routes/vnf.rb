@@ -90,6 +90,7 @@ class Provisioning < VnfProvisioning
           vdu: [],
           stack_url: nil,
           vms_id: nil,
+          scale_info: nil,
           lifecycle_info: vnf['vnfd']['vnf_lifecycle_events'].find { |lifecycle| lifecycle['flavor_id_ref'].downcase == vnf_flavour.downcase },
           lifecycle_events_values: nil)
     rescue Moped::Errors::OperationFailure => e
@@ -128,7 +129,7 @@ class Provisioning < VnfProvisioning
     }
 
     # Request VIM to provision a VNF
-    response = provision_vnf(vim_info, vnf['vnfd']['name'] + "_" + vnfr.id, hot)
+    response = provision_vnf(vim_info, vnf['vnfd']['name'].delete(' ') + "_" + vnfr.id, hot)
     logger.debug 'Provision response: ' + response.to_json
 
     vdu = []
@@ -359,7 +360,6 @@ class Provisioning < VnfProvisioning
         port['physical_resource_id'] = resources.find { |res| res['resource_name'] == port['id'] }['physical_resource_id']
       end
 
-
       # Send the VNFR to the mAPI
       registerRequestmAPI(vnfr)
 
@@ -372,10 +372,15 @@ class Provisioning < VnfProvisioning
       vms_id = {}
       lifecycle_events_values = {}
       vnf_addresses = {}
+      scale_urls = {}
       stack_info['stack']['outputs'].select do |output|
         # If the output is an ID
         if output['output_key'] =~ /^.*#id$/i
           vms_id[output['output_key'].match(/^(.*)#id$/i)[1]] = output['output_value']
+        elsif output['output_key'] == "scale_in_url"
+          scale_urls[:scale_in] = output['output_value']
+        elsif output['output_key'] == "scale_out_url"
+          scale_urls[:scale_out] = output['output_value']
         else
 
           if output['output_key'] =~ /^.*#PublicIp$/i
@@ -390,8 +395,14 @@ class Provisioning < VnfProvisioning
                 parameter_match = parameter.delete(' ').match(/^get_attr\[(.*)\]$/i).to_a
                 string = parameter_match[1].split(",").map(&:strip)
                 key_string = string.join("#")
-
-                if string[1] == "PublicIp"
+puts "Key string: "
+puts key_string
+puts output['output_key']
+puts output['output_key'] =~ /^#{parameter_match[1]}##{parameter_match[2]}$/i
+puts "parameters: "
+puts parameter_match[1]
+puts parameter_match[2]
+                if string[2] == "PublicIp"
                   if key_string == output['output_key']
 #                    if output['output_key'] =~ /^.*#PublicIp$/i #output['output_key'] =~ /^.*#floating_ip$/i
                     if id == 'controller'
@@ -404,7 +415,7 @@ class Provisioning < VnfProvisioning
                     lifecycle_events_values[event][key_string] = output['output_value']
                   end
                 elsif output['output_key'] =~ /^#{parameter_match[1]}##{parameter_match[2]}$/i
-                  vnf_addresses["#{parameter_match[1]}"] = output['output_value'] if parameter_match[2] == 'ip' && !vnf_addresses.has_key?("#{parameter_match[1]}") # Only to populate VNF Ad$
+                  vnf_addresses["#{parameter_match[1]}"] = output['output_value'] if parameter_match[2] == 'ip' && !vnf_addresses.has_key?("#{parameter_match[1]}") # Only to populate VNF
                   lifecycle_events_values[event] = {} unless lifecycle_events_values.has_key?(event)
                   lifecycle_events_values[event]["#{parameter_match[1]}##{parameter_match[2]}"] = output['output_value']
                 elsif output['output_key'] == id #'controller'
@@ -429,7 +440,8 @@ class Provisioning < VnfProvisioning
           vnf_addresses: vnf_addresses,
           vnf_status: 1,
           vms_id: vms_id,
-          lifecycle_events_values: lifecycle_events_values)
+          lifecycle_events_values: lifecycle_events_values,
+          scale_info: scale_urls)
 
       # Build message to send to the NS Manager callback
       vnfi_id = []
@@ -443,14 +455,15 @@ class Provisioning < VnfProvisioning
 
         # Request VIM information about the error
         begin
-          response = RestClient.get vnfr.stack_url, 'X-Auth-Token' => auth_token, :accept => :json
+          response = JSON.parse(RestClient.get vnfr.stack_url, 'X-Auth-Token' => auth_token, :accept => :json)
         rescue Errno::ECONNREFUSED
           halt 500, 'VIM unreachable'
         rescue => e
           logger.error e.response
           halt e.response.code, e.response.body
         end
-        logger.error 'Response from the VIM about the error: ' + response
+        puts response
+        logger.error 'Response from the VIM about the error: ' + response.to_s
 
         # Request VIM to delete the stack
         begin
@@ -462,7 +475,7 @@ class Provisioning < VnfProvisioning
           halt e.response.code, e.response.body
         end
         logger.debug 'Response from VIM to destroy allocated resources: ' + response.to_json
-puts response.to_json
+        logger.error 'VIM ERROR: ' + response['stack']['stack_status_reason'].to_s
         vnfr.push(lifecycle_event_history: stack_info['stack']['stack_status'])
         vnfr.update_attributes!(
             vnf_status: 2)

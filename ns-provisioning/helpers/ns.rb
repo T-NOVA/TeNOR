@@ -71,7 +71,7 @@ module NsProvisioner
         break
       end
 
-      auth_info = @instance['authentication'].find { |auth| auth['pop_id'] == resource['pop_id']}
+      auth_info = @instance['authentication'].find { |auth| auth['pop_id'] == resource['pop_id'] }
       popInfo = getPopInfo(resource['pop_id'])
       popUrls = getPopUrls(popInfo['info'][0]['extrainfo'])
 
@@ -132,7 +132,7 @@ module NsProvisioner
       popInfo = getPopInfo(vnf['pop_id'])
       popUrls = getPopUrls(popInfo['info'][0]['extrainfo'])
 
-      auth_info = @instance['authentication'].find { |auth| auth['pop_id'] == vnf['pop_id']}
+      auth_info = @instance['authentication'].find { |auth| auth['pop_id'] == vnf['pop_id'] }
       puts popInfo
 
       begin
@@ -185,7 +185,7 @@ module NsProvisioner
     logger.debug "SLA id: " + sla_id
 
     if settings.environment == 'development'
-      infr_repo_url = { "host" => "", "port" => "" }
+      infr_repo_url = {"host" => "", "port" => ""}
     else
       infr_repo_url = settings.infr_repository
     end
@@ -234,7 +234,7 @@ module NsProvisioner
       pop_id = vnf['maps_to_PoP'].gsub('/pop/', '')
 #      vnf_id = vnf['vnf'].delete('/')
 
-      #check if this the authentication info is already created for this pop_id, if created, break the each
+#check if this the authentication info is already created for this pop_id, if created, break the each
       logger.info "Check if authentication is created for this PoP"
       authentication = @instance['authentication'].find { |auth| auth['pop_id'] == pop_id }
       next if !authentication.nil?
@@ -261,7 +261,7 @@ module NsProvisioner
       popUrls = getPopUrls(extra_info)
       pop_auth['urls'] = popUrls
 
-      #create credentials for pop_id
+#create credentials for pop_id
       if popUrls[:keystone].nil? || popUrls[:orch].nil? || popUrls[:tenant].nil?
         logger.error 'Keystone and/or openstack urls missing'
         generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", "Internal error: Keystone and/or openstack urls missing."))
@@ -307,7 +307,7 @@ module NsProvisioner
       @instance['authentication'] << pop_auth
     end
 
-   logger.info "Authentication generated"
+    logger.info "Authentication generated"
 
     #check if @instance['authentication'] has the credentials for each PoP in mapping['vnf_mapping'] ? compare sizes?
 
@@ -454,9 +454,15 @@ module NsProvisioner
       #resource_reservation = @instance['resource_reservation']
       puts @instance['resource_reservation']
       resource_reservation = []
-      resource_reservation << {:ports => [], :network_stack => stack, :routers => routers, :networks => networks, :public_network_id => publicNetworkId, :dns_server => settings.dns_server, :pop_id => pop_auth['pop_id']}
-      puts "Resouirce reservation"
-      puts resource_reservation
+      resource_reservation << {
+          :ports => [],
+          :network_stack => stack,
+          :routers => routers,
+          :networks => networks,
+          :public_network_id => publicNetworkId,
+          :dns_server => settings.dns_server,
+          :pop_id => pop_auth['pop_id']
+      }
       @instance.update_attribute('resource_reservation', resource_reservation)
     end
 
@@ -477,13 +483,13 @@ module NsProvisioner
         recoverState(@instance, error)
       end
       vnf_flavour = sla_info['vnf_flavour_id_reference']
-      logger.info "VNF Flavour: " + vnf_flavour
+      logger.debug "VNF Flavour: " + vnf_flavour
 
       vnf_provisioning_info = {
           :ns_id => nsd['id'],
           :vnf_id => vnf_id,
           :flavour => vnf_flavour,
-          :vim_id => pop_id,#popInfo['info'][0]['dcname'],
+          :vim_id => pop_id, #popInfo['info'][0]['dcname'],
           :auth => {
               :url => {
                   :keystone => popUrls[:keystone],
@@ -494,7 +500,7 @@ module NsProvisioner
               :token => pop_auth['token'],
               :password => pop_auth['password']
           },
-          :reserved_resources => @instance['resource_reservation'].find { |resources| resources[:pop_id] == pop_id},
+          :reserved_resources => @instance['resource_reservation'].find { |resources| resources[:pop_id] == pop_id },
           :security_group_id => pop_auth['security_group_id'],
           :callback_url => settings.manager + "/ns-instances/" + @instance['id'] + "/instantiate"
       }
@@ -521,15 +527,15 @@ module NsProvisioner
       vnfr, errors = parse_json(response)
       logger.error errors if errors
 
-      new_vnfr = {}
-      new_vnfr[:vnfd_id] = vnfr['vnfd_reference']
-      new_vnfr[:vnfi_id] = []
-      new_vnfr[:vnfr_id] = vnfr['_id']
-      new_vnfr[:pop_id] = pop_id
-      vnfrs << new_vnfr
+      vnfrs << {
+          :vnfd_id => vnfr['vnfd_reference'],
+          :vnfi_id => [],
+          :vnfr_id => vnfr['_id'],
+          :pop_id => pop_id
+      }
       @instance.update_attribute('vnfrs', vnfrs)
     end
-    logger.info "Creating VNFs for the NS instance " + nsd['id'].to_s  + "..."
+    logger.info "Creating VNFs for the NS instance " + nsd['id'].to_s + "..."
     return
   end
 end
