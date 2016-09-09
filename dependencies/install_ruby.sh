@@ -13,5 +13,5 @@ rvm install 2.2.5
 echo "Installation of Ruby 2.2.5 done."
 
 echo "Installing Bundler..."
-gem install bundler
+gem install bundler compass invoker
 echo "Installation of Bundler done."
