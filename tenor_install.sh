@@ -84,6 +84,14 @@ installTenor(){
         cd ../
     done
 
+    cd ui/
+    npm install
+    cd api
+    npm install
+    cd ../
+
+    cd ../
+
     configureFiles
 
     printf "\n\nTeNOR installation script finished\n\n"

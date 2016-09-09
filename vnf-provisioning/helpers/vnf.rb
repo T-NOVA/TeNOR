@@ -207,6 +207,24 @@ module ProvisioningHelper
     end
   end
 
+  def getStackResources(stack_url, auth_token)
+    begin
+      response = RestClient.get stack_url + "/resources", 'X-Auth-Token' => auth_token
+    rescue Errno::ECONNREFUSED
+      error = {"info" => "VIM unrechable."}
+      return
+    rescue => e
+      logger.error e
+      logger.error e.response
+      error = {"info" => "Error creating the network stack."}
+      return
+    end
+    resources, errors = parse_json(response)
+    return 400, errors if errors
+
+    return resources['resources']
+  end
+
   def recoverMonitoredInstances()
 
     #get list of VNF instances and filter for INIT instances

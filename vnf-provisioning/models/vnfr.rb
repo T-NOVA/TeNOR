@@ -46,6 +46,7 @@ class Vnfr
 	field :stack_url, type: String
 	field :vms_id, type: Hash
 	field :scale_info, type:Hash
+	field :scale_resources, type: Array
 	field :lifecycle_info, type: Hash
 	field :lifecycle_events_values, type: Hash
 	field :vdu, type: Array

@@ -24,6 +24,8 @@ class Scaling < VNFManager
   # @param [Integer] vnfr_id the vnfr ID
   post '/:vnfr_id/scale_out' do
 
+    scaling_info = parse_json(request.body.read)
+
     # Get VNF Instance by VNFR id
     begin
       instantiation_info = parse_json(RestClient.get settings.vnf_provisioning + '/vnf-provisioning/vnf-instances/' + params['vnfr_id'].to_s, 'X-Auth-Token' => @client_token, :accept => :json)
@@ -44,11 +46,11 @@ class Scaling < VNFManager
       halt e.response.code, e.response.body
     end
 
-    scale_info = {:vnfd => vnfd}
+    scale_info = {:auth => scaling_info['auth'], :vnfr => instantiation_info, :vnfd => vnfd}
 
     # Forward the request to the VNF Provisioning
     begin
-      response = RestClient.post settings.vnf_provisioning + request.fullpath, scale_info.to_json, 'X-Auth-Token' => @client_token, :accept => :json
+      response = RestClient.post settings.vnf_provisioning + request.fullpath, scale_info.to_json, 'X-Auth-Token' => @client_token, :accept => :json, :content_type => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'VNF Provisioning unreachable'
     rescue => e
