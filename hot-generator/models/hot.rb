@@ -16,53 +16,66 @@
 # limitations under the License.
 #
 class Hot
-	attr_accessor :resources_list, :outputs_list
+  attr_accessor :resources_list, :outputs_list, :parameters_list
 
-	# Initializes Hot object
-	#
-	# @param [String] description the description of Hot object
-	def initialize(description)
-		@version = '2014-10-16'
-		@description = description
-		@resources_list = []
-		@outputs_list = []
-	end
+  # Initializes Hot object
+  #
+  # @param [String] description the description of Hot object
+  def initialize(description)
+    @version = '2015-04-30'
+    @description = description
+    @resources_list = []
+    @outputs_list = []
+    @parameters_list = []
+  end
 
-	# Converts Hot object to HOT JSON format
-	#
-	# @return [JSON] the converted Hot object in HOT JSON format
-	def to_json(*a)
-		# Resources
-		resources = {}
-		@resources_list.each do |resource|
-			resources[resource.name] = resource
-		end
+  # Converts Hot object to HOT JSON format
+  #
+  # @return [JSON] the converted Hot object in HOT JSON format
+  def to_json(*a)
+    # Resources
+    resources = {}
+    @resources_list.each do |resource|
+      resources[resource.name] = resource
+    end
 
-		# Outputs
-		outputs = {}
-		@outputs_list.each do |output|
-			outputs[output.name] = output
-		end
+    # Outputs
+    outputs = {}
+    @outputs_list.each do |output|
+      outputs[output.name] = output
+    end
 
-		{heat_template_version: @version, description: @description, resources: resources, outputs: outputs}.to_json(*a)
-	end
+    # Parameters
+    parameters = {}
+    @parameters_list.each do |parameter|
+      parameters[parameter.name] = parameter
+    end
 
-	# Converts Hot object to HOT YAML format
-	#
-	# @return [YAML] the converted Hot object in HOT YAML format
-	def to_yaml
-		# Resources
-		resources = {}
-		@resources_list.each do |resource|
-			resources[resource.name] = resource.to_yaml
-		end
+    {heat_template_version: @version, description: @description, parameters: parameters, resources: resources, outputs: outputs}.to_json(*a)
+  end
 
-		# Outputs
-		outputs = {}
-		@outputs_list.each do |output|
-			outputs[output.name] = output
-		end
+  # Converts Hot object to HOT YAML format
+  #
+  # @return [YAML] the converted Hot object in HOT YAML format
+  def to_yaml
+    # Resources
+    resources = {}
+    @resources_list.each do |resource|
+      resources[resource.name] = resource.to_yaml
+    end
 
-		{'heat_template_version' => @version, 'description' => @description, 'resources' => resources, 'outputs' => outputs}.to_yaml
-	end
+    # Outputs
+    outputs = {}
+    @outputs_list.each do |output|
+      outputs[output.name] = output.to_yaml
+    end
+
+    # Parameters
+    parameters = {}
+    @parameters_list.each do |parameter|
+      parameters[parameter.name] = parameter.to_yaml
+    end
+
+    {'heat_template_version' => @version, 'description' => @description, 'parameters' => parameters, 'resources' => resources, 'outputs' => outputs}.to_yaml
+  end
 end

@@ -44,5 +44,6 @@ require_relative 'nova/flavor'
 require_relative 'nova/key_pair'
 require_relative 'nova/server'
 require_relative 'nova/server_group'
+require_relative 'generic_resource'
 
 require_relative 'scale_to_hot'
