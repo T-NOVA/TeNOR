@@ -53,6 +53,8 @@ A Vagrantfile is provided with TeNOR, Gatekeeper and a mongodb installed.
 
 TeNOR can be executed in two ways:
 
+1. Using Invoker (http://invoker.codemancers.com)
+   `invoker start invoker.ini`
 1. Using Byobu (modern Tmux). Useful for development purposes.
    `./tenor_development.sh`
 2. Using Foreman
