@@ -9,14 +9,21 @@ module Sinatra
         puts "Initializing gem GK..."
 
         service_info = {:name => settings.servicename, :host => "localhost", :port => settings.port, :path => "" }
+        publish_service(service_info)
+
+        return
+      end
+
+      def publish_service(service_info)
+        puts "Publishing service..."
         begin
           RestClient.post settings.manager + '/configs/services/publish/' + settings.servicename, service_info.to_json, :accept => :json, :content_type => :json
         rescue => e
           puts "Error registring or receiving dependencies from NS Manager"
           puts e
+          sleep(10)
+          publish_service(service_info)
         end
-
-        return
       end
 
       def authorized?

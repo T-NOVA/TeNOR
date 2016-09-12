@@ -110,7 +110,6 @@ else
     if [ "$install" = "y" ]; then
       echo -e -n "\033[1;31mGatekeeper is not installed. Installing..."
       sudo apt-get install gcc -y
-      #./install_gatekeeper.sh
       install_gatekeeper
     fi
 fi
@@ -129,6 +128,7 @@ if [ $RUBY_IS_INSTALLED -eq 0 ]; then
     fi
 else
     echo -e -n "\033[1;31mRuby is not installed."
+    echo -e "\nDo you want to install ruby? (y/n)"
     read install
     if [ "$install" = "y" ]; then
         install_ruby
@@ -143,14 +143,13 @@ if [ $NPM_IS_INSTALLED -eq 0 ]; then
     echo ">>> NPM is already installed"
 else
     echo -e -n "\033[1;31mNPM is not installed."
+    echo -e "\nDo you want to install NodeJS/NPM? (y/n)"
     read install
     if [ "$install" = "y" ]; then
         install_npm
     fi
 fi
 
-printf "\e[31m✘ ${1}"
-echo -e -n "\n"
 echo -e -n "\033[1;36mChecking if dependencies are installed\n"
 echo "mongod          $(echo_if $(program_is_installed mongo))"
 echo "ruby            $(echo_if $(program_is_installed ruby))"
