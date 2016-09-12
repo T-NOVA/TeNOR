@@ -259,4 +259,43 @@ module ProvisioningHelper
       end
   end
 
+  def delete_stack_with_wait(stack_url, auth_token)
+    deleteStack(stack_url, auth_token)
+    status = "DELETING"
+    count = 0
+    while (status != "DELETE_COMPLETE" && status != "DELETE_FAILED")
+      sleep(5)
+      begin
+        response = RestClient.get stack_url, 'X-Auth-Token' => auth_token, :content_type => :json, :accept => :json
+        stack_info, error = parse_json(response)
+        status = stack_info['stack']['stack_status']
+      rescue Errno::ECONNREFUSED
+        error = {"info" => "VIM unrechable."}
+        return
+      rescue RestClient::ResourceNotFound
+        logger.info "Stack already removed."
+        status = "DELETE_COMPLETE"
+      rescue => e
+        puts "If no exists means that is deleted correctly"
+        status = "DELETE_COMPLETE"
+        logger.error e
+        logger.error e.response
+      end
+
+      logger.debug "Try: " + count.to_s + ", status: " + status.to_s
+      if (status == "DELETE_FAILED")
+        deleteStack(stack_url, auth_token)
+        status = "DELETING"
+      end
+      count = count +1
+
+      if count > 10
+        logger.error "Stack can not be removed"
+        raise 400, "Stack can not be removed"
+      end
+      break if count > 20 #to remove
+    end
+    response
+  end
+
 end

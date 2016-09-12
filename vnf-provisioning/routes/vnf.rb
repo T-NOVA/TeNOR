@@ -216,81 +216,13 @@ class Provisioning < VnfProvisioning
     resources.each do |resource|
       if resource['resource_type'] == 'OS::Heat::AutoScalingGroup'
         stack_url = resource['links'].find { |link| link['rel'] == "nested" }['href']
-        deleteStack(stack_url, auth_token)
-        count = 0
-        while (status != "DELETE_COMPLETE" && status != "DELETE_FAILED")
-          sleep(5)
-          begin
-            response = RestClient.get stack_url, 'X-Auth-Token' => auth_token, :content_type => :json, :accept => :json
-            stack_info, error = parse_json(response)
-            status = stack_info['stack']['stack_status']
-          rescue Errno::ECONNREFUSED
-            error = {"info" => "VIM unrechable."}
-            return
-          rescue RestClient::ResourceNotFound
-            logger.info "Stack already removed."
-            status = "DELETE_COMPLETE"
-          rescue => e
-            puts "If no exists means that is deleted correctly"
-            status = "DELETE_COMPLETE"
-            logger.error e
-            logger.error e.response
-          end
-
-          logger.debug "Try: " + count.to_s + ", status: " + status.to_s
-          if (status == "DELETE_FAILED")
-            deleteStack(stack_url, auth_token)
-            status = "DELETING"
-          end
-          count = count +1
-
-          if count > 10
-            logger.error "Stack can not be removed"
-            raise 400, "Stack can not be removed"
-          end
-          break if count > 20 #to remove
-        end
+        response = delete_stack_with_wait(stack_url, auth_token)
+        logger.debug 'VIM response to destroy the AutoScalingGroup: ' + response.to_json
       end
     end
-
 
     # Requests the VIM to delete the stack
-    deleteStack(vnfr.stack_url, auth_token)
-
-    status = "DELETING"
-    count = 0
-    while (status != "DELETE_COMPLETE" && status != "DELETE_FAILED")
-      sleep(5)
-      begin
-        response = RestClient.get vnfr.stack_url, 'X-Auth-Token' => auth_token, :content_type => :json, :accept => :json
-        stack_info, error = parse_json(response)
-        status = stack_info['stack']['stack_status']
-      rescue Errno::ECONNREFUSED
-        error = {"info" => "VIM unrechable."}
-        return
-      rescue RestClient::ResourceNotFound
-        logger.info "Stack already removed."
-        status = "DELETE_COMPLETE"
-      rescue => e
-        puts "If no exists means that is deleted correctly"
-        status = "DELETE_COMPLETE"
-        logger.error e
-        logger.error e.response
-      end
-
-      logger.debug "Try: " + count.to_s + ", status: " + status.to_s
-      if (status == "DELETE_FAILED")
-        deleteStack(vnfr.stack_url, auth_token)
-        status = "DELETING"
-      end
-      count = count +1
-
-      if count > 10
-        logger.error "Stack can not be removed"
-        raise 400, "Stack can not be removed"
-      end
-      break if count > 20 #to remove
-    end
+    response = delete_stack_with_wait(vnfr.stack_url, auth_token)
 
     logger.debug 'VIM response to destroy: ' + response.to_json
 
@@ -405,7 +337,9 @@ class Provisioning < VnfProvisioning
       end
 
       # Send the VNFR to the mAPI
-      registerRequestmAPI(vnfr)
+      if !settings.mapi.nil?
+        registerRequestmAPI(vnfr)
+      end
 
       # Read from VIM outputs and map with parameters
       logger.debug "Output recevied from Openstack:"
