@@ -358,7 +358,7 @@
         "required": [
           "alias"
         ],
-        "additionalProperties": false
+        "additionalProperties": true
       }
     },
     "trade": {
@@ -367,6 +367,7 @@
     },
     "descriptor_version": {
       "id": "http://www.t-nova.eu/descriptor_version",
+      "type": "string"
       "type": "string"
     },
     "deployment_flavours": {
