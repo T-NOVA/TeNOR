@@ -17,14 +17,7 @@ byobu send-keys "cd ../TeNOR" C-m
 byobu send-keys "cd ns-manager" C-m
 byobu send-keys "rake start" C-m
 
-echo "Sleeping 10 seconds..."
 sleep 10
-echo "Done"
-#wait until NS Manager port is listening
-
-byobu new-window -n 'LoadModules'
-byobu send-keys "" C-m
-byobu send-keys "sh loadModules.sh" C-m
 
 byobu new-window -n 'Catlg'
 byobu send-keys "cd ns-catalogue" C-m
