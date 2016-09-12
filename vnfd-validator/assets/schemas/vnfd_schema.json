@@ -348,11 +348,11 @@
           },*/
           "existing_net_id":{
             "id": "http://www.t-nova.eu/vlinks/3/existing_net_id",
-            "type": "String"
+            "type": "string"
           },
           "existing_net":{
             "id": "http://www.t-nova.eu/vlinks/3/existing_net",
-            "type": "String"
+            "type": "string"
           }
         },
         "required": [
@@ -367,7 +367,6 @@
     },
     "descriptor_version": {
       "id": "http://www.t-nova.eu/descriptor_version",
-      "type": "string"
       "type": "string"
     },
     "deployment_flavours": {
