@@ -1,3 +1,12 @@
+## 0.3.0
+- UI infinite monitoring request fixed.
+- Included Invoker for deployment of TeNOR.
+- Included Parameter in Hot Generator
+- Update Scaling for support Floating IPs. Updated Hot Generator and VNF Provisioning using Nested Templates.
+- Hot Generator fixed yaml response.
+- Updated Hot Generator Network in order to avoid problems with Port_Security
+- Updated installation dependencies script.
+
 ## 0.2.0
 - Refactor code.
 - Fix NS Provisioning when choose a Public Network Id.

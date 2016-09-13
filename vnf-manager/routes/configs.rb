@@ -97,4 +97,19 @@ class ServiceConfiguration < VNFManager
 		halt response.code, response.body
 	end
 
+	# @method get_configs_services_publish_microservice
+	# @overload get '/configs/services/:name/status'
+	# Get dependencies for specific microservice, asyncrhonous call
+	post '/services/publish/:microservice' do
+		name =  params[:microservice]
+
+		registerService(request.body.read)
+
+		EM.defer do
+			ServiceConfigurationHelper.publishServices()
+		end
+
+		return 200
+	end
+
 end

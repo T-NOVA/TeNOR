@@ -53,6 +53,10 @@ configure do
 	set :logger, logger
 end
 
+before do
+	env['rack.logger'] = settings.logger
+end
+
 class NsCatalogue < Sinatra::Application
   helpers ApplicationHelper
 	Mongoid.load!('config/mongoid.yml')

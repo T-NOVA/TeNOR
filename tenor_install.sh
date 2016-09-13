@@ -85,11 +85,11 @@ installTenor(){
     done
 
     cd ui/
-    npm install
+    #sudo npm install
+    bower install
     cd api
-    npm install
+    #sudo npm install
     cd ../
-
     cd ../
 
     configureFiles

@@ -73,12 +73,20 @@ function install_npm {
     echo "Installation of NodeJS and NPM done."
 
     echo "Installing Grunt and Bower..."
+    cd ../ui
+    pwd
     sudo npm install -g grunt grunt-cli bower
     echo "Installation of Grunt and Bower done."
+
+    sudo npm install
 
     echo "Installing Compass..."
     gem install compass
     echo "Installation of Compass done."
+
+    cd ../dependencies
+    echo "NPM dependencies done."
+
 }
 
 echo -e -n "\033[1;36mChecking if mongodb is installed"
