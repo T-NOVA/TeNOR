@@ -4,7 +4,7 @@
 
 ### Requirements
 
-This code has been run on Ruby 2.1.
+This code has been tested on Ruby 2.1.
 Additional include files for the mapper binary application are included in bin/include/ directory.
 This package requires GLPK libraries! ( http://www.gnu.org/software/glpk/ )
 This package uses jsoncons library (http://github.com/danielaparker/jsoncons) redistributed under the Boost license.
@@ -24,58 +24,77 @@ This package uses jsoncons library (http://github.com/danielaparker/jsoncons) re
 
 ### Installation
 
-After you cloned the source from the repository, you can run
+Followin up, the istallation instruction on how to deploy on a freshly deployed VM having Ubuntu 14.04 LTS OS.
 
 ```
-bundle install
+sudo apt-get update
+
+sudo apt-get install -y make g++ ruby bundler zlib1g zlib1g-devp
 ```
-Which will install all the gems.
 
+which updates the vm OS and installs the required dependencies.
 
-GLPK library is required for the binary applications and it is NOT distributed within this package.
-On Linux environment:
+GLPK library is required for the binary applications and it is NOT distributed within this package. On Linux environment:
 
-```
+``` 
+
 wget http://ftp.gnu.org/gnu/glpk/glpk-4.55.tar.gz
 
-tar xf glpk-4.55.tar.gz
+tar xf glpk-4.55.tar.gz 
 
-cd glpk-4.55
+cd glpk-4.55 
 
 mkdir build
 
-cd build
+cd build 
 
-../configure
+../configure 
 
 make
 
 sudo make install
+
+sudo ldconfig
+
 ```
 
-By default, the installer script copies the service into the /home/<username>/TeNOR-Mapper directory.
-It is possible to manual install the service and compile the binary applications: a makefile is available
-in the TeNOR-Mapper/bin directory.
+After the source has been cloned from the repository, you can run
 
-### Tests
+```
+./install.sh
+```
 
-TODO
+from the cloned git directory. By default, the installer script copies the service into the ~/TeNOR-Mapper directory.
+
+It is possible to manual install the service and compile the binary applications: a makefile is available in the TeNOR-Mapper/bin directory.
+
+The following guidelines, however, assume that the content of the cloned git has been copied into the ~/TeNOR-Mapper directory.
+
+From there, launch: 
+
+```
+bundle install
+```
+
+for downloading and configuring the required Ruby gems.
+
+Then, from the ~/TeNOR-Mapper/bin directory, compile the binary applications:
+
+```
+make jsonconverter
+
+make solver
+```
+
+Eventually, for solving any issue with gem dependencies, try running
+
+```
+bundle update
+```
+
 
 ### API Documentation
-
-The API is documented with yardoc and can be built with a rake task:
-
-```
-rake yard
-```
-
-from here you can use the yard server to browse the docs from the source root:
-
-```
-yard server
-```
-
-and they can be viewed from http://localhost:8808/
+A wiki page will be available shortly
 
 ### Run Server
 
@@ -96,5 +115,7 @@ test_sm.html is used in conjunction with the localhost server
 
 ### Developed by Unimi.it in 2015-2016
 Alessandro Petrini (alessandro.petrini@unimi.it)
+
 Marco Trubian
+
 Alberto Ceselli
