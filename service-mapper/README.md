@@ -108,7 +108,7 @@ rake start
 
 The service mapper can be invoked with the following curl example:
 ```
-curl -X POST localhost:4042/vnsd -H 'Content-Type: application/json' -d '{"NS_id":"demo1"}'
+curl -X POST localhost:4042/mapper -H 'Content-Type: application/json' -d '{"NS_id":"demo1", "NS_sla":"gold", "NS_id":"demo1", "NS_sla":"gold", "tenor_api":"http://10.20.30.40:5454", "infr_repo_api":"http://1.2.3.4:5544"}'
 ```
 or by using the included html page:
 test_sm.html is used in conjunction with the localhost server
