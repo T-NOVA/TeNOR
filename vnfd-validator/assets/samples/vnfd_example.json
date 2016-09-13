@@ -169,7 +169,6 @@
           "vdu0"
         ],
         "external_access": true,
-        "port_security_enabled": false,
         "connection_points_reference": [
           "CPfs0h"
         ],
@@ -187,7 +186,6 @@
           "vdu0"
         ],
         "external_access": true,
-        "port_security_enabled": false,
         "connection_points_reference": [
           "CPng8r"
         ],

@@ -5,6 +5,7 @@ declare mongo_ip
 declare gatekeeper
 declare dns
 declare logstash_address
+declare cassandra_address
 
 pause(){
   read -p "Press [Enter] key to continue..." fackEnterKey
@@ -105,6 +106,7 @@ configureIps(){
     GATEKEEPER="127.0.0.1:8000"
     DNS_SERVER="8.8.8.8"
     LOGSTASH_ADDRESS="127.0.0.1:5228"
+    CASSANDRA_ADDRESS="127.0.0.1"
 
     echo "Type the IP where is installed TeNOR, followed by [ENTER]:"
     read tenor_ip
@@ -125,6 +127,10 @@ configureIps(){
     echo "Type the IP:PORT (xxx.xxx.xxx.xxx:xxxx) where is installed Logstash, followed by [ENTER]:"
     read logstash_address
     if [ -z "$logstash_address" ]; then logstash_address=$LOGSTASH_ADDRESS; fi
+
+    echo "Type the IP (xxx.xxx.xxx.xxx) where is installed Cassandra, followed by [ENTER]:"
+    read cassandra_address
+    if [ -z "$cassandra_address" ]; then cassandra_address=$CASSANDRA_ADDRESS; fi
 
     logstash_host=${logstash_address%%:*}
     logstash_port=${logstash_address##*:}
@@ -169,6 +175,7 @@ configureFiles(){
         if [ -f config/database.yml.sample ] &&  [ ! -f config/database.yml ]; then
             printf "Copy Cassandra Config\n"
             cp config/database.yml.sample config/database.yml
+            sed -i -e 's/127.0.0.1:27017/'$cassandra_address'/' config/database.yml
         fi
         cd ../
     done
