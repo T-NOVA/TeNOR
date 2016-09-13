@@ -185,6 +185,7 @@ addNewPop(){
     GATEKEEPER_HOST=localhost:8000
     GATEKEEPER_PASS=Eq7K8h9gpg
     GATEKEEPER_USER_ID=1
+    OPENSTACK_NAME=default
     OPENSTACK_IP=localhost
     ADMIN_TENANT_NAME=admin
     KEYSTONEPASS=password
@@ -193,6 +194,10 @@ addNewPop(){
     echo "Type the Gatekeeper hosts (localhost:8000), followed by [ENTER]:"
     read gatekeeper_host
     if [ -z "$gatekeeper_host" ]; then gatekeeper_host=$GATEKEEPER_HOST; fi
+
+    echo "Type the Openstack name, followed by [ENTER]:"
+    read openstack_name
+    if [ -z "$openstack_name" ]; then openstack_name=$OPENSTACK_NAME; fi
 
     echo "Type the Openstack IP, followed by [ENTER]:"
     read openstack_ip
@@ -213,7 +218,7 @@ addNewPop(){
     tokenId=$(curl -XPOST http://$gatekeeper_host/token/ -H "X-Auth-Password:$GATEKEEPER_PASS" -H "X-Auth-Uid:$GATEKEEPER_USER_ID" | python -c 'import json,sys;obj=json.load(sys.stdin);print obj["token"]["id"]')
     curl -X POST http://$gatekeeper_host/admin/dc/ \
     -H 'X-Auth-Token: '$tokenId'' \
-    -d '{"msg": "PoP Testbed", "dcname":"default", "adminid":"'$keystoneUser'","password":"'$keystonePass'", "extrainfo":"pop-ip='$openstack_ip' tenant-name='$admin_tenant_name' keystone-endpoint=http://'$openstack_ip':35357/v2.0 orch-endpoint=http://'$openstack_ip':8004/v1 compute-endpoint=http://'$openstack_ip':8774/v2.1 neutron-endpoint=http://'$openstack_ip':9696/v2.0"}'
+    -d '{"msg": "PoP Testbed", "dcname":"'$openstack_name'", "adminid":"'$keystoneUser'","password":"'$keystonePass'", "extrainfo":"pop-ip='$openstack_ip' tenant-name='$admin_tenant_name' keystone-endpoint=http://'$openstack_ip':35357/v2.0 orch-endpoint=http://'$openstack_ip':8004/v1 compute-endpoint=http://'$openstack_ip':8774/v2.1 neutron-endpoint=http://'$openstack_ip':9696/v2.0"}'
 
     pause
 }

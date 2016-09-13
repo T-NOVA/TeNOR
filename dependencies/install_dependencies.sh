@@ -53,6 +53,7 @@ function install_gatekeeper {
 function install_ruby {
     echo "Installing RVM..."
     gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
+	curl -sSL https://rvm.io/mpapis.asc | gpg --import -
     \curl -sSL https://get.rvm.io | bash -s stable
     echo "Installation of RVM done."
 
@@ -74,11 +75,11 @@ function install_npm {
 
     echo "Installing Grunt and Bower..."
     cd ../ui
-    pwd
-    sudo npm install -g grunt grunt-cli bower
-    echo "Installation of Grunt and Bower done."
+	echo "You need to install manually Grunt and Grunt-cli"
+#    sudo npm install -g grunt grunt-cli bower
+#    echo "Installation of Grunt and Bower done."
 
-    sudo npm install
+#    sudo npm install
 
     echo "Installing Compass..."
     gem install compass
@@ -86,7 +87,7 @@ function install_npm {
 
     cd ../dependencies
     echo "NPM dependencies done."
-
+	echo "You need to install manually Grunt and Grunt-cli with the command sudo npm install -g grunt grunt-cli bower"
 }
 
 echo -e -n "\033[1;36mChecking if mongodb is installed"

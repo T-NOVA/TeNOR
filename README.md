@@ -92,7 +92,7 @@ The PoP information is saved in Gatekeeper. This can be inserted in three manner
  First of all, define the following variables:
 
 ```
- GATEKEEPER_IP=localhost
+ GATEKEEPER_HOST=localhost:8000
  GATEKEEPER_PASS=Eq7K8h9gpg
  GATEKEEPER_USER_ID=1
  OPENSTACK_IP=localhost
@@ -104,12 +104,12 @@ The PoP information is saved in Gatekeeper. This can be inserted in three manner
  Get the Gatekeeper token (you can copy and paste in the command prompt):
 
 ```
-tokenId=$(curl -XPOST http://$GATEKEEPER_IP:8000/token/ -H "X-Auth-Password:$GATEKEEPER_PASS" -H "X-Auth-Uid:$GATEKEEPER_USER_ID" | python -c 'import json,sys;obj=json.load(sys.stdin);print obj["token"]["id"]')
+tokenId=$(curl -XPOST http://$GATEKEEPER_HOST/token/ -H "X-Auth-Password:$GATEKEEPER_PASS" -H "X-Auth-Uid:$GATEKEEPER_USER_ID" | python -c 'import json,sys;obj=json.load(sys.stdin);print obj["token"]["id"]')
 ```
 
 Post PoP Information (you can copy and paste in the command prompt):
 ```
- curl -X POST http://$GATEKEEPER_IP:8000/admin/dc/ \
+ curl -X POST http://$GATEKEEPER_HOST/admin/dc/ \
    -H 'X-Auth-Token: '$tokenId'' \
    -d '{"msg": "PoP Testbed", "dcname":"default", "adminid":"'$keystoneUser'","password":"'$keystonePass'", "extrainfo":"pop-ip='$OPENSTACK_IP' tenant-name='$admin_tenant_name' keystone-endpoint=http://'$OPENSTACK_IP':35357/v2.0 orch-endpoint=http://'$OPENSTACK_IP':8004/v1 compute-endpoint=http://'$OPENSTACK_IP':8774/v2.1 neutron-endpoint=http://'$OPENSTACK_IP':9696/v2.0"}'
 ```

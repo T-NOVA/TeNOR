@@ -103,11 +103,11 @@ class ServiceConfiguration < VNFManager
 	post '/services/publish/:microservice' do
 		name =  params[:microservice]
 
-		registerService(request.body.read)
+		#registerService(request.body.read)
 
-		EM.defer do
-			ServiceConfigurationHelper.publishServices()
-		end
+		#EM.defer do
+		#	ServiceConfigurationHelper.publishServices()
+		#end
 
 		return 200
 	end
