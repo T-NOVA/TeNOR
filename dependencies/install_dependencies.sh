@@ -30,10 +30,6 @@ function echo_pass {
   echo -e "\033[0m"
 }
 
-# echo pass or fail
-# example
-# echo echo_if 1 "Passed"
-# echo echo_if 0 "Failed"
 function echo_if {
   if [ $1 == 1 ]; then
     echo_pass $2
@@ -42,6 +38,18 @@ function echo_if {
   fi
 }
 
+function install_rabbitmq {
+    echo "Installing RabbitMq..."
+    wget https://www.rabbitmq.com/releases/rabbitmq-server/v3.6.5/rabbitmq-server-generic-unix-3.6.5.tar.xz
+
+    echo 'deb http://www.rabbitmq.com/debian/ testing main' | sudo tee /etc/apt/sources.list.d/rabbitmq.list
+    wget -O- https://www.rabbitmq.com/rabbitmq-release-signing-key.asc | sudo apt-key add -
+    sudo apt-get update
+    sudo apt-get install rabbitmq-server
+
+    echo "Restarting RabbitMq service"
+    sudo service rabbitmq-server restart
+}
 function install_mongodb {
     echo "Installing mongodb..."
     ./install_mongodb.sh
@@ -96,7 +104,6 @@ mongod --version > /dev/null 2>&1
 MONGO_IS_INSTALLED=$?
 if [ $MONGO_IS_INSTALLED -eq 0 ]; then
     echo ">>> MongoDB already installed"
-    #service mongod restart
 else
     echo "Do you want to install mongodb? (y/n)"
     read install
@@ -104,8 +111,6 @@ else
       echo -e -n "\033[1;31mMongodb is not installed... Installing..."
       install_mongodb
     fi
-    #./install_mongodb.sh
-    #bash -c "$(curl -fsSL https://raw.githubusercontent.com/steveneaston/Vaprobash/master/scripts/mongodb.sh)" bash $1 $2
 fi
 
 echo -e -n "\033[1;36mChecking if gatekeeper is installed"
@@ -160,9 +165,24 @@ else
     fi
 fi
 
+echo -e -n "\033[1;36mChecking if rabbitmq is installed"
+rabbitmq-server --version > /dev/null 2>&1
+RABBITMQ_IS_INSTALLED=$?
+if [ $RABBITMQ_IS_INSTALLED -eq 0 ]; then
+    echo ">>> RabbitMQ already installed"
+else
+    echo "Do you want to install rabbitmq for monitoring? (y/n)"
+    read install
+    if [ "$install" = "y" ]; then
+      echo -e -n "\033[1;31mRabbitmq is not installed... Installing..."
+      install_rabbitmq
+    fi
+fi
+
 echo -e -n "\033[1;36mChecking if dependencies are installed\n"
 echo "mongod          $(echo_if $(program_is_installed mongo))"
 echo "ruby            $(echo_if $(program_is_installed ruby))"
 echo "bundler         $(echo_if $(program_is_installed bundler))"
 echo "node            $(echo_if $(program_is_installed node))"
 echo "npm             $(echo_if $(program_is_installed npm))"
+echo "rabbitmq             $(echo_if $(program_is_installed rabbitmq-server))"
