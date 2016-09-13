@@ -199,6 +199,9 @@ module VimHelper
       logger.error e.response.body
     end
     sec, error = parse_json(response)
+    if sec.nil?
+      return nil
+    end
     return sec['security_group']['id']
   end
 
@@ -238,6 +241,7 @@ module VimHelper
     rescue => e
       logger.error e
       logger.error e.response.body
+      return nil
     end
     sec, error = parse_json(response)
     return sec
@@ -245,6 +249,9 @@ module VimHelper
 
   def configureSecurityGroups(computeUrl, tenant_id, token)
     vim_security_groups = getSecurityGroups(computeUrl, tenant_id, token)
+    if vim_security_groups
+      return nil
+    end
     security_group_id = nil
     if (!settings.default_tenant_name.nil?)
       security_group_id = vim_security_groups['security_groups'][0]['id']

@@ -5,6 +5,7 @@ declare mongo_ip
 declare gatekeeper
 declare dns
 declare logstash_address
+declare cassandra_address
 
 pause(){
   read -p "Press [Enter] key to continue..." fackEnterKey
@@ -105,6 +106,7 @@ configureIps(){
     GATEKEEPER="127.0.0.1:8000"
     DNS_SERVER="8.8.8.8"
     LOGSTASH_ADDRESS="127.0.0.1:5228"
+    CASSANDRA_ADDRESS="127.0.0.1"
 
     echo "Type the IP where is installed TeNOR, followed by [ENTER]:"
     read tenor_ip
@@ -125,6 +127,10 @@ configureIps(){
     echo "Type the IP:PORT (xxx.xxx.xxx.xxx:xxxx) where is installed Logstash, followed by [ENTER]:"
     read logstash_address
     if [ -z "$logstash_address" ]; then logstash_address=$LOGSTASH_ADDRESS; fi
+
+    echo "Type the IP (xxx.xxx.xxx.xxx) where is installed Cassandra, followed by [ENTER]:"
+    read cassandra_address
+    if [ -z "$cassandra_address" ]; then cassandra_address=$CASSANDRA_ADDRESS; fi
 
     logstash_host=${logstash_address%%:*}
     logstash_port=${logstash_address##*:}
@@ -169,6 +175,7 @@ configureFiles(){
         if [ -f config/database.yml.sample ] &&  [ ! -f config/database.yml ]; then
             printf "Copy Cassandra Config\n"
             cp config/database.yml.sample config/database.yml
+            sed -i -e 's/127.0.0.1:27017/'$cassandra_address'/' config/database.yml
         fi
         cd ../
     done
@@ -185,6 +192,7 @@ addNewPop(){
     GATEKEEPER_HOST=localhost:8000
     GATEKEEPER_PASS=Eq7K8h9gpg
     GATEKEEPER_USER_ID=1
+    OPENSTACK_NAME=default
     OPENSTACK_IP=localhost
     ADMIN_TENANT_NAME=admin
     KEYSTONEPASS=password
@@ -193,6 +201,10 @@ addNewPop(){
     echo "Type the Gatekeeper hosts (localhost:8000), followed by [ENTER]:"
     read gatekeeper_host
     if [ -z "$gatekeeper_host" ]; then gatekeeper_host=$GATEKEEPER_HOST; fi
+
+    echo "Type the Openstack name, followed by [ENTER]:"
+    read openstack_name
+    if [ -z "$openstack_name" ]; then openstack_name=$OPENSTACK_NAME; fi
 
     echo "Type the Openstack IP, followed by [ENTER]:"
     read openstack_ip
@@ -213,7 +225,7 @@ addNewPop(){
     tokenId=$(curl -XPOST http://$gatekeeper_host/token/ -H "X-Auth-Password:$GATEKEEPER_PASS" -H "X-Auth-Uid:$GATEKEEPER_USER_ID" | python -c 'import json,sys;obj=json.load(sys.stdin);print obj["token"]["id"]')
     curl -X POST http://$gatekeeper_host/admin/dc/ \
     -H 'X-Auth-Token: '$tokenId'' \
-    -d '{"msg": "PoP Testbed", "dcname":"default", "adminid":"'$keystoneUser'","password":"'$keystonePass'", "extrainfo":"pop-ip='$openstack_ip' tenant-name='$admin_tenant_name' keystone-endpoint=http://'$openstack_ip':35357/v2.0 orch-endpoint=http://'$openstack_ip':8004/v1 compute-endpoint=http://'$openstack_ip':8774/v2.1 neutron-endpoint=http://'$openstack_ip':9696/v2.0"}'
+    -d '{"msg": "PoP Testbed", "dcname":"'$openstack_name'", "adminid":"'$keystoneUser'","password":"'$keystonePass'", "extrainfo":"pop-ip='$openstack_ip' tenant-name='$admin_tenant_name' keystone-endpoint=http://'$openstack_ip':35357/v2.0 orch-endpoint=http://'$openstack_ip':8004/v1 compute-endpoint=http://'$openstack_ip':8774/v2.1 neutron-endpoint=http://'$openstack_ip':9696/v2.0"}'
 
     pause
 }

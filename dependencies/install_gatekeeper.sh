@@ -19,7 +19,7 @@ echo "Downloading auth-utils code now, please wait ..."
 mkdir $HOME/go
 mkdir -p $HOME/go/src/github.com/piyush82
 cd $HOME/go/src/github.com/piyush82
-git clone https://github.com/piyush82/auth-utils.git
+git clone https://github.com/T-NOVA/auth-utils
 echo "done."
 
 cd auth-utils
