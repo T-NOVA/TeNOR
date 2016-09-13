@@ -87,7 +87,8 @@ function install_npm {
 
     cd ../dependencies
     echo "NPM dependencies done."
-	echo "You need to install manually Grunt and Grunt-cli with the command sudo npm install -g grunt grunt-cli bower"
+	echo "You need to move it to UI folder, and t install manually Grunt and Grunt-cli with the command: sudo npm install -g grunt grunt-cli bower"
+	echo "Also, then use the following command: sudo npm install"
 }
 
 echo -e -n "\033[1;36mChecking if mongodb is installed"
