@@ -85,7 +85,7 @@ class ServiceConfigurationController < TnovaManager
 		registerService(request.body.read)
 
     EM.defer do
-      ServiceConfigurationHelper.publishService(name)
+      ServiceConfigurationHelper.publishServices()
     end
 
     return 200

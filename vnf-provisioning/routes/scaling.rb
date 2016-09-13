@@ -29,6 +29,94 @@ class Scaling < VnfProvisioning
 
     # Validate JSON format
     scale_info = parse_json(request.body.read)
+    #logger.debug 'Scale out: ' + scale_info.to_json
+    halt 400, 'NS Manager callback URL not found' unless scale_info.has_key?('vnfd')
+
+    vnfr = scale_info['vnfr']
+
+    logger.error vnfr
+    logger.info vnfr['scale_resources']
+    logger.info scale_info['auth']
+
+    vnfr['scale_resources'].each do |resource|
+      logger.info resource
+      logger.info resource['id']
+      logger.debug "Sending request to Openstack for Scale OUT"
+      begin
+        response = parse_json(RestClient.post resource['scale_out'], "", :accept => :json)
+      rescue Errno::ECONNREFUSED
+        halt 500, 'VIM unreachable'
+      rescue => e
+        logger.error e.response
+        halt e.response.code, e.response.body
+      end
+      logger.debug "Scale out ok."
+
+      logger.info "Authentication to VIM"
+      vim_info = vnfr['auth']
+      token_info = request_auth_token(vim_info)
+      tenant_id = token_info['access']['token']['tenant']['id']
+      auth_token = token_info['access']['token']['id']
+
+      #get stack of AutoScalingGroup
+      begin
+        response = parse_json(RestClient.get "#{vim_info['heat']}/#{tenant_id}/stacks/#{resource['id']}", 'X-Auth-Token' => auth_token, :accept => :json)
+      rescue Errno::ECONNREFUSED
+        halt 500, 'VIM unreachable'
+      rescue => e
+        logger.error e.response
+        halt e.response.code, e.response.body
+      end
+
+      logger.info "GET AutoscalingGroup stack:"
+      logger.info response
+      stack_id = response['stack']['id']
+
+      #get instances of the scaling group
+      begin
+        response = parse_json(RestClient.get "#{vim_info['heat']}/#{tenant_id}/stacks/#{resource['id']}/#{stack_id}/resources", 'X-Auth-Token' => auth_token, :accept => :json)
+      rescue Errno::ECONNREFUSED
+        halt 500, 'VIM unreachable'
+      rescue => e
+        logger.error e.response
+        halt e.response.code, e.response.body
+      end
+
+      logger.info "GET Resources of AutoscalingGroup stack:"
+      logger.info response
+
+      response['resources'].each do |res|
+        logger.info res['physical_resource_id']
+        logger.info res['resource_name']
+      end
+
+      logger.info "Execute lifecycle events"
+
+
+
+    end
+
+
+    logger.info "Lifecycle events..."
+    logger.info vnfr['lifecycle_info']
+    logger.info vnfr['lifecycle_info']['events']
+
+    halt 200, "Scale out ok"
+  end
+
+
+
+  # @method post_vnf_instances_scale_out
+  # @overload post '/vnf-instances/scaling/:id/scale_out'
+  # Post a Scale out request
+  # @param [JSON]
+  post "/:vnfr_id/scale_out_old" do
+
+    # Return if content-type is invalid
+    halt 415 unless request.content_type == 'application/json'
+
+    # Validate JSON format
+    scale_info = parse_json(request.body.read)
     logger.debug 'Instantiation info: ' + scale_info.to_json
     halt 400, 'NS Manager callback URL not found' unless scale_info.has_key?('vnfd')
 
@@ -80,54 +168,31 @@ class Scaling < VnfProvisioning
   # @param [JSON]
   post "/:vnfr_id/scale_in" do
 
-    scaled_resources = "http://www.example.com"
+    # Return if content-type is invalid
+    halt 415 unless request.content_type == 'application/json'
 
-    auth_token = "aaa"
+    # Validate JSON format
+    scale_info = parse_json(request.body.read)
+    logger.debug 'Scale out: ' + scale_info.to_json
+    halt 400, 'NS Manager callback URL not found' unless scale_info.has_key?('vnfd')
 
-    puts "Send DELETE to: "
-    puts scaled_resources
+    vnfr = scale_info['vnfr']
 
-
+    logger.debug "Sending request to Openstack for Scale OUT"
     begin
-      response = RestClient.get scaled_resources, 'X-Auth-Token' => auth_token, :accept => :json
+      response = parse_json(RestClient.post vnfr['scale_info']['scale_out'], "", :accept => :json)
     rescue Errno::ECONNREFUSED
       halt 500, 'VIM unreachable'
-    rescue RestClient::ResourceNotFound
-      puts "Already removed from the VIM."
-    rescue => e
-      puts e
-      logger.error e.response
-      halt e.response.code, e.response.body
-    end
-
-    puts response
-    return
-
-    #get the scale_scale information in the VNFR
-    begin
-      vnfr = Vnfr.find(params[:vnfr_id])
-    rescue Mongoid::Errors::DocumentNotFound => e
-      logger.error 'VNFR record not found'
-      halt 404
-    end
-
-    scaled_resources = vnfr['vdu'].detect { |vdu| vdu['type'] == 1 }
-
-    scaled_resources['stack_url'] = "http://localhost/stackurl"
-
-    puts scaled_resources['stack_url']
-
-    begin
-      response = RestClient.delete scaled_resources['stack_url'], 'X-Auth-Token' => auth_token, :accept => :json
-    rescue Errno::ECONNREFUSED
-      halt 500, 'VIM unreachable'
-    rescue RestClient::ResourceNotFound
-      puts "Already removed from the VIM."
     rescue => e
       logger.error e.response
       halt e.response.code, e.response.body
     end
-    vnfr['vdu'].delete_if { |x| x['id'] == scaled_resources['id'] }
+    logger.debug "Scale out ok."
+
+    #reading information from the VIM about the stack.
+
+    logger.debug "Response is null."
+
 
     halt 200, "Scale in done."
   end

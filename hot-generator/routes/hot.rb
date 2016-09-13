@@ -142,4 +142,8 @@ class HotGenerator < Sinatra::Application
 		halt 200, hot.to_json
 	end
 
+	get '/files/:file_name' do
+    File.read(File.join('assets/templates', params[:file_name]))
+	end
+
 end

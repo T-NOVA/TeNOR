@@ -21,7 +21,7 @@ class VnfdToHot
   #
   # @param [String] name the name for the HOT
   # @param [String] description the description for the HOT
-  def initialize(name, description,public_network_id)
+  def initialize(name, description, public_network_id)
     @hot = Hot.new(description)
     @name = name
     @outputs = {}
@@ -72,11 +72,11 @@ class VnfdToHot
       if vdu['vm_image_format'] == 'openstack_id'
         image_name = vdu['vm_image']
       else
-        image_name = { get_resource: create_image(vdu) }
+        image_name = {get_resource: create_image(vdu)}
       end
       flavor_name = create_flavor(vdu)
 
-      ports = create_ports(vdu['id'], vdu['connection_points'], vnfd['vlinks'], networks_id, security_group_id)
+      #ports = create_ports(vdu['id'], vdu['connection_points'], vnfd['vlinks'], networks_id, security_group_id)
       nets = []
       vdu['connection_points'].each do |connection_point|
         l = networks_id.find { |vlink| vlink['id'] == connection_point['vlink_ref'] }
@@ -85,19 +85,115 @@ class VnfdToHot
 
       #create AutoScalingGroup if the VNF can scale
       if (vdu['scale_in_out']['maximum'] > 1)
-        server = create_server(vdu, image_name, flavor_name, nets, key, true)
-        auto_scale_group = create_autoscale_group(60, vdu['scale_in_out']['maximum'], vdu['scale_in_out']['minimum'], 1, server)
-        create_scale_policy(auto_scale_group, 1)
-        create_scale_policy(auto_scale_group, -1)
-        @hot.outputs_list << Output.new("#{vdu['id']}#id", "#{vdu['id']} ID", {get_resource: auto_scale_group})
-        @hot.outputs_list << Output.new("#{vdu['id']}#ServiceList", "ServiceList of #{vdu['id']}", {get_attr: [auto_scale_group, 'outputs_list', 'name']})
-        @hot.outputs_list << Output.new("#{vdu['id']}#Networks", "ServiceList of #{vdu['id']}", {get_attr: [auto_scale_group, 'outputs', 'networks']})
+        #server = create_server(vdu, image_name, flavor_name, nets, key, true)
+
+        #generate template for server
+        nested_template = generate_nested_template(vdu, vnfd, networks_id, security_group_id, nets)
+
+        #save template in folder
+        name = vnfd['id'].to_s
+        filename = "assets/templates/" + name + ".yaml"
+        File.open(filename, 'w') { |file| file.write(nested_template.to_yaml) }
+
+        url = HotGenerator.manager + "/files/" + name + ".yaml"
+        properties = {
+            :image => image_name,
+            :flavor => {get_resource: flavor_name}
+        }
+
+        networks_id.each do |net|
+          properties[net['heat']] = {"get_resource" => net['heat']}
+        end
+        properties
+
+        scaled_resource = GenericResource.new(vdu['id'], url, properties)
+
+        auto_scale_group = create_autoscale_group(60, vdu['scale_in_out']['maximum'], vdu['scale_in_out']['minimum'], 1, scaled_resource)
+        scale_out_policy = create_scale_policy(auto_scale_group, 1)
+        scale_in_policy = create_scale_policy(auto_scale_group, -1)
+        @hot.outputs_list << Output.new("#{vdu['id']}#scale_out_url", "Url of scale out.", {get_attr: [scale_out_policy, 'alarm_url']})
+        @hot.outputs_list << Output.new("#{vdu['id']}#scale_in_url", "Url of scale in.", {get_attr: [scale_in_policy, 'alarm_url']})
+        @hot.outputs_list << Output.new("#{vdu['id']}#scale_group", "#{vdu['id']} ID", {get_resource: auto_scale_group})
+        @hot.outputs_list << Output.new("#{vdu['id']}#vdus", "ServiceList of #{vdu['id']}", {get_attr: [auto_scale_group, 'outputs_list', 'name']})
+        @hot.outputs_list << Output.new("#{vdu['id']}#networks", "ServiceList of #{vdu['id']}", {get_attr: [auto_scale_group, 'outputs', 'networks']})
       else
+        ports = create_ports(vdu['id'], vdu['connection_points'], vnfd['vlinks'], networks_id, security_group_id)
         create_server(vdu, image_name, flavor_name, ports, key, false)
       end
     end
 
     @hot
+  end
+
+  def generate_nested_template(vdu, vnfd, networks_id, security_group_id, nets)
+
+    hot = Hot.new("server")
+    hot.parameters_list = []
+    outputs_list = {}
+    hot.parameters_list << Parameter.new('image', '', 'string')
+    hot.parameters_list << Parameter.new('flavor', '', 'string')
+    hot.parameters_list << Parameter.new('flavor', '', 'string')
+    #for each network, create a parameter
+    networks_id.each do |net|
+      hot.parameters_list << Parameter.new(net['heat'], '', 'string')
+    end
+
+    ports = []
+    connection_points = vdu['connection_points']
+    vlinks = vnfd['vlinks']
+    vdu_id = vdu['id']
+
+    connection_points.each do |connection_point|
+      vlink = vlinks.find { |vlink| vlink['id'] == connection_point['vlink_ref'] }
+      #detect, and return error if not.
+      network = networks_id.detect { |network| network['alias'] == vlink['alias'] }
+      if network != nil
+        port_name = "#{connection_point['id']}"
+        ports << {"port" => {"get_resource" => port_name}}
+        if vlink['existing_net_id']
+          if vlink['port_security_enabled']
+            hot.resources_list << Port.new(port_name, network['heat_id'], security_group_id)
+          else
+            hot.resources_list << Port.new(port_name, network['heat_id'])
+          end
+        else
+          if vlink['port_security_enabled']
+            hot.resources_list << Port.new(port_name, {"get_param" => network['heat']}, security_group_id)
+          else
+            hot.resources_list << Port.new(port_name, {"get_param" => network['heat']})
+          end
+        end
+
+        # Check if it's necessary to create an output for this resource
+        if outputs_list.has_key?('ip') && outputs_list['ip'].include?(port_name)
+          hot.outputs_list << Output.new("#{port_name}#ip", "#{port_name} IP address", {"get_attr" => [port_name, 'fixed_ips', 0, 'ip_address']})
+        end
+
+        # Check if the port has a Floating IP
+        if vlink['access']
+          floating_ip_name = get_resource_name_nested(hot)
+          # TODO: Receive the floating ip pool name?
+          hot.resources_list << FloatingIp.new(floating_ip_name, @public_network_id)
+          hot.resources_list << FloatingIpAssociation.new(get_resource_name_nested(hot), {"get_resource" => floating_ip_name}, {"get_resource" => port_name})
+          hot.outputs_list << Output.new("#{vdu_id}##{connection_point['id']}#PublicIp", "#{port_name} Floating IP", {"get_attr" => [floating_ip_name, 'floating_ip_address']})
+          auto_scale_name = get_resource_name
+          @hot.outputs_list << Output.new("#{vdu_id}##{connection_point['id']}#PublicIp", "#{port_name} Nested outputs_list", {"get_attr" => [auto_scale_name, 'outputs_list', "#{vdu_id}##{connection_point['id']}#PublicIp"]})
+          @hot.outputs_list << Output.new("#{vdu_id}##{connection_point['id']}#PublicIp2", "#{port_name} Nested output", {"get_attr" => [auto_scale_name, 'output', "#{vdu_id}##{connection_point['id']}#PublicIp"]})
+
+        end
+      end
+
+    end
+
+    hot.resources_list << Server.new(
+        vdu['id'],
+        {"get_param" => 'flavor'},
+        {"get_param" => 'image'},
+        ports,
+        add_wait_condition2(vdu, hot),
+        nil)
+
+    hot
   end
 
   def create_networks(vlink, dns_server, router_id)
@@ -119,7 +215,7 @@ class VnfdToHot
 
   def create_network(network_name, port_security_enabled, shared)
     name = get_resource_name
-    @hot.resources_list << Network.new(name, network_name, port_security_enabled, shared)
+    @hot.resources_list << Network.new(name, network_name, shared, port_security_enabled)
     name
   end
 
@@ -227,8 +323,6 @@ class VnfdToHot
         port_name = "#{connection_point['id']}"
         ports << {port: {get_resource: port_name}}
         if vlink['existing_net_id']
-          puts "NETWORK HEAT"
-          puts network['heat_id']
           if vlink['port_security_enabled']
             @hot.resources_list << Port.new(port_name, network['heat_id'], security_group_id)
           else
@@ -253,7 +347,7 @@ class VnfdToHot
           # TODO: Receive the floating ip pool name?
           @hot.resources_list << FloatingIp.new(floating_ip_name, @public_network_id)
           @hot.resources_list << FloatingIpAssociation.new(get_resource_name, {get_resource: floating_ip_name}, {get_resource: port_name})
-#          @hot.outputs_list << Output.new("#{port_name}#floating_ip", "#{port_name} Floating IP", {get_attr: [floating_ip_name, 'floating_ip_address']})
+          #          @hot.outputs_list << Output.new("#{port_name}#floating_ip", "#{port_name} Floating IP", {get_attr: [floating_ip_name, 'floating_ip_address']})
           @hot.outputs_list << Output.new("#{vdu_id}##{connection_point['id']}#PublicIp", "#{port_name} Floating IP", {get_attr: [floating_ip_name, 'floating_ip_address']})
         end
       end
@@ -318,9 +412,8 @@ class VnfdToHot
     if @type != 'vSA'
       @hot.resources_list << WaitConditionHandle.new(wc_handle_name)
       @hot.resources_list << WaitCondition.new(get_resource_name, wc_handle_name, 2000)
-    #end
+      #end
     end
-
 
     wc_notify = ""
     wc_notify = "\nwc_notify --data-binary '{\"status\": \"SUCCESS\"}'\n"
@@ -336,7 +429,7 @@ class VnfdToHot
       wc_notify = wc_notify + "\nwc_notify --data-binary '{\"status\": \"SUCCESS\"}'\n"
     end
 
-    shell =  "#!/bin/bash"
+    shell = "#!/bin/bash"
     if @type == 'vSA'
       shell = "#!/bin/tcsh"
     end
@@ -357,11 +450,49 @@ class VnfdToHot
     end
   end
 
+  def add_wait_condition2(vdu, hot)
+    wc_handle_name = get_resource_name_nested(hot)
+
+    #if vdu['wc_notify']
+    if @type != 'vSA' && !vdu['wc_notify'].nil?
+      hot.resources_list << WaitConditionHandle.new(wc_handle_name)
+      hot.resources_list << WaitCondition.new(get_resource_name_nested(hot), wc_handle_name, 2000)
+      #end
+    end
+
+    wc_notify = ""
+    wc_notify = "\nwc_notify --data-binary '{\"status\": \"SUCCESS\"}'\n"
+    if vdu['wc_notify']
+      wc_notify = "\nwc_notify --data-binary '{\"status\": \"SUCCESS\"}'\n"
+    end
+
+    shell = "#!/bin/bash"
+    if @type == 'vSA'
+      shell = "#!/bin/tcsh"
+    end
+
+    bootstrap_script = vdu.has_key?('bootstrap_script') ? vdu['bootstrap_script'] : shell
+    {
+        "str_replace" => {
+            "params" => {
+                "wc_notify" => {
+                    "get_attr" => [wc_handle_name, 'curl_cli']
+                }
+            },
+            "template" => bootstrap_script + wc_notify
+        }
+    }
+  end
+
   # Generates a new resource name
   #
   # @return [String] the generated resource name
   def get_resource_name
     @name + '_' + @hot.resources_list.length.to_s unless @name.empty?
+  end
+
+  def get_resource_name_nested(hot)
+    @name + '_nested_' + hot.resources_list.length.to_s unless @name.empty?
   end
 
   # Converts a value to another unit
@@ -402,12 +533,6 @@ class VnfdToHot
   def create_scale_policy(auto_scaling_group, scaling_adjustment)
     name = get_resource_name
     @hot.resources_list << ScalingPolicy.new(name, {get_resource: auto_scaling_group}, scaling_adjustment)
-
-    if scaling_adjustment > 0
-      @hot.outputs_list << Output.new("scale_out_url", "Url of scale out.", {get_attr: [name, 'alarm_url']})
-    else
-      @hot.outputs_list << Output.new("scale_in_url", "Url of scale in.", {get_attr: [name, 'alarm_url']})
-    end
     name
   end
 

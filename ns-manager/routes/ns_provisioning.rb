@@ -23,6 +23,11 @@ class NsProvisionerController < TnovaManager
   # Post a ns-instance
   post '/' do
 
+    popList = getPopList()
+    if popList.empty?
+      halt 400, "No PoPs registereds."
+    end
+
     begin
       @service = ServiceModel.find_by(name: "ns_provisioner")
     rescue Mongoid::Errors::DocumentNotFound => e

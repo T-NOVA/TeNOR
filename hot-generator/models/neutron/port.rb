@@ -23,8 +23,8 @@ class Port < Resource
 	# @param [String] network Network name this port belongs to
 	# @param [String] security_group_id the ID of the T-NOVA security group
 	def initialize(resource_name, network, security_group_id = nil)
-		@type = 'OS::Neutron::Port'
-		security_group_id.nil? ? @properties = {'network' => network} : @properties = {'network' => network, 'security_groups' => [security_group_id]}
-		super(resource_name, @type, @properties)
+		type = 'OS::Neutron::Port'
+		security_group_id.nil? ? properties = {'network' => network} : properties = {'network' => network, 'security_groups' => [security_group_id]}
+		super(resource_name, type, properties)
 	end
 end

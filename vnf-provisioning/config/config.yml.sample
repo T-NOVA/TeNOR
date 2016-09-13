@@ -19,4 +19,4 @@ mapi: http://admin:changeme@10.10.1.67:1234
 gk:
 service_key:
 
-dependencies: [vnf_manager, mAPI, hot_generator]
+dependencies: [vnf_manager, mapi, hot_generator]

@@ -15,15 +15,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-class Network < Resource
+class GenericResource < Resource
 
-  # Initializes a Network object
+  # Initializes GenericResource object
   #
-  # @param [String] resource_name the Network resource name
-  # @param [String] name the name of the network
-  def initialize(resource_name, name, shared, port_security_enabled = nil?)
-    @type = 'OS::Neutron::Net'
-    port_security_enabled.nil? ? @properties = {'name' => name, 'shared' => shared} : @properties = {'name' => name, 'port_security_enabled' => port_security_enabled, 'shared' => shared}
-    super(resource_name, @type, @properties)
+  # @param [String] resource_name the resource name
+  # @param [String] type the type of the resource
+  # @param [Integer] properties the properties of the resource
+  def initialize(resource_name, type, properties)
+    type = type
+    properties = properties
+    super(resource_name, type, properties)
   end
 end

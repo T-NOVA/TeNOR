@@ -60,9 +60,6 @@ class NSMonitoring < Sinatra::Application
 
   Mongoid.load!('config/mongoid.yml')
 
-# @@testThreads = []
-
-#testFunction()
   MonitoringHelper.startSubcription()
 
 end

@@ -51,30 +51,33 @@ A Vagrantfile is provided with TeNOR, Gatekeeper and a mongodb installed.
 
 ## Execution
 
-TeNOR can be executed in two ways:
+TeNOR can be executed in three ways:
 
-1. Using Byobu (modern Tmux). Useful for development purposes.
+1. Using Invoker (http://invoker.codemancers.com)
+   `invoker start invoker.ini`
+2. Using Byobu (modern Tmux). Useful for development purposes.
    `./tenor_development.sh`
-2. Using Foreman
+3. Using Foreman
    `foreman start`
 
+In the case of using Invoker, the invoker command offer several functionalities in order to restart microservices or the entire TeNOR.
 In the case of using Byobu, you'll see three sessions, one for the NS manager, one for the VNF manager and one for the UI. Inside each session use use F3 and F4 keys for navigate through the windows.
 
 How to test if TeNOR is installed [Test if TeNOR is installed and running](#test-if-tenor-is-installed-and-running)
 
 ## Registering modules in TeNOR and Gatekeeper
-TeNOR has a microservice architecture and requires a registration of each microservices to the system. The NS Manager (API gateway) is the responsible to manage this registration. The interal TeNOR modules are managed automatically, but external modules like Gatekeeper, mAPI, WICM needs to be registered.
+TeNOR has a microservice architecture and requires a registration of each microservices to the system. The NS Manager (API gateway) is the responsible to manage this registration. The interal TeNOR modules are managed automatically, but external modules like mAPI, WICM, Infrastructure repository needs to be registered.
 
-The registration of modules can be done with in two ways:
+The registration of modules can be done with in three ways:
 
  - Using [TeNOR User Interface](#user-interface)
  `Configuration -> Modules`
+ - Using the TeNOR script:
+ `./tenor_install.sh`
  - Using the following script:
  `./loadModules.sh`
 
 The content of the loadModules.sh is a set of CuRL request to the NS Manager inserting the IP and PORT of each microservice. When the NS Manager recevies the requests, automatically register each module into Gatekeeper in order to generate a microservice-token.
-
-Make sure to pu
 
 ## Loading PoP information in Gatekeeper
 

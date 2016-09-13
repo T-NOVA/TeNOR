@@ -1,0 +1,188 @@
+{
+  "name": "testName",
+  "vnfd": {
+    "vdu": [
+      {
+        "resource_requirements": {
+          "network_interface_bandwidth_unit": "",
+          "hypervisor_parameters": {
+            "version": "10002|12001|2.6.32-358.el6.x86_64",
+            "type": "QEMU-KVM"
+          },
+          "memory_unit": "GB",
+          "network_interface_card_capabilities": {
+            "SR-IOV": true,
+            "mirroring": false
+          },
+          "storage": {
+            "size_unit": "GB",
+            "persistence": false,
+            "size": 40
+          },
+          "network_interface_bandwidth": "",
+          "platform_pcie_parameters": {
+            "SR-IOV": true,
+            "device_pass_through": true
+          },
+          "vcpus": 2,
+          "vswitch_capabilities": {
+            "version": "2.0",
+            "type": "ovs",
+            "overlay_tunnel": "GRE"
+          },
+          "data_processing_acceleration_library": "",
+          "memory": 4,
+          "memory_parameters": {
+            "large_pages_required": false,
+            "numa_allocation_policy": ""
+          },
+          "cpu_support_accelerator": "AES-NI"
+        },
+        "alias": "test",
+        "id": "vdu0",
+        "networking_resources": "",
+        "monitoring_parameters_specific": [
+        ],
+        "wc_notify": true,
+        "vm_image": "6b8e0030-7001-4fb2-b4e0-b6a1fdcb44c5",
+        "controller": true,
+        "connection_points": [
+          {
+            "vlink_ref": "vl0",
+            "id": "CPfs0h"
+          },
+          {
+            "vlink_ref": "vl1",
+            "id": "CPng8r"
+          }
+        ],
+        "monitoring_parameters": [
+        ],
+        "scale_in_out": {
+          "minimum": 1,
+          "maximum": 1
+        },
+        "vm_image_md5": "bcfeb21476221db5ec2269369e27fed5",
+        "vm_image_format": "openstack_id"
+      }
+    ],
+    "name": "testVNF",
+    "provider_id": 1,
+    "trade": false,
+    "descriptor_version": "1",
+    "deployment_flavours": [
+      {
+        "vdu_reference": [
+          "vdu0"
+        ],
+        "constraint": "",
+        "flavour_key": "gold",
+        "vlink_reference": [
+          "vl0",
+          "vl1"
+        ],
+        "id": "flavor0",
+        "assurance_parameters": [
+          {
+            "violation": [
+              {
+                "interval": 60,
+                "breaches_count": 2
+              }
+            ],
+            "value": 3,
+            "penalty": {
+              "type": "Discount",
+              "expression": 1,
+              "validity": "P1D",
+              "unit": "%"
+            },
+            "formula": "cpuidle LT 3",
+            "rel_id": "param0",
+            "id": "cpuidle",
+            "unit": "%"
+          }
+        ]
+      }
+    ],
+    "version": "1",
+    "vnf_lifecycle_events": [
+      {
+        "authentication_username": "vagrant",
+        "driver": "ssh",
+        "authentication_type": "PubKeyAuthentication",
+        "authentication": "-----BEGIN RSA PRIVATE KEY-----\nMIIEpAIBAAKCAQEAqKzv1O+8SG53PJsMWHpAaBbbwQ5bEbHMplnOvnfWiL21cfU+\nEQdY2JgjsLMJyMnS2mMBmopJQ8y2c1KS2yz30oz/2ac/PcbiRmX4PV2qqUgDdVj1\n5w5YQreSBMNfi+hXs2uhs5dsDfG1mbedXhyT9QFlimeiZH+WwmX+91A9GQrCTrQU\nSp7FQsiXyDBNUYmVsYYdP19XcNNc1OoReY8oCBzrrBR+vOf7XA6dh86HlM/ZBuQf\nSUEn8SdYeQM0975aDIrjhW8m3Fd3ZE3ZZKuCl7rbMLY8RRB8pSAkpFrBtyeqtN0H\nRj7HpAd+BGjfgrL+ivXmG5AZ3fSehTFSKsGDDQIDAQABAoIBACgFkIpXr7cH7ubE\nazN7HlkUQ2QVQep643H9ER8EVDTxvmGhrO5hbeVGhAFjGck4if0jTLgcY7HgmtHW\nH949VzfwGKzOECVaUUoe273DwcCUw61ORFpkfvClmdHjgYIyyMxbl2yDWzIbzdkB\nRieUZE7X2/3xBQkPdPf/N3X65eRQ1FYRR6wOp2dAONzw0xpq2TYOKdVBqgZS3Sa6\npksSDycaLlSJA/NN2y/FiIU8kkoUShYflRrsyheipQ9D5KMEmQASxWkDQu3xW+Wl\n60aUwnOrEGoMNAXAHUshfpbrsu3A6d59/6rykhc37z9tVUdTnPbX5KPDkWbKqC7H\nDdMSMsECgYEA34kRR8+nBd+fBNHPGsn++S8eaeczX0kMqRiATWq0ZPspcIbA2ojS\n0X5txoEFBjcZ8C2Nq56MjZtqfZRZCLfm1e/Dk2LP0x8vRS9BQRKwL//hypYqEC5l\norokfy91Ow0kxnHxiYvJy2riinTcqSc4/8u2PuDVGW6JnLRxCIcW1kUCgYEAwSw0\n9jVjwQCWhkRJr/17vCLuCmkSMzmTFSu9SEsrVAmrYeE2qJPNRySjTfnDa/yA3OxG\nj620F5yMrD0ONCtoSqU6VQt23KiS0DPmWkeCuv6eOYMxXGy721idHshCtY9PlSZg\nC/QKa2KQnKV/88UfHUt/3hcAlpJzSdWBSku4iikCgYEAgv1LRw2EDokQIj7gYg5k\nf5kA9YYqMHgaFyzoYnVY6KPVkL8mW+k5wNGZem04iH/Zj0jib+Mk8gZUzOoVkmpR\ntqQds0yABHONu7kJQBy3ailEIvcEBx9pJ4Z0xKMGy2fUWQWESNnFkpI71m7Mr8Lw\nP9UcIpSVy6Vetpl2c0zWMRECgYAGBlbwhuHBlz8amO6jaoh9aal68aP7rQQFWQPi\nSVXknRiXSOrnfxSb72yYdf2+VHXAbi4VNRm00tEgXhcfUWtDSLv1AxKF90v86mF4\n11ogcuiEaq8TbuC9Cpp750sNVpbo0/WS6d2ZU82m1RKUi8VYqI4oYxdFmvO1jc8m\nfg4XYQKBgQCebRk5OiGmHTKUHHuBnFyA1ZJpVPGzBBmyQo83gRQ9+KvBOHQHYQcC\nv8JYWnuTwKCcIJhcqA8UbIGhRKHtBnqLr3Ipg97gKBElO3bTzUUut0QcMd14i6ab\n9oaS/tg7BhxKkQyuYwIpSeqFeZeecID4dfMCMHgaPaAsz+epjv1NIw==\n-----END RSA PRIVATE KEY-----",
+        "authentication_port": 22,
+        "flavor_id_ref": "flavor0",
+        "events": {
+          "start": {
+            "command": "/home/vagrant/scripts/start",
+            "template_file": "{\"controller\":\"get_attr[vdu0,CPfs0h,PublicIp]\"}",
+            "template_file_format": "JSON"
+          },
+          "stop": {
+            "command": "/home/vagrant/scripts/stop",
+            "template_file": "{}",
+            "template_file_format": "JSON"
+          }
+        },
+        "vnf_container": "/home/vagrant/container/"
+      }
+    ],
+    "billing_model": {
+      "price": {
+        "setup": 1,
+        "max_per_period": 1,
+        "min_per_period": 1,
+        "unit": "EUR"
+      },
+      "model": "PAYG",
+      "period": "P1D"
+    },
+    "provider": "i2CAT",
+    "release": "T-NOVA",
+    "vlinks": [
+      {
+        "leaf_requirement": "Unlimited",
+        "connectivity_type": "E-LAN",
+        "vdu_reference": [
+          "vdu0"
+        ],
+        "external_access": true,
+        "existing_net_id" : "53641d17-dd1e-4e56-aa22-a37a3c1e0da8",
+        "connection_points_reference": [
+          "CPfs0h"
+        ],
+        "access": true,
+        "alias": "int-net",
+        "dhcp": false,
+        "net_segment": "10.0.0.39",
+        "root_requirement": "Unlimited",
+        "qos": "",
+        "id": "vl0"
+      },
+      {
+        "leaf_requirement": "Unlimited",
+        "connectivity_type": "E-LAN",
+        "vdu_reference": [
+          "vdu0"
+        ],
+        "external_access": false,
+        "existing_net_id" : "60e11da1-0229-412c-8a9e-ca5a8ae54e7e",
+        "connection_points_reference": [
+          "CPng8r"
+        ],
+        "access": true,
+        "alias": "ext-net-eth2",
+        "dhcp": false,
+        "net_segment": "10.0.0.13",
+        "root_requirement": "Unlimited",
+        "qos": "",
+        "id": "vl1"
+      }
+    ],
+    "type": "vPXAAS",
+    "description": "Test VNF example with Existing ID",
+    "id": 1296
+  }
+}

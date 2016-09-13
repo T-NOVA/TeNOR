@@ -103,7 +103,7 @@ class NsdToHot
   # @return [String] the name of the created resource
   def create_network(vld_id, network_name, shared)
     name = get_resource_name
-    @hot.resources_list << Network.new(vld_id, network_name, false, shared)
+    @hot.resources_list << Network.new(vld_id, network_name, shared, nil)
     name
   end
 

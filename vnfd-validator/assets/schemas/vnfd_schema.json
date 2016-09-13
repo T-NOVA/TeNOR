@@ -342,23 +342,23 @@
             "id": "http://www.t-nova.eu/vlinks/3/qos",
             "type": "string"
           },
-          "port_security_enabled":{
+/*          "port_security_enabled":{
             "id": "http://www.t-nova.eu/vlinks/3/port_security_enabled",
             "type": "boolean"
-          },
+          },*/
           "existing_net_id":{
             "id": "http://www.t-nova.eu/vlinks/3/existing_net_id",
-            "type": "String"
+            "type": "string"
           },
           "existing_net":{
             "id": "http://www.t-nova.eu/vlinks/3/existing_net",
-            "type": "String"
+            "type": "string"
           }
         },
         "required": [
           "alias"
         ],
-        "additionalProperties": false
+        "additionalProperties": true
       }
     },
     "trade": {
@@ -587,7 +587,7 @@
                 },
                 "additionalProperties": false
               },
-              "scaling_in": {
+              "scale-in": {
                 "id": "http://www.t-nova.eu/vnf_lifecycle_events/1/events/scaling_in",
                 "type": "object",
                 "properties": {
@@ -606,7 +606,7 @@
                 },
                 "additionalProperties": false
               },
-              "scaling_out": {
+              "scale-out": {
                 "id": "http://www.t-nova.eu/vnf_lifecycle_events/1/events/scaling_out",
                 "type": "object",
                 "properties": {

@@ -42,6 +42,53 @@ function echo_if {
   fi
 }
 
+function install_mongodb {
+    echo "Installing mongodb..."
+    ./install_mongodb.sh
+}
+function install_gatekeeper {
+    echo "Installing gatekeeper..."
+    ./install_gatekeeper.sh
+}
+function install_ruby {
+    echo "Installing RVM..."
+    gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
+    \curl -sSL https://get.rvm.io | bash -s stable
+    echo "Installation of RVM done."
+
+    cd ~
+    . ~/.rvm/scripts/rvm
+
+    echo "Installing Ruby 2.2.5..."
+    rvm install 2.2.5
+    echo "Installation of Ruby 2.2.5 done."
+
+    echo "Installing Bundler..."
+    gem install bundler invoker
+    echo "Installation of Bundler done."
+}
+function install_npm {
+    echo "Installing NodeJS and NPM..."
+    sudo apt-get install -y nodejs-legacy npm
+    echo "Installation of NodeJS and NPM done."
+
+    echo "Installing Grunt and Bower..."
+    cd ../ui
+    pwd
+    sudo npm install -g grunt grunt-cli bower
+    echo "Installation of Grunt and Bower done."
+
+    sudo npm install
+
+    echo "Installing Compass..."
+    gem install compass
+    echo "Installation of Compass done."
+
+    cd ../dependencies
+    echo "NPM dependencies done."
+
+}
+
 echo -e -n "\033[1;36mChecking if mongodb is installed"
 mongod --version > /dev/null 2>&1
 MONGO_IS_INSTALLED=$?
@@ -49,21 +96,30 @@ if [ $MONGO_IS_INSTALLED -eq 0 ]; then
     echo ">>> MongoDB already installed"
     #service mongod restart
 else
-    echo -e -n "\033[1;31mMongodb is not installed... Installing..."
-    ./install_mongodb.sh
+    echo "Do you want to install mongodb? (y/n)"
+    read install
+    if [ "$install" = "y" ]; then
+      echo -e -n "\033[1;31mMongodb is not installed... Installing..."
+      install_mongodb
+    fi
+    #./install_mongodb.sh
     #bash -c "$(curl -fsSL https://raw.githubusercontent.com/steveneaston/Vaprobash/master/scripts/mongodb.sh)" bash $1 $2
 fi
 
 echo -e -n "\033[1;36mChecking if gatekeeper is installed"
 if [ -f ~/go/bin/auth-utils ]; then
-  echo ">>> Gatekeeper already installed."
+  echo -e -n ">>> Gatekeeper already installed."
   if [ ! -f ~/gatekeeper.cfg ]; then
     cp go/src/github.com/piyush82/auth-utils/gatekeeper.cfg ~
   fi
 else
-    echo -e -n "\033[1;31mGatekeeper is not installed. Installing..."
-    sudo apt-get install gcc -y
-    ./install_gatekeeper.sh
+    echo "Do you want to install gatekeeper? (y/n)"
+    read install
+    if [ "$install" = "y" ]; then
+      echo -e -n "\033[1;31mGatekeeper is not installed. Installing..."
+      sudo apt-get install gcc -y
+      install_gatekeeper
+    fi
 fi
 
 echo -e -n "\033[1;36mChecking if ruby is installed"
@@ -80,8 +136,12 @@ if [ $RUBY_IS_INSTALLED -eq 0 ]; then
     fi
 else
     echo -e -n "\033[1;31mRuby is not installed."
-    ./install_ruby.sh
-    . ~/.rvm/scripts/rvm
+    echo -e "\nDo you want to install ruby? (y/n)"
+    read install
+    if [ "$install" = "y" ]; then
+        install_ruby
+        . ~/.rvm/scripts/rvm
+    fi
 fi
 
 echo -e -n "\033[1;36mChecking if nodejs is installed"
@@ -91,10 +151,14 @@ if [ $NPM_IS_INSTALLED -eq 0 ]; then
     echo ">>> NPM is already installed"
 else
     echo -e -n "\033[1;31mNPM is not installed."
-    ./install_npm.sh
+    echo -e "\nDo you want to install NodeJS/NPM? (y/n)"
+    read install
+    if [ "$install" = "y" ]; then
+        install_npm
+    fi
 fi
 
-echo -e -n "\033[1;36mChecking if dependencies are installed"
+echo -e -n "\033[1;36mChecking if dependencies are installed\n"
 echo "mongod          $(echo_if $(program_is_installed mongo))"
 echo "ruby            $(echo_if $(program_is_installed ruby))"
 echo "bundler         $(echo_if $(program_is_installed bundler))"

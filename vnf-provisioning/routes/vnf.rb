@@ -91,6 +91,7 @@ class Provisioning < VnfProvisioning
           stack_url: nil,
           vms_id: nil,
           scale_info: nil,
+          scale_resources: [],
           lifecycle_info: vnf['vnfd']['vnf_lifecycle_events'].find { |lifecycle| lifecycle['flavor_id_ref'].downcase == vnf_flavour.downcase },
           lifecycle_events_values: nil)
     rescue Moped::Errors::OperationFailure => e
@@ -210,43 +211,18 @@ class Provisioning < VnfProvisioning
       halt 404
     end
 
-    # Requests the VIM to delete the stack
-    deleteStack(vnfr.stack_url, auth_token)
-
-    status = "DELETING"
-    count = 0
-    while (status != "DELETE_COMPLETE" && status != "DELETE_FAILED")
-      sleep(5)
-      begin
-        response = RestClient.get vnfr.stack_url, 'X-Auth-Token' => auth_token, :content_type => :json, :accept => :json
-        stack_info, error = parse_json(response)
-        status = stack_info['stack']['stack_status']
-      rescue Errno::ECONNREFUSED
-        error = {"info" => "VIM unrechable."}
-        return
-      rescue RestClient::ResourceNotFound
-        logger.info "Stack already removed."
-        status = "DELETE_COMPLETE"
-      rescue => e
-        puts "If no exists means that is deleted correctly"
-        status = "DELETE_COMPLETE"
-        logger.error e
-        logger.error e.response
+    #if the stack contains nested templates, remove nesed before
+    resources = getStackResources(vnfr.stack_url, auth_token)
+    resources.each do |resource|
+      if resource['resource_type'] == 'OS::Heat::AutoScalingGroup'
+        stack_url = resource['links'].find { |link| link['rel'] == "nested" }['href']
+        response = delete_stack_with_wait(stack_url, auth_token)
+        logger.debug 'VIM response to destroy the AutoScalingGroup: ' + response.to_json
       end
-
-      logger.debug "Try: " + count.to_s + ", status: " + status.to_s
-      if (status == "DELETE_FAILED")
-        deleteStack(vnfr.stack_url, auth_token)
-        status = "DELETING"
-      end
-      count = count +1
-
-      if count > 10
-        logger.error "Stack can not be removed"
-        raise 400, "Stack can not be removed"
-      end
-      break if count > 20 #to remove
     end
+
+    # Requests the VIM to delete the stack
+    response = delete_stack_with_wait(vnfr.stack_url, auth_token)
 
     logger.debug 'VIM response to destroy: ' + response.to_json
 
@@ -361,7 +337,9 @@ class Provisioning < VnfProvisioning
       end
 
       # Send the VNFR to the mAPI
-      registerRequestmAPI(vnfr)
+      if !settings.mapi.nil?
+        registerRequestmAPI(vnfr)
+      end
 
       # Read from VIM outputs and map with parameters
       logger.debug "Output recevied from Openstack:"
@@ -373,14 +351,45 @@ class Provisioning < VnfProvisioning
       lifecycle_events_values = {}
       vnf_addresses = {}
       scale_urls = {}
+      scale_resources = []
       stack_info['stack']['outputs'].select do |output|
+        logger.info output['output_key']
         # If the output is an ID
         if output['output_key'] =~ /^.*#id$/i
           vms_id[output['output_key'].match(/^(.*)#id$/i)[1]] = output['output_value']
-        elsif output['output_key'] == "scale_in_url"
-          scale_urls[:scale_in] = output['output_value']
-        elsif output['output_key'] == "scale_out_url"
-          scale_urls[:scale_out] = output['output_value']
+        elsif output['output_key']  =~ /^.*#scale_in_url/i
+          scale_resource = scale_resources.find { |res| res[:vdu] == output['output_key'].match(/^(.*)#scale_in_url/i)[1] }
+          if scale_resource.nil?
+            scale_resources << {:vdu => output['output_key'].match(/^(.*)#scale_in_url/i)[1], :scale_in => output['output_value']}
+          else
+            scale_resource[:scale_in] = output['output_value']
+          end
+        elsif output['output_key']  =~ /^.*#scale_out_url/i
+          scale_resource = scale_resources.find { |res| res[:vdu] == output['output_key'].match(/^(.*)#scale_out_url/i)[1] }
+          if scale_resource.nil?
+            scale_resources << {:vdu => output['output_key'].match(/^(.*)#scale_out_url/i)[1], :scale_out => output['output_value']}
+          else
+            scale_resource[:scale_out] = output['output_value']
+          end
+        elsif output['output_key'] =~ /^.*#scale_group/i
+          scale_resource = scale_resources.find { |res| res[:vdu] == output['output_key'].match(/^(.*)#scale_group/i)[1] }
+          if scale_resource.nil?
+            scale_resources << {:vdu => output['output_key'].match(/^(.*)#scale_group/i)[1], :id => output['output_value']}
+          else
+            scale_resource[:id] = output['output_value']
+          end
+        elsif output['output_key'] =~ /^.*#vdus/i
+          puts "VDUs"
+          puts output['output_value']
+          vms_id[output['output_key']] = output['output_value']
+        elsif output['output_key'] =~ /^.*#networks/i
+          #scale_resource = scale_resources.find { |res| res[:vdu] == output['output_key'].match(/^(.*)#networks/i)[1] }
+          #if scale_resource.nil?
+          #  scale_resources << {:vdu => output['output_key'].match(/^(.*)#scale_out_url/i)[1], :networks => output['output_value']}
+          #else
+          #  scale_resource[:networks] = output['output_value']
+          #end
+          #vnf_addresses[output['output_key']] = output['output_value']
         else
 
           if output['output_key'] =~ /^.*#PublicIp$/i
@@ -402,7 +411,11 @@ puts output['output_key'] =~ /^#{parameter_match[1]}##{parameter_match[2]}$/i
 puts "parameters: "
 puts parameter_match[1]
 puts parameter_match[2]
-                if string[2] == "PublicIp"
+                if string[1] == "PublicIp"
+                  vnf_addresses[output['output_key']] = output['output_value']
+                  lifecycle_events_values[event] = {} unless lifecycle_events_values.has_key?(event)
+                  lifecycle_events_values[event][key_string] = output['output_value']
+                elsif string[2] == "PublicIp"
                   if key_string == output['output_key']
 #                    if output['output_key'] =~ /^.*#PublicIp$/i #output['output_key'] =~ /^.*#floating_ip$/i
                     if id == 'controller'
@@ -441,7 +454,8 @@ puts parameter_match[2]
           vnf_status: 1,
           vms_id: vms_id,
           lifecycle_events_values: lifecycle_events_values,
-          scale_info: scale_urls)
+          scale_info: scale_urls,
+          scale_resources: scale_resources)
 
       # Build message to send to the NS Manager callback
       vnfi_id = []
