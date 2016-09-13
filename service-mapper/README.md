@@ -7,7 +7,7 @@
 This code has been tested on Ruby 2.1.
 Additional include files for the mapper binary application are included in bin/include/ directory.
 This package requires GLPK libraries! ( http://www.gnu.org/software/glpk/ )
-This package uses jsoncons library (http://github.com/danielaparker/jsoncons) redistributed under the Boost license.
+This package uses jsoncons library ( http://github.com/danielaparker/jsoncons ) redistributed under the Boost license.
 
 
 ### Gems used
@@ -24,7 +24,7 @@ This package uses jsoncons library (http://github.com/danielaparker/jsoncons) re
 
 ### Installation
 
-Followin up, the istallation instruction on how to deploy on a freshly deployed VM having Ubuntu 14.04 LTS OS.
+Following up, a guideline on how to install on a freshly deployed VM having Ubuntu 14.04 LTS OS.
 
 ```
 sudo apt-get update
@@ -37,7 +37,6 @@ which updates the vm OS and installs the required dependencies.
 GLPK library is required for the binary applications and it is NOT distributed within this package. On Linux environment:
 
 ``` 
-
 wget http://ftp.gnu.org/gnu/glpk/glpk-4.55.tar.gz
 
 tar xf glpk-4.55.tar.gz 
@@ -55,10 +54,9 @@ make
 sudo make install
 
 sudo ldconfig
-
 ```
 
-After the source has been cloned from the repository, you can run
+After the source has been cloned from the repository (this may require the installation of the git package), you can run
 
 ```
 ./install.sh
@@ -86,7 +84,7 @@ make jsonconverter
 make solver
 ```
 
-Eventually, for solving any issue with gem dependencies, try running
+Eventually, for solving any issue with gem dependencies, try running:
 
 ```
 bundle update
