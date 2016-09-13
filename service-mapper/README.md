@@ -4,7 +4,7 @@
 
 ### Requirements
 
-This code has been tested on Ruby 2.1.
+This code has been tested with Ruby 2.1 on Ubuntu 14.04 LTS.
 Additional include files for the mapper binary application are included in bin/include/ directory.
 This package requires GLPK libraries! ( http://www.gnu.org/software/glpk/ )
 This package uses jsoncons library ( http://github.com/danielaparker/jsoncons ) redistributed under the Boost license.
@@ -25,6 +25,8 @@ This package uses jsoncons library ( http://github.com/danielaparker/jsoncons ) 
 ### Installation
 
 Following up, a guideline on how to install on a freshly deployed VM having Ubuntu 14.04 LTS OS.
+
+Start with:
 
 ```
 sudo apt-get update
@@ -64,9 +66,7 @@ After the source has been cloned from the repository (this may require the insta
 
 from the cloned git directory. By default, the installer script copies the service into the ~/TeNOR-Mapper directory.
 
-It is possible to manual install the service and compile the binary applications: a makefile is available in the TeNOR-Mapper/bin directory.
-
-The following guidelines, however, assume that the content of the cloned git has been copied into the ~/TeNOR-Mapper directory.
+It is possible to manual install the service and compile the binary applications; the following guidelines, however, assume that the content of the cloned git has been copied into the ~/TeNOR-Mapper directory.
 
 From there, launch: 
 
@@ -92,7 +92,7 @@ bundle update
 
 
 ### API Documentation
-A wiki page will be available shortly
+A wiki page will be available shortly.
 
 ### Run Server
 
