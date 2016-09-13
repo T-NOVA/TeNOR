@@ -31,7 +31,7 @@ Start with:
 ```
 sudo apt-get update
 
-sudo apt-get install -y make g++ ruby bundler zlib1g zlib1g-devp
+sudo apt-get install -y make g++ ruby bundler zlib1g zlib1g-dev
 ```
 
 which updates the vm OS and installs the required dependencies.
@@ -75,6 +75,8 @@ It is possible to manual install the service and compile the binary applications
 From there, launch: 
 
 ```
+gem install bundler
+
 bundle install
 ```
 
@@ -91,7 +93,7 @@ make solver
 Eventually, for solving any issue with gem dependencies, try running:
 
 ```
-bundle update
+gem install bundler
 ```
 
 

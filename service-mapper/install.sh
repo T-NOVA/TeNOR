@@ -28,6 +28,7 @@
 NO_GLPK_CONTINUE=
 OVERWRITE_CONTINUE=
 BUNDLER_RET_VAL=
+BUNDLER_INSTALL_RET_VAL=
 MAKE_RET_VAL=
 MAKE_LOG_VAL=
 
@@ -145,6 +146,14 @@ rm $HOME/TeNOR-Mapper/install.sh
 echo
 echo -e "\e[94mUpdating Ruby gems\e[39m"
 cd $HOME/TeNOR-Mapper
+sudo gem install bundler
+#BUNDLER_INSTALL_RET_VAL=$(sudo bundle update)
+#if [ "$BUNDLER_INSTALL_RET_VAL" -ne 0 ]
+#then
+#    echo "Gem install bundler failed. Check the onscreen log."
+#    exit 5
+#fi
+
 sudo bundle update
 #BUNDLER_RET_VAL=$(sudo bundle update)
 #if [ "$BUNDLER_RET_VAL" -ne 0 ]
