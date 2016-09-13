@@ -58,6 +58,8 @@ sudo make install
 sudo ldconfig
 ```
 
+#### Using the installer script
+
 After the source has been cloned from the repository (this may require the installation of the git package), you can run
 
 ```
@@ -65,6 +67,8 @@ After the source has been cloned from the repository (this may require the insta
 ```
 
 from the cloned git directory. By default, the installer script copies the service into the ~/TeNOR-Mapper directory.
+
+#### Manual installation
 
 It is possible to manual install the service and compile the binary applications; the following guidelines, however, assume that the content of the cloned git has been copied into the ~/TeNOR-Mapper directory.
 
