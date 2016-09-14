@@ -40,8 +40,9 @@ class HotGenerator < Sinatra::Application
 		routers_id = provision_info['routers_id']
 		halt 400, 'Routers ID not found' if routers_id.nil?
 
-		security_group_id = provision_info['security_group_id']
-		halt 400, 'Security group ID not found' if security_group_id.nil?
+		if provision_info['security_group_id'].nil?
+			security_group_id = nil
+		end
 
 		vnfr_id = provision_info['vnfr_id']
 		halt 400, 'Vnfr ID not found' if vnfr_id.nil?
