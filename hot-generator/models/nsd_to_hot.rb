@@ -49,18 +49,16 @@ class NsdToHot
           cidr = "192." + rand(256).to_s + "." + index.to_s + ".0/24"
         end
 
+        network_name = create_network(vlink['vld_id'], vlink['alias'])
+        subnet_name = create_subnet(vlink['vld_id'], dns_server, cidr)
+
         if vlink['connectivity_type'] == "E-LINE"
-          shared = false
+          #nothing
         elsif vlink['connectivity_type'] == "E-LAN"
-          #similar case merge is true
-          shared = true
+          create_router_interface(router_name, subnet_name)
         elsif vlink['connectivity_type'] == "E-TREE"
           #TODO
         end
-
-        network_name = create_network(vlink['vld_id'], vlink['alias'], shared)
-        subnet_name = create_subnet(vlink['vld_id'], dns_server, cidr)
-        create_router_interface(router_name, subnet_name)
 
 =begin
         if (vlink['merge'])
@@ -101,9 +99,9 @@ class NsdToHot
   #
   # @param [String] network_name the network name
   # @return [String] the name of the created resource
-  def create_network(vld_id, network_name, shared)
+  def create_network(vld_id, network_name)
     name = get_resource_name
-    @hot.resources_list << Network.new(vld_id, network_name, shared, nil)
+    @hot.resources_list << Network.new(vld_id, network_name, nil)
     name
   end
 

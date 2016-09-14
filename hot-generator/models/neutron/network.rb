@@ -21,9 +21,12 @@ class Network < Resource
   #
   # @param [String] resource_name the Network resource name
   # @param [String] name the name of the network
-  def initialize(resource_name, name, shared, port_security_enabled = nil?)
-    @type = 'OS::Neutron::Net'
-    port_security_enabled.nil? ? @properties = {'name' => name, 'shared' => shared} : @properties = {'name' => name, 'port_security_enabled' => port_security_enabled, 'shared' => shared}
-    super(resource_name, @type, @properties)
+  # @param [String] shared if the network is shared
+  # @param [String] port_security_enabled the security of the ports
+  def initialize(resource_name, name, port_security_enabled = nil)
+    type = 'OS::Neutron::Net'
+    #properties = {'name' => name, 'port_security_enabled' => port_security_enabled}
+    properties = {'name' => name}
+    super(resource_name, type, properties)
   end
 end
