@@ -1,6 +1,6 @@
 development:
   host: 127.0.0.1
-  keyspace: tnova_monitoring_dev
+  keyspace: tnova_monitoring
   username: username
   password: password
 
