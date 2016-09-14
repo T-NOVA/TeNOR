@@ -205,6 +205,11 @@ then
     exit 1
 fi
 
+# Create log directory
+if [ ! -d "$HOME/TeNOR-Mapper/log" ]; then
+    mkdir $HOME/TeNOR-Mapper/log
+fi
+
 echo
 echo
 echo

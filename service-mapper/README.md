@@ -31,7 +31,7 @@ Start with:
 ```
 sudo apt-get update
 
-sudo apt-get install -y make g++ ruby bundler zlib1g zlib1g-dev
+sudo apt-get install -y make g++ ruby bundler zlib1g zlib1g-dev git
 ```
 
 which updates the vm OS and installs the required dependencies.
@@ -60,7 +60,7 @@ sudo ldconfig
 
 #### Using the installer script
 
-After the source has been cloned from the repository (this may require the installation of the git package), you can run
+After the source has been cloned from the repository, you can run
 
 ```
 ./install.sh
@@ -94,6 +94,13 @@ Eventually, for solving any issue with gem dependencies, try running:
 
 ```
 gem install bundler
+```
+
+Also, error may be thrown in case of missing TeNOR-Mapper/log directory. It can be fixed with:
+
+``` 
+mkdir TeNOR-Mapper/log
+
 ```
 
 
