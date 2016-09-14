@@ -44,7 +44,7 @@ class IR_helper
 	# but I haven't had the chance to try them in a working environment. Code may change drastically if
 	# I decide to implement filtered-based queries!
 	#
-	def queryIR(ir_address, simulation, debugprint)
+	def queryIR(ir_address, simulation, debugprint, overcommiting)
 
 		conv = Sm_converters.new
 		#dummyRest = Sm_dummyRest.new
@@ -221,10 +221,14 @@ class IR_helper
 				# Actual limits found on the OpenStack docs: 16 vcpus for each physical core and 1.5MB virtual ram
 				# for each MB or ram. Disregard them and return only the difference between physical cores and vcpu used
 				# (as suggested by Intel).
-				#pop_aggregate_cpus += cpus * 16 - vcpus_used
-				#pop_aggregate_ram  += ram * 1.5 - ram_used
-				pop_aggregate_cpus += cpus - vcpus_used
-				pop_aggregate_ram  += ram - ram_used
+				# 14/Mar/16: enabling optional overcommitting
+				if (overcommiting == "true")
+					pop_aggregate_cpus += cpus * 16 - vcpus_used
+					pop_aggregate_ram  += ram * 1.5 - ram_used
+				else
+					pop_aggregate_cpus += cpus - vcpus_used
+					pop_aggregate_ram  += ram - ram_used
+				end
 				pop_aggregate_hdd  += hdd - hdd_used
 
 				if hypervisor_occi_epa_attributes_hash["cpu_info"]["features"].include?("aes")
@@ -238,6 +242,8 @@ class IR_helper
 			pop_aggregate_data["aggregate_cpu_accel_aes-ni"]  = pop_aggregate_cpu_aesni
 			hypervisors_detail_hash[pop_id] = pop_aggregate_data
 		end
+
+		puts "Done querying hypervisors"
 
 		# Take care of the EPA features: collect the number of DPDK-enabled NICs and the number of GPUs in each PoP
 		# and store in the PoP_aggregate_resources hash
@@ -267,6 +273,39 @@ class IR_helper
 			end
 			gpu_osdev = JSON.parse(gpu_osdev_list)
 			hypervisors_detail_hash[pop_id]["gpu_count"] = gpu_osdev.length
+
+			## Sometimes, GPU are not recognized by the OS, expecially when PCI-passthrough is enabled and
+			## no drivers have been installed on the host OS.
+			## Try the naive approach (get all the pcidev of each PoP, duh!)
+			## Experimental - disabled for now
+			#begin
+			#	pcidev_list = RestClient.get(base_ir_address + pop_id + '/pcidev/', :accept => 'application/occi+json')
+			#rescue => e
+			#	if debugprint == true
+			#		puts 'API call fail /pop/<pop_id>/pcidev/'
+			#	end
+			#	return {'status' => -22,
+			#			'error' => "API call fail: /pop/" + pop_id + "/pcidev/"}
+			#end
+			#pcidev_hash = JSON.parse(pcidev_list)
+			#gpu_counter = 0
+			#pcidev_hash.each do |pcidev|
+			#	begin
+			#		pcidev_detail = RestClient.get(base_ir_address + pcidev["identifier"], :accept => 'application/occi+json')
+			#	rescue => e
+			#		if debugprint == true
+			#			puts 'API call fail /pop/<pop_id>/pcidev/<pci_id>'
+			#		end
+			#		return {'status' => -22,
+			#				'error' => "API call fail: /pop/" + pop_id + "/pcidev/<pci_id>"}
+			#	end
+			#	pcidev_detail_hash = JSON.parse(pcidev_detail)
+			#	if pcidev_detail_hash["attributes"]["occi.epa.attributes"].include? "NVIDIA"
+			#		gpu_counter = gpu_counter + 1
+			#		puts "gpu found at " + pcidev_detail_hash["attributes"]["occi.epa.hostname"]
+			#	end
+			#end
+			#hypervisors_detail_hash[pop_id]["gpu_count"] = gpu_counter
 		end
 
 
@@ -286,7 +325,7 @@ class IR_helper
 		end
 
 		return {'status' => 0,
-                'error'=> "Ok"}
+                        'error'=> "Ok"}
 
 
 	end
