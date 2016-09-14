@@ -84,9 +84,12 @@ module NsProvisioner
 
       stack_url = resource['network_stack']['stack']['links'][0]['href']
       logger.debug "Removing reserved stack..."
-      deleteStack(stack_url, tenant_token)
       status = "DELETING"
       count = 0
+      code = deleteStack(stack_url, tenant_token)
+      if code == 404
+        status = "DELETE_COMPLETE"
+      end
       while (status != "DELETE_COMPLETE" && status != "DELETE_FAILED")
         sleep(5)
         begin

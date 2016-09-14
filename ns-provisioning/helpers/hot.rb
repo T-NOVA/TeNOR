@@ -139,6 +139,9 @@ module HotHelper
     rescue Errno::ECONNREFUSED
       error = {"info" => "VIM unrechable."}
       return
+    rescue RestClient::ResourceNotFound
+      logger.error "Already removed from the VIM."
+      return 404
     rescue => e
       logger.error e
       logger.error e.response
