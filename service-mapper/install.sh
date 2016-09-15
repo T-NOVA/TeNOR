@@ -210,6 +210,11 @@ if [ ! -d "$HOME/TeNOR-Mapper/log" ]; then
     mkdir $HOME/TeNOR-Mapper/log
 fi
 
+# Delete old Gemfile.lock, if present
+if [ -d "$HOME/TeNOR-Mapper/Gemfile.lock" ]; then
+    rm $HOME/TeNOR-Mapper/Gemfile.lock
+fi
+
 echo
 echo
 echo
