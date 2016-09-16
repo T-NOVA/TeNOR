@@ -294,15 +294,7 @@ module NsProvisioner
             pop_auth['tenant_name'] = "tenor_instance_" + @instance['id'].to_s
             pop_auth['tenant_id'] = createTenant(popUrls[:keystone], pop_auth['tenant_name'], token)
           end
-=begin
-          if (!settings.default_tenant_name.nil?)
-            pop_auth['tenant_name'] = settings.default_tenant_name
-            pop_auth['tenant_id'] = settings.default_tenant_id
-          else
-            pop_auth['tenant_name'] = "tenor_instance_" + @instance['id'].to_s
-            pop_auth['tenant_id'] = createTenant(popUrls[:keystone], pop_auth['tenant_name'], token)
-          end
-=end
+
           pop_auth['username'] = "user_" + @instance['id'].to_s
           pop_auth['password'] = "secretsecret"
           pop_auth['user_id'] = createUser(popUrls[:keystone], pop_auth['tenant_id'], pop_auth['username'], pop_auth['password'], token)
