@@ -25,41 +25,6 @@ module MappingHelper
   # @return [Hash, String] if the parsed message is an invalid JSON
   def callMapping(ms, nsd)
 
-    vnf_mapping = []
-    nsd['vnfds'].each do |vnf_id|
-      vnf_mapping << {"maps_to_PoP" => "/pop/default", "vnf" => "/" + vnf_id.to_s}
-    end
-
-
-    #nsd, errors = parse_json(response)
-    mapping = {
-        "created_at" => "Thu Nov  5 10:13:25 2015",
-        "links_mapping" =>
-            [
-                {
-                    "vld_id" => "vld1",
-                    "maps_to_link" => "/pop/link/85b0bc34-dff0-4399-8435-4fb2ed65790a"
-                }
-            ],
-        "vnf_mapping" => vnf_mapping
-        #            [
-        #                {
-        #                    "maps_to_PoP" => "/pop/default",
-        #                   "vnf" => "/" + nsd['vnfds'][0].to_s
-        #                }
-        #            ]
-    }
-
-    unsuccessfullMapping = {
-        "Error" => "Error in MIP problem",
-        "Info" => "MIP solution is undefined",
-        "created_at" => "Thu Nov  5 10:11:37 2015"
-    }
-
-    if ms[:development]
-      return mapping
-    end
-
     begin
       response = RestClient.post settings.mapping + '/mapper', ms.to_json, :content_type => :json
     rescue => e
@@ -73,6 +38,27 @@ module MappingHelper
     mapping, errors = parse_json(response.body)
     return 400, errors if errors
 
+    return mapping
+  end
+
+  # When the Mapping is not required, only one pop or is selected manually, use the same format for the response
+  def getMappingResponse(nsd, pop_id)
+    vnf_mapping = []
+    nsd['vnfds'].each do |vnf_id|
+      vnf_mapping << {"maps_to_PoP" => "/pop/#{pop_id}", "vnf" => "/" + vnf_id.to_s}
+    end
+
+    mapping = {
+        "created_at" => "Thu Nov  5 10:13:25 2015",
+        "links_mapping" =>
+            [
+                {
+                    "vld_id" => "vld1",
+                    "maps_to_link" => "/pop/link/85b0bc34-dff0-4399-8435-4fb2ed65790a"
+                }
+            ],
+        "vnf_mapping" => vnf_mapping
+    }
     return mapping
   end
 

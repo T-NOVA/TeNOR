@@ -173,7 +173,7 @@ module NsProvisioner
   # @param [JSON] message NSD
   # @return [Hash, nil] NS
   # @return [Hash, String] if the parsed message is an invalid JSON
-  def instantiate(instance, nsd)
+  def instantiate(instance, nsd, pop_list, pop_id = nil)
 
     @instance = instance
     callbackUrl = @instance['notification']
@@ -193,24 +193,28 @@ module NsProvisioner
       infr_repo_url = settings.infr_repository
     end
 
-    #if PoP list has only one PoP, avoid execute ServiceMapping
-    pops = getPops()
-=begin
-    if pops.size > 1
-    else
-    end
-=end
+    logger.debug "List of available PoPs:"
+    logger.debug pop_list
 
-    ms = {
-        :NS_id => nsd['id'],
-        :tenor_api => settings.manager,
-        :infr_repo_api => infr_repo_url,
-        :development => true,
-        :NS_sla => sla_id,
-        :overcommitting => "true"
-    }
-    #choose select mapping
-    mapping = callMapping(ms, nsd)
+    if pop_list.size == 1
+      pop_id = pop_list[0]
+    end
+
+    if !pop_id.nil?
+      logger.debug "Deploy to PoP id: " + pop_id.to_s
+      mapping = getMappingResponse(nsd, pop_id)
+    else
+      ms = {
+          :NS_id => nsd['id'],
+          :tenor_api => settings.manager,
+          :infr_repo_api => infr_repo_url,
+          :development => true,
+          :NS_sla => sla_id,
+          :overcommitting => "true"
+      }
+      mapping = callMapping(ms, nsd)
+    end
+
     @instance.update_attribute('mapping_time', DateTime.now.iso8601(3).to_s)
 
     if (!mapping['vnf_mapping'])
