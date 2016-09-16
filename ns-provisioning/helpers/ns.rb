@@ -414,7 +414,7 @@ module NsProvisioner
       stack_id = stack['stack']['id']
       #@instance.update_attribute('network_stack', stack)
 
-      logger.info "Checking network stack creation..."
+      logger.info "Checking network stack creation2..."
       status = "CREATING"
       count = 0
       while (status != "CREATE_COMPLETE" && status != "CREATE_FAILED")
@@ -428,7 +428,10 @@ module NsProvisioner
         logger.error "Error creating the stack."
         logger.error stack_info
         logger.error errors
-        #recoverState(@instance, error)
+        @instance.push(lifecycle_event_history: "ERROR_CREATING the NS network")
+        @instance.update_attribute('status', "ERROR_CREATING")
+        @instance.push(audit_log: stack_info)
+        generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", error))
         return
       end
 
@@ -469,6 +472,7 @@ module NsProvisioner
       @instance.update_attribute('resource_reservation', resource_reservation)
     end
 
+    @instance.update_attribute('status', "INSTANTIATING VNFs")
     vnfrs = []
     #for each VNF, instantiate
     mapping['vnf_mapping'].each do |vnf|
@@ -515,13 +519,26 @@ module NsProvisioner
       begin
         response = RestClient.post settings.vnf_manager + '/vnf-provisioning/vnf-instances', vnf_provisioning_info.to_json, :content_type => :json
       rescue => e
-        logger.error "Rescue instatiation"
-        logger.error e
-        if (defined?(e.response)).nil?
-          puts e.response.body
-          error = "Instantiation error. Response from the VNF Manager: " + e.response.body
-          generateMarketplaceResponse(marketplaceUrl, generateError(instantiation_info['ns_id'], "FAILED", error))
-          return
+        @instance.push(lifecycle_event_history: "ERROR_CREATING " + vnf_id.to_s + " VNF")
+        @instance.update_attribute('status', "ERROR_CREATING")
+        if e.response.code == 404
+          error = "The VNFD is not defined in the VNF Catalogue."
+          @instance.push(audit_log: error)
+          logger.error error
+          generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", error))
+        else
+          if e.response.body.nil?
+            error = "Instantiation error. Response from the VNF Manager with no information."
+            logger.error error
+            generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", error))
+            return
+          else
+            @instance.push(audit_log: e.response.body)
+            error = "Instantiation error. Response from the VNF Manager: " + e.response.body
+            logger.error error
+            generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", error))
+            return
+          end
         end
         logger.error "Handle error."
         return
