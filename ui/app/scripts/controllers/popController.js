@@ -85,7 +85,17 @@ angular.module('tNovaApp')
             });
         };
 
-        $scope.removePop = function (popId) {
+        $scope.removePopDialog = function (id) {
+            $scope.itemToDeleteId = id;
+            $modal({
+                title: "Are you sure you want to delete this item?",
+                template: "views/t-nova/modals/delete.html",
+                show: true,
+                scope: $scope,
+            });;
+        };
+
+        $scope.deleteItem = function (popId) {
             popId = popId + 1;
             AuthService.delete($window.localStorage.token, "admin/dc/" + popId).then(function (data) {
                 console.log(data);

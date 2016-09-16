@@ -16,8 +16,8 @@
                             <th data-title="'name'" class="col-sm-2 col-md-2 col-lg-2">NS id</th>
                             <th data-title="'name'" class="col-sm-1 col-md-1 col-lg-1">Vendor</th>
                             <th data-title="'name'" class="col-sm-1 col-md-1 col-lg-1">Version</th>
-                            <th st-sort="created_at" data-title="'Add VI'" class="col-sm-2 col-md-2 col-lg-2">Creation date</th>
-                            <th st-sort="status" data-title="'Remove VI'" class="col-sm-2 col-md-2 col-lg-2">Status</th>
+                            <th st-sort="status" data-title="'status'" class="col-sm-2 col-md-2 col-lg-2">Status</th>
+                            <th st-sort="created_at" data-title="'created_at'" class="col-sm-2 col-md-2 col-lg-2">Creation date</th>
                             <th data-title="'actions'" class="col-sm-3 col-md-3 col-lg-3">Actions</th>
                         </tr>
                         <tr>
@@ -26,6 +26,15 @@
                             </th>
                             <th colspan="1">
                                 <input st-search="nsd_id" class="form-control" placeholder="search by nsd ..." type="text" />
+                            </th>
+                            <th colspan="1">
+                                <input st-search="vendor" class="form-control" placeholder="search by nsd ..." type="text" />
+                            </th>
+                            <th colspan="1">
+                                <input st-search="version" class="form-control" placeholder="search by nsd ..." type="text" />
+                            </th>
+                            <th colspan="1">
+                                <input st-search="status" class="form-control" placeholder="search by nsd ..." type="text" />
                             </th>
                             <th colspan="4">
                                 <input st-search="" class="form-control" placeholder="global search ..." type="text" />
@@ -38,8 +47,8 @@
                             <td>{{row.nsd_id}}</td>
                             <td>{{row.vendor}}</td>
                             <td>{{row.version}}</td>
-                            <td>{{row.created_at| date:'yyyy-MM-dd HH:mm:ss'}}</td>
                             <td>{{row.status}}
+                            <td>{{row.created_at| date:'yyyy-MM-dd HH:mm:ss'}}</td>
                                 <span ng-if="row.status === 'instantiated'">Instantiated</span>
                                 <span ng-if="row.status === 1">Tear-up</span>
                                 <span ng-if="row.status === 2">In progress</span>
