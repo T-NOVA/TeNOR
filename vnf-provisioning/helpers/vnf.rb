@@ -113,6 +113,8 @@ module ProvisioningHelper
       halt 500, 'VIM unreachable'
     rescue => e
       logger.error e.response
+      logger.error e.response.code
+      logger.error e.response.body
       halt e.response.code, e.response.body
     end
 
