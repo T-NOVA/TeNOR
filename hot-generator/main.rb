@@ -56,5 +56,9 @@ class HotGenerator < Sinatra::Application
     set :logger, logger
   end
 
+  before do
+    env['rack.logger'] = settings.logger
+  end
+
   helpers CommonMethods
 end

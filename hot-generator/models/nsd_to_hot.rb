@@ -55,10 +55,11 @@ class NsdToHot
         if vlink['connectivity_type'] == "E-LINE"
           #nothing
         elsif vlink['connectivity_type'] == "E-LAN"
-          create_router_interface(router_name, subnet_name)
+          #create_router_interface(router_name, subnet_name)
         elsif vlink['connectivity_type'] == "E-TREE"
           #TODO
         end
+        create_router_interface(router_name, subnet_name)
 
 =begin
         if (vlink['merge'])
