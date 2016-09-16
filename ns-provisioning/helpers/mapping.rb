@@ -32,6 +32,7 @@ module MappingHelper
       if (defined?(e.response)).nil?
         #halt 400, "NS-Mapping unavailable"
       end
+      return 500, "Service Mapping error."
       #halt e.response.code, e.response.body
     end
 

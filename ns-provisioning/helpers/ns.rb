@@ -199,6 +199,7 @@ module NsProvisioner
     if pop_list.size == 1
       pop_id = pop_list[0]
     end
+    pop_id = pop_list[0]
 
     if !pop_id.nil?
       logger.debug "Deploy to PoP id: " + pop_id.to_s
@@ -212,7 +213,9 @@ module NsProvisioner
           :NS_sla => sla_id,
           :overcommitting => "true"
       }
-      mapping = callMapping(ms, nsd)
+      mapping, errors = callMapping(ms, nsd)
+      logger.error "Internal error: Mapping not reachable." if errors
+      return generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", "Internal error: Mapping not reachable.")) if errors
     end
 
     @instance.update_attribute('mapping_time', DateTime.now.iso8601(3).to_s)
@@ -281,6 +284,17 @@ module NsProvisioner
         begin
           token = openstackAdminAuthentication(popUrls[:keystone], popUrls[:tenant], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
 
+          if (!settings.default_tenant)
+            pop_auth['tenant_name'] = settings.default_tenant_name
+            pop_auth['tenant_id'] = getTenantId(popUrls[:keystone], pop_auth['tenant_name'], token)
+            if pop_auth['tenant_id'].nil?
+              pop_auth['tenant_id'] = createTenant(popUrls[:keystone], pop_auth['tenant_name'], token)
+            end
+          else
+            pop_auth['tenant_name'] = "tenor_instance_" + @instance['id'].to_s
+            pop_auth['tenant_id'] = createTenant(popUrls[:keystone], pop_auth['tenant_name'], token)
+          end
+=begin
           if (!settings.default_tenant_name.nil?)
             pop_auth['tenant_name'] = settings.default_tenant_name
             pop_auth['tenant_id'] = settings.default_tenant_id
@@ -288,7 +302,7 @@ module NsProvisioner
             pop_auth['tenant_name'] = "tenor_instance_" + @instance['id'].to_s
             pop_auth['tenant_id'] = createTenant(popUrls[:keystone], pop_auth['tenant_name'], token)
           end
-
+=end
           pop_auth['username'] = "user_" + @instance['id'].to_s
           pop_auth['password'] = "secretsecret"
           pop_auth['user_id'] = createUser(popUrls[:keystone], pop_auth['tenant_id'], pop_auth['username'], pop_auth['password'], token)

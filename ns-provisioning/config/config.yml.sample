@@ -21,6 +21,10 @@ dns_server:
 default_tenant_id:
 default_tenant_name:
 
+default_tenant: true
+default_tenant_name: tenor_tenant
+default_tenant_user: tenor_user
+
 dependencies: [ns_monitoring, vnf_manager, wicm, mAPI, mapping, hot_generator, infr_repository]
 
 gk:
