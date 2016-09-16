@@ -1,6 +1,6 @@
 <div class="left_col scroll-view">
     <div class="navbar nav_title" style="border: 0;">
-        <a ui-sref="root.dashboard" class="site_title hidden-small" style="text-align: center;" ><img width="150px" src="images/tenor_logo_white.png" /></a>
+        <a ui-sref="root.dashboard" class="site_title hidden-small" style="text-align: center;"><img width="150px" src="images/tenor_logo_white.png" /></a>
     </div>
     <div class="clearfix"></div>
     <br />
@@ -35,12 +35,13 @@
                 <li ng-class="{'active': $state.current.name === 'root.infrastructureRepository'}">
                     <a ui-sref="root.infrastructureRepository"><i class="glyphicon glyphicon-hdd"></i> Infrastructure Repository</a>
                 </li>
-                <li class="nav-header" ng-class="{'active': $state.current.name === 'root.configuration' || $state.current.name === 'root.modules' || $state.current.name === 'root.pops'}">
+                <li class="nav-header" ng-class="{'active': $state.current.name === 'root.configuration' || $state.current.name === 'root.modules' || $state.current.name === 'root.pops' || $state.current.name === 'root.logs'}">
                     <a data-toggle="collapse" data-target="#menuConfig" aria-expanded="false"> <i class="glyphicon glyphicon-tasks"></i> Configuration <span class="caret pull-right"></span></a>
                     <ul class="nav child_menu collapse" id="menuConfig">
                         <li ng-class="{'active': $state.current.name === 'root.configuration'}"><a ui-sref="root.configuration">General configuration</a></li>
                         <li ng-class="{'active': $state.current.name === 'root.modules'}"><a ui-sref="root.modules">Modules</a></li>
                         <li ng-class="{'active': $state.current.name === 'root.pops'}"><a ui-sref="root.pops">PoPs</a></li>
+                        <li ng-class="{'active': $state.current.name === 'root.logs'}"><a ui-sref="root.logs">Logs</a></li>
                     </ul>
                 </li>
             </ul>
