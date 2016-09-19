@@ -210,7 +210,7 @@ class VnfdToHot
       #nothig to do
     end
 
-    create_router_interface(router_name, subnet_name)
+    create_router_interface(router_id, subnet_name)
 
     return network_name
   end
