@@ -1,3 +1,14 @@
+## 0.4.0
+- Fixed installation issues.
+- Included DNS in tenor_install script.
+- Port_Security is disabled by default due problems with some Openstack versions.
+- When only one pop is defined, the vnf is deployed automatically to that pop.
+- VNF provisioning allows to deploy to a specific PoP. Updated instantiation form in UI.
+- NS Provisioning default tenant name specified in config file. Can be disabled. By default disabled.
+- Fix grunt installaltion.
+- Refactor NS Provisioning errors.
+ 
+
 ## 0.3.0
 - UI infinite monitoring request fixed.
 - Included Invoker for deployment of TeNOR.
