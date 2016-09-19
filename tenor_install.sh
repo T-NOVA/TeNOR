@@ -3,7 +3,6 @@
 declare tenor_ip
 declare mongo_ip
 declare gatekeeper
-declare dns
 declare logstash_address
 declare cassandra_address
 
@@ -104,7 +103,6 @@ configureIps(){
     TENOR_IP="127.0.0.1"
     MONGODB_IP="127.0.0.1:27017"
     GATEKEEPER="127.0.0.1:8000"
-    DNS_SERVER="8.8.8.8"
     LOGSTASH_ADDRESS="127.0.0.1:5228"
     CASSANDRA_ADDRESS="127.0.0.1"
 
@@ -119,10 +117,6 @@ configureIps(){
     echo "Type the IP:PORT (xxx.xxx.xxx.xxx:xxxx) where is installed Gatekeeper, followed by [ENTER]:"
     read gatekeeper
     if [ -z "$gatekeeper" ]; then gatekeeper=$GATEKEEPER; fi
-
-    echo "Type the IP of the DNS server, followed by [ENTER]:"
-    read dns
-    if [ -z "$dns" ]; then dns=$DNS_SERVER; fi
 
     echo "Type the IP:PORT (xxx.xxx.xxx.xxx:xxxx) where is installed Logstash, followed by [ENTER]:"
     read logstash_address
@@ -156,7 +150,6 @@ configureFiles(){
             cp config/config.yml.sample config/config.yml
             sed -i -e 's/\(logstash_host:\).*/\1 '$logstash_host'/' config/config.yml
             sed -i -e 's/\(logstash_port:\).*/\1 '$logstash_port'/' config/config.yml
-            sed -i -e 's/\(dns_server:\).*/\1 '$dns'/' config/config.yml
             sed -i -e 's/\(gatekeeper:\).*/\1 '$gatekeeper'/' config/config.yml
             for i in "${tenor_ns_url[@]}"
             do
@@ -230,7 +223,7 @@ addNewPop(){
     tokenId=$(curl -XPOST http://$gatekeeper_host/token/ -H "X-Auth-Password:$GATEKEEPER_PASS" -H "X-Auth-Uid:$GATEKEEPER_USER_ID" | python -c 'import json,sys;obj=json.load(sys.stdin);print obj["token"]["id"]')
     curl -X POST http://$gatekeeper_host/admin/dc/ \
     -H 'X-Auth-Token: '$tokenId'' \
-    -d '{"msg": "PoP Testbed", "dcname":"'$openstack_name'", "adminid":"'$keystoneUser'","password":"'$keystonePass'", "extrainfo":"pop-ip='$openstack_ip' tenant-name='$admin_tenant_name' keystone-endpoint=http://'$openstack_ip':35357/v2.0 orch-endpoint=http://'$openstack_ip':8004/v1 compute-endpoint=http://'$openstack_ip':8774/v2.1 neutron-endpoint=http://'$openstack_ip':9696/v2.0 dns='openstack_dns'"}'
+    -d '{"msg": "PoP Testbed", "dcname":"'$openstack_name'", "adminid":"'$keystoneUser'","password":"'$keystonePass'", "extrainfo":"pop-ip='$openstack_ip' tenant-name='$admin_tenant_name' keystone-endpoint=http://'$openstack_ip':35357/v2.0 orch-endpoint=http://'$openstack_ip':8004/v1 compute-endpoint=http://'$openstack_ip':8774/v2.1 neutron-endpoint=http://'$openstack_ip':9696/v2.0 dns='$openstack_dns'"}'
 
     pause
 }
