@@ -60,6 +60,8 @@ module PopHelper
         popUrls[:orch] = item.split('=')[1]
       elsif key == 'tenant-name'
         popUrls[:tenant] = item.split('=')[1]
+      elsif key == 'dns'
+        popUrls[:dns] = item.split('=')[1]
       end
     end
 

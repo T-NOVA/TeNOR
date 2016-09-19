@@ -82,10 +82,12 @@ module ProvisioningHelper
 #      halt 500, 'VIM unreachable'
     rescue => e
       logger.error e
-      logger.error e.response
+
       if e.response == nil
         raise 400, "Reserved stack can not be removed"
 #        halt 500, e
+      else
+        logger.error e.response
       end
 
 #      halt e.response.code, e.response.body
@@ -248,16 +250,18 @@ module ProvisioningHelper
       rescue Errno::ECONNREFUSED
         logger.error "mAPI -> Connection Refused."
         message = {status: "mAPI_unreachable", vnfd_id: vnfr.vnfd_reference, vnfr_id: vnfr.id}
-        logger.info "mAPI is not rechable"
+        logger.info "mAPI is not reachable"
 #        nsmanager_callback(stack_info['ns_manager_callback'], message)
 #        halt 500, 'mAPI unreachable'
       rescue => e
-        logger.error e.response
+        if e.response.nil?
+          logger.error e
+        else
+          logger.error e.response
+        end
         message = {status: "mAPI_error", vnfd_id: vnfr.vnfd_reference, vnfr_id: vnfr.id}
         logger.error message
-        logger.info "mAPI is not rechable"
-#        nsmanager_callback(stack_info['ns_manager_callback'], message)
-#        halt e.response.code, e.response.body
+        logger.info "mAPI is not reachable"
       end
   end
 

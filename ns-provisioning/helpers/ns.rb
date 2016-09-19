@@ -60,6 +60,7 @@ module NsProvisioner
   def recoverState(instance, error)
     logger.info "Recover state executed."
     @instance = instance
+    @instance.update_attribute('status', "DELETING")
     callback_url = @instance['notification']
     ns_id = @instance['nsd_id']
 
@@ -150,8 +151,9 @@ module NsProvisioner
 
       logger.info "Removing user '" + auth_info['user_id'].to_s + "'..."
       deleteUser(popUrls[:keystone], auth_info['user_id'], token)
+      logger.error "USER DELETED?"
 
-      if !settings.default_tenant_id.nil?
+      if !settings.default_tenant
         logger.info "Removing tenant '" + auth_info['tenant_id'].to_s + "'..."
         #deleteTenant(popUrls[:keystone], auth_info['tenant_id'], token)
       end
@@ -275,7 +277,7 @@ module NsProvisioner
         begin
           token = openstackAdminAuthentication(popUrls[:keystone], popUrls[:tenant], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
 
-          if (!settings.default_tenant)
+          if (settings.default_tenant)
             pop_auth['tenant_name'] = settings.default_tenant_name
             pop_auth['tenant_id'] = getTenantId(popUrls[:keystone], pop_auth['tenant_name'], token)
             if pop_auth['tenant_id'].nil?
@@ -400,7 +402,7 @@ module NsProvisioner
       hot_generator_message = {
           nsd: nsd,
           public_net_id: publicNetworkId,
-          dns_server: settings.dns_server
+          dns_server: popUrls[:dns]
       }
 
       logger.info "Generating network HOT template..."
@@ -467,7 +469,7 @@ module NsProvisioner
           :routers => routers,
           :networks => networks,
           :public_network_id => publicNetworkId,
-          :dns_server => settings.dns_server,
+          :dns_server => popUrls[:dns],
           :pop_id => pop_auth['pop_id']
       }
       @instance.update_attribute('resource_reservation', resource_reservation)

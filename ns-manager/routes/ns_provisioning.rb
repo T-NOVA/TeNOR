@@ -292,6 +292,7 @@ class NsProvisionerController < TnovaManager
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Provisioning unreachable'
     rescue => e
+      logger.error e
       logger.error e.response
       halt e.response.code, e.response.body
     end

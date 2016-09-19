@@ -119,11 +119,10 @@ module VimHelper
       logger.error e.response.body
     end
 
-    tenants = parse_json(response)
-    tenants['tenants'].each do |tenant|
-      if tenant['name'] == tenantName
-        return tenant['id']
-      end
+    tenants, errors = parse_json(response)
+    tenant = tenants['tenants'].find { |tenant| tenant['name'] == tenantName }
+    if !tenant.nil?
+      return tenant['id']
     end
   end
 

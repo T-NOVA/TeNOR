@@ -15,8 +15,6 @@ logstash_port: 5228
 mapping: http://localhost:4042
 sla_enforcement: http://localhost:4016
 
-dns_server:
-
 #optional fields
 default_tenant: true
 default_tenant_name: tenor_tenant
