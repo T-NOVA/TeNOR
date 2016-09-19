@@ -1,3 +1,7 @@
+## 0.4.1
+- Reading DNS information from PoP Info.
+- Fix default tenant name, now it's used correctly.
+
 ## 0.4.0
 - Fixed installation issues.
 - Included DNS in tenor_install script.

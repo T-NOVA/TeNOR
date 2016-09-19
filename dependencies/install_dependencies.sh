@@ -84,6 +84,8 @@ function install_npm {
     echo "Installing Grunt and Bower..."
     sudo npm install -g grunt-cli bower
 
+    echo -e "Moving to UI folder...."
+
     cd ../ui
     echo "Installing Grunt and Bower locally in UI folder."
     sudo npm install
@@ -94,6 +96,7 @@ function install_npm {
     gem install compass
     echo "Installation of Compass done."
 
+    echo -e "Moving to dependencies folder...."
     cd ../dependencies
     echo "NPM dependencies done."
 }
