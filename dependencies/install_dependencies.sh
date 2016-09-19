@@ -82,12 +82,13 @@ function install_npm {
     echo "Installation of NodeJS and NPM done."
 
     echo "Installing Grunt and Bower..."
-    cd ../ui
-	echo "You need to install manually Grunt and Grunt-cli"
-#    sudo npm install -g grunt grunt-cli bower
-#    echo "Installation of Grunt and Bower done."
+    sudo npm install -g grunt-cli bower
 
-#    sudo npm install
+    cd ../ui
+    echo "Installing Grunt and Bower locally in UI folder."
+    sudo npm install
+
+    bower install
 
     echo "Installing Compass..."
     gem install compass
@@ -95,8 +96,6 @@ function install_npm {
 
     cd ../dependencies
     echo "NPM dependencies done."
-	echo "You need to move it to UI folder, and t install manually Grunt and Grunt-cli with the command: sudo npm install -g grunt grunt-cli bower"
-	echo "Also, then use the following command: sudo npm install"
 }
 
 echo -e -n "\033[1;36mChecking if mongodb is installed"
