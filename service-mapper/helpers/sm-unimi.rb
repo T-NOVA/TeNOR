@@ -23,6 +23,7 @@
 
 # test with curl:
 # curl -X POST localhost:4042/mapper -H 'Content-Type: application/json' -d '{"NS_id":"demo1", "NS_sla":"gold", "ir_simulation":"true"}'
+# curl -X POST localhost:4042/mapper -H "Content-Type: application/json" -d "{\"NS_id\":\"demo1\", \"NS_sla\":\"gold\", \"ir_simulation\":\"false\", \"tenor_api\":\"http://10.20.30.40:5454\", \"infr_repo_api\":\"http://1.2.3.4:5544\"}"
 # @see sm-unimi
 
 require_relative 'sm-unimi_IR_helper'
@@ -68,6 +69,7 @@ class MapperUnimi < Sinatra::Application
 	# -120				NS.json not found / not generated
 	# -121				NI.json not found / not generated
 	# -122				Invalid json request: no ns_id found
+	# -123				mapper_response.json not found / not generated. Check logs...
 	#
 	def mapper_manager()
 
@@ -123,6 +125,12 @@ class MapperUnimi < Sinatra::Application
 			ns_sla = "gold"
 		end
 
+		# Look for optional overcommitting
+		if requestbody_hash.has_key?('overcommitting')
+			overcommitting = requestbody_hash['overcommitting']
+		else
+			overcommitting = "false"
+		end
 
 		# Query to NS and VNF catalogs
 		service_catalogs = NS_helper.new
@@ -133,7 +141,7 @@ class MapperUnimi < Sinatra::Application
 
 		# Query to Infrastructure Repository.
 		ir = IR_helper.new
-		status = ir.queryIR( ir_address, simulation=ir_simulation_requested, debugprint )
+		status = ir.queryIR( ir_address, simulation=ir_simulation_requested, debugprint, overcommitting )
 		if status['status'] < 0
 			return JSON.pretty_generate( status )
 		end
@@ -162,9 +170,20 @@ class MapperUnimi < Sinatra::Application
 		system("bin/jsonConverter bin/workspace/NS.json bin/workspace/NI.json")
 		system("bin/solver")
 
+		# It may happen that the solver do not generate the response in case of malformed
+		# NSD or VNFD.
+		begin
+			mapper_solution_json = File.read('bin/workspace/mapperResponse.json')
+		rescue => e
+			puts e
+			puts "mapper_response.json not found / not generated. Check logs..."
+			status = {'status' => -123,
+					'error' => "mapper_response.json not found / not generated. Check logs..."}
+			return JSON.pretty_generate( status )
+		end
+
 		# Solver has returned a mapperResponse.json file containg the solution (or the error).
 		# Add a second timestamp and return solution to Orchestrator
-		mapper_solution_json = File.read('bin/workspace/mapperResponse.json')
 		mapper_hash = JSON.parse(mapper_solution_json)
 		time1 = Time.new
 		mapper_hash['updated_at'] = time1.inspect
@@ -173,6 +192,26 @@ class MapperUnimi < Sinatra::Application
 			mapper_hash['status'] = 1
 		else
 			mapper_hash['status'] = 0
+		end
+
+		# Rename the files in the workspace
+		if File.exist?('bin/workspace/mapperResponse.json')
+			File.rename('bin/workspace/mapperResponse.json', 'bin/workspace/mapperResponse_old.json')
+		end
+		if File.exist?('bin/workspace/NI.json')
+			File.rename('bin/workspace/NI.json', 'bin/workspace/NI_old.json')
+		end
+		if File.exist?('bin/workspace/NS.json')
+			File.rename('bin/workspace/NS.json', 'bin/workspace/NS_old.json')
+		end
+		if File.exist?('bin/workspace/NI_generated.dat')
+			File.rename('bin/workspace/NI_generated.dat', 'bin/workspace/NI_generated_old.dat')
+		end
+		if File.exist?('bin/workspace/NS_generated.dat')
+			File.rename('bin/workspace/NS_generated.dat', 'bin/workspace/NS_generated_old.dat')
+		end
+		if File.exist?('bin/workspace/pref_generated.dat')
+			File.rename('bin/workspace/pref_generated.dat', 'bin/workspace/pref_generated_old.dat')
 		end
 
 		return JSON.pretty_generate(mapper_hash)
