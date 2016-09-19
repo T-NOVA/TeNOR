@@ -201,12 +201,9 @@ class NS_helper
 		# Collecting data regarding interconnection graph between VNFs and between VNFs and outside world
 		# As now, only point to point (E-line) links are supported (and, hopefully, it will always be)
 		virtual_links_array = Array.new
-		#file = File.read( "json_templates/fake_vld_01.json" )				### Temporary stuff
-		#fake_vld = JSON.parse(file)										###
-		#nsd_from_catalogue_hash["vld"] = fake_vld							### end temporary stuff
 		nsd_from_catalogue_hash["vld"]["virtual_links"].each do |virtual_link|
 			# Filter out non-data links and mismatching flavours
-			if ((virtual_link["alias"].downcase == "data") | (virtual_link["alias"].downcase == "ingress") | (virtual_link["alias"].downcase == "egress")) & (virtual_link["sla_ref_id"] == ns_sla)
+			if ((virtual_link["alias"].downcase == "data") | (virtual_link["alias"].downcase == "ingress") | (virtual_link["alias"].downcase == "egress") | (virtual_link["alias"].downcase == "engress")) & (virtual_link["sla_ref_id"] == ns_sla)
 				virt_link_item = Hash.new
 				virt_link_item["virtual_link_id"] = virtual_link["vld_id"]
 				virt_link_item["root_requirements"] = conv.bw_conversion(virtual_link["root_requirements"])
@@ -217,6 +214,7 @@ class NS_helper
 
 				# This junk has been made in order to adapat the marketplace generated VLD
 				# "data" VLD has been guessed, since I've never seen an example of this kind of link
+				# 14/Mar/16: it's clear the aliases are arbitrary
 				if virtual_link["alias"] == "ingress"
 					virt_link_item["source"] = "ns_ext_ingress"
 					virt_link_item["destination"] = virtual_link["connections"][0]
@@ -229,21 +227,33 @@ class NS_helper
 					virt_link_item["destination"] = "ns_ext_egress"
 					virtual_links_array.push(virt_link_item)
 				end
-				if virtual_link["alias"] == "data"
+				if virtual_link["alias"] == "engress"  ### "Please, let me win the spelling bee..."
 					virt_link_item["source"] = virtual_link["connections"][0]
 					virt_link_item["source"].slice! "VNF#"
-					virt_link_item["destination"] = virtual_link["connections"][1]
-					virt_link_item["destination"].slice! "VNF#"
+					virt_link_item["destination"] = "ns_ext_engress"
 					virtual_links_array.push(virt_link_item)
+				end
+				if virtual_link["alias"] == "data"
+					### 14/Mar/16: more junk, since now links might be E-LAN type, in opposition with the model and what has been discussed so far
+					if virtual_link["connections"].size == 1
+						virt_link_item["source"] = virtual_link["connections"][0]
+						virt_link_item["source"].slice! "VNF#"
+						virt_link_item["destination"] = virtual_link["connections"][0]
+						virt_link_item["destination"].slice! "VNF#"
+						virtual_links_array.push(virt_link_item)
+					else
+						virt_link_item["source"] = virtual_link["connections"][0]
+						virt_link_item["source"].slice! "VNF#"
+						virt_link_item["destination"] = virtual_link["connections"][1]
+						virt_link_item["destination"].slice! "VNF#"
+						virtual_links_array.push(virt_link_item)
+					end
 				end
 			end
 		end
 
 		# --TODO-- considering the first nfp only
 		network_forwarding_paths = Array.new
-		#file = File.read( "json_templates/fake_vnffgd_01.json" )	###
-		#fake_vnffgd = JSON.parse(file)								### Temporary stuff
-		#nsd_from_catalogue_hash["vnffgd"] = fake_vnffgd				###
 		nsd_from_catalogue_hash["vnffgd"]["vnffgs"][0]["network_forwarding_path"].each do |nfp|
 			nfp_item = Hash.new
 			connection_points = Array.new

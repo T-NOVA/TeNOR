@@ -29,10 +29,22 @@ then
     echo "workspace/mapperResponse.json deleted"
 fi
 
+if [ -f "workspace/mapperResponse_old.json" ]
+then
+    rm workspace/mapperResponse_old.json
+    echo "workspace/mapperResponse_old.json deleted"
+fi
+
 if [ -f "workspace/NI.json" ]
 then
     rm workspace/NI.json
     echo "workspace/NI.json deleted"
+fi
+
+if [ -f "workspace/NI_old.json" ]
+then
+    rm workspace/NI_old.json
+    echo "workspace/NI_old.json deleted"
 fi
 
 if [ -f "workspace/NS.json" ]
@@ -41,10 +53,22 @@ then
     echo "workspace/NS.json deleted"
 fi
 
+if [ -f "workspace/NS_old.json" ]
+then
+    rm workspace/NS_old.json
+    echo "workspace/NS_old.json deleted"
+fi
+
 if [ -f "workspace/NI_generated.dat" ]
 then
     rm workspace/NI_generated.dat
     echo "workspace/NI_generated.dat deleted"
+fi
+
+if [ -f "workspace/NI_generated_old.dat" ]
+then
+    rm workspace/NI_generated_old.dat
+    echo "workspace/NI_generated_old.dat deleted"
 fi
 
 if [ -f "workspace/NS_generated.dat" ]
@@ -53,10 +77,22 @@ then
     echo "workspace/NS_generated.dat deleted"
 fi
 
+if [ -f "workspace/NS_generated_old.dat" ]
+then
+    rm workspace/NS_generated_old.dat
+    echo "workspace/NS_generated_old.dat deleted"
+fi
+
 if [ -f "workspace/pref_generated.dat" ]
 then
     rm workspace/pref_generated.dat
     echo "workspace/pref_generated.dat deleted"
+fi
+
+if [ -f "workspace/pref_generated_old.dat" ]
+then
+    rm workspace/pref_generated_old.dat
+    echo "workspace/pref_generated_old.dat deleted"
 fi
 
 if [ -f "workspace/print_mip.out" ]
@@ -64,3 +100,4 @@ then
     rm workspace/print_mip.out
     echo "workspace/print_mip.out deleted"
 fi
+
