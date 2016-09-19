@@ -1,6 +1,7 @@
 ---
-servicename: vnf-monitoring
+servicename: vnf_monitoring
 environment: development
+manager: localhost:4567
 address: 0.0.0.0
 port: 4573
 max_conns: 1024
@@ -13,10 +14,9 @@ logstash_port: 5228
 
 vnf_manager: http://10.10.1.61:4567
 vim_monitoring: http://10.10.1.62:8080
-vnf_instance_repository: http://10.10.1.61:4018
 ns_manager: http://10.10.1.61:4000
 
 gk:
 service_key:
 
-dependencies: [ns_catalogue, ns_instance_repository, ns_monitoring]
+dependencies: [ns_manager, vim_monitoring, vnf_manager]

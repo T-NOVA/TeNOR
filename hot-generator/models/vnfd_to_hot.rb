@@ -197,25 +197,27 @@ class VnfdToHot
   end
 
   def create_networks(vlink, dns_server, router_id)
-    if vlink['connectivity_type'] == 'E-LAN'
-      shared = true
-    else
-      shared = false
-    end
-    network_name = create_network(vlink['alias'], vlink['port_security_enabled'], shared)
+    network_name = create_network(vlink['alias'], vlink['port_security_enabled'])
     if vlink['net_segment'] && vlink['net_segment'] != ""
       cidr = vlink['net_segment']
     else
       cidr = "192." + rand(256).to_s + "." + rand(256).to_s + ".0/24"
     end
     subnet_name = create_subnet(network_name, dns_server, cidr)
+    if vlink['connectivity_type'] == 'E-LAN'
+      #create_router_interface(router_id, subnet_name)
+    elsif vlink['connectivity_type'] == 'E-LINE'
+      #nothig to do
+    end
+
     create_router_interface(router_id, subnet_name)
+
     return network_name
   end
 
-  def create_network(network_name, port_security_enabled, shared)
+  def create_network(network_name, port_security_enabled)
     name = get_resource_name
-    @hot.resources_list << Network.new(name, network_name, shared, port_security_enabled)
+    @hot.resources_list << Network.new(name, network_name, port_security_enabled)
     name
   end
 
@@ -408,11 +410,11 @@ class VnfdToHot
   def add_wait_condition(vdu)
     wc_handle_name = get_resource_name
 
-    #if vdu['wc_notify']
-    if @type != 'vSA'
-      @hot.resources_list << WaitConditionHandle.new(wc_handle_name)
-      @hot.resources_list << WaitCondition.new(get_resource_name, wc_handle_name, 2000)
-      #end
+    if vdu['wc_notify']
+      if @type != 'vSA'
+        @hot.resources_list << WaitConditionHandle.new(wc_handle_name)
+        @hot.resources_list << WaitCondition.new(get_resource_name, wc_handle_name, 2000)
+      end
     end
 
     wc_notify = ""
@@ -429,24 +431,26 @@ class VnfdToHot
       wc_notify = wc_notify + "\nwc_notify --data-binary '{\"status\": \"SUCCESS\"}'\n"
     end
 
-    shell = "#!/bin/bash"
-    if @type == 'vSA'
-      shell = "#!/bin/tcsh"
-    end
-    if @type != 'vSA'
-      bootstrap_script = vdu.has_key?('bootstrap_script') ? vdu['bootstrap_script'] : shell
-      {
-          str_replace: {
-              params: {
-                  wc_notify: {
-                      get_attr: [wc_handle_name, 'curl_cli']
-                  }
-              },
-              template: bootstrap_script + wc_notify
-          }
-      }
-    else
-      bootstrap_script = "#!/bin/bash" + wc_notify
+    if vdu['wc_notify']
+      shell = "#!/bin/bash"
+      if @type == 'vSA'
+        shell = "#!/bin/tcsh"
+      end
+      if @type != 'vSA'
+        bootstrap_script = vdu.has_key?('bootstrap_script') ? vdu['bootstrap_script'] : shell
+        {
+            str_replace: {
+                params: {
+                    wc_notify: {
+                        get_attr: [wc_handle_name, 'curl_cli']
+                    }
+                },
+                template: bootstrap_script + wc_notify
+            }
+        }
+      else
+        bootstrap_script = "#!/bin/bash" + wc_notify
+      end
     end
   end
 

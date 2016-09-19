@@ -40,6 +40,12 @@ ip_address=$(ip addr | grep 'state UP' -A2 | tail -n1 | awk '{print $2}' | cut -
 #edit config file
 sed -i -e 's/\(start_rpc:\).*/\1 true/' apache-cassandra-$cassandra_version/conf/cassandra.yaml
 sed -i -e 's/\(rpc_address:\).*/\1 '$ip_address'/' apache-cassandra-$cassandra_version/conf/cassandra.yaml
+
+echo "CREATE KEYSPACE tnova_monitoring WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };" > schema.txt
+echo "use tnova_monitoring;" >> schema.txt
+echo "CREATE TABLE nsmonitoring ( instanceId text, date int, metricName text, value text, primary key(instanceId, metricName, date));" >> schema.txt
+echo "CREATE TABLE vnfmonitoring ( instanceId text, date int, metricName text, value text, unit text, primary key(instanceId, metricName, date));" >> schema.txt
+
 #start_rpc: true  => line 445
 #rpc_address: 172.16.6.29 => line 475
 #nano apache-cassandra-2.2.4/conf/cassandra.yaml

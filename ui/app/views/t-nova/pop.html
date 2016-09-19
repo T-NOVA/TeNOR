@@ -23,7 +23,7 @@
                         <tbody>
                             <tr ng-repeat="row in displayedCollection track by $index">
                                 <td><a ng-click="getPopInfo($index)">{{row}}</a></td>
-                                <td><a ng-click="removePop($index)">Remove</a></td>
+                                <td><a ng-click="removePopDialog($index)">Remove</a></td>
                             </tr>
                         </tbody>
                         <tfoot>

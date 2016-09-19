@@ -249,7 +249,7 @@ module VimHelper
 
   def configureSecurityGroups(computeUrl, tenant_id, token)
     vim_security_groups = getSecurityGroups(computeUrl, tenant_id, token)
-    if vim_security_groups
+    if vim_security_groups.nil?
       return nil
     end
     security_group_id = nil

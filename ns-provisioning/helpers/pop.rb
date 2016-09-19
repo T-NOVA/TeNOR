@@ -24,7 +24,6 @@ module PopHelper
   # @return [Hash, nil] if the parsed message is a valid JSON
   # @return [Hash, String] if the parsed message is an invalid JSON
   def getPopInfo(pop_id)
-
     begin
       response = RestClient.get "#{settings.manager}/gatekeeper/dc/#{pop_id}", :content_type => :json
     rescue => e
@@ -33,7 +32,7 @@ module PopHelper
       return 400, "no exists"
       raise 'Pop id no exists'
     end
-    popInfo, errors = parse_json(response.body)
+    popInfo, errors = parse_json(response)
     return 400, errors if errors
 
     return popInfo
@@ -80,8 +79,10 @@ module PopHelper
       return 400, "no exists"
       raise 'Pop id no exists'
     end
-    popInfo, errors = parse_json(response.body)
+    popInfo, errors = parse_json(response)
     return 400, errors if errors
+
+    logger.error popInfo
 
     return popInfo
   end

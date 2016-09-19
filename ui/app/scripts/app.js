@@ -208,6 +208,14 @@ angular.module('tNovaApp', ['ui.router', 'ngSanitize', 'tNovaApp.config', 'tNova
                                 controller: 'descriptionCreationController'
                             }
                         }
+                    }).state('root.logs', {
+                        url: '/logs',
+                        views: {
+                            'master@root': {
+                                templateUrl: 'views/t-nova/logs.html',
+                                controller: 'logsController'
+                            }
+                        }
                     });
 
                 $urlRouterProvider.otherwise('/login');

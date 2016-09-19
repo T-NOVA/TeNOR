@@ -22,7 +22,7 @@ class Subnet < Resource
   # @param [String] resource_name the Subnet resource name
   # @param [String] network_id Network ID this subnet belongs to
   # @param [String] dns_server the DNS server to use in this subnet
-  # @param [String] index the index for the CIDR
+  # @param [String] cidr the index for the CIDR
   def initialize(resource_name, network_id, dns_server, cidr)
     @type = 'OS::Neutron::Subnet'
     @properties = {"network_id" => network_id, "ip_version" => 4, "cidr" => cidr, :dns_nameservers => [dns_server]}

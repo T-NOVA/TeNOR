@@ -113,6 +113,8 @@ module ProvisioningHelper
       halt 500, 'VIM unreachable'
     rescue => e
       logger.error e.response
+      logger.error e.response.code
+      logger.error e.response.body
       halt e.response.code, e.response.body
     end
 
@@ -199,7 +201,7 @@ module ProvisioningHelper
       #halt 500, 'VIM unreachable'
     rescue RestClient::ResourceNotFound
       logger.error "Already removed from the VIM."
-      return
+      return 404
     rescue => e
       logger.error e.response
       return
@@ -260,9 +262,12 @@ module ProvisioningHelper
   end
 
   def delete_stack_with_wait(stack_url, auth_token)
-    deleteStack(stack_url, auth_token)
     status = "DELETING"
     count = 0
+    code = deleteStack(stack_url, auth_token)
+    if code == 404
+      status = "DELETE_COMPLETE"
+    end
     while (status != "DELETE_COMPLETE" && status != "DELETE_FAILED")
       sleep(5)
       begin

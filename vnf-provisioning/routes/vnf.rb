@@ -92,6 +92,7 @@ class Provisioning < VnfProvisioning
           vms_id: nil,
           scale_info: nil,
           scale_resources: [],
+          outputs: [],
           lifecycle_info: vnf['vnfd']['vnf_lifecycle_events'].find { |lifecycle| lifecycle['flavor_id_ref'].downcase == vnf_flavour.downcase },
           lifecycle_events_values: nil)
     rescue Moped::Errors::OperationFailure => e
@@ -329,24 +330,33 @@ class Provisioning < VnfProvisioning
         halt e.response.code, e.response.body
       end
 
-      #map ports to openstack_port_id
+      logger.debug "Output received from Openstack:"
+      logger.debug stack_info['stack']['outputs']
 
+      #map ports to openstack_port_id
       resources = response['resources']
       vnfr.port_instances.each do |port|
-        port['physical_resource_id'] = resources.find { |res| res['resource_name'] == port['id'] }['physical_resource_id']
+        puts port['id']
+        if !resources.find { |res| res['resource_name'] == port['id'] }.nil?
+          port['physical_resource_id'] = resources.find { |res| res['resource_name'] == port['id'] }['physical_resource_id']
+        end
       end
+
+      outputs = []
+      stack_info['stack']['outputs'].select do |output|
+        outputs << {:key => output['output_key'], :value => output['output_value']}
+      end
+
+      #update vnfr with the key generated in the stack
+      private_key = outputs.find { |res| res[:key] == "private_key" }
+      vnfr.lifecycle_info["authentication"] = private_key[:value]
 
       # Send the VNFR to the mAPI
       if !settings.mapi.nil?
         registerRequestmAPI(vnfr)
       end
 
-      # Read from VIM outputs and map with parameters
-      logger.debug "Output recevied from Openstack:"
-      logger.debug stack_info['stack']['outputs']
-
       sleep(2)
-
       vms_id = {}
       lifecycle_events_values = {}
       vnf_addresses = {}
@@ -355,7 +365,10 @@ class Provisioning < VnfProvisioning
       stack_info['stack']['outputs'].select do |output|
         logger.info output['output_key']
         # If the output is an ID
-        if output['output_key'] =~ /^.*#id$/i
+
+        if output['output_key'] == "private_key"
+          #do nothing
+        elsif output['output_key'] =~ /^.*#id$/i
           vms_id[output['output_key'].match(/^(.*)#id$/i)[1]] = output['output_value']
         elsif output['output_key']  =~ /^.*#scale_in_url/i
           scale_resource = scale_resources.find { |res| res[:vdu] == output['output_key'].match(/^(.*)#scale_in_url/i)[1] }
@@ -379,10 +392,9 @@ class Provisioning < VnfProvisioning
             scale_resource[:id] = output['output_value']
           end
         elsif output['output_key'] =~ /^.*#vdus/i
-          puts "VDUs"
-          puts output['output_value']
           vms_id[output['output_key']] = output['output_value']
         elsif output['output_key'] =~ /^.*#networks/i
+          #TODO
           #scale_resource = scale_resources.find { |res| res[:vdu] == output['output_key'].match(/^(.*)#networks/i)[1] }
           #if scale_resource.nil?
           #  scale_resources << {:vdu => output['output_key'].match(/^(.*)#scale_out_url/i)[1], :networks => output['output_value']}
@@ -404,27 +416,19 @@ class Provisioning < VnfProvisioning
                 parameter_match = parameter.delete(' ').match(/^get_attr\[(.*)\]$/i).to_a
                 string = parameter_match[1].split(",").map(&:strip)
                 key_string = string.join("#")
-puts "Key string: "
-puts key_string
-puts output['output_key']
-puts output['output_key'] =~ /^#{parameter_match[1]}##{parameter_match[2]}$/i
-puts "parameters: "
-puts parameter_match[1]
-puts parameter_match[2]
-                if string[1] == "PublicIp"
+                logger.debug "Key string: " + key_string.to_s + ". Out_key: " + output['output_key'].to_s
+
+                if string[1] == "PublicIp" #DEPRECATED: to be removed when all VNF develpers uses the new form
                   vnf_addresses[output['output_key']] = output['output_value']
                   lifecycle_events_values[event] = {} unless lifecycle_events_values.has_key?(event)
                   lifecycle_events_values[event][key_string] = output['output_value']
                 elsif string[2] == "PublicIp"
                   if key_string == output['output_key']
-#                    if output['output_key'] =~ /^.*#PublicIp$/i #output['output_key'] =~ /^.*#floating_ip$/i
                     if id == 'controller'
                       vnf_addresses['controller'] = output['output_value']
-#                      vnf_addresses[output['output_key']] = output['output_value']
                     end
                     vnf_addresses[output['output_key']] = output['output_value']
                     lifecycle_events_values[event] = {} unless lifecycle_events_values.has_key?(event)
-                    #lifecycle_events_values[event][id] = output['output_value']
                     lifecycle_events_values[event][key_string] = output['output_value']
                   end
                 elsif output['output_key'] =~ /^#{parameter_match[1]}##{parameter_match[2]}$/i
@@ -434,7 +438,6 @@ puts parameter_match[2]
                 elsif output['output_key'] == id #'controller'
                   lifecycle_events_values[event] = {} unless lifecycle_events_values.has_key?(event)
                   lifecycle_events_values[event][key_string] = output['output_value']
-#lifecycle_events_values[event][output['output_key']] = output['output_value']
                 end
               end
             end

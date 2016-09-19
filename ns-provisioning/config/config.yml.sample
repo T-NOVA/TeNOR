@@ -18,8 +18,8 @@ sla_enforcement: http://localhost:4016
 dns_server:
 
 #optional fields
-default_tenant_id:
-default_tenant_name:
+default_tenant: true
+default_tenant_name: tenor_tenant
 
 dependencies: [ns_monitoring, vnf_manager, wicm, mAPI, mapping, hot_generator, infr_repository]
 

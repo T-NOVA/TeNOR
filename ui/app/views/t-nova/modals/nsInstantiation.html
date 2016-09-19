@@ -29,6 +29,20 @@
                     </div>
                     <div class="box-body">
                         <div class="form-group">
+                            <label for="tenantName">Select PoP</label>
+                            <button type="button" class="btn btn-default" ng-model="object.pop_id" data-html="1" bs-options="sla.sla_key as sla.sla_key for sla in nsd.sla" bs-select>
+                                Action <span class="caret"></span>
+                            </button>
+                        </div>
+                        <div class="form-group">
+                            <label for="tenantName">Use service mapping</label>
+                            <button type="button" class="btn btn-default" ng-model="object.pop_id" data-html="1" bs-options="sla.sla_key as sla.sla_key for sla in nsd.sla" bs-select>
+                                Action <span class="caret"></span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="box-body">
+                        <div class="form-group">
                             <button ng-click="instantiate(object)" type="submit" class="btn btn-primary">Submit</button>
                         </div>
                     </div>

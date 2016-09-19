@@ -63,6 +63,10 @@ class Provisioner < NsProvisioning
       halt 400, "Failed creating instance. Flavour is null"
     end
 
+    if !instantiation_info['pop_id'].nil?
+      logger.error "PoP selected: " + instantiation_info['pop_id'].to_s
+    end
+
     instance = {
         :nsd_id => nsd['id'],
         :descriptor_reference => nsd['id'],
@@ -81,7 +85,7 @@ class Provisioner < NsProvisioning
         :resource_reservation => [],
         :runtime_policy_info => [],
         :status => "INIT",
-        :notification => instantiation_info['callbackUrl'],
+        :notification => instantiation_info['callback_url'],
         :lifecycle_event_history => ['INIT'],
         :audit_log => [],
         :marketplace_callback => instantiation_info['callbackUrl']
@@ -93,7 +97,7 @@ class Provisioner < NsProvisioning
     #call thread to process instantiation
     #EM.defer(instantiate(instantiation_info), callback())
     EM.defer do
-      instantiate(@instance, nsd)
+      instantiate(@instance, nsd, instantiation_info['pop_list'], instantiation_info['pop_id'])
     end
 
     return 200, instance.to_json
@@ -287,10 +291,14 @@ class Provisioner < NsProvisioning
     if callback_response['status'] == 'ERROR_CREATING'
       @instance['status'] = "ERROR_CREATING"
       @instance['lifecycle_event_history'].push("ERROR_CREATING")
+      @instance['audit_log'].push(callback_response['stack_resources']['stack']['stack_status_reason'])
       instance.update_attributes(@instance)
-      generateMarketplaceResponse(@instance['notification'], "Error creating VNF")
+      generateMarketplaceResponse(@instance['notification'], {:status => "error", :message => callback_response['stack_resources']['stack']['stack_status_reason'] }.to_s)
+      #generateMarketplaceResponse(@instance['notification'], "Error")
       return 200
     end
+
+    logger.info callback_response['vnfd_id'].to_s + " INSTANTIATED"
 
     @instance['lifecycle_event_history'].push("VNF " + callback_response['vnfd_id'].to_s + " INSTANTIATED")
     @vnfr = @instance['vnfrs'].find { |vnf_info| vnf_info['vnfd_id'] == callback_response['vnfd_id'] }
@@ -310,16 +318,23 @@ class Provisioner < NsProvisioning
         net = vnf_net.split(":ext_")[1]
 
         if (vnf_id == vnfr_resources['vnfd_reference'])
-          logger.debug "Searching ports for network " + net.to_s
+          logger.info "Searching ports for network " + net.to_s
           next if  net == "undefined"
           vlr = vnfr_resources['vlr_instances'].find { |vlr| vlr['alias'] == net }
-          vnf_ports = vnfr_resources['port_instances'].find_all { |port| port['vlink_ref'] == vlr['id'] }
-          ports = {}
-          ports['ns_network'] = conn
-          ports['vnf_ports'] = vnf_ports
-          resources = @instance['resource_reservation'].find { |res| res['pop_id'] == @vnfr['pop_id'] }
-          resources['ports'] << ports
-          instance.update_attributes(@instance)
+          logger.error vnfr_resources['port_instances']
+          logger.error vlr
+          if vnfr_resources['port_instances'].size > 0 && !vlr.nil?
+            vnf_ports = vnfr_resources['port_instances'].find_all { |port| port['vlink_ref'] == vlr['id'] }
+            ports = {
+                :ns_network => conn,
+                :vnf_ports => vnf_ports
+            }
+            #ports['ns_network'] = conn
+            #ports['vnf_ports'] = vnf_ports
+            resources = @instance['resource_reservation'].find { |res| res['pop_id'] == @vnfr['pop_id'] }
+            resources['ports'] << ports
+            instance.update_attributes(@instance)
+          end
         end
       end
     end
@@ -370,6 +385,8 @@ class Provisioner < NsProvisioning
     EM.defer do
       monitoringData(nsd, nsr_id, @instance)
     end
+
+    
 
     return 200
   end

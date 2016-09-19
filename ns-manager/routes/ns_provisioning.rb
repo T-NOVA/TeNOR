@@ -55,7 +55,7 @@ class NsProvisionerController < TnovaManager
       halt e.response.code, e.response.body
     end
 
-    provisioning = {:nsd => JSON.parse(nsd), :customer_id => "some_id", :nap_id => "some_id", :callbackUrl => instantiation_info['callbackUrl'], :flavour => instantiation_info['flavour']}
+    provisioning = {:nsd => JSON.parse(nsd), :customer_id => "some_id", :nap_id => "some_id", :callback_url => instantiation_info['callbackUrl'], :flavour => instantiation_info['flavour'], :pop_list => popList, :pop_id => instantiation_info['pop_id'] }
 
     begin
       response = RestClient.post @service.host + ":" + @service.port.to_s + request.fullpath, provisioning.to_json, 'X-Auth-Token' => @client_token, :content_type => :json

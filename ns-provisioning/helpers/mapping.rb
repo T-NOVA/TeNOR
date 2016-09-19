@@ -25,13 +25,30 @@ module MappingHelper
   # @return [Hash, String] if the parsed message is an invalid JSON
   def callMapping(ms, nsd)
 
-    vnf_mapping = []
-    nsd['vnfds'].each do |vnf_id|
-      vnf_mapping << {"maps_to_PoP" => "/pop/default", "vnf" => "/" + vnf_id.to_s}
+    begin
+      response = RestClient.post settings.mapping + '/mapper', ms.to_json, :content_type => :json
+    rescue => e
+      logger.error e
+      if (defined?(e.response)).nil?
+        #halt 400, "NS-Mapping unavailable"
+      end
+      return 500, "Service Mapping error."
+      #halt e.response.code, e.response.body
     end
 
+    mapping, errors = parse_json(response.body)
+    return 400, errors if errors
 
-    #nsd, errors = parse_json(response)
+    return mapping
+  end
+
+  # When the Mapping is not required, only one pop or is selected manually, use the same format for the response
+  def getMappingResponse(nsd, pop_id)
+    vnf_mapping = []
+    nsd['vnfds'].each do |vnf_id|
+      vnf_mapping << {"maps_to_PoP" => "/pop/#{pop_id}", "vnf" => "/" + vnf_id.to_s}
+    end
+
     mapping = {
         "created_at" => "Thu Nov  5 10:13:25 2015",
         "links_mapping" =>
@@ -42,37 +59,7 @@ module MappingHelper
                 }
             ],
         "vnf_mapping" => vnf_mapping
-        #            [
-        #                {
-        #                    "maps_to_PoP" => "/pop/default",
-        #                   "vnf" => "/" + nsd['vnfds'][0].to_s
-        #                }
-        #            ]
     }
-
-    unsuccessfullMapping = {
-        "Error" => "Error in MIP problem",
-        "Info" => "MIP solution is undefined",
-        "created_at" => "Thu Nov  5 10:11:37 2015"
-    }
-
-    if ms[:development]
-      return mapping
-    end
-
-    begin
-      response = RestClient.post settings.mapping + '/mapper', ms.to_json, :content_type => :json
-    rescue => e
-      logger.error e
-      if (defined?(e.response)).nil?
-        #halt 400, "NS-Mapping unavailable"
-      end
-      #halt e.response.code, e.response.body
-    end
-
-    mapping, errors = parse_json(response.body)
-    return 400, errors if errors
-
     return mapping
   end
 

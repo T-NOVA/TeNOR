@@ -33,7 +33,7 @@ module GatekeeperHelper
         halt 503, "The PoP list in Gatekeeper is empty "
       end
     end
-    popList, errors = parse_json(response.body)
+    popList, errors = parse_json(response)
     return 400, errors if errors
 
     return popList['dclist']

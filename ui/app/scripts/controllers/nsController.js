@@ -55,6 +55,7 @@ angular.module('tNovaApp')
             $scope.object = {};
             $scope.object.ns_id = nsd.id;
             $scope.object.callbackUrl = "https://httpbin.org/post";
+            $scope.object.pop_id = null;
             $modal({
                 title: "Instantiation - " + nsd.id,
                 template: "views/t-nova/modals/nsInstantiation.html",
