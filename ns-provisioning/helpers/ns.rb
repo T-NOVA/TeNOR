@@ -23,8 +23,8 @@ module NsProvisioner
   # @param [JSON] message Notification URL
   # @param [JSON] message the message to send
   def generateMarketplaceResponse(notification_url, message)
+    logger.error message
     logger.debug "Notification url: " + notification_url
-    logger.debug message.to_json
     begin
       response = RestClient.post notification_url, message.to_json, :content_type => :json
     rescue RestClient::ResourceNotFound
@@ -60,7 +60,7 @@ module NsProvisioner
   def recoverState(instance, error)
     logger.info "Recover state executed."
     @instance = instance
-    callbackUrl = @instance['notification']
+    callback_url = @instance['notification']
     ns_id = @instance['nsd_id']
 
     #reserved_resources for the instance
@@ -163,7 +163,7 @@ module NsProvisioner
         :nsr_id => @instance['id'],
         :vnfrs => @instance['vnfrs']
     }
-    generateMarketplaceResponse(callbackUrl, message)
+    generateMarketplaceResponse(callback_url, message)
     @instance.delete
   end
 
@@ -176,13 +176,11 @@ module NsProvisioner
   def instantiate(instance, nsd, pop_list, pop_id = nil)
 
     @instance = instance
-    callbackUrl = @instance['notification']
+    callback_url = @instance['notification']
     flavour = @instance['service_deployment_flavour']
     slaInfo = nsd['sla'].find { |sla| sla['sla_key'] == flavour }
     if slaInfo.nil?
-      error = "SLA inconsistency"
-      recoverState(@instance, error)
-      return
+      return generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", "Internal error: SLA inconsistency"))
     end
     sla_id = nsd['sla'].find { |sla| sla['sla_key'] == flavour }['id']
     logger.debug "SLA id: " + sla_id
@@ -193,12 +191,13 @@ module NsProvisioner
       infr_repo_url = settings.infr_repository
     end
 
-    logger.debug "List of available PoPs:"
-    logger.debug pop_list
+    logger.info "List of available PoPs:"
+    logger.info pop_list
 
     if pop_list.size == 1
       pop_id = pop_list[0]
     end
+    #testing...
     pop_id = pop_list[0]
 
     if !pop_id.nil?
@@ -214,21 +213,18 @@ module NsProvisioner
           :overcommitting => "true"
       }
       mapping, errors = callMapping(ms, nsd)
-      logger.error "Internal error: Mapping not reachable." if errors
-      return generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", "Internal error: Mapping not reachable.")) if errors
+      return generateMarketplaceResponse(callback_url, generateError(nsd['id'], "FAILED", "Internal error: Mapping not reachable.")) if errors
     end
 
     @instance.update_attribute('mapping_time', DateTime.now.iso8601(3).to_s)
 
     if (!mapping['vnf_mapping'])
-      #halt 400, "Mapping: not enough resources."
-      generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", "Internal error: Mapping: not enough resources."))
+      generateMarketplaceResponse(callback_url, generateError(nsd['id'], "FAILED", "Internal error: Mapping: not enough resources."))
       return
     end
 
     if @instance.nil?
-      logger.error "Instance is null"
-      generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", "Internal error: instance is null."))
+      generateMarketplaceResponse(callback_url, generateError(nsd['id'], "FAILED", "Internal error: instance is null."))
       return
     end
 
@@ -244,7 +240,7 @@ module NsProvisioner
       pop_id = vnf['maps_to_PoP'].gsub('/pop/', '')
 #      vnf_id = vnf['vnf'].delete('/')
 
-#check if this the authentication info is already created for this pop_id, if created, break the each
+      #check if this the authentication info is already created for this pop_id, if created, break the each
       logger.info "Check if authentication is created for this PoP"
       authentication = @instance['authentication'].find { |auth| auth['pop_id'] == pop_id }
       next if !authentication.nil?
@@ -256,25 +252,20 @@ module NsProvisioner
       begin
         popInfo, error = getPopInfo(pop_id)
       rescue => e
-        error = "Internal error: error getting pop information."
-        logger.error error
-        generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", error))
+        generateMarketplaceResponse(callback_url, generateError(nsd['id'], "FAILED", "Internal error: error getting pop information."))
         return
       end
       if popInfo == 400
-        error = "Internal error: error getting pop information."
-        logger.error error
-        generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", error))
+        generateMarketplaceResponse(callback_url, generateError(nsd['id'], "FAILED", "Internal error: error getting pop information."))
         return
       end
       extra_info = popInfo['info'][0]['extrainfo']
       popUrls = getPopUrls(extra_info)
       pop_auth['urls'] = popUrls
 
-#create credentials for pop_id
+      #create credentials for pop_id
       if popUrls[:keystone].nil? || popUrls[:orch].nil? || popUrls[:tenant].nil?
-        logger.error 'Keystone and/or openstack urls missing'
-        generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", "Internal error: Keystone and/or openstack urls missing."))
+        generateMarketplaceResponse(callback_url, generateError(nsd['id'], "FAILED", "Internal error: Keystone and/or openstack urls missing."))
         return
       end
 
@@ -301,6 +292,8 @@ module NsProvisioner
 
           logger.info "Created user with admin role."
           putRoleAdmin(popUrls[:keystone], pop_auth['tenant_id'], pop_auth['user_id'], token)
+
+          logger.info "Authentication using new user credentials."
           pop_auth['token'] = openstackAuthentication(popUrls[:keystone], pop_auth['tenant_id'], pop_auth['username'], pop_auth['password'])
 
           logger.info "Configuring Security Groups"
@@ -424,7 +417,7 @@ module NsProvisioner
       stack_id = stack['stack']['id']
       #@instance.update_attribute('network_stack', stack)
 
-      logger.info "Checking network stack creation2..."
+      logger.info "Checking network stack creation..."
       status = "CREATING"
       count = 0
       while (status != "CREATE_COMPLETE" && status != "CREATE_FAILED")
@@ -441,7 +434,7 @@ module NsProvisioner
         @instance.push(lifecycle_event_history: "ERROR_CREATING the NS network")
         @instance.update_attribute('status', "ERROR_CREATING")
         @instance.push(audit_log: stack_info)
-        generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", error))
+        generateMarketplaceResponse(callback_url, generateError(nsd['id'], "FAILED", error))
         return
       end
 
@@ -465,9 +458,7 @@ module NsProvisioner
       end
       @instance.push(lifecycle_event_history: "NETWORK CREATED")
       @instance.update_attribute('vlr', networks)
-      #@instance.update_attribute('routers', routers)
 
-      #resource_reservation = @instance['resource_reservation']
       puts @instance['resource_reservation']
       resource_reservation = []
       resource_reservation << {
@@ -535,18 +526,18 @@ module NsProvisioner
           error = "The VNFD is not defined in the VNF Catalogue."
           @instance.push(audit_log: error)
           logger.error error
-          generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", error))
+          generateMarketplaceResponse(callback_url, generateError(nsd['id'], "FAILED", error))
         else
           if e.response.body.nil?
             error = "Instantiation error. Response from the VNF Manager with no information."
             logger.error error
-            generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", error))
+            generateMarketplaceResponse(callback_url, generateError(nsd['id'], "FAILED", error))
             return
           else
             @instance.push(audit_log: e.response.body)
             error = "Instantiation error. Response from the VNF Manager: " + e.response.body
             logger.error error
-            generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", error))
+            generateMarketplaceResponse(callback_url, generateError(nsd['id'], "FAILED", error))
             return
           end
         end
