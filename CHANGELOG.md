@@ -1,3 +1,9 @@
+## 0.4.2
+- Handle Errno::EHOSTUNREACH for mAPI when not available.
+- VNF Provisioning with infinite timeout.
+- Re-login in Gatekeeper when the list of PoPs is requested. Avoid token invalid.
+
+
 ## 0.4.1
 - Reading DNS information from PoP Info.
 - Fix default tenant name, now it's used correctly.
