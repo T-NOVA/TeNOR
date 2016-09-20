@@ -23,6 +23,7 @@ class NsProvisionerController < TnovaManager
   # Post a ns-instance
   post '/' do
 
+    AuthenticationHelper.loginGK()
     popList = getPopList()
     if popList.empty?
       halt 400, "No PoPs registereds."

@@ -118,8 +118,8 @@ module NsProvisioner
           deleteStack(stack_url, tenant_token)
           status = "DELETING"
         end
+        break if status == "DELETE_COMPLETE"
         count = count +1
-
         if count > 10
           logger.error "Reserved stack can not be removed"
           raise 400, "Reserved stack can not be removed"
@@ -151,7 +151,6 @@ module NsProvisioner
 
       logger.info "Removing user '" + auth_info['user_id'].to_s + "'..."
       deleteUser(popUrls[:keystone], auth_info['user_id'], token)
-      logger.error "USER DELETED?"
 
       if !settings.default_tenant
         logger.info "Removing tenant '" + auth_info['tenant_id'].to_s + "'..."
