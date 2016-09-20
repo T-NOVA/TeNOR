@@ -118,7 +118,7 @@ angular.module('tNovaApp')
         var remove = function (token, path) {
             var deferred = $q.defer();
             var url = 'rest/gk/api/' + path;
-            console.log(url)
+            console.log(url);
             var promise = $http.delete(url, {
                 headers: {
                     'X-Auth-Token': token,

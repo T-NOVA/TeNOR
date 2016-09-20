@@ -33,7 +33,8 @@ module.exports = function (app) {
         } else if (req.method === 'DELETE') {
             r = request.del({
                 uri: url,
-                body: ''
+                body: '',
+                headers: req.headers
             }).pipe(res);
         } else {
             request({
