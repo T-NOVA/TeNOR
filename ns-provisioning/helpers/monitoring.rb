@@ -57,7 +57,7 @@ module MonitoringHelper
       puts 'NS Monitoring unreachable'
 #      halt 500, 'NS Monitoring unreachable'
     rescue => e
-      logger.error e.response
+      logger.error e
       #halt e.response.code, e.response.body
     end
 
