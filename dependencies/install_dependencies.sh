@@ -86,6 +86,8 @@ function install_npm {
 
     echo -e "Moving to UI folder...."
 
+    pwd
+
     cd ../ui
     echo "Installing Grunt and Bower locally in UI folder."
     sudo npm install
