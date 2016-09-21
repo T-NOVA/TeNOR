@@ -24,6 +24,8 @@ module CommonMethods
 	# @param [String] flavour_key the T-NOVA flavour
 	# @param [Array] networks_id the IDs of the networks created by the NS Manager
 	# @param [String] security_group_id the ID of the T-NOVA security group
+	# @param [String] vnfr_id the ID of the VNFr
+	# @param [String] dns the DNS
 	# @return [Hash] the generated hot template
 	def self.generate_hot_template(vnfd, flavour_key, networks_id, routers_id, security_group_id, vnfr_id, dns, public_network_id)
 		hot = VnfdToHot.new(vnfd['name'], vnfd['description'], public_network_id)
@@ -102,6 +104,18 @@ module CommonMethods
 		hot.build(provider_info)
 	end
 
+	# Generate a Netfloc HOT template
+	#
+	# @param [Hash] vnffgd
+	# @param [Hash] odl_username ODL username
+	# @param [Hash] odl_password ODL password
+	# @param [Hash] netfloc_ip_port Netfloc IP and Port
+	# @return [Hash] the generated netfloc hot template
+	def self.generate_netfloc_hot_template(ports, odl_username, odl_password, netfloc_ip_port)
+		hot = NetflocToHot.new('Netfloc', 'Resources for Netfloc integration')
+
+		hot.build(ports, odl_username, odl_password, netfloc_ip_port)
+	end
 
 	def self.is_num?(str)
 		!!Integer(str)

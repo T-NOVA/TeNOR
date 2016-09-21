@@ -143,6 +143,36 @@ class HotGenerator < Sinatra::Application
 		halt 200, hot.to_json
 	end
 
+	# @method post_netflochot
+	# @overload post '/netfloc'
+	# 	Build a HOT to create the Netfloc integration
+	# Convert a VNFFG into a HOT
+	post '/netfloc' do
+		# Return if content-type is invalid
+		halt 415 unless request.content_type == 'application/json'
+
+		# Validate JSON format
+		provision_info, errors = parse_json(request.body.read)
+		return 400, errors.to_json if errors
+
+		ports = provision_info['ports']
+		halt 400, 'Ports not found' if ports.nil?
+
+		odl_username = provision_info['odl_username']
+		halt 400, 'ODL username not found' if odl_username.nil?
+
+		odl_password = provision_info['odl_password']
+		halt 400, 'ODL password not found' if odl_password.nil?
+
+		netfloc_ip_port = provision_info['netfloc_ip_port']
+		halt 400, 'Netfloc IP not found' if netfloc_ip_port.nil?
+
+		# Build a HOT template
+		hot = CommonMethods.generate_netfloc_hot_template(ports, odl_username, odl_password, netfloc_ip_port)
+
+		halt 200, hot.to_json
+	end
+
 	get '/files/:file_name' do
     File.read(File.join('assets/templates', params[:file_name]))
 	end

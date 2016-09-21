@@ -410,12 +410,12 @@ class VnfdToHot
   def add_wait_condition(vdu)
     wc_handle_name = get_resource_name
 
-    if vdu['wc_notify']
+    #if vdu['wc_notify']
       if @type != 'vSA'
         @hot.resources_list << WaitConditionHandle.new(wc_handle_name)
         @hot.resources_list << WaitCondition.new(get_resource_name, wc_handle_name, 2000)
       end
-    end
+    #end
 
     wc_notify = ""
     wc_notify = "\nwc_notify --data-binary '{\"status\": \"SUCCESS\"}'\n"
@@ -431,7 +431,7 @@ class VnfdToHot
       wc_notify = wc_notify + "\nwc_notify --data-binary '{\"status\": \"SUCCESS\"}'\n"
     end
 
-    if vdu['wc_notify']
+    #if vdu['wc_notify']
       shell = "#!/bin/bash"
       if @type == 'vSA'
         shell = "#!/bin/tcsh"
@@ -451,7 +451,7 @@ class VnfdToHot
       else
         bootstrap_script = "#!/bin/bash" + wc_notify
       end
-    end
+    #end
   end
 
   def add_wait_condition2(vdu, hot)
