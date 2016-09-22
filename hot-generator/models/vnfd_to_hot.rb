@@ -114,8 +114,6 @@ class VnfdToHot
         @hot.outputs_list << Output.new("#{vdu['id']}#scale_out_url", "Url of scale out.", {get_attr: [scale_out_policy, 'alarm_url']})
         @hot.outputs_list << Output.new("#{vdu['id']}#scale_in_url", "Url of scale in.", {get_attr: [scale_in_policy, 'alarm_url']})
         @hot.outputs_list << Output.new("#{vdu['id']}#scale_group", "#{vdu['id']} ID", {get_resource: auto_scale_group})
-        @hot.outputs_list << Output.new("#{vdu['id']}#vdus", "ServiceList of #{vdu['id']}", {get_attr: [auto_scale_group, 'outputs_list', 'name']})
-        @hot.outputs_list << Output.new("#{vdu['id']}#networks", "ServiceList of #{vdu['id']}", {get_attr: [auto_scale_group, 'outputs', 'networks']})
       else
         ports = create_ports(vdu['id'], vdu['connection_points'], vnfd['vlinks'], networks_id, security_group_id)
         create_server(vdu, image_name, flavor_name, ports, key, false)
@@ -142,7 +140,7 @@ class VnfdToHot
     connection_points = vdu['connection_points']
     vlinks = vnfd['vlinks']
     vdu_id = vdu['id']
-
+    auto_scale_name = get_resource_name
     connection_points.each do |connection_point|
       vlink = vlinks.find { |vlink| vlink['id'] == connection_point['vlink_ref'] }
       #detect, and return error if not.
@@ -176,10 +174,7 @@ class VnfdToHot
           hot.resources_list << FloatingIp.new(floating_ip_name, @public_network_id)
           hot.resources_list << FloatingIpAssociation.new(get_resource_name_nested(hot), {"get_resource" => floating_ip_name}, {"get_resource" => port_name})
           hot.outputs_list << Output.new("#{vdu_id}##{connection_point['id']}#PublicIp", "#{port_name} Floating IP", {"get_attr" => [floating_ip_name, 'floating_ip_address']})
-          auto_scale_name = get_resource_name
           @hot.outputs_list << Output.new("#{vdu_id}##{connection_point['id']}#PublicIp", "#{port_name} Nested outputs_list", {"get_attr" => [auto_scale_name, 'outputs_list', "#{vdu_id}##{connection_point['id']}#PublicIp"]})
-          @hot.outputs_list << Output.new("#{vdu_id}##{connection_point['id']}#PublicIp2", "#{port_name} Nested output", {"get_attr" => [auto_scale_name, 'output', "#{vdu_id}##{connection_point['id']}#PublicIp"]})
-
         end
       end
 
@@ -192,7 +187,8 @@ class VnfdToHot
         ports,
         add_wait_condition2(vdu, hot),
         nil)
-
+    hot.outputs_list << Output.new("#{vdu['id']}#id", "#{vdu['id']} ID", {"get_resource" => vdu['id']})
+    @hot.outputs_list << Output.new("#{vdu['id']}#vdus", "#{vdu['id']} ID", {"get_attr" => [auto_scale_name, 'outputs_list', "#{vdu['id']}#id"]})
     hot
   end
 
