@@ -85,8 +85,6 @@ class VnfdToHot
 
       #create AutoScalingGroup if the VNF can scale
       if (vdu['scale_in_out']['maximum'] > 1)
-        #server = create_server(vdu, image_name, flavor_name, nets, key, true)
-
         #generate template for server
         nested_template = generate_nested_template(vdu, vnfd, networks_id, security_group_id, nets)
 
@@ -104,10 +102,9 @@ class VnfdToHot
         networks_id.each do |net|
           properties[net['heat']] = {"get_resource" => net['heat']}
         end
-        properties
+        #properties
 
         scaled_resource = GenericResource.new(vdu['id'], url, properties)
-
         auto_scale_group = create_autoscale_group(60, vdu['scale_in_out']['maximum'], vdu['scale_in_out']['minimum'], 1, scaled_resource)
         scale_out_policy = create_scale_policy(auto_scale_group, 1)
         scale_in_policy = create_scale_policy(auto_scale_group, -1)
