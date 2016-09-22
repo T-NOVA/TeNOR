@@ -85,7 +85,7 @@ class NsCatalogue < Sinatra::Application
       ns = Ns.find_by({"nsd.id" => ns['nsd']['id'], "nsd.version" => ns['nsd']['version'], "nsd.vendor" => ns['nsd']['vendor']})
       logger.error ns
       if ns != nil
-        return 400, 'ERROR: Duplicated NS ID, Version or Vendor'
+        return 409, 'ERROR: Duplicated NS ID, Version or Vendor'
       end
     rescue Mongoid::Errors::DocumentNotFound => e
     end

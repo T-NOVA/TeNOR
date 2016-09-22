@@ -58,7 +58,7 @@ class VnfCatalogue < Sinatra::Application
 			if vnfd != nil
 				logger.error 'Duplicated VNFD with id: ' + vnf['vnfd']['id'].to_s
 				logger.error 'ERROR: Duplicated VNFD ID, Version or Vendor'
-				return 400, 'ERROR: Duplicated VNFD ID, Version or Vendor'
+				return 409, 'ERROR: Duplicated VNFD ID, Version or Vendor'
 			end
 		rescue Mongoid::Errors::DocumentNotFound => e
 		end
