@@ -15,4 +15,6 @@ logstash_port:
 gk:
 service_key:
 
+nsd_validator: localhost:4015
+
 dependencies: [nsd_validator]

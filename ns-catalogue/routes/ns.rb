@@ -15,12 +15,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # @see NsCatalogue
-class NsCatalogue < Sinatra::Application
+class Catalogue < NsCatalogue
 
-  # @method get_nss
+  # @method get_network_services
   # @overload get '/network-services'
   #	Returns a list of NSs
-  get '/network-services' do
+  get '/' do
     params[:offset] ||= 1
     params[:limit] ||= 20
 
@@ -43,11 +43,11 @@ class NsCatalogue < Sinatra::Application
 
   end
 
-  # @method get_ns_id
+  # @method get_network_services_id
   # @overload get '/network-services/:external_ns_id'
   #	Show a NS
   #	@param [Integer] external_ns_id NS external ID
-  get '/network-services/:external_ns_id' do
+  get ':external_ns_id' do
     begin
       ns = Ns.find_by({"nsd.id" => params[:external_ns_id]})
     rescue Mongoid::Errors::DocumentNotFound => e
@@ -56,11 +56,11 @@ class NsCatalogue < Sinatra::Application
     return 200, ns.nsd.to_json
   end
 
-  # @method post_nss
+  # @method post_network_services
   # @overload post '/network-services'
   # Post a NS in JSON format
   # @param [JSON] NS in JSON format
-  post '/network-services' do
+  post '/' do
     # Return if content-type is invalid
     return 415 unless request.content_type == 'application/json'
 
@@ -107,7 +107,7 @@ class NsCatalogue < Sinatra::Application
   # @overload put '/network-services/:id'
   # Update a NS
   # @param [JSON] NS in JSON format
-  put '/network-services/:external_ns_id' do
+  put ':external_ns_id' do
 
     # Return if content-type is invalid
     return 415 unless request.content_type == 'application/json'
@@ -148,7 +148,7 @@ class NsCatalogue < Sinatra::Application
   # @overload delete '/network-services/:external_vnf_id'
   #	Delete a NS by its ID
   #	@param [Integer] external_ns_id NS external ID
-  delete '/network-services/:external_ns_id' do
+  delete '/:external_ns_id' do
     begin
       #ns = Ns.find( params[:external_ns_id] )
       ns = Ns.find_by({"nsd.id" => params[:external_ns_id]})
