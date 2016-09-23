@@ -1,2 +1,2 @@
 #*.rb linguist-language=Ruby
-doc/* linguist-documentation
+*/doc/* linguist-documentation
