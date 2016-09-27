@@ -40,7 +40,7 @@ function echo_if {
 
 function install_rabbitmq {
     echo "Installing RabbitMq..."
-    wget https://www.rabbitmq.com/releases/rabbitmq-server/v3.6.5/rabbitmq-server-generic-unix-3.6.5.tar.xz
+#    wget https://www.rabbitmq.com/releases/rabbitmq-server/v3.6.5/rabbitmq-server-generic-unix-3.6.5.tar.xz
 
     echo 'deb http://www.rabbitmq.com/debian/ testing main' | sudo tee /etc/apt/sources.list.d/rabbitmq.list
     wget -O- https://www.rabbitmq.com/rabbitmq-release-signing-key.asc | sudo apt-key add -
@@ -56,7 +56,53 @@ function install_mongodb {
 }
 function install_gatekeeper {
     echo "Installing gatekeeper..."
-    ./install_gatekeeper.sh
+    dir=$pwd
+    cd $HOME
+
+    echo "Downloading and installing go runtime from google servers, please wait ..."
+    wget https://storage.googleapis.com/golang/go1.4.2.linux-amd64.tar.gz
+    sudo tar -C /usr/local -xzf go1.4.2.linux-amd64.tar.gz
+
+    sudo -k
+
+    echo "configuring your environment for go projects ..."
+
+    export GOPATH=$HOME/go
+    export PATH=$PATH:/usr/local/go/bin:$GOPATH/bin
+
+    cd $HOME
+
+    echo "Downloading auth-utils code now, please wait ..."
+    mkdir $HOME/go
+    mkdir -p $HOME/go/src/github.com/piyush82
+    cd $HOME/go/src/github.com/piyush82
+    git clone https://github.com/piyush82/auth-utils.git
+    echo "done."
+
+    cd auth-utils
+    echo "getting all code dependencies for auth-utils now, be patient ~ 1-2 minutes"
+    go get
+    echo "done."
+
+    echo "compiling and installing the package"
+    go install
+    echo "done."
+
+    echo "starting the auth-service next, you can start using it at port :8000"
+    echo "use Ctrl+c to stop it. The executable is located at: $GOPATH/bin/auth-utils"
+
+    cd $HOME
+    cp go/src/github.com/piyush82/auth-utils/gatekeeper.cfg .
+
+    echo -e '#!/bin/bash \ncd '$HOME' \ngo/bin/auth-utils &' > ~/gatekeeperd
+    sudo mv ~/gatekeeperd /etc/init.d/gatekeeperd
+    sudo chmod +x /etc/init.d/gatekeeperd
+    sudo chown root:root /etc/init.d/gatekeeperd
+    sudo update-rc.d gatekeeperd defaults
+    sudo update-rc.d gatekeeperd enable
+    sudo service gatekeeperd start
+
+    cd $dir
 }
 function install_ruby {
     echo "Installing RVM..."
@@ -95,7 +141,7 @@ function install_npm {
     bower install
 
     echo "Installing Compass..."
-    gem install compass
+    sudo gem install compass
     echo "Installation of Compass done."
 
     echo -e "Moving to dependencies folder...."
@@ -142,6 +188,13 @@ if [ $RUBY_IS_INSTALLED -eq 0 ]; then
     if [ $ruby_version -eq 1 ]; then
         echo "Ruby version: " $RUBY_VERSION
         echo "Please, install a ruby version higher or equal to 2.2.5"
+        echo -e -n "\033[1;31mRuby is not installed."
+        echo -e "\nDo you want to install ruby? (y/n)"
+        read install
+        if [ "$install" = "y" ]; then
+            install_ruby
+            . ~/.rvm/scripts/rvm
+        fi
     else
         echo ">>> Ruby is already installed"
     fi
