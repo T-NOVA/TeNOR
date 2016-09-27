@@ -1,5 +1,7 @@
 #!/bin/bash
 
+current_dir=$(pwd)
+
 function program_is_installed {
   # set to 1 initially
   local return_=1
@@ -134,7 +136,16 @@ function install_npm {
 
     pwd
 
-    cd ../ui
+    dir="$(basename $current_dir)"
+    if [ "$dir" = "dependencies" ]; then
+        cd ../ui
+    elif [ "$dir" = "TeNOR" ]; then
+        cd ui
+    else
+        echo "Script executed outside TeNOR folder. Install the UI manually or rerun the script."
+        return
+    fi
+
     echo "Installing Grunt and Bower locally in UI folder."
     sudo npm install
 
@@ -148,6 +159,7 @@ function install_npm {
     cd ../dependencies
     echo "NPM dependencies done."
 }
+
 
 echo -e -n "\033[1;36mChecking if mongodb is installed"
 mongod --version > /dev/null 2>&1
