@@ -7,7 +7,10 @@
                 <button type="button " class="btn btn-default " ng-model="day " data-html="1 " bs-options="day as day for day in days " bs-select ng-change="getLogs(day) ">
                     Select <span class="caret "></span>
                 </button>
-                <button type="button " class="btn btn-default " ng-model="selectedSeverity " data-html="1 " bs-options="severity as severity for severity in severities " bs-select ng-change="selectSeverity() ">
+                <button type="button " class="btn btn-default " ng-model="selectedSeverity " data-html="1 " bs-options="severity as severity for severity in severities " bs-select ng-change="getBySeverity() ">
+                    Select <span class="caret "></span>
+                </button>
+                <button type="button " class="btn btn-default " ng-model="selectedModule " data-html="1 " bs-options="module as module for module in modules " bs-select ng-change="getByModule() ">
                     Select <span class="caret "></span>
                 </button>
             </div>
