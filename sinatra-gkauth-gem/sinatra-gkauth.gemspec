@@ -2,8 +2,8 @@
 
 Gem::Specification.new do |gem|
   gem.name          = "sinatra-gkauth"
-  gem.version       = "0.2.0"
-  gem.date          = '2016-05-25'
+  gem.version       = "0.3.0"
+  gem.date          = '2016-09-23'
   gem.summary       = %q{}
   gem.description   = %q{This gem allows to authorize the Tenor modules with Gatekeeper.}
 

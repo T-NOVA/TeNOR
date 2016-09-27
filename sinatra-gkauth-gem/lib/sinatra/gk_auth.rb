@@ -8,7 +8,7 @@ module Sinatra
       def initialize
         puts "Initializing gem GK..."
 
-        service_info = {:name => settings.servicename, :host => "localhost", :port => settings.port, :path => "" }
+        service_info = {:name => settings.servicename, :host => settings.address, :port => settings.port, :path => "" }
         publish_service(service_info)
 
         return
@@ -70,10 +70,6 @@ module Sinatra
         elsif key == 'service_key'
           settings.service_key = value
         end
-      end
-
-      def updateConfigValues(key, value)
-          settings[key] = value
       end
 
     end
