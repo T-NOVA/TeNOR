@@ -54,43 +54,4 @@ class NsdValidator < Sinatra::Application
 
   helpers NsdValidatorHelper
 
-  puts Sinatra::Base.routes
-
-=begin
-  get '/' do
-    a = []
-
-    Sinatra::Application.each_route do |route|
-      puts route.verb + " " + route.path
-      a.push(route.path)
-    end
-    return a.to_json
-  end
-
-  Sinatra::Application.each_route do |route|
-    puts route.verb + " " + route.path
-  end
-
-  NsdValidator.each_route do |route|
-    puts route.verb + " " + route.path
-  end
-
-  puts "Sinatra..."
-
-  NsdValidator::routes.each_pair do |method, list|
-    puts ":: #{method} ::"
-    routes = []
-    list.each do |item|
-      puts item
-      source = item[0].source
-      item[1].each do |s|
-        source.sub!(/\(.+?\)/, ':'+s)
-      end
-      routes << source[1...-1]
-    end
-    puts routes.sort.join("\n")
-    puts "\n"
-  end
-=end
-
 end

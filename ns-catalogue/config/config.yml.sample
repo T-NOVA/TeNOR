@@ -9,8 +9,8 @@ timeout: 30
 max_persistent_conns: 512
 daemonize: false
 threaded: true
-logstash_host:
-logstash_port:
+logstash_host: localhost
+logstash_port: 5228
 
 gk:
 service_key:

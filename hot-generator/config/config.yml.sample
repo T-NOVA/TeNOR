@@ -1,6 +1,6 @@
 ---
 servicename: hot_generator
-manager: localhost:4000
+manager: http://localhost:4000
 environment: development
 address: 0.0.0.0
 port: 4571
@@ -8,7 +8,7 @@ max_conns: 1024
 timeout: 30
 max_persistent_conns: 512
 daemonize: false
-logstash_host: 84.88.40.160
+logstash_host: localhost
 logstash_port: 5228
 port_security: false
 

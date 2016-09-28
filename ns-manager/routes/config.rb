@@ -86,6 +86,7 @@ class ServiceConfigurationController < TnovaManager
 
     EM.defer do
       ServiceConfigurationHelper.publishServices()
+      while not EM.reactor_running?; end
     end
 
     return 200

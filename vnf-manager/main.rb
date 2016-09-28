@@ -32,10 +32,12 @@ class VNFManager < Sinatra::Application
 
   require_relative 'routes/init'
   require_relative 'helpers/init'
+  require_relative 'models/serviceModel'
 
   register Sinatra::ConfigFile
 # Load configurations
   config_file 'config/config.yml'
+  Mongoid.load!('config/mongoid.yml')
 
   configure do
     # Configure logging

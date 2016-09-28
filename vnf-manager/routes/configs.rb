@@ -46,17 +46,11 @@ class ServiceConfiguration < VNFManager
 	# 	List all configurations
 	# Get all configs
 	get '/' do
-		# Forward request to NS Manager
-		begin
-			response = RestClient.get settings.ns_manager + '/configs/services', 'X-Auth-Token' => @client_token
-		rescue Errno::ECONNREFUSED
-			halt 500, 'NS Manager unreachable'
-		rescue => e
-			logger.error e.response
-			halt e.response.code, e.response.body
-		end
-
-		halt response.code, response.body
+		if params['name']
+			  return ServiceModel.find_by(name: params["name"]).to_json
+	    else
+			  return ServiceModel.all.to_json
+	    end
 	end
 
 	# @method get_configs_config_id

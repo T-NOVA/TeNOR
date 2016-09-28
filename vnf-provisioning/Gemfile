@@ -10,7 +10,7 @@ gem 'rest-client', '~>1.8'
 gem 'logstash-logger'
 
 # Gatekeeper auth gem
-gem 'sinatra-gkauth', '~>0.2.0', path: '../sinatra-gkauth-gem'
+gem 'sinatra-gkauth', '~>0.3.0', path: '../sinatra-gkauth-gem'
 
 group :development do
 	gem 'rerun'

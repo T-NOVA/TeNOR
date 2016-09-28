@@ -1,5 +1,5 @@
-# @see OrchestratorMonitoring
-class OrchestratorMonitoring < Sinatra::Application
+# @see TeNORMonitoring
+class TeNORMonitoring < Sinatra::Application
 
 	def initialize()
 		Thread.new do
@@ -50,7 +50,7 @@ class OrchestratorMonitoring < Sinatra::Application
 	def threaded
 		Thread.new do
 			loop do
-				Kernel.exit if gets =~ /exit/
+				#Kernel.exit if gets =~ /exit/
 			end
 		end
 	end

@@ -1,21 +1,20 @@
 source 'https://rubygems.org'
 
 gem 'sinatra', '~>1.4'
-gem 'thin', '~>1.6'
-gem 'json', '~>1.8'
 gem 'sinatra-contrib', '~>1.4'
-gem 'nokogiri', '~>1.6'
+gem 'puma', '3.6.0'
+gem 'json', '~>1.8'
 gem 'json-schema', '~>2.5'
 gem 'rest-client', '~>1.8'
-gem 'logstash-logger'
+gem 'logstash-logger', '~>0.19.1'
 
 # Gatekeeper auth gem
-gem 'sinatra-gkauth', '~>0.2.0', path: '../sinatra-gkauth-gem'
+gem 'sinatra-gkauth', '~>0.3.0', path: '../sinatra-gkauth-gem'
 
 group :development, :test do
 	gem 'rerun'
-	gem 'rspec'
-	gem 'rack-test'
+	gem 'rspec', '3.5.0'
+	gem 'rack-test', '0.6.3'
 end
 
 group :doc do
