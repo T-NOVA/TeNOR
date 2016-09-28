@@ -5,6 +5,6 @@
 
 nb-configuration.xml
 node_modules/
-npm-debug.log
-bower_components/
+app/bower_components/
 app/config.js
+Gemfile.lock
