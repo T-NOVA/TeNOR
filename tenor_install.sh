@@ -5,6 +5,7 @@ declare mongo_ip
 declare gatekeeper
 declare logstash_address
 declare cassandra_address
+CURRENT_PROGRESS=0
 
 show_menus() {
 	clear
@@ -34,7 +35,10 @@ show_menus() {
 	echo "6. Inserting sample VNF and NS"
 	echo "7. Exit"
 }
-
+function delay()
+{
+    sleep 0.2;
+}
 function progress()
 {
     PARAM_PROGRESS=$1;
@@ -106,7 +110,7 @@ installTenor(){
     count=0
     progress 0
     for folder in $(find . -type d \( -name "ns*" -o -name "vnf*" -o -name "hot-generator" \) ); do
-        printf "$folder\n"
+        #printf "$folder\n"
         cd $folder
 
         if [ "$folder" = "./ns-manager" ]; then
@@ -122,6 +126,7 @@ installTenor(){
 
     cd ui/
     bower install
+    bundle install --quiet
     cd api/
 
     configureFiles

@@ -228,20 +228,6 @@ else
     fi
 fi
 
-echo -e -n "\033[1;36mChecking if nodejs is installed"
-npm --version > /dev/null 2>&1
-NPM_IS_INSTALLED=$?
-if [ $NPM_IS_INSTALLED -eq 0 ]; then
-    echo ">>> NPM is already installed"
-else
-    echo -e -n "\033[1;31mNPM is not installed."
-    echo -e "\nDo you want to install NodeJS/NPM? (y/n)"
-    read install
-    if [ "$install" = "y" ]; then
-        install_npm
-    fi
-fi
-
 echo -e -n "\033[1;36mChecking if rabbitmq is installed"
 rabbitmq-server --version > /dev/null 2>&1
 RABBITMQ_IS_INSTALLED=$?
@@ -260,6 +246,4 @@ echo -e -n "\033[1;36mChecking if dependencies are installed\n"
 echo "mongod          $(echo_if $(program_is_installed mongo))"
 echo "ruby            $(echo_if $(program_is_installed ruby))"
 echo "bundler         $(echo_if $(program_is_installed bundler))"
-echo "node            $(echo_if $(program_is_installed node))"
-echo "npm             $(echo_if $(program_is_installed npm))"
 echo "rabbitmq             $(echo_if $(program_is_installed rabbitmq-server))"
