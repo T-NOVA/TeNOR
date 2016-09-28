@@ -54,7 +54,15 @@ function install_rabbitmq {
 }
 function install_mongodb {
     echo "Installing mongodb..."
-    ./install_mongodb.sh
+    dir="$(basename $current_dir)"
+    if [ "$dir" = "dependencies" ]; then
+        ./install_mongodb.sh
+    elif [ "$dir" = "TeNOR" ]; then
+        ./dependencies/install_mongodb.sh
+    else
+        echo "Script executed outside TeNOR folder. Install the UI manually or rerun the script."
+        return
+    fi
 }
 function install_gatekeeper {
     echo "Installing gatekeeper..."
@@ -152,7 +160,7 @@ function install_npm {
     bower install
 
     echo "Installing Compass..."
-    sudo gem install compass
+    gem install foreman compass
     echo "Installation of Compass done."
 
     echo -e "Moving to dependencies folder...."
@@ -196,9 +204,9 @@ echo -e -n "\033[1;36mChecking if ruby is installed"
 ruby --version > /dev/null 2>&1
 RUBY_IS_INSTALLED=$?
 if [ $RUBY_IS_INSTALLED -eq 0 ]; then
-    ruby_version=`ruby -e "print(RUBY_VERSION <= '2.2.5' ? '1' : '0' )"`
+    ruby_version=`ruby -e "print(RUBY_VERSION < '2.2.5' ? '1' : '0' )"`
     if [ $ruby_version -eq 1 ]; then
-        echo "Ruby version: " $RUBY_VERSION
+        echo -e "\nRuby version: " $RUBY_VERSION
         echo "Please, install a ruby version higher or equal to 2.2.5"
         echo -e -n "\033[1;31mRuby is not installed."
         echo -e "\nDo you want to install ruby? (y/n)"

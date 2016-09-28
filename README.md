@@ -77,7 +77,7 @@ How to test if TeNOR is installed [Test if TeNOR is installed and running](#test
 Invoker is an utility to manage all the processes in the environment. The basic commands are the following:
 
 invoker start invoker.ini -> Start TeNOR.
-invoker reload ns-manager -> Retart the NS Manager service.
+invoker reload ns-manager -> Restart the NS Manager service.
 invoker list -> Show the list of running microservices and the status.
 
 ## Registering modules in TeNOR and Gatekeeper
@@ -101,7 +101,7 @@ The PoP information is saved in Gatekeeper. This can be inserted in three manner
  - Using the TeNOR User Interface:
  `Configuration -> PoPs`
  - Using the TeNOR script:
-  Execute the tenor_install.sh script and choose the option` **4. Add new PoP**
+  Execute the tenor_install.sh script and choose the option **4. Add new PoP**
  - Using the CLI:
 
  First of all, define the following variables:
@@ -166,13 +166,21 @@ The next step is add the dummy descriptors to TeNOR system using the API. This s
 In order to test TeNOR functionality, you can follow the next steps (you can copy and paste in the command prompt):
 
 1. Add the VNFD in the VNF catalogue
-` curl -XPOST localhost:4000/vnfs -H "Content-Type: application/json" --data-binary @vnfd-validator/assets/samples/vnfd_example.json `
+```
+ curl -XPOST localhost:4000/vnfs -H "Content-Type: application/json" --data-binary @vnfd-validator/assets/samples/vnfd_example.json 
+```
 2. Add the NSD in the NS catalogue
-` curl -XPOST localhost:4000/network-services -H "Content-Type: application/json" --data-binary @nsd-validator/assets/samples/nsd_example.json `
+```
+ curl -XPOST localhost:4000/network-services -H "Content-Type: application/json" --data-binary @nsd-validator/assets/samples/nsd_example.json 
+```
 3. Get the NSD ID (identification) from the NS Catalogue (getting the first NSD, so if more NSDs are defined, this command needs to be modified accordingly)
-` ns_id=$(curl -XGET localhost:4000/network-services | python -c 'import json,sys;obj=json.load(sys.stdin);print obj[0]["nsd"]["id"]') `
+```
+ ns_id=$(curl -XGET localhost:4000/network-services | python -c 'import json,sys;obj=json.load(sys.stdin);print obj[0]["nsd"]["id"]') 
+```
 4. Instantiate the NSD using the NSD ID extracted from the catalogue
-` curl -XPOST localhost:4000/ns-instances -H "Content-Type: application/json" --data '{"ns_id": "'$ns_id'", "callbackUrl": "https://httpbin.org/post", "flavour": "basic"}' `
+```
+ curl -XPOST localhost:4000/ns-instances -H "Content-Type: application/json" --data '{"ns_id": "'$ns_id'", "callbackUrl": "https://httpbin.org/post", "flavour": "basic"}' 
+```
 
 # Development
 
