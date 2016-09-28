@@ -1,5 +1,6 @@
 require 'sinatra/base'
 require 'json'
+require 'rest-client'
 
 module Sinatra
   module Gk_Auth
