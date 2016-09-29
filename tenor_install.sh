@@ -106,28 +106,27 @@ installTenor(){
 
     bundle install --quiet
 
-    max=13
+    max=14
     count=0
     progress 0
-    for folder in $(find . -type d \( -name "ns*" -o -name "vnf*" -o -name "hot-generator" \) ); do
+    array=(*/)
+    for folder in "${array[@]}"; do
         #printf "$folder\n"
-        cd $folder
 
-        if [ "$folder" = "./ns-manager" ]; then
-            cd default/monitoring
+        if [[ "$folder" =~ ^ns-* ]] || [[ "$folder" =~ ^vnf-* ]] || [[ "$folder" =~ ^hot-* ]] || [[ "$folder" = "ui/" ]]; then
+            cd $folder
+
+            if [ "$folder" = "ns-manager/" ]; then
+                cd default/monitoring
+                bundle install --quiet
+                cd ../../
+            fi
             bundle install --quiet
-            cd ../../
+            cd ../
+            count=$((count+1))
+            progress  $(( 100 * $count / $max )) ""
         fi
-        bundle install --quiet
-        cd ../
-        count=$((count+1))
-        progress  $(( 100 * $count / $max )) ""
     done
-
-    cd ui/
-    bower install
-    bundle install --quiet
-    cd api/
 
     configureFiles
 
@@ -185,28 +184,33 @@ configureFiles(){
         if [ ! -f config/config.yml ]; then
             printf "Copy Config\n"
             cp config/config.yml.sample config/config.yml
-            sed -i -e 's/\(logstash_host:\).*/\1 '$logstash_host'/' config/config.yml
-            sed -i -e 's/\(logstash_port:\).*/\1 '$logstash_port'/' config/config.yml
-            sed -i -e 's/\(gatekeeper:\).*/\1 '$gatekeeper'/' config/config.yml
-            for i in "${tenor_ns_url[@]}"
-            do
-                sed  -i -e  's/\('$i':\).*\:\(.*\)/\1 '$tenor_ip':\2/' config/config.yml
-            done
-            for i in "${tenor_vnf_url[@]}"
-            do
-                sed  -i -e  's/\('$i':\).*\:\(.*\)/\1 '$tenor_ip':\2/' config/config.yml
-            done
         fi
         if [ -f config/mongoid.yml.sample ] &&  [ ! -f config/mongoid.yml ]; then
             printf "Copy Mongo Config\n"
             cp config/mongoid.yml.sample config/mongoid.yml
-            sed -i -e 's/127.0.0.1:27017/'$mongo_ip'/' config/mongoid.yml
         fi
         if [ -f config/database.yml.sample ] &&  [ ! -f config/database.yml ]; then
             printf "Copy Cassandra Config\n"
             cp config/database.yml.sample config/database.yml
+        fi
+
+        sed -i -e 's/\(logstash_host:\).*/\1 '$logstash_host'/' config/config.yml
+        sed -i -e 's/\(logstash_port:\).*/\1 '$logstash_port'/' config/config.yml
+        sed -i -e 's/\(gatekeeper:\).*/\1 '$gatekeeper'/' config/config.yml
+        for i in "${tenor_ns_url[@]}"; do
+            sed  -i -e  's/\('$i':\).*\:\(.*\)/\1 '$tenor_ip':\2/' config/config.yml
+        done
+        for i in "${tenor_vnf_url[@]}"; do
+            sed  -i -e  's/\('$i':\).*\:\(.*\)/\1 '$tenor_ip':\2/' config/config.yml
+        done
+
+        if [ -f config/mongoid.yml ]; then
+            sed -i -e 's/127.0.0.1:27017/'$mongo_ip'/' config/mongoid.yml
+        fi
+        if [ -f config/database.yml ]; then
             sed -i -e 's/127.0.0.1:27017/'$cassandra_address'/' config/database.yml
         fi
+
         cd ../
     done
 

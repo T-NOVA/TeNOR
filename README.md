@@ -9,38 +9,41 @@ TeNOR is the NFV Orchestrator platform developed by the [T-NOVA](http://www.t-no
 - Middleware API (https://github.com/T-NOVA/mAPI) (optional but required for start/stop the Lifecycle events inside the VNFS)
 - VIM Monitoring (https://github.com/T-NOVA/vim-monitoring) (optional)
 - Netfloc (https://github.com/T-NOVA/netfloc) (optional)
+- Openstack Juno version or higher
 
 ## Requirements
 - Ruby >= 2.2.5 (installation provided in dependencies/install_dependencies.sh)
 - Bundler (installation provided in dependencies/install_dependencies.sh)
 - MongoDB (installation provided in dependencies/install_dependencies.sh)
-- NodeJS and NPM (installation provided in dependencies/install_dependencies.sh)
-- Apache Cassandra (optional, used for monitoring)
+- Apache Cassandra (optional, used for monitoring) (installation provided in dependencies/install_cassandra.sh)
 - Logstash (optional) & ElasticSearch (optional)
-- Byobu (optional) (sudo apt-get install byobu) (https://help.ubuntu.com/community/Byobu)
+- Byobu (optional) 
 - RabbitMq (optional, used for monitoring) (installation provided in dependencies/install_dependencies.sh)
 - Openstack with Neutron ML2 Port Security plugin. Requires a change in /etc/nova/nova.conf with the following field: `security_group_api = nova`
 
 #Getting started
 
 ## Steps
-
-1. Install the minimum requirements (Ruby, NPM, Gatekeeper and MongoDB). Installation scripts are provided in the `dependencies` folder. Use the `install_dependencies.sh` script if you want to install all the dependencies.
+1. Install the minimum requirements (Ruby, Gatekeeper and MongoDB). Installation of these requirements provided in the `dependencies` folder. Use the `install_dependencies.sh` script if you want to install it automatically.
 2. Install TeNOR (internal dependencies and configurations). Installation script provided in the root folder `tenor_install.sh`.
 3. Start TeNOR.
-4. Register the internal modules (each microservice) and external modules (Mapping, mAPI, WICM, VIMMonitoring, Netfloc...)
+4. Register the internal modules (each microservice) and external modules (Mapping, mAPI, WICM, VIMMonitoring, Netfloc...).
 5. Register a Point of Presence (PoP) inserting the Openstack credentials into Gatekeeper.
 
 ## Installation
-We provide an installation script for Ubuntu 14.04 that helps with the installation of the Ruby Gem dependencies, the configuration of the system and the registration of the modules and PoPs.
+We provide an installation script for Ubuntu 14.04 that helps with the installation of Ruby, Gatekeeper and MongoDB.
 
 In order to install Ruby, the MongoDB, Gatekeeper and NodeJS execute the following script inside the dependencies folder:
-`install_dependencies.sh`
+```
+./install_dependencies.sh
+```
 
-For each requirement, the script will ask if you want to install it or not. Write y or n and press the Enter Key.
+For each requirement, the script will ask if you want to install it or not. Write `y` or `n` and press the Enter Key.
 
-Once Ruby is installed (use `ruby -v` command in the terminal), in the root folder run the following script:
-`./tenor_install.sh`
+Once Ruby is installed (you can be sure of that using `ruby -v` command in the terminal), you can proceed with the TeNOR installation. In the root folder run the following script:
+```
+./tenor_install.sh
+```
 
 and choose a number in the menu [1-7].
 
@@ -60,15 +63,17 @@ A Vagrantfile is provided with TeNOR, Gatekeeper and Mongodb installed.
 
 ## Execution
 
-TeNOR can be executed in tw ways:
+TeNOR can be executed in two ways:
 
-1. Using Invoker (http://invoker.codemancers.com) ([Help here](#using_invoker))
-   `invoker start invoker.ini`
-2. Using Byobu (modern Tmux). Useful for development purposes.
-   `./tenor_development.sh`
+1. Using Invoker (http://invoker.codemancers.com) ([Help here](#using-invoker))
+```
+invoker start invoker.ini
+```
 
-In the case of using Invoker, the invoker command offer several functionalities in order to restart microservices or the entire TeNOR.
-In the case of using Byobu, you'll see three sessions, one for the NS manager, one for the VNF manager and one for the UI. Inside each session use F3 and F4 keys for navigate through the windows.
+2. Using Byobu (modern Tmux). (sudo apt-get install byobu)  Useful for development purposes. ([Help here](#using-byobu))
+```
+./tenor_development.sh
+```
 
 How to test if TeNOR is installed [Test if TeNOR is installed and running](#test-if-tenor-is-installed-and-running)
 
@@ -76,12 +81,21 @@ How to test if TeNOR is installed [Test if TeNOR is installed and running](#test
 
 Invoker is an utility to manage all the processes in the environment. The basic commands are the following:
 
-invoker start invoker.ini -> Start TeNOR.
-invoker reload ns-manager -> Restart the NS Manager service.
-invoker list -> Show the list of running microservices and the status.
+ - invoker start invoker.ini -> Start TeNOR.
+ - invoker reload ns-manager -> Restart the NS Manager service.
+ - invoker list -> Show the list of running microservices and the status.
+
+### Using Byobu
+
+Byobu is a modern Tmux that allows to execute multiple shells in one terminal. Typing the command `byobu` you will see a list of windows created using the provided script. More information of Byobu in (https://help.ubuntu.com/community/Byobu).
+
+Basic keys for using Byobu:
+
+ - F3 and F4 for navigate through the windows
+ - F6 exit from Byobu 
 
 ## Registering modules in TeNOR and Gatekeeper
-TeNOR has a microservice architecture and requires a registration of each microservices to the system. The NS Manager (API gateway) is the responsible to manage this registration. The interal TeNOR modules are managed automatically, but external modules like mAPI, WICM, Infrastructure repository needs to be registered.
+TeNOR has a microservice architecture and requires a registration of each microservices to the system. The NS Manager (API gateway) is the responsible to manage this registration. The internal TeNOR modules are managed automatically, but external modules like mAPI, WICM, Infrastructure repository and Netfloc needs to be registered.
 
 The registration of modules can be done with in three ways:
 

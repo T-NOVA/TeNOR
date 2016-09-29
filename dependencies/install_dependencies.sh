@@ -104,6 +104,8 @@ function install_gatekeeper {
     cd $HOME
     cp go/src/github.com/piyush82/auth-utils/gatekeeper.cfg .
 
+    gatekeeper_script=$HOME'/go/bin/auth-utils'
+
     echo -e '#!/bin/bash \ncd '$HOME' \ngo/bin/auth-utils &' > ~/gatekeeperd
     sudo mv ~/gatekeeperd /etc/init.d/gatekeeperd
     sudo chmod +x /etc/init.d/gatekeeperd
@@ -246,4 +248,5 @@ echo -e -n "\033[1;36mChecking if dependencies are installed\n"
 echo "mongod          $(echo_if $(program_is_installed mongo))"
 echo "ruby            $(echo_if $(program_is_installed ruby))"
 echo "bundler         $(echo_if $(program_is_installed bundler))"
+echo "gatekeeper      $(echo_if $(program_is_installed $gatekeeper_script))"
 echo "rabbitmq             $(echo_if $(program_is_installed rabbitmq-server))"
