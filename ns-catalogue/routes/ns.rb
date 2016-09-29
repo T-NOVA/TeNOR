@@ -47,7 +47,7 @@ class Catalogue < NsCatalogue
   # @overload get '/network-services/:external_ns_id'
   #	Show a NS
   #	@param [Integer] external_ns_id NS external ID
-  get ':external_ns_id' do
+  get '/:external_ns_id' do
     begin
       ns = Ns.find_by({"nsd.id" => params[:external_ns_id]})
     rescue Mongoid::Errors::DocumentNotFound => e
@@ -107,7 +107,7 @@ class Catalogue < NsCatalogue
   # @overload put '/network-services/:id'
   # Update a NS
   # @param [JSON] NS in JSON format
-  put ':external_ns_id' do
+  put '/:external_ns_id' do
 
     # Return if content-type is invalid
     return 415 unless request.content_type == 'application/json'
@@ -159,7 +159,7 @@ class Catalogue < NsCatalogue
     return 200
   end
 
-  get '/network-services/vnf/:vnf_id' do
+  get '/vnf/:vnf_id' do
     begin
       nss = Ns.find_by({"nsd.vnfds" => params[:vnf_id]})
     rescue Mongoid::Errors::DocumentNotFound => e
