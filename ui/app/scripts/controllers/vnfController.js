@@ -3,19 +3,26 @@
 angular.module('tNovaApp')
     .controller('vnfController', function ($scope, $stateParams, $filter, tenorService, $interval, $modal) {
 
-        $scope.getVnfList = function () {
-            tenorService.get('vnfs?limit=10000').then(function (data) {
-                $scope.dataCollection = _.sortBy(data, function (o) {
-                    var dt = new Date(o.created_at);
-                    return -dt;
-                });
+        var page_num = 2;
+        var page = 0;
+        $scope.dataCollection = [];
+        $scope.getVnfList = function (page) {
+            tenorService.get('vnfs?offset=' + page + '&limit=' + page_num).then(function (data) {
+                if (data !== []) {
+                    $scope.dataCollection = _.sortBy(angular.extend($scope.dataCollection, data), function (o) {
+                        var dt = new Date(o.created_at);
+                        return -dt;
+                    })
+                    page = page++;
+                    $scope.getVnfList(page);
+                }
             });
         };
 
-        $scope.getVnfList();
+        $scope.getVnfList(page);
         var promise = $interval(function () {
-            $scope.getVnfList();
-        }, defaultTimer);
+            $scope.getVnfList(page);
+        }, 1000000);
 
         $scope.deleteDialog = function (id) {
             $scope.itemToDeleteId = id;

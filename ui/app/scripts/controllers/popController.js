@@ -71,8 +71,9 @@ angular.module('tNovaApp')
             $scope.dc_default = {
                 msg: $scope.dc_default.msg,
                 id: $scope.dc_default.id,
-                adminid: $scope.dc_default.adminid,
-                password: $scope.dc_default.password,
+                adminName: $scope.dc_default.adminName,
+                tenantName: $scope.dc_default.tenantName,
+                adminPass: $scope.dc_default.adminPass,
                 openstack_ip: openstack_ip,
                 keystone_api: openstack_ip + ":" + keystone_version,
                 heat_api: openstack_ip + ":" + heat_version,
@@ -101,8 +102,9 @@ angular.module('tNovaApp')
             AuthService.post($window.localStorage.token, "admin/dc/", pop).then(function (d) {
                 console.log(d);
                 $scope.registeredDcList = d.dclist;
-                this.$hide();
+                //this.$hide();
             });
+            this.$hide();
         };
 
         $scope.getPopInfo = function (popId) {

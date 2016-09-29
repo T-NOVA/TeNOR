@@ -22,7 +22,7 @@ class App < Sinatra::Base
     set :bind, '0.0.0.0'
   end
 
-   Dir[File.dirname(__FILE__) + '/apis/*.rb'].each do |file| 
+  Dir[File.dirname(__FILE__) + '/apis/*.rb'].each do |file|
     file_class = 'app/' + File.basename(file, File.extname(file))
     require file
     use file_class.classify.constantize
