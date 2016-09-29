@@ -134,12 +134,14 @@ class Provisioning < VnfProvisioning
     response = provision_vnf(vim_info, vnf['vnfd']['name'].delete(' ') + "_" + vnfr.id, hot)
     logger.debug 'Provision response: ' + response.to_json
 
+    ############ to remove??
     vdu = []
     vdu0 = {}
     vdu0['vnfc_instance'] = response['stack']['links'][0]['href']
     vdu0['id'] = response['stack']['id']
     vdu0['type'] = 0
     vdu << vdu0
+    ############
 
     # Update the VNFR
     vnfr.push(lifecycle_event_history: 'CREATE_IN_PROGRESS')
@@ -188,6 +190,7 @@ class Provisioning < VnfProvisioning
   #   @param [JSON] the VNF to instantiate and auth info
   # Destroy a VNF
   post '/vnf-instances/:vnfr_id/destroy' do
+    logger.info "Start removing process for VNFR: " + params['vnfr_id'].to_s
     # Return if content-type is invalid
     halt 415 unless request.content_type == 'application/json'
 
@@ -204,6 +207,7 @@ class Provisioning < VnfProvisioning
     }
     token_info = request_auth_token(vim_info)
     auth_token = token_info['access']['token']['id']
+    callback_url = destroy_info['callback_url']
 
     # Find VNFR
     begin
@@ -216,31 +220,43 @@ class Provisioning < VnfProvisioning
     resources = getStackResources(vnfr.stack_url, auth_token)
     resources.each do |resource|
       if resource['resource_type'] == 'OS::Heat::AutoScalingGroup'
-        stack_url = resource['links'].find { |link| link['rel'] == "nested" }['href']
-        response = delete_stack_with_wait(stack_url, auth_token)
-        logger.debug 'VIM response to destroy the AutoScalingGroup: ' + response.to_json
+        if resource['links'].find { |link| link['rel'] == "nested" }
+          stack_url = resource['links'].find { |link| link['rel'] == "nested" }['href']
+          response = delete_stack_with_wait(stack_url, auth_token)
+          logger.debug 'VIM response to destroy the AutoScalingGroup: ' + response.to_json
+        end
       end
     end
 
     # Requests the VIM to delete the stack
-    response = delete_stack_with_wait(vnfr.stack_url, auth_token)
+    response, errors = delete_stack_with_wait(vnfr.stack_url, auth_token)
+    logger.error "ERRORS!-----------------------------------------------_?"
+    logger.error errors if errors
+    halt 400, errors if errors
 
     logger.debug 'VIM response to destroy: ' + response.to_json
 
-    # Delete the VNFR from mAPI
-    begin
-      response = RestClient.delete "#{settings.mapi}/vnf_api/#{vnfr.id}/", 'X-Auth-Token' => @client_token
-    rescue Errno::ECONNREFUSED
-      halt 500, 'mAPI unreachable'
-    rescue RestClient::ResourceNotFound
-      puts "Already removed from the mAPI."
-    rescue => e
-      puts e
-      logger.error e
-      #logger.error e.response
-      #halt e.response.code, e.response.body
+    if settings.mapi.nil?
+      logger.info "mAPI not defined. No action performed to mAPI."
+    else
+      # Delete the VNFR from mAPI
+      logger.info "Sending delete command to mAPI..."
+      begin
+        response = RestClient.delete "#{settings.mapi}/vnf_api/#{vnfr.id}/", 'X-Auth-Token' => @client_token
+      rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH
+        halt 500, 'mAPI unreachable'
+      rescue RestClient::ResourceNotFound
+        puts "Already removed from the mAPI."
+      rescue => e
+        logger.error "Error removing vnfr from mAPI."
+        puts e
+        logger.error e
+        #logger.error e.response
+        #halt e.response.code, e.response.body
+      end
     end
 
+    logger.error "REMOVING VNFR:..................."
     # Delete the VNFR from the database
     vnfr.destroy
     halt 200, response.body
@@ -268,6 +284,10 @@ class Provisioning < VnfProvisioning
     # Return if event doesn't have information
     halt 400, 'Event has no information' if vnfr.lifecycle_info['events'][config_info['event']].nil?
 
+    if settings.mapi.nil?
+      halt 200, "mAPI not defined. No execution performed."
+    end
+
     # Build mAPI request
     mapi_request = {
         event: config_info['event'],
@@ -283,7 +303,7 @@ class Provisioning < VnfProvisioning
       else
         response = RestClient.put settings.mapi + '/vnf_api/' + params[:vnfr_id] + '/config/', mapi_request.to_json, :content_type => :json, :accept => :json
       end
-    rescue Errno::ECONNREFUSED
+    rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH
       halt 500, 'mAPI unreachable'
     rescue => e
       logger.error e.response
@@ -320,25 +340,30 @@ class Provisioning < VnfProvisioning
     # If stack is in create complete state
     if params[:status] == 'create_complete'
       logger.debug 'Create complete'
-
-      begin
-        response = parse_json(RestClient.get vnfr.stack_url + "/resources", 'X-Auth-Token' => auth_token, :content_type => :json)
-      rescue Errno::ECONNREFUSED
-        halt 500, 'VIM unreachable'
-      rescue => e
-        logger.error e.response
-        halt e.response.code, e.response.body
-      end
-
       logger.debug "Output received from Openstack:"
       logger.debug stack_info['stack']['outputs']
 
+      #get stack resources
+      resources = getStackResources(vnfr.stack_url, auth_token)
+
       #map ports to openstack_port_id
-      resources = response['resources']
       vnfr.port_instances.each do |port|
-        puts port['id']
         if !resources.find { |res| res['resource_name'] == port['id'] }.nil?
           port['physical_resource_id'] = resources.find { |res| res['resource_name'] == port['id'] }['physical_resource_id']
+        end
+      end
+
+      #resources = getStackResources(vnfr.stack_url, auth_token)
+
+      #maybe can be removed.... not used
+      resources.each do |resource|
+        if resource['resource_type'] == 'OS::Heat::AutoScalingGroup'
+          stack_url = resource['links'].find { |link| link['rel'] == "nested" }['href']
+          nested_resources = getStackResources(stack_url, auth_token)
+          logger.info 'VIM response of AutoScalingGroup: ' + nested_resources.to_json
+          logger.info resource['links']
+          #scale_resources << {:vdu => output['output_key'].match(/^(.*)#scale_in_url/i)[1], :scale_in => output['output_value']}
+          #scale_resources << {:id => output['output_value']}
         end
       end
 
@@ -349,25 +374,18 @@ class Provisioning < VnfProvisioning
 
       #update vnfr with the key generated in the stack
       private_key = outputs.find { |res| res[:key] == "private_key" }
-      vnfr.lifecycle_info["authentication"] = private_key[:value]
 
-      # Send the VNFR to the mAPI
-      if !settings.mapi.nil?
-        registerRequestmAPI(vnfr)
-      end
-
-      sleep(2)
       vms_id = {}
       lifecycle_events_values = {}
       vnf_addresses = {}
       scale_urls = {}
       scale_resources = []
       stack_info['stack']['outputs'].select do |output|
+        logger.info "OUTPUT_KEY.............................................................................................................."
         logger.info output['output_key']
-        # If the output is an ID
 
         if output['output_key'] == "private_key"
-          #do nothing
+          private_key = output['output_value']
         elsif output['output_key'] =~ /^.*#id$/i
           vms_id[output['output_key'].match(/^(.*)#id$/i)[1]] = output['output_value']
         elsif output['output_key']  =~ /^.*#scale_in_url/i
@@ -413,12 +431,17 @@ class Provisioning < VnfProvisioning
             unless event_info.nil?
               JSON.parse(event_info['template_file']).each do |id, parameter|
 
+                logger.error parameter
+
                 parameter_match = parameter.delete(' ').match(/^get_attr\[(.*)\]$/i).to_a
                 string = parameter_match[1].split(",").map(&:strip)
                 key_string = string.join("#")
                 logger.debug "Key string: " + key_string.to_s + ". Out_key: " + output['output_key'].to_s
 
-                if string[1] == "PublicIp" #DEPRECATED: to be removed when all VNF develpers uses the new form
+                logger.info string[1]
+                logger.info string[2]
+                logger.info string[3]
+                if string[1] == "PublicIp" #DEPRECATED: to be removed when all VNF developers uses the new form
                   vnf_addresses[output['output_key']] = output['output_value']
                   lifecycle_events_values[event] = {} unless lifecycle_events_values.has_key?(event)
                   lifecycle_events_values[event][key_string] = output['output_value']
@@ -430,6 +453,21 @@ class Provisioning < VnfProvisioning
                     vnf_addresses[output['output_key']] = output['output_value']
                     lifecycle_events_values[event] = {} unless lifecycle_events_values.has_key?(event)
                     lifecycle_events_values[event][key_string] = output['output_value']
+                  end
+                elsif string[1] == "fixed_ips"#PrivateIp
+                  logger.info "FIXED_IPS"
+                  logger.info key_string
+                  key_string2 = output['output_key'].partition("#")[2]
+                  logger.info key_string2
+                  logger.info output['output_key']
+                  if key_string2 == key_string
+                    vnf_addresses[output['output_key']] = output['output_value']
+                    lifecycle_events_values[event] = {} unless lifecycle_events_values.has_key?(event)
+                    if output['output_value'].kind_of?(Array)
+                      lifecycle_events_values[event][key_string] = output['output_value'][0]
+                    else
+                      lifecycle_events_values[event][key_string] = output['output_value']
+                    end
                   end
                 elsif output['output_key'] =~ /^#{parameter_match[1]}##{parameter_match[2]}$/i
                   vnf_addresses["#{parameter_match[1]}"] = output['output_value'] if parameter_match[2] == 'ip' && !vnf_addresses.has_key?("#{parameter_match[1]}") # Only to populate VNF
@@ -443,7 +481,6 @@ class Provisioning < VnfProvisioning
             end
           end
         end
-
       end
 
       logger.debug 'VMs ID: ' + vms_id.to_json
@@ -459,6 +496,21 @@ class Provisioning < VnfProvisioning
           lifecycle_events_values: lifecycle_events_values,
           scale_info: scale_urls,
           scale_resources: scale_resources)
+
+
+      if vnfr.lifecycle_info["authentication_type"] == "PubKeyAuthentication"
+        if vnfr.lifecycle_info["authentication"] == ""
+          logger.info "Public Authentication is empty. Included the key generated by Openstack."
+#        vnfr.lifecycle_info["authentication"] = private_key
+#        vnfr.update_attributes!(lifecycle_info["authentication"] = private_key)
+        end
+      end
+
+      logger.info "Registring values to mAPI if required..."
+      # Send the VNFR to the mAPI
+      if !settings.mapi.nil?
+        registerRequestmAPI(vnfr)
+      end
 
       # Build message to send to the NS Manager callback
       vnfi_id = []

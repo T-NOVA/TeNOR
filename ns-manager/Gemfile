@@ -6,7 +6,7 @@ gem 'puma', '3.6.0'
 gem 'json', '~>1.8'
 gem 'json-schema', '~>2.5'
 gem 'rest-client', '~>2.0'
-gem 'logstash-logger', '~>0.19.1'
+gem 'logstash-logger', '~>0.19.2'
 gem 'eventmachine', '~>1.2.0.1'
 gem 'mongoid', '~>4.0' # MongoDB driver
 

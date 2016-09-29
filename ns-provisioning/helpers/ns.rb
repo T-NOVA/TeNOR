@@ -20,26 +20,24 @@ module NsProvisioner
 
   # Sends a notification to the callback url
   #
-  # @param [JSON] message Notification URL
-  # @param [JSON] message the message to send
+  # @param [JSON] notification_url Notification URL
+  # @param [JSON] message The message to send
   def generateMarketplaceResponse(notification_url, message)
     logger.error message
     logger.debug "Notification url: " + notification_url
     begin
       response = RestClient.post notification_url, message.to_json, :content_type => :json
     rescue RestClient::ResourceNotFound
-      logger.error "Error sending the callback to the marketplace."
-      puts "No exists in the Marketplace."
+      logger.error "Error sending the callback to the marketplace. Resource not found."
     rescue => e
       logger.error e
-      #halt e.response.code, e.response.body
     end
   end
 
   # Generates a standard Hash for errors.
   #
-  # @param [JSON] message NSr id
-  # @param [JSON] message Status
+  # @param [JSON] ns_id NSr id
+  # @param [JSON] status Status
   # @param [JSON] message Message
   # @return [Hash] The error message
   def generateError(ns_id, status, message)
@@ -53,7 +51,7 @@ module NsProvisioner
 
   # Recover the state due to fail during the instatiation or when the instance should be removed
   #
-  # @param [JSON] message NSr
+  # @param [JSON] instance NSr
   # @return [Hash, nil] NS
   # @return [Hash, String] if the parsed message is an invalid JSON
   #def recoverState(popInfo, vnf_info, instance, error)
@@ -174,11 +172,16 @@ module NsProvisioner
   # @param [JSON] message NSD
   # @return [Hash, nil] NS
   # @return [Hash, String] if the parsed message is an invalid JSON
-  def instantiate(instance, nsd, pop_list, pop_id = nil)
+  def instantiate(instance, nsd, instantiation_info)
 
     @instance = instance
     callback_url = @instance['notification']
     flavour = @instance['service_deployment_flavour']
+    pop_list = instantiation_info['pop_list']
+    pop_id = instantiation_info['pop_id']
+    mapping_id = instantiation_info['mapping_id']
+    nap_id = instantiation_info['nap_id']
+    customer_id = instantiation_info['customer_id']
     slaInfo = nsd['sla'].find { |sla| sla['sla_key'] == flavour }
     if slaInfo.nil?
       return generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], "FAILED", "Internal error: SLA inconsistency"))
@@ -195,11 +198,20 @@ module NsProvisioner
     logger.info "List of available PoPs:"
     logger.info pop_list
 
-    if pop_list.size == 1
-      pop_id = pop_list[0]
+    if pop_id.nil? && mapping_id.nil?
+      logger.info "Request from Marketplace."
+      if pop_list.size == 1 # if PoP size is 1, use that PoP
+        pop_id = pop_list[0]
+      else
+        #use default Mapping Algorithm
+        pop_id = nil
+      end
+    elsif !pop_id.nil?
+      pop_id = pop_id
+    elsif !mapping_id.nil?
+      #call specified mapping with the id
+      #TODO
     end
-    #testing...
-    pop_id = pop_list[0]
 
     if !pop_id.nil?
       logger.debug "Deploy to PoP id: " + pop_id.to_s
@@ -214,6 +226,7 @@ module NsProvisioner
           :overcommitting => "true"
       }
       mapping, errors = callMapping(ms, nsd)
+      #mapping Mapper PoPs with gatekeeper PoPs.
       return generateMarketplaceResponse(callback_url, generateError(nsd['id'], "FAILED", "Internal error: Mapping not reachable.")) if errors
     end
 
@@ -326,8 +339,8 @@ module NsProvisioner
       # Request WICM to create a service
       wicm_message = {
           ns_instance_id: nsd['id'],
-          client_mkt_id: '1',
-          nap_mkt_id: '1',
+          client_mkt_id: customer_id,
+          nap_mkt_id: nap_id,
           nfvi_mkt_id: '1'
       }
 
@@ -399,6 +412,7 @@ module NsProvisioner
       publicNetworkId = publicNetworkId(popUrls[:neutron], tenant_token)
 
       hot_generator_message = {
+          nsr_id: @instance['id'],
           nsd: nsd,
           public_net_id: publicNetworkId,
           dns_server: popUrls[:dns]
@@ -523,23 +537,31 @@ module NsProvisioner
       rescue => e
         @instance.push(lifecycle_event_history: "ERROR_CREATING " + vnf_id.to_s + " VNF")
         @instance.update_attribute('status', "ERROR_CREATING")
-        if e.response.code == 404
-          error = "The VNFD is not defined in the VNF Catalogue."
-          @instance.push(audit_log: error)
-          logger.error error
-          generateMarketplaceResponse(callback_url, generateError(nsd['id'], "FAILED", error))
-        else
-          if e.response.body.nil?
-            error = "Instantiation error. Response from the VNF Manager with no information."
-            logger.error error
-            generateMarketplaceResponse(callback_url, generateError(nsd['id'], "FAILED", error))
-            return
+        logger.error e.response
+        if e.response.nil?
+          if e.response.code.nil?
+            logger.error e
+            logger.error "Response code not defined."
           else
-            @instance.push(audit_log: e.response.body)
-            error = "Instantiation error. Response from the VNF Manager: " + e.response.body
-            logger.error error
-            generateMarketplaceResponse(callback_url, generateError(nsd['id'], "FAILED", error))
-            return
+            if e.response.code == 404
+              error = "The VNFD is not defined in the VNF Catalogue."
+              @instance.push(audit_log: error)
+              logger.error error
+              generateMarketplaceResponse(callback_url, generateError(nsd['id'], "FAILED", error))
+            else
+              if e.response.body.nil?
+                error = "Instantiation error. Response from the VNF Manager with no information."
+                logger.error error
+                generateMarketplaceResponse(callback_url, generateError(nsd['id'], "FAILED", error))
+                return
+              else
+                @instance.push(audit_log: e.response.body)
+                error = "Instantiation error. Response from the VNF Manager: " + e.response.body
+                logger.error error
+                generateMarketplaceResponse(callback_url, generateError(nsd['id'], "FAILED", error))
+                return
+              end
+            end
           end
         end
         logger.error "Handle error."

@@ -20,9 +20,9 @@ class ScalingController< TnovaManager
 
   # @method post_ns_instances_scaling
   # @overload post "/ns-instances/scaling/:id/scale_out"
-  # Manual scaling given ns instance id
+  # Manual scaling out given ns instance id
   # @param [string] NS instance id
-  post '/:id/scale_out' do
+  post '/:nsr_id/scale_out' do
 
     begin
       @service = ServiceModel.find_by(name: "ns_provisioner")
@@ -30,17 +30,36 @@ class ScalingController< TnovaManager
       halt 500, {'Content-Type' => "text/plain"}, "NS Provisioning not registred."
     end
 
+    begin
+      @service_catalogue = ServiceModel.find_by(name: "ns_catalogue")
+    rescue Mongoid::Errors::DocumentNotFound => e
+      halt 500, {'Content-Type' => "text/plain"}, "NS Catalogue not registred."
+    end
+
     return 415 unless request.content_type == 'application/json'
 
     # Validate JSON format
     instantiation_info = JSON.parse(request.body.read)
 
-    # Get VNF by id
+    # Get NS Instance by NSR id
     begin
-      nsd = RestClient.get settings.ns_catalogue + '/network-services/' + instantiation_info['ns_id'].to_s, 'X-Auth-Token' => @client_token
+      instantiation_info, errors = parse_json(RestClient.get @service.host + ":" + @service.port.to_s + '/ns-instances/' + params['nsr_id'].to_s, :accept => :json)
+    rescue Errno::ECONNREFUSED
+      halt 500, 'VNF Catalogue unreachable'
+    rescue => e
+      logger.error e
+      logger.error e.response
+      halt e.response.code, e.response.body
+    end
+
+    logger.error instantiation_info['nsd_id']
+    # Get NS by id
+    begin
+      nsd = RestClient.get @service_catalogue.host + ":" + @service_catalogue.port.to_s + '/network-services/' + instantiation_info['nsd_id'].to_s, 'X-Auth-Token' => @client_token
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Catalogue unreachable'
     rescue => e
+      logger.error e
       logger.error e.response
       halt e.response.code, e.response.body
     end
@@ -53,19 +72,17 @@ class ScalingController< TnovaManager
       logger.error e.response
       halt e.response.code, e.response.body
     end
-    logger.error "Instantiation correct."
+    logger.error "Scaling correct."
     logger.error response.code
-
-    updateStatistics('ns_instantiated_requests')
 
     return response.code, response.body
   end
 
   # @method post_ns_instances_scaling
-  # @overload post "/ns-instances/scaling/:id/scale_out"
-  # Manual scaling given ns instance id
+  # @overload post "/ns-instances/scaling/:id/scale_in"
+  # Manual scaling in given ns instance id
   # @param [string] NS instance id
-  post '/:id/scale_out' do
+  post '/:nsr_id/scale_in' do
 
     begin
       @service = ServiceModel.find_by(name: "ns_provisioner")
@@ -73,17 +90,36 @@ class ScalingController< TnovaManager
       halt 500, {'Content-Type' => "text/plain"}, "NS Provisioning not registred."
     end
 
+    begin
+      @service_catalogue = ServiceModel.find_by(name: "ns_catalogue")
+    rescue Mongoid::Errors::DocumentNotFound => e
+      halt 500, {'Content-Type' => "text/plain"}, "NS Catalogue not registred."
+    end
+
     return 415 unless request.content_type == 'application/json'
 
     # Validate JSON format
     instantiation_info = JSON.parse(request.body.read)
 
-    # Get VNF by id
+    # Get NS Instance by NSR id
     begin
-      nsd = RestClient.get settings.ns_catalogue + '/network-services/' + instantiation_info['ns_id'].to_s, 'X-Auth-Token' => @client_token
+      instantiation_info, errors = parse_json(RestClient.get @service.host + ":" + @service.port.to_s + '/ns-instances/' + params['nsr_id'].to_s, :accept => :json)
+    rescue Errno::ECONNREFUSED
+      halt 500, 'VNF Catalogue unreachable'
+    rescue => e
+      logger.error e
+      logger.error e.response
+      halt e.response.code, e.response.body
+    end
+
+    logger.error instantiation_info['nsd_id']
+    # Get NS by id
+    begin
+      nsd = RestClient.get @service_catalogue.host + ":" + @service_catalogue.port.to_s + '/network-services/' + instantiation_info['nsd_id'].to_s, 'X-Auth-Token' => @client_token
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Catalogue unreachable'
     rescue => e
+      logger.error e
       logger.error e.response
       halt e.response.code, e.response.body
     end
@@ -96,10 +132,8 @@ class ScalingController< TnovaManager
       logger.error e.response
       halt e.response.code, e.response.body
     end
-    logger.error "Instantiation correct."
+    logger.error "Scaling correct."
     logger.error response.code
-
-    updateStatistics('ns_instantiated_requests')
 
     return response.code, response.body
   end

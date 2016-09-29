@@ -26,7 +26,14 @@ module HotHelper
       return 500, error
     rescue => e
       puts e
-      logger.error e.response
+      logger.error "RESPONSEEEE?"
+      if e.nil?
+        logger.error "E IS NUILLL"
+      end
+      if e.response.nil?
+       logger.error "RESPONSE IS NIL?"
+      end
+      #logger.error e.response
       return 500, e
     end
     hot, errors = parse_json(response)
@@ -61,8 +68,9 @@ module HotHelper
     rescue Errno::ECONNREFUSED
       error = {"info" => "VIM unrechable."}
       return 500, error
-    rescue => e
-      logger.error e
+    rescue RestClient::ExceptionWithResponse => e
+      #logger.error e
+      logger.error e.response
       error = {"info" => "Error creating the network stack."}
       return 500, error
     end
@@ -147,6 +155,23 @@ module HotHelper
       logger.error e.response
       return
     end
+  end
+
+  def generateNetflocTemplate(hot_generator_message)
+    begin
+      response = RestClient.post settings.hot_generator + "/netfloc", hot_generator_message.to_json, :content_type => :json, :accept => :json
+    rescue Errno::ECONNREFUSED
+      error = {"info" => "HOT Generator unrechable."}
+      return 500, error
+    rescue => e
+      puts e
+      logger.error e.response
+      return 500, e
+    end
+    hot, errors = parse_json(response)
+    return 400, errors if errors
+
+    return hot
   end
 
 end

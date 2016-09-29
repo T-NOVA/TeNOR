@@ -102,9 +102,7 @@ module AuthenticationHelper
     rescue => e
       puts "Error"
       puts e
-			#logger.error e
     end
-    puts response
 		metadata = JSON.parse(response)
 		return metadata['servicelist']
 	end

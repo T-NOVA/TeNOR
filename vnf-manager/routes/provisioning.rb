@@ -124,6 +124,7 @@ class Provisioning < VNFManager
                 rescue Errno::ECONNREFUSED
                         halt 500, 'VNF Provisioning unreachable'
                 rescue => e
+                        logger.error e
                         logger.error e.response
                         halt e.response.code, e.response.body
                 end

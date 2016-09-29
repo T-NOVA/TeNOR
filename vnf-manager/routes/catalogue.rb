@@ -79,6 +79,11 @@ class Catalogue < VNFManager
     rescue Errno::ECONNREFUSED
       halt 500, 'VNF Catalogue unreachable'
     rescue => e
+      logger.error e
+      if e.response.nil?
+        logger.error e
+        halt 400, "Error getting list of VNFs."
+      end
       logger.error e.response
       halt e.response.code, e.response.body
     end
