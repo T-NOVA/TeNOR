@@ -45,6 +45,7 @@ class VnfdToHot
     @vnfr_id = vnfr_id
 
     key = create_key_pair(SecureRandom.urlsafe_base64(9))
+    router_id = routers_id[0]['id']
 
     # Get T-NOVA deployment flavour
     deployment_information = vnfd['deployment_flavours'].detect { |flavour| flavour['id'] == tnova_flavour }
@@ -54,14 +55,16 @@ class VnfdToHot
     vlinks = deployment_information['vlink_reference']
 
     networks_id = []
+    router_interfaces = []
 
     vlinks.each do |vlink|
       vlink_json = vnfd['vlinks'].detect { |vl| vl['id'] == vlink }
       if !vlink_json['existing_net_id'].nil?
         networks_id << {'id' => vlink, 'alias' => vlink_json['alias'], 'heat_id' => vlink_json['existing_net_id']}
       else
-        net_name = create_networks(vlink_json, dns, routers_id[0]['id'])
+        net_name, router_interface = create_networks(vlink_json, dns, router_id)
         networks_id << {'id' => vlink, 'alias' => vlink_json['alias'], 'heat' => net_name}
+        router_interfaces << router_interface
       end
     end
 
@@ -86,7 +89,7 @@ class VnfdToHot
       #create AutoScalingGroup if the VNF can scale
       if (vdu['scale_in_out']['maximum'] > 1)
         #generate template for server
-        nested_template = generate_nested_template(vdu, vnfd, networks_id, security_group_id, nets)
+        nested_template = generate_nested_template(vdu, vnfd, networks_id, security_group_id, nets, router_interfaces, router_id)
 
         #save template in folder
         name = vnfd['id'].to_s
@@ -102,9 +105,12 @@ class VnfdToHot
         networks_id.each do |net|
           properties[net['heat']] = {"get_resource" => net['heat']}
         end
-        #properties
+        router_interfaces.each do |iface|
+          properties[iface] = {"get_resource" => iface}
+        end
+        #properties['depends_on'] = router_interfaces
 
-        scaled_resource = GenericResource.new(vdu['id'], url, properties)
+        scaled_resource = GenericResource.new(vdu['id'], url, properties, router_interfaces)
         auto_scale_group = create_autoscale_group(60, vdu['scale_in_out']['maximum'], vdu['scale_in_out']['minimum'], 1, scaled_resource)
         scale_out_policy = create_scale_policy(auto_scale_group, 1)
         scale_in_policy = create_scale_policy(auto_scale_group, -1)
@@ -112,25 +118,33 @@ class VnfdToHot
         @hot.outputs_list << Output.new("#{vdu['id']}#scale_in_url", "Url of scale in.", {get_attr: [scale_in_policy, 'alarm_url']})
         @hot.outputs_list << Output.new("#{vdu['id']}#scale_group", "#{vdu['id']} ID", {get_resource: auto_scale_group})
       else
-        ports = create_ports(vdu['id'], vdu['connection_points'], vnfd['vlinks'], networks_id, security_group_id)
+        ports = create_ports(vdu['id'], vdu['connection_points'], vnfd['vlinks'], networks_id, security_group_id, router_interfaces)
         create_server(vdu, image_name, flavor_name, ports, key, false)
       end
     end
 
+    puts @hot.to_json
+
     @hot
   end
 
-  def generate_nested_template(vdu, vnfd, networks_id, security_group_id, nets)
-
+  def generate_nested_template(vdu, vnfd, networks_id, security_group_id, nets, router_interfaces, router_id)
     hot = Hot.new("server")
     hot.parameters_list = []
     outputs_list = {}
     hot.parameters_list << Parameter.new('image', '', 'string')
     hot.parameters_list << Parameter.new('flavor', '', 'string')
-    hot.parameters_list << Parameter.new('flavor', '', 'string')
     #for each network, create a parameter
     networks_id.each do |net|
       hot.parameters_list << Parameter.new(net['heat'], '', 'string')
+    end
+    router_interfaces.each do |iface|
+      hot.parameters_list << Parameter.new(iface, '', 'string')
+    end
+
+    arr = []
+    router_interfaces.each do |iface|
+      arr << {"get_param" => iface}
     end
 
     ports = []
@@ -158,6 +172,8 @@ class VnfdToHot
             hot.resources_list << Port.new(port_name, {"get_param" => network['heat']})
           end
         end
+        #router_interface_name = get_resource_name_nested(hot)
+        #hot.resources_list << RouterInterface.new(router_interface_name, router_id, nil, {"get_resource" => port_name})
 
         # Check if it's necessary to create an output for this resource
         if outputs_list.has_key?('ip') && outputs_list['ip'].include?(port_name)
@@ -169,9 +185,12 @@ class VnfdToHot
           floating_ip_name = get_resource_name_nested(hot)
           # TODO: Receive the floating ip pool name?
           hot.resources_list << FloatingIp.new(floating_ip_name, @public_network_id)
-          hot.resources_list << FloatingIpAssociation.new(get_resource_name_nested(hot), {"get_resource" => floating_ip_name}, {"get_resource" => port_name})
+          hot.resources_list << FloatingIpAssociation.new(get_resource_name_nested(hot), {"get_resource" => floating_ip_name}, {"get_resource" => port_name}, [])
           hot.outputs_list << Output.new("#{vdu_id}##{connection_point['id']}#PublicIp", "#{port_name} Floating IP", {"get_attr" => [floating_ip_name, 'floating_ip_address']})
           @hot.outputs_list << Output.new("#{vdu_id}##{connection_point['id']}#PublicIp", "#{port_name} Nested outputs_list", {"get_attr" => [auto_scale_name, 'outputs_list', "#{vdu_id}##{connection_point['id']}#PublicIp"]})
+        else
+          hot.outputs_list << Output.new("#{vdu_id}##{connection_point['id']}#PrivateIp", "#{port_name} Private IP", {"get_attr" => [port_name,'fixed_ips',0,'ip_address']})
+          @hot.outputs_list << Output.new("#{vdu_id}##{connection_point['id']}#fixed_ips#0#ip_address", "#{port_name} Nested outputs_list", {"get_attr" => [auto_scale_name, 'outputs_list', "#{vdu_id}##{connection_point['id']}#PrivateIp"]})
         end
       end
 
@@ -203,9 +222,9 @@ class VnfdToHot
       #nothig to do
     end
 
-    create_router_interface(router_id, subnet_name)
+    router_interface = create_router_interface(router_id, subnet_name, nil)
 
-    return network_name
+    return network_name, router_interface
   end
 
   def create_network(network_name, port_security_enabled)
@@ -220,9 +239,9 @@ class VnfdToHot
     name
   end
 
-  def create_router_interface(router_id, subnet_name)
+  def create_router_interface(router_id, subnet_name, port_name)
     name = get_resource_name
-    @hot.resources_list << RouterInterface.new(name, router_id, {get_resource: subnet_name})
+    @hot.resources_list << RouterInterface.new(name, router_id, {get_resource: subnet_name}, {get_resource: port_name})
     name
   end
 
@@ -261,6 +280,9 @@ class VnfdToHot
                   @outputs[match[2]] << match[1]
                 else
                   @outputs[match[2]] = [match[1]]
+                end
+                if string[1] == 'fixed_ips'
+                  #@hot.outputs_list << Output.new(id, "", get_attr)
                 end
                 if string[1] != 'PublicIp'
                   #@hot.outputs_list << Output.new(id, "", get_attr)
@@ -307,7 +329,7 @@ class VnfdToHot
   # @param [Array] networks_id the IDs of the networks created by NS Manager
   # @param [String] security_group_id the ID of the T-NOVA security group
   # @return [Array] a list of ports
-  def create_ports(vdu_id, connection_points, vlinks, networks_id, security_group_id)
+  def create_ports(vdu_id, connection_points, vlinks, networks_id, security_group_id, router_interfaces)
     ports = []
 
     connection_points.each do |connection_point|
@@ -341,9 +363,12 @@ class VnfdToHot
           floating_ip_name = get_resource_name
           # TODO: Receive the floating ip pool name?
           @hot.resources_list << FloatingIp.new(floating_ip_name, @public_network_id)
-          @hot.resources_list << FloatingIpAssociation.new(get_resource_name, {get_resource: floating_ip_name}, {get_resource: port_name})
+          @hot.resources_list << FloatingIpAssociation.new(get_resource_name, {get_resource: floating_ip_name}, {get_resource: port_name}, router_interfaces)
           #          @hot.outputs_list << Output.new("#{port_name}#floating_ip", "#{port_name} Floating IP", {get_attr: [floating_ip_name, 'floating_ip_address']})
           @hot.outputs_list << Output.new("#{vdu_id}##{connection_point['id']}#PublicIp", "#{port_name} Floating IP", {get_attr: [floating_ip_name, 'floating_ip_address']})
+          @hot.outputs_list << Output.new("#{vdu_id}##{connection_point['id']}#fixed_ips#0#ip_address", "#{port_name} private address", {"get_attr" => [port_name,'fixed_ips',0,'ip_address']})
+        else
+          @hot.outputs_list << Output.new("#{vdu_id}##{connection_point['id']}#fixed_ips#0#ip_address", "#{port_name} private address", {"get_attr" => [port_name,'fixed_ips',0,'ip_address']})
         end
       end
 

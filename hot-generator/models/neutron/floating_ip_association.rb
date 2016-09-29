@@ -22,9 +22,10 @@ class FloatingIpAssociation < Resource
 	# @param [String] resource_name the FloatingIpAssociation resource name
 	# @param [String] floatingip_id ID of the Floating IP to associate
 	# @param [String] port_id ID of an existing port to associate with this floating IP
-	def initialize(resource_name, floatingip_id, port_id)
+	def initialize(resource_name, floatingip_id, port_id, depends_on)
 		type = 'OS::Neutron::FloatingIPAssociation'
+		depends_on = depends_on
 		properties = {'floatingip_id' => floatingip_id, 'port_id' => port_id}
-		super(resource_name, type, properties)
+		super(resource_name, type, properties, depends_on)
 	end
 end

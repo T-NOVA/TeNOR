@@ -24,8 +24,7 @@ require 'yaml'
 require 'logstash-logger'
 require 'securerandom'
 
-# Require the bundler gem and then call Bundler.require to load in all gems
-# listed in Gemfile.
+# Require the bundler gem and then call Bundler.require to load in all gems listed in Gemfile.
 require 'bundler'
 Bundler.require :default, ENV['RACK_ENV'].to_sym
 
@@ -46,7 +45,7 @@ class HotGenerator < Sinatra::Application
         outputs: [
             {type: :stdout, formatter: ::Logger::Formatter},
             {type: :file, path: "log/#{settings.environment}.log", sync: true},
-            {host: settings.logstash_host, port: settings.logstash_port}
+            {host: settings.logstash_host, port: settings.logstash_port, sync: false}
         ])
     LogStashLogger.configure do |config|
       config.customize_event do |event|
