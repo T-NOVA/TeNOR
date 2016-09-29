@@ -14,5 +14,5 @@ Gem::Specification.new do |gem|
 
   gem.add_dependency 'sinatra', '~>1.4'
   gem.add_dependency 'json', '~>1.8'
-  gem.add_dependency'rest-client', '~>2.0'
+  gem.add_dependency 'rest-client', '~>2.0'
 end
