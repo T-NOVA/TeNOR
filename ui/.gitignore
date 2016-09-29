@@ -4,7 +4,5 @@
 /.project
 
 nb-configuration.xml
-node_modules/
-app/bower_components/
 app/config.js
 Gemfile.lock
