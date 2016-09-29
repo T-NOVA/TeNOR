@@ -23,17 +23,22 @@ class Resource
 	# @param [String] name the resource name
 	# @param [String] type the type of HEAT resource
 	# @param [String] properties the properties of HEAT resource
-	def initialize(name, type, properties={})
+	def initialize(name, type, properties={}, depends_on=[])
 		@name = name
 		@type = type
 		@properties = properties
+		@depends_on = depends_on
 	end
 
 	# Converts Resource object to HOT JSON format
 	#
 	# @return [JSON] the converted Resource object in HOT JSON format
 	def to_json(*a)
-		{type: @type, properties: @properties}.to_json(*a)
+		if @depends_on.size == 0
+			{type: @type, properties: @properties}.to_json(*a)
+		else
+			{type: @type, properties: @properties, depends_on: @depends_on}.to_json(*a)
+		end
 	end
 
 	# Converts Resource object to HOT YAML format
@@ -42,6 +47,10 @@ class Resource
 	def to_yaml
 		properties_not_empty = {}
 		@properties.each { |key, value| properties_not_empty[key] = value unless value.nil? }
-		{'type' => @type, 'properties' => properties_not_empty}
+		if @depends_on.size == 0
+			{'type' => @type, 'properties' => properties_not_empty}
+    else
+      {'type' => @type, 'properties' => properties_not_empty, 'depends_on' => @depends_on}
+		end
 	end
 end

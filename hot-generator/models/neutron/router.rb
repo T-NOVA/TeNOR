@@ -21,9 +21,9 @@ class Router < Resource
   #
   # @param [String] resource_name the Router resource name
   # @param [String] public_net_id the ID of the public network
-  def initialize(resource_name, public_net_id)
+  def initialize(resource_name, public_net_id, nsd_instance)
     @type = 'OS::Neutron::Router'
-    @properties = {'external_gateway_info' => { 'network' => public_net_id }, 'name' => 'Tenor router'}
+    @properties = {'external_gateway_info' => { 'network' => public_net_id }, 'name' => 'Tenor_' + nsd_instance.to_s}
     super(resource_name, @type, @properties)
   end
 end

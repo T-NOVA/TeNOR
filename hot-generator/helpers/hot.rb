@@ -28,7 +28,7 @@ module CommonMethods
 	# @param [String] dns the DNS
 	# @return [Hash] the generated hot template
 	def self.generate_hot_template(vnfd, flavour_key, networks_id, routers_id, security_group_id, vnfr_id, dns, public_network_id)
-		hot = VnfdToHot.new(vnfd['name'], vnfd['description'], public_network_id)
+		hot = VnfdToHot.new(vnfd['name'].delete(" "), vnfd['description'], public_network_id)
 
 		begin
 			hot.build(vnfd, flavour_key, networks_id, routers_id, security_group_id, vnfr_id, dns)
@@ -74,11 +74,11 @@ module CommonMethods
 	# @param [String] dns_server the DNS Server to add to the networks
 	# @param [String] flavour the T-NOVA flavour
 	# @return [Hash] the generated networks hot template
-	def self.generate_network_hot_template(nsd, public_net_id, dns_server, flavour)
+	def self.generate_network_hot_template(nsd, public_net_id, dns_server, flavour, nsr_id)
 		hot = NsdToHot.new(nsd['id'], nsd['name'])
 
     begin
-      hot.build(nsd, public_net_id, dns_server, flavour)
+      hot.build(nsd, public_net_id, dns_server, flavour, nsr_id)
     rescue CustomException::NoExtensionError => e
       logger.error e.message
       halt 400, e.message

@@ -29,8 +29,8 @@ class HotGenerator < Sinatra::Application
 		halt 415 unless request.content_type == 'application/json'
 
 		# Validate JSON format
-		provision_info, errors = parse_json(request.body.read)
-		return 400, errors.to_json if errors
+		provision_info = JSON.parse(request.body.read)
+		#return 400, errors.to_json if errors
 
 		vnf = provision_info['vnf']
 
@@ -74,8 +74,11 @@ class HotGenerator < Sinatra::Application
 		halt 415 unless request.content_type == 'application/json'
 
 		# Validate JSON format
-		networkInfo, errors = parse_json(request.body.read)
-    return 400, errors.to_json if errors
+		networkInfo = JSON.parse(request.body.read)
+    #return 400, errors.to_json if errors
+
+		nsr_id = networkInfo['nsr_id']
+		halt 400, 'NSR ID not found' if nsr_id.nil?
 
 		nsd = networkInfo['nsd']
 		halt 400, 'NSD not found' if nsd.nil?
@@ -88,7 +91,7 @@ class HotGenerator < Sinatra::Application
 
 		# Build a HOT template
 		logger.debug 'T-NOVA flavour: ' + params[:flavour]
-		hot = CommonMethods.generate_network_hot_template(nsd, public_net_id, dns_server, params[:flavour])
+		hot = CommonMethods.generate_network_hot_template(nsd, public_net_id, dns_server, params[:flavour], nsr_id)
 
 		halt 200, hot.to_json
 	end
@@ -102,8 +105,8 @@ class HotGenerator < Sinatra::Application
 		halt 415 unless request.content_type == 'application/json'
 
 		# Validate JSON format
-		provider_info, errors = parse_json(request.body.read)
-    return 400, errors.to_json if errors
+		provider_info = JSON.parse(request.body.read)
+    #return 400, errors.to_json if errors
 
 		# Build a HOT template
 		hot = CommonMethods.generate_wicm_hot_template(provider_info)
@@ -122,8 +125,8 @@ class HotGenerator < Sinatra::Application
     halt 415 unless request.content_type == 'application/json'
 
     # Validate JSON format
-    provision_info, errors = parse_json(request.body.read)
-    return 400, errors.to_json if errors
+    provision_info = JSON.parse(request.body.read)
+    #return 400, errors.to_json if errors
 
     vnf = provision_info['vnf']
 
@@ -152,8 +155,8 @@ class HotGenerator < Sinatra::Application
 		halt 415 unless request.content_type == 'application/json'
 
 		# Validate JSON format
-		provision_info, errors = parse_json(request.body.read)
-		return 400, errors.to_json if errors
+		provision_info = JSON.parse(request.body.read)
+		#return 400, errors.to_json if errors
 
 		ports = provision_info['ports']
 		halt 400, 'Ports not found' if ports.nil?
