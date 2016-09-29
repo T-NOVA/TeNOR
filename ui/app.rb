@@ -8,6 +8,8 @@ class App < Sinatra::Base
   configure do
     #set :root, File.dirname(__FILE__)
     set :public_folder, 'app'
+    set :admin_user_uid, 1
+    set :admin_user_passwd, "Eq7K8h9gpg"
   end
 
   configure :development do
@@ -18,8 +20,6 @@ class App < Sinatra::Base
   configure :production do
     disable :dump_errors, :logging
     set :bind, '0.0.0.0'
-    set :port, 80
-    set :haml, :ugly => true
   end
 
    Dir[File.dirname(__FILE__) + '/apis/*.rb'].each do |file| 

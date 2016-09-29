@@ -1,15 +1,18 @@
 'use strict';
 
 angular.module('tNovaApp')
-    .controller('AuthCtrl', function ($rootScope, $scope, $location, AuthService, $window) {
+    .controller('AuthCtrl', function ($rootScope, $scope, $location, AuthService, $window, $alert) {
 
         $scope.loginGKProcess = function (username, password) {
-            var user_id = 1;
-            AuthService.loginGK(user_id, password).then(function (data) {
+            console.log(username);
+            //var user_id = 1;
+            var user_id;
+            AuthService.loginGK(username, password).then(function (data) {
                     console.log(data);
                     if (data === '') return;
                     $window.localStorage.token = data.token.id;
                     $window.localStorage.expiration = data.token['valid-until'];
+                    user_id = data.uid;
                     AuthService.profileGK(user_id, data.token.id).then(function (data) {
                         console.log(data);
                         $window.localStorage.user = JSON.stringify(data.info[0]);
@@ -18,10 +21,31 @@ angular.module('tNovaApp')
                     }, function (error) {
                         console.log(error);
                         $scope.loginError = 'Login failed';
+                        $alert({
+                            title: "Error: ",
+                            content: error,
+                            placement: 'top',
+                            type: 'danger',
+                            keyboard: true,
+                            show: true,
+                            container: '#alerts-container',
+                            duration: 5
+                        });
                     });
                 },
                 function (error) {
                     $rootScope.loginError = 'Error with the Authentication module.';
+                    $scope.loginError = 'Login failed';
+                    $alert({
+                        title: "Error: ",
+                        content: error,
+                        placement: 'top',
+                        type: 'danger',
+                        keyboard: true,
+                        show: true,
+                        container: '#alerts-container',
+                        duration: 5
+                    });
                     //$rootScope.loginError = error;
                 }
             );
