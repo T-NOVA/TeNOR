@@ -1,8 +1,21 @@
+## 0.5.0
+- UI changed Grunt to Ruby Sinatra App.
+- Changed Sinatra Server, Thin to Puma.
+- Updated Installation scripts and README. Node and NPM removed.
+- Updated Docker in order to use Invoker.
+- Removed EventMachine due problems with Puma server, using ruby threads.
+- NS manager and NS provisioning support a predefined PoP id inserted.
+- Included Netfloc Models in Hot Generator
+- Defined Scale_out lifecycle_event template. Updated scaling accordingly.
+- Updated scale_examples with two VDUs, the controller VDU must not scale!
+- NS manager uses Gatekeeper ids accordingly to the recent update in Gatekeeper.
+- Updating UI according with the new version of Gatekeeper that has fixed the IDs removal problem.
+- Updating UI included more options when a service is instantiated. The PoP id can be choosed. Service Mapping, NAP, and customer id also included.
+- Included Bower_components.
+
 ## 0.4.2
 - Handle Errno::EHOSTUNREACH for mAPI when not available.
-- VNF Provisioning with infinite timeout.
 - Re-login in Gatekeeper when the list of PoPs is requested. Avoid token invalid.
-
 
 ## 0.4.1
 - Reading DNS information from PoP Info.
