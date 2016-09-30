@@ -1,0 +1,47 @@
+{
+  "vnffgd": {
+    "vnffgs": [
+      {
+        "vnffg_id": "vnffg0",
+        "number_of_endpoints": 4,
+        "number_of_virtual_links": 2,
+        "dependent_virtual_links": [
+          "vld1",
+          "vld2"
+        ],
+        "network_forwarding_path": [
+          {
+            "nfp_id": "nfp0",
+            "graph": [
+              "vld1",
+              "vld2"
+            ],
+            "connection_points": [
+              "VNF#2375:ext_MNG_ITL",
+              "VNF#2376:ext_MNG_IN",
+              "VNF#2376:ext_MNG_OUT",
+              "VNF#2377:ext_MNG_IN"
+            ],
+            "constituent_vnfs": [
+              {
+                "vnf_ref_id": "2375",
+                "vnf_flavor_key_ref": "gold"
+              },
+              {
+                "vnf_ref_id": "2376",
+                "vnf_flavor_key_ref": "gold"
+              },
+              {
+                "vnf_ref_id": "2377",
+                "vnf_flavor_key_ref": "gold"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "odl_username": "username",
+  "odl_password": "password",
+  "netfloc_ip_port": "netfloc_ip_port"
+}

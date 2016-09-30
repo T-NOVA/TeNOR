@@ -5,10 +5,7 @@ declare mongo_ip
 declare gatekeeper
 declare logstash_address
 declare cassandra_address
-
-pause(){
-  read -p "Press [Enter] key to continue..." fackEnterKey
-}
+CURRENT_PROGRESS=0
 
 show_menus() {
 	clear
@@ -34,14 +31,52 @@ show_menus() {
 	echo "2. Reconfigure configuration files"
 	echo "3. Register microservices"
 	echo "4. Add new PoP"
-	echo "5. Inserting sample VNF and NS"
-	echo "6. Exit"
+	echo "5. Remove PoP"
+	echo "6. Inserting sample VNF and NS"
+	echo "7. Exit"
+}
+function delay()
+{
+    sleep 0.2;
+}
+function progress()
+{
+    PARAM_PROGRESS=$1;
+    PARAM_STATUS=$2;
+
+    if [ $CURRENT_PROGRESS -le 0 -a $PARAM_PROGRESS -ge 0 ]  ; then echo -ne "[..........................] (0%)  $PARAM_PHASE \r"  ; delay; fi;
+    if [ $CURRENT_PROGRESS -le 5 -a $PARAM_PROGRESS -ge 5 ]  ; then echo -ne "[#.........................] (5%)  $PARAM_PHASE \r"  ; delay; fi;
+    if [ $CURRENT_PROGRESS -le 10 -a $PARAM_PROGRESS -ge 10 ]; then echo -ne "[##........................] (10%) $PARAM_PHASE \r"  ; delay; fi;
+    if [ $CURRENT_PROGRESS -le 15 -a $PARAM_PROGRESS -ge 15 ]; then echo -ne "[###.......................] (15%) $PARAM_PHASE \r"  ; delay; fi;
+    if [ $CURRENT_PROGRESS -le 20 -a $PARAM_PROGRESS -ge 20 ]; then echo -ne "[####......................] (20%) $PARAM_PHASE \r"  ; delay; fi;
+    if [ $CURRENT_PROGRESS -le 25 -a $PARAM_PROGRESS -ge 25 ]; then echo -ne "[#####.....................] (25%) $PARAM_PHASE \r"  ; delay; fi;
+    if [ $CURRENT_PROGRESS -le 30 -a $PARAM_PROGRESS -ge 30 ]; then echo -ne "[######....................] (30%) $PARAM_PHASE \r"  ; delay; fi;
+    if [ $CURRENT_PROGRESS -le 35 -a $PARAM_PROGRESS -ge 35 ]; then echo -ne "[#######...................] (35%) $PARAM_PHASE \r"  ; delay; fi;
+    if [ $CURRENT_PROGRESS -le 40 -a $PARAM_PROGRESS -ge 40 ]; then echo -ne "[########..................] (40%) $PARAM_PHASE \r"  ; delay; fi;
+    if [ $CURRENT_PROGRESS -le 45 -a $PARAM_PROGRESS -ge 45 ]; then echo -ne "[#########.................] (45%) $PARAM_PHASE \r"  ; delay; fi;
+    if [ $CURRENT_PROGRESS -le 50 -a $PARAM_PROGRESS -ge 50 ]; then echo -ne "[##########................] (50%) $PARAM_PHASE \r"  ; delay; fi;
+    if [ $CURRENT_PROGRESS -le 55 -a $PARAM_PROGRESS -ge 55 ]; then echo -ne "[###########...............] (55%) $PARAM_PHASE \r"  ; delay; fi;
+    if [ $CURRENT_PROGRESS -le 60 -a $PARAM_PROGRESS -ge 60 ]; then echo -ne "[############..............] (60%) $PARAM_PHASE \r"  ; delay; fi;
+    if [ $CURRENT_PROGRESS -le 65 -a $PARAM_PROGRESS -ge 65 ]; then echo -ne "[#############.............] (65%) $PARAM_PHASE \r"  ; delay; fi;
+    if [ $CURRENT_PROGRESS -le 70 -a $PARAM_PROGRESS -ge 70 ]; then echo -ne "[###############...........] (70%) $PARAM_PHASE \r"  ; delay; fi;
+    if [ $CURRENT_PROGRESS -le 75 -a $PARAM_PROGRESS -ge 75 ]; then echo -ne "[#################.........] (75%) $PARAM_PHASE \r"  ; delay; fi;
+    if [ $CURRENT_PROGRESS -le 80 -a $PARAM_PROGRESS -ge 80 ]; then echo -ne "[####################......] (80%) $PARAM_PHASE \r"  ; delay; fi;
+    if [ $CURRENT_PROGRESS -le 85 -a $PARAM_PROGRESS -ge 85 ]; then echo -ne "[#######################...] (90%) $PARAM_PHASE \r"  ; delay; fi;
+    if [ $CURRENT_PROGRESS -le 90 -a $PARAM_PROGRESS -ge 90 ]; then echo -ne "[##########################] (100%) $PARAM_PHASE \r" ; delay; fi;
+    if [ $CURRENT_PROGRESS -le 100 -a $PARAM_PROGRESS -ge 100 ];then echo -ne 'Done!                                            \n' ; delay; fi;
+
+    CURRENT_PROGRESS=$PARAM_PROGRESS;
+
+}
+
+pause(){
+  read -p "Press [Enter] key to continue..." fackEnterKey
 }
 
 installTenor(){
 	echo "Installing TeNOR..."
 
-	echo "Checking the Ruby version"
+	echo "Checking the Ruby version: " $RUBY_VERSION
 	ruby_version=`ruby -e "print(RUBY_VERSION < '2.2.0' ? '1' : '0' )"`
 	if [[ ! `which ruby` ]]; then
         echo "Ruby is not installed, please install a version higer than 2.2.0."
@@ -62,35 +97,34 @@ installTenor(){
         return
     fi
 
-    printf "\n\nStarting TeNOR installation script\n\n"
-
-    printf "\nBundle install of each NS/VNF Module\n"
+    printf "\n\nStarting TeNOR installation... Please wait, this can take some time.\n\n"
 
     declare -a tenor_ns_url=("ns_manager" "ns_provisioner" "nsd_validator" "ns_monitoring" "ns_catalogue" "sla_enforcement" )
     declare -a tenor_vnf_url=("vnf_manager" "vnf_provisioner" "vnfd_validator" "vnf_monitoring" "vnf_catalogue" )
 
     bundle install --quiet
 
-    for folder in $(find . -type d \( -name "ns*" -o -name "vnf*" -o -name "hot-generator" \) ); do
-        printf "$folder\n"
-        cd $folder
+    max=14
+    count=0
+    progress 0
+    array=(*/)
+    for folder in "${array[@]}"; do
+        #printf "$folder\n"
 
-        if [ "$folder" = "./ns-manager" ]; then
-            cd default/monitoring
+        if [[ "$folder" =~ ^ns-* ]] || [[ "$folder" =~ ^vnf-* ]] || [[ "$folder" =~ ^hot-* ]] || [[ "$folder" = "ui/" ]]; then
+            cd $folder
+
+            if [ "$folder" = "ns-manager/" ]; then
+                cd default/monitoring
+                bundle install --quiet
+                cd ../../
+            fi
             bundle install --quiet
-            cd ../../
+            cd ../
+            count=$((count+1))
+            progress  $(( 100 * $count / $max )) ""
         fi
-        bundle install --quiet
-        cd ../
     done
-
-    cd ui/
-    #sudo npm install
-    bower install
-    cd api
-    #sudo npm install
-    cd ../
-    cd ../
 
     configureFiles
 
@@ -130,7 +164,7 @@ configureIps(){
     logstash_port=${logstash_address##*:}
 }
 configureFiles(){
-    printf "\nConfigure NS/VNF modules\n"
+    printf "\nConfiguring NS/VNF modules\n\n"
 
     configureIps
 
@@ -146,37 +180,39 @@ configureFiles(){
         fi
 
         if [ ! -f config/config.yml ]; then
-            printf "Copy Config\n"
             cp config/config.yml.sample config/config.yml
-            sed -i -e 's/\(logstash_host:\).*/\1 '$logstash_host'/' config/config.yml
-            sed -i -e 's/\(logstash_port:\).*/\1 '$logstash_port'/' config/config.yml
-            sed -i -e 's/\(gatekeeper:\).*/\1 '$gatekeeper'/' config/config.yml
-            for i in "${tenor_ns_url[@]}"
-            do
-                sed  -i -e  's/\('$i':\).*\:\(.*\)/\1 '$tenor_ip':\2/' config/config.yml
-            done
-            for i in "${tenor_vnf_url[@]}"
-            do
-                sed  -i -e  's/\('$i':\).*\:\(.*\)/\1 '$tenor_ip':\2/' config/config.yml
-            done
         fi
         if [ -f config/mongoid.yml.sample ] &&  [ ! -f config/mongoid.yml ]; then
-            printf "Copy Mongo Config\n"
             cp config/mongoid.yml.sample config/mongoid.yml
-            sed -i -e 's/127.0.0.1:27017/'$mongo_ip'/' config/mongoid.yml
         fi
         if [ -f config/database.yml.sample ] &&  [ ! -f config/database.yml ]; then
-            printf "Copy Cassandra Config\n"
             cp config/database.yml.sample config/database.yml
+        fi
+
+        sed -i -e 's/\(logstash_host:\).*/\1 '$logstash_host'/' config/config.yml
+        sed -i -e 's/\(logstash_port:\).*/\1 '$logstash_port'/' config/config.yml
+        sed -i -e 's/\(gatekeeper:\).*/\1 '$gatekeeper'/' config/config.yml
+        for i in "${tenor_ns_url[@]}"; do
+            sed  -i -e  's/\('$i':\).*\:\(.*\)/\1 '$tenor_ip':\2/' config/config.yml
+        done
+        for i in "${tenor_vnf_url[@]}"; do
+            sed  -i -e  's/\('$i':\).*\:\(.*\)/\1 '$tenor_ip':\2/' config/config.yml
+        done
+
+        if [ -f config/mongoid.yml ]; then
+            sed -i -e 's/127.0.0.1:27017/'$mongo_ip'/' config/mongoid.yml
+        fi
+        if [ -f config/database.yml ]; then
             sed -i -e 's/127.0.0.1:27017/'$cassandra_address'/' config/database.yml
         fi
+
         cd ../
     done
 
-    printf "\n\nConfiguring UI...\n\n"
+    printf "\nConfiguring UI...\n\n"
     cp ui/app/config.js.sample ui/app/config.js
 
-    printf "\n\nConfiguration done.\n\n"
+    printf "\nConfiguration done.\n\n"
     pause
 }
 
@@ -209,7 +245,7 @@ addNewPop(){
     if [ -z "$keystoneUser" ]; then keystoneUser=$KEYSTONEUSER; fi
 
     echo "Type the Openstack admin password, followed by [ENTER]:"
-    read keystonePass
+    read -s keystonePass
     if [ -z "$keystonePass" ]; then keystonePass=$KEYSTONEPASS; fi
 
     echo "Type the Openstack admin tenant name, followed by [ENTER]:"
@@ -224,6 +260,37 @@ addNewPop(){
     curl -X POST http://$gatekeeper_host/admin/dc/ \
     -H 'X-Auth-Token: '$tokenId'' \
     -d '{"msg": "PoP Testbed", "dcname":"'$openstack_name'", "adminid":"'$keystoneUser'","password":"'$keystonePass'", "extrainfo":"pop-ip='$openstack_ip' tenant-name='$admin_tenant_name' keystone-endpoint=http://'$openstack_ip':35357/v2.0 orch-endpoint=http://'$openstack_ip':8004/v1 compute-endpoint=http://'$openstack_ip':8774/v2.1 neutron-endpoint=http://'$openstack_ip':9696/v2.0 dns='$openstack_dns'"}'
+
+    pause
+}
+
+conn_openstack() {
+    tokenId=$(curl -XPOST $1":35357/v2.0" -d "" | python -c 'import json,sys;obj=json.load(sys.stdin);print obj["token"]["id"]')
+
+}
+
+removePop() {
+    echo "Removing PoP..."
+    gatekeeper_host=10.10.1.63:8000
+    GATEKEEPER_PASS=Eq7K8h9gpg
+    GATEKEEPER_USER_ID=1
+
+    tokenId=$(curl -XPOST http://$gatekeeper_host/token/ -H "X-Auth-Password:$GATEKEEPER_PASS" -H "X-Auth-Uid:$GATEKEEPER_USER_ID" | python -c 'import json,sys;obj=json.load(sys.stdin);print obj["token"]["id"]')
+    options=$(curl -XGET http://$gatekeeper_host/admin/dc/ -H 'X-Auth-Token: '$tokenId'' | python -c 'import json,sys;obj=json.load(sys.stdin);print obj["dclist"]')
+
+    echo "Type the PoP Id, followed by [ENTER]:"
+    read pop_id
+
+    popInfo=$(curl -XGET http://$gatekeeper_host/admin/dc/$pop_id -H 'X-Auth-Token: '$tokenId'' | python -c 'import json,sys;obj=json.load(sys.stdin);print obj["info"]')
+    echo "PoP to remove: "
+
+    echo "Are you sure you want to remove this PoP (y/n)?, followed by [ENTER]:"
+    read remove
+
+    if [ "$remove" = "y" ]; then
+      echo "Removing PoP..."
+      curl -XDELETE http://$gatekeeper_host/admin/dc/$pop_id -H 'X-Auth-Token: '$tokenId''
+    fi
 
     pause
 }
@@ -252,7 +319,7 @@ read_options(){
         choice=$1
     else
         local choice
-	    read -p "Enter choice [ 1 - 5 ] " choice
+	    read -p "Enter choice [ 1 - 7 ] " choice
     fi
 
 	case $choice in
@@ -260,8 +327,9 @@ read_options(){
 		2) configureFiles ;;
 		3) registerMicroservice ;;
 		4) addNewPop ;;
-		5) insertSamples ;;
-		6) exit 0;;
+		5) removePop ;;
+		6) insertSamples ;;
+		7) exit 0;;
 		*) echo -e "${RED}Error...${STD}" && sleep 2
 	esac
 }
@@ -283,4 +351,5 @@ do
 	read_options $choice
 	exit 0
 done
+
 

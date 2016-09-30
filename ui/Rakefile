@@ -1,0 +1,7 @@
+require "./app"
+
+desc 'Start the service'
+task :start do
+	conf = File.expand_path('config/puma.rb', File.dirname(__FILE__))
+	exec("puma -p 9000")
+end

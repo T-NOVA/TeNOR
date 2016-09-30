@@ -34,8 +34,8 @@ class NsdToHot
   # @param [String] dns_server the DNS Server to add to the networks
   # @param [String] flavour the T-NOVA flavour
   # @return [HOT] returns an HOT object
-  def build(nsd, public_net_id, dns_server, flavour)
-    router_name = create_router(public_net_id)
+  def build(nsd, public_net_id, dns_server, flavour, nsr_id)
+    router_name = create_router(public_net_id, nsr_id)
     
     #virtual_links = nsd['vld']['virtual_links']
     virtual_links = nsd['vld']['virtual_links'].select{|vlink| vlink['sla_ref_id'] == flavour}
@@ -90,9 +90,9 @@ class NsdToHot
   #
   # @param [String] public_net_id the ID of the public network
   # @return [String] the name of the created resource
-  def create_router(public_net_id)
+  def create_router(public_net_id, nsr_id)
     name = get_resource_name
-    @hot.resources_list << Router.new(name, public_net_id)
+    @hot.resources_list << Router.new(name, public_net_id, nsr_id)
     name
   end
 
@@ -125,7 +125,7 @@ class NsdToHot
   # @return [String] the name of the created resource
   def create_router_interface(router_name, subnet_name)
     name = get_resource_name
-    @hot.resources_list << RouterInterface.new(name, {get_resource: router_name}, {get_resource: subnet_name})
+    @hot.resources_list << RouterInterface.new(name, {get_resource: router_name}, {get_resource: subnet_name}, nil)
     name
   end
 

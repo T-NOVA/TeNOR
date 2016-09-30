@@ -40,7 +40,7 @@ before do
 	env['rack.logger'] = logger
 end
 
-class OrchestratorMonitoring < Sinatra::Application
+class TeNORMonitoring < Sinatra::Application
 	register Sinatra::ConfigFile
 	# Load configurations
 	config_file 'config/config.yml'

@@ -1,7 +1,13 @@
 'use strict';
 
 angular.module('tNovaApp')
-    .controller('nsController', function ($scope, $stateParams, $filter, tenorService, $interval, $modal, $location) {
+    .controller('nsController', function ($scope, $stateParams, $filter, tenorService, $interval, $modal, $location, AuthService, $window, $alert) {
+
+        $scope.registeredDcList = [];
+        $scope.serviceMapping = [{
+            id: 0,
+            name: "UniMi"
+        }];
 
         $scope.getServiceList = function () {
             tenorService.get('network-services?limit=1000').then(function (data) {
@@ -51,6 +57,7 @@ angular.module('tNovaApp')
         });
 
         $scope.instantiateDialog = function (nsd) {
+            $scope.getPoPs();
             $scope.nsd = nsd;
             $scope.object = {};
             $scope.object.ns_id = nsd.id;
@@ -66,12 +73,65 @@ angular.module('tNovaApp')
 
         $scope.instantiate = function (instance) {
             console.log(instance);
+            var error = undefined;
+            if (instance.flavour === undefined) {
+                error = "Flavour not selected."
+            } else {
+                if (instance.select_pop == 0) { //use service Mapping
+                    if (instance.mapping_id == null) {
+                        error = "Mapping not selected."
+                    }
+                    delete instance["pop_id"];
+                } else { //use selected PoP
+                    if (instance.pop_id == null) {
+                        error = "PoP not selected."
+                    }
+                    delete instance["mapping_id"];
+                }
+            }
+            if (error !== undefined) {
+                $alert({
+                    title: "Error: ",
+                    content: error,
+                    placement: 'top',
+                    type: 'danger',
+                    keyboard: true,
+                    show: true,
+                    container: '#alerts-container_modal',
+                    duration: 5
+                });
+                return;
+            }
+            delete instance["select_pop"];
+            console.log(instance);
             tenorService.post('ns-instances', instance).then(function (data) {
                 console.log(data);
-                //window.location = "#!/nsInstances/";
+                $alert({
+                    title: "Creating new instance... ",
+                    content: "",
+                    placement: 'top',
+                    type: 'success',
+                    keyboard: true,
+                    show: true,
+                    container: '#alerts-container',
+                    duration: 5
+                });
             });
+
             this.$hide();
         };
+
+        $scope.getPoPs = function () {
+            AuthService.get($window.localStorage.token, "admin/dc/").then(function (d) {
+                $scope.registeredDcList = [];
+                _.map(d.dclist, function (row, index) {
+                    $scope.registeredDcList.push({
+                        id: d.dcid[index],
+                        name: row
+                    })
+                });
+            });
+        }
 
         $scope.terminate = function (id) {
             console.log("Terminate Network Service");
@@ -92,7 +152,7 @@ angular.module('tNovaApp')
         $scope.data = [];
         $scope.updateInstanceList = function () {
             tenorService.get("ns-instances").then(function (data) {
-                data = data.reverse();
+                //                data = data.reverse();
                 $scope.dataCollection = _.sortBy(data, function (o) {
                     var dt = new Date(o.created_at);
                     return -dt;

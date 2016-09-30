@@ -6,22 +6,23 @@
                 <h4 class="modal-title" ng-bind="title"></h4>
             </div>
             <div class="modal-body">
+                <div id="alerts-container_modal"></div>
                 <form name="editForm">
                     <div class="box-body">
                         <div class="form-group">
-                            <label for="tenantName">NS id</label>
-                            <input ng-model="object.ns_id" type="text" class="form-control" id="tenantName" readonly>
+                            <label for="ns_id">NS id</label>
+                            <input ng-model="object.ns_id" type="text" class="form-control" id="ns_id" readonly>
                         </div>
                     </div>
                     <div class="box-body">
                         <div class="form-group">
-                            <label for="tenantName">Callback url</label>
-                            <input ng-model="object.callbackUrl" type="text" class="form-control" id="tenantName" value="https://httpbin.org/post">
+                            <label for="callbackUrl">Callback url</label>
+                            <input ng-model="object.callbackUrl" type="text" class="form-control" id="callbackUrl" value="https://httpbin.org/post">
                         </div>
                     </div>
                     <div class="box-body">
                         <div class="form-group">
-                            <label for="tenantName">Select Flavour</label>
+                            <label for="flavour">Select Flavour</label>
                             <button type="button" class="btn btn-default" ng-model="object.flavour" data-html="1" bs-options="sla.sla_key as sla.sla_key for sla in nsd.sla" bs-select>
                                 Action <span class="caret"></span>
                             </button>
@@ -30,15 +31,33 @@
                     <div class="box-body">
                         <div class="form-group">
                             <label for="tenantName">Select PoP</label>
-                            <button type="button" class="btn btn-default" ng-model="object.pop_id" data-html="1" bs-options="sla.sla_key as sla.sla_key for sla in nsd.sla" bs-select>
+                            <label>
+                                <input type="radio" class="radio" value="1" ng-model="object.select_pop" />
+                            </label>
+                            <button ng-if="object.select_pop == 1" type="button" class="btn btn-default" ng-model="object.pop_id" data-html="1" bs-options="dc.id as dc.name for dc in registeredDcList" bs-select bs-disabled>
                                 Action <span class="caret"></span>
                             </button>
                         </div>
                         <div class="form-group">
                             <label for="tenantName">Use service mapping</label>
-                            <button type="button" class="btn btn-default" ng-model="object.pop_id" data-html="1" bs-options="sla.sla_key as sla.sla_key for sla in nsd.sla" bs-select>
+                            <label>
+                                <input type="radio" class="radio" value="0" ng-model="object.select_pop" />
+                            </label>
+                            <button ng-show="object.select_pop == '0'" type="button" class="btn btn-default" ng-model="object.mapping_id" data-html="1" bs-options="mapping.id as mapping.name for mapping in serviceMapping" bs-select disable>
                                 Action <span class="caret"></span>
                             </button>
+                        </div>
+                    </div>
+                    <div class="box-body">
+                        <div class="form-group">
+                            <label for="nap_id">Nap ID</label>
+                            <input ng-model="object.nap_id" type="text" class="form-control" id="tenantName" value="0">
+                        </div>
+                    </div>
+                    <div class="box-body">
+                        <div class="form-group">
+                            <label for="customer_id">Customer id</label>
+                            <input ng-model="object.customer_id" type="text" class="form-control" id="customer_id" value="0">
                         </div>
                     </div>
                     <div class="box-body">

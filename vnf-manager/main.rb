@@ -32,10 +32,12 @@ class VNFManager < Sinatra::Application
 
   require_relative 'routes/init'
   require_relative 'helpers/init'
+  require_relative 'models/serviceModel'
 
   register Sinatra::ConfigFile
 # Load configurations
   config_file 'config/config.yml'
+  Mongoid.load!('config/mongoid.yml')
 
   configure do
     # Configure logging
@@ -44,7 +46,7 @@ class VNFManager < Sinatra::Application
         outputs: [
             {type: :stdout, formatter: ::Logger::Formatter},
             {type: :file, path: "log/#{settings.environment}.log", sync: true},
-            {host: settings.logstash_host, port: settings.logstash_port}
+            {host: settings.logstash_host, port: settings.logstash_port, sync: false}
         ])
     LogStashLogger.configure do |config|
       config.customize_event do |event|

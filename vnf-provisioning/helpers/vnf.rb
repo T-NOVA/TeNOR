@@ -251,26 +251,26 @@ module ProvisioningHelper
         logger.error "mAPI -> Connection Refused."
         message = {status: "mAPI_unreachable", vnfd_id: vnfr.vnfd_reference, vnfr_id: vnfr.id}
         logger.info "mAPI is not reachable"
-#        nsmanager_callback(stack_info['ns_manager_callback'], message)
-#        halt 500, 'mAPI unreachable'
+      rescue Errno::EHOSTUNREACH
+        logger.error "No route to mAPI host"
       rescue => e
-        if e.response.nil?
-          logger.error e
-        else
-          logger.error e.response
-        end
+        logger.error e
         message = {status: "mAPI_error", vnfd_id: vnfr.vnfd_reference, vnfr_id: vnfr.id}
         logger.error message
         logger.info "mAPI is not reachable"
       end
+      logger.info "Recevied response??"
+    logger.info response
   end
 
   def delete_stack_with_wait(stack_url, auth_token)
     status = "DELETING"
     count = 0
+    count2 = 0
     code = deleteStack(stack_url, auth_token)
     if code == 404
       status = "DELETE_COMPLETE"
+      return 200
     end
     while (status != "DELETE_COMPLETE" && status != "DELETE_FAILED")
       sleep(5)
@@ -296,11 +296,17 @@ module ProvisioningHelper
         deleteStack(stack_url, auth_token)
         status = "DELETING"
       end
-      count = count +1
+      break if status == "DELETE_COMPLETE"
+      if status == "DELETE_IN_PROGRESS"
+        #do nothing
+      else
+        count = count +1
+      end
 
-      if count > 10
+      if count > 20
         logger.error "Stack can not be removed"
-        raise 400, "Stack can not be removed"
+        return 400, "Stack can not be removed"
+        #raise 400, "Stack can not be removed"
       end
       break if count > 20 #to remove
     end

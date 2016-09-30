@@ -1,5 +1,7 @@
 #!/bin/bash
 
+current_dir=$(pwd)
+
 function program_is_installed {
   # set to 1 initially
   local return_=1
@@ -40,7 +42,7 @@ function echo_if {
 
 function install_rabbitmq {
     echo "Installing RabbitMq..."
-    wget https://www.rabbitmq.com/releases/rabbitmq-server/v3.6.5/rabbitmq-server-generic-unix-3.6.5.tar.xz
+#    wget https://www.rabbitmq.com/releases/rabbitmq-server/v3.6.5/rabbitmq-server-generic-unix-3.6.5.tar.xz
 
     echo 'deb http://www.rabbitmq.com/debian/ testing main' | sudo tee /etc/apt/sources.list.d/rabbitmq.list
     wget -O- https://www.rabbitmq.com/rabbitmq-release-signing-key.asc | sudo apt-key add -
@@ -52,11 +54,67 @@ function install_rabbitmq {
 }
 function install_mongodb {
     echo "Installing mongodb..."
-    ./install_mongodb.sh
+    dir="$(basename $current_dir)"
+    if [ "$dir" = "dependencies" ]; then
+        ./install_mongodb.sh
+    elif [ "$dir" = "TeNOR" ]; then
+        ./dependencies/install_mongodb.sh
+    else
+        echo "Script executed outside TeNOR folder. Install the UI manually or rerun the script."
+        return
+    fi
 }
 function install_gatekeeper {
     echo "Installing gatekeeper..."
-    ./install_gatekeeper.sh
+    dir=$pwd
+    cd $HOME
+
+    echo "Downloading and installing go runtime from google servers, please wait ..."
+    wget https://storage.googleapis.com/golang/go1.4.2.linux-amd64.tar.gz
+    sudo tar -C /usr/local -xzf go1.4.2.linux-amd64.tar.gz
+
+    sudo -k
+
+    echo "configuring your environment for go projects ..."
+
+    export GOPATH=$HOME/go
+    export PATH=$PATH:/usr/local/go/bin:$GOPATH/bin
+
+    cd $HOME
+
+    echo "Downloading auth-utils code now, please wait ..."
+    mkdir $HOME/go
+    mkdir -p $HOME/go/src/github.com/piyush82
+    cd $HOME/go/src/github.com/piyush82
+    git clone https://github.com/piyush82/auth-utils.git
+    echo "done."
+
+    cd auth-utils
+    echo "getting all code dependencies for auth-utils now, be patient ~ 1-2 minutes"
+    go get
+    echo "done."
+
+    echo "compiling and installing the package"
+    go install
+    echo "done."
+
+    echo "starting the auth-service next, you can start using it at port :8000"
+    echo "use Ctrl+c to stop it. The executable is located at: $GOPATH/bin/auth-utils"
+
+    cd $HOME
+    cp go/src/github.com/piyush82/auth-utils/gatekeeper.cfg .
+
+    gatekeeper_script=$HOME'/go/bin/auth-utils'
+
+    echo -e '#!/bin/bash \ncd '$HOME' \ngo/bin/auth-utils &' > ~/gatekeeperd
+    sudo mv ~/gatekeeperd /etc/init.d/gatekeeperd
+    sudo chmod +x /etc/init.d/gatekeeperd
+    sudo chown root:root /etc/init.d/gatekeeperd
+    sudo update-rc.d gatekeeperd defaults
+    sudo update-rc.d gatekeeperd enable
+    sudo service gatekeeperd start
+
+    cd $dir
 }
 function install_ruby {
     echo "Installing RVM..."
@@ -86,20 +144,32 @@ function install_npm {
 
     echo -e "Moving to UI folder...."
 
-    cd ../ui
+    pwd
+
+    dir="$(basename $current_dir)"
+    if [ "$dir" = "dependencies" ]; then
+        cd ../ui
+    elif [ "$dir" = "TeNOR" ]; then
+        cd ui
+    else
+        echo "Script executed outside TeNOR folder. Install the UI manually or rerun the script."
+        return
+    fi
+
     echo "Installing Grunt and Bower locally in UI folder."
     sudo npm install
 
     bower install
 
     echo "Installing Compass..."
-    gem install compass
+    gem install foreman compass
     echo "Installation of Compass done."
 
     echo -e "Moving to dependencies folder...."
     cd ../dependencies
     echo "NPM dependencies done."
 }
+
 
 echo -e -n "\033[1;36mChecking if mongodb is installed"
 mongod --version > /dev/null 2>&1
@@ -136,10 +206,17 @@ echo -e -n "\033[1;36mChecking if ruby is installed"
 ruby --version > /dev/null 2>&1
 RUBY_IS_INSTALLED=$?
 if [ $RUBY_IS_INSTALLED -eq 0 ]; then
-    ruby_version=`ruby -e "print(RUBY_VERSION <= '2.2.5' ? '1' : '0' )"`
+    ruby_version=`ruby -e "print(RUBY_VERSION < '2.2.5' ? '1' : '0' )"`
     if [ $ruby_version -eq 1 ]; then
-        echo "Ruby version: " $RUBY_VERSION
+        echo -e "\nRuby version: " $RUBY_VERSION
         echo "Please, install a ruby version higher or equal to 2.2.5"
+        echo -e -n "\033[1;31mRuby is not installed."
+        echo -e "\nDo you want to install ruby? (y/n)"
+        read install
+        if [ "$install" = "y" ]; then
+            install_ruby
+            . ~/.rvm/scripts/rvm
+        fi
     else
         echo ">>> Ruby is already installed"
     fi
@@ -150,20 +227,6 @@ else
     if [ "$install" = "y" ]; then
         install_ruby
         . ~/.rvm/scripts/rvm
-    fi
-fi
-
-echo -e -n "\033[1;36mChecking if nodejs is installed"
-npm --version > /dev/null 2>&1
-NPM_IS_INSTALLED=$?
-if [ $NPM_IS_INSTALLED -eq 0 ]; then
-    echo ">>> NPM is already installed"
-else
-    echo -e -n "\033[1;31mNPM is not installed."
-    echo -e "\nDo you want to install NodeJS/NPM? (y/n)"
-    read install
-    if [ "$install" = "y" ]; then
-        install_npm
     fi
 fi
 
@@ -185,6 +248,5 @@ echo -e -n "\033[1;36mChecking if dependencies are installed\n"
 echo "mongod          $(echo_if $(program_is_installed mongo))"
 echo "ruby            $(echo_if $(program_is_installed ruby))"
 echo "bundler         $(echo_if $(program_is_installed bundler))"
-echo "node            $(echo_if $(program_is_installed node))"
-echo "npm             $(echo_if $(program_is_installed npm))"
+echo "gatekeeper      $(echo_if $(program_is_installed $gatekeeper_script))"
 echo "rabbitmq             $(echo_if $(program_is_installed rabbitmq-server))"

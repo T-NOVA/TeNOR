@@ -1,5 +1,6 @@
 require 'sinatra/base'
 require 'json'
+require 'rest-client'
 
 module Sinatra
   module Gk_Auth
@@ -8,7 +9,7 @@ module Sinatra
       def initialize
         puts "Initializing gem GK..."
 
-        service_info = {:name => settings.servicename, :host => "localhost", :port => settings.port, :path => "" }
+        service_info = {:name => settings.servicename, :host => settings.address, :port => settings.port, :path => "" }
         publish_service(service_info)
 
         return
@@ -19,9 +20,9 @@ module Sinatra
         begin
           RestClient.post settings.manager + '/configs/services/publish/' + settings.servicename, service_info.to_json, :accept => :json, :content_type => :json
         rescue => e
-          puts "Error registring or receiving dependencies from NS Manager"
+          puts "Error registring or receiving dependencies to the Manager"
           puts e
-          sleep(10)
+          sleep(10)#wait 10 seconds
           publish_service(service_info)
         end
       end
@@ -72,10 +73,6 @@ module Sinatra
         end
       end
 
-      def updateConfigValues(key, value)
-          settings[key] = value
-      end
-
     end
 
     def self.registered(app)
@@ -117,7 +114,6 @@ module Sinatra
         services, errors = parse_json(request.body.read)
         return 400, errors.to_json if errors
 
-        puts "Services publishing..."
         if settings.dependencies.nil?
           return 200
         end

@@ -47,3 +47,7 @@ require_relative 'nova/server_group'
 require_relative 'generic_resource'
 
 require_relative 'scale_to_hot'
+
+#netfloc
+require_relative 'netfloc_to_hot'
+require_relative 'netfloc/service_chain'

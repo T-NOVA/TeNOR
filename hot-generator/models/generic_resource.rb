@@ -22,9 +22,10 @@ class GenericResource < Resource
   # @param [String] resource_name the resource name
   # @param [String] type the type of the resource
   # @param [Integer] properties the properties of the resource
-  def initialize(resource_name, type, properties)
+  def initialize(resource_name, type, properties, router_interfaces=[])
     type = type
+    depends_on = router_interfaces
     properties = properties
-    super(resource_name, type, properties)
+    super(resource_name, type, properties, depends_on)
   end
 end

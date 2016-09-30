@@ -4,69 +4,98 @@ TeNOR is the NFV Orchestrator platform developed by the [T-NOVA](http://www.t-no
 
 ## Prerequisites
 - Gatekeeper (https://github.com/piyush82/auth-utils). Used for register TeNOR modules and save PoP information.
-- Infrastructure Repository (https://github.com/T-NOVA/infrastructure-repository). Used by the UI and the Service Mapping algorithm.
 - Service Mapping (https://github.com/T-NOVA/TeNOR/tree/master/service-mapper). Used when more than 1 PoP is available.
+- Infrastructure Repository (https://github.com/T-NOVA/infrastructure-repository). Used by the UI and the Service Mapping algorithm.
 - Middleware API (https://github.com/T-NOVA/mAPI) (optional but required for start/stop the Lifecycle events inside the VNFS)
 - VIM Monitoring (https://github.com/T-NOVA/vim-monitoring) (optional)
+- Netfloc (https://github.com/T-NOVA/netfloc) (optional)
+- Openstack Juno version or higher
 
 ## Requirements
-- Ruby >= 2.2.5
-- Bundler
-- MongoDB
-- Apache Cassandra (optional, used for monitoring)
+- Ruby >= 2.2.5 (installation provided in dependencies/install_dependencies.sh)
+- Bundler (installation provided in dependencies/install_dependencies.sh)
+- MongoDB (installation provided in dependencies/install_dependencies.sh)
+- Apache Cassandra (optional, used for monitoring) (installation provided in dependencies/install_cassandra.sh)
 - Logstash (optional) & ElasticSearch (optional)
-- Byobu (development) (sudo apt-get install byobu) (https://help.ubuntu.com/community/Byobu)
-- RabbitMq (optional, used for monitoring)
+- Byobu (optional) 
+- RabbitMq (optional, used for monitoring) (installation provided in dependencies/install_dependencies.sh)
 - Openstack with Neutron ML2 Port Security plugin. Requires a change in /etc/nova/nova.conf with the following field: `security_group_api = nova`
 
 #Getting started
 
 ## Steps
-
-1. Install and run the requirements (Gatekeeper and MongoDB). Installation scripts are provided in the `dependencies` folder. Use the `install_dependencies.sh` script if you want to install all the dependencies.
-2. Install TeNOR (internal dependencies and configurations)
-3. Start TeNOR
-4. Register the internal modules (each microservice) and external modules (Mapping, mAPI, WICM, VIMMonitoring, Netfloc...)
-5. Register a Point of Presence (PoP) inserting the Openstack credentials into Gatekeeper
+1. Install the minimum requirements (Ruby, Gatekeeper and MongoDB). Installation of these requirements provided in the `dependencies` folder. Use the `install_dependencies.sh` script if you want to install it automatically.
+2. Install TeNOR (internal dependencies and configurations). Installation script provided in the root folder `tenor_install.sh`.
+3. Start TeNOR.
+4. Register the internal modules (each microservice) and external modules (Mapping, mAPI, WICM, VIMMonitoring, Netfloc...).
+5. Register a Point of Presence (PoP) inserting the Openstack credentials into Gatekeeper.
 
 ## Installation
-We provide an installation script that helps with the installation of the Ruby Gem dependecies, the configuration of the system and the registration of the modules and PoPs.
+We provide an installation script for Ubuntu 14.04 that helps with the installation of Ruby, Gatekeeper and MongoDB.
 
-Run the following script:
-`./tenor_install.sh`
+In order to install Ruby, the MongoDB, Gatekeeper and NodeJS execute the following script inside the dependencies folder:
+```
+./install_dependencies.sh
+```
 
-and choose a number in the menu [1-5].
+For each requirement, the script will ask if you want to install it or not. Write `y` or `n` and press the Enter Key.
 
-For TeNOR installation, insert the number 1, press the Enter key and the installation will start. The script will asks a set of questions regarding the location of the MongoDB, Gatekeeper and Logstash. Then, automatically will install the Ruby Gem dependencies and will configure TeNOR. **Make sure that you have installed a Ruby version >= 2.2 and the `bundle` command is installed.**
+Once Ruby is installed (you can be sure of that using `ruby -v` command in the terminal), you can proceed with the TeNOR installation. In the root folder run the following script:
+```
+./tenor_install.sh
+```
+
+and choose a number in the menu [1-7].
+
+For TeNOR installation, insert the number 1 and press the Enter Key. The installation will start automatically installing the Ruby Gem dependencies. After few minutes, the script will ask you a set of questions regarding the location of the MongoDB, Gatekeeper and Logstash. 
+
+**Make sure that you have installed a Ruby version >= 2.2 and the `bundle` command is installed.**
 
 Once the installation finishes, TeNOR needs to be [started](#execution)
 
 ## Docker (alternative installation)
 
-A Dockerfile is provided that generates a container with TeNOR and Gatekeeper and a mongodb installed.
+A Dockerfile is provided that generates a container with TeNOR, Gatekeeper and Mongodb installed.
 
 ## Vagrant (alternative installation)
 
-A Vagrantfile is provided with TeNOR, Gatekeeper and a mongodb installed.
+A Vagrantfile is provided with TeNOR, Gatekeeper and Mongodb installed.
 
 ## Execution
 
-TeNOR can be executed in three ways:
+TeNOR can be executed in two ways:
 
-1. Using Invoker (http://invoker.codemancers.com)
-   `invoker start invoker.ini`
-2. Using Byobu (modern Tmux). Useful for development purposes.
-   `./tenor_development.sh`
-3. Using Foreman
-   `foreman start`
+1. Using Invoker (http://invoker.codemancers.com) ([Help here](#using-invoker))
+```
+invoker start invoker.ini
+```
 
-In the case of using Invoker, the invoker command offer several functionalities in order to restart microservices or the entire TeNOR.
-In the case of using Byobu, you'll see three sessions, one for the NS manager, one for the VNF manager and one for the UI. Inside each session use use F3 and F4 keys for navigate through the windows.
+2. Using Byobu (modern Tmux). (sudo apt-get install byobu)  Useful for development purposes. ([Help here](#using-byobu))
+```
+./tenor_development.sh
+```
 
 How to test if TeNOR is installed [Test if TeNOR is installed and running](#test-if-tenor-is-installed-and-running)
 
+### Using Invoker
+
+Invoker is an utility to manage all the processes in the environment. The basic commands are the following:
+
+ - invoker start invoker.ini -> Start TeNOR.
+ - invoker reload ns-manager -> Restart the NS Manager service.
+ - invoker list -> Show the list of running microservices and the status.
+
+### Using Byobu
+
+Byobu is a modern Tmux that allows to execute multiple shells in one terminal. Typing the command `byobu` you will see a list of windows created using the provided script. More information of Byobu in (https://help.ubuntu.com/community/Byobu).
+
+Basic keys for using Byobu:
+
+ - F3 and F4 for navigate through the windows
+ - F6 exit from Byobu 
+
 ## Registering modules in TeNOR and Gatekeeper
-TeNOR has a microservice architecture and requires a registration of each microservices to the system. The NS Manager (API gateway) is the responsible to manage this registration. The interal TeNOR modules are managed automatically, but external modules like mAPI, WICM, Infrastructure repository needs to be registered.
+TeNOR has a microservice architecture and requires a registration of each microservices to the system. The NS Manager (API gateway) is the responsible to manage this registration. The internal TeNOR modules are managed automatically, but external modules like mAPI, WICM, Infrastructure repository and Netfloc needs to be registered.
 
 The registration of modules can be done with in three ways:
 
@@ -86,7 +115,7 @@ The PoP information is saved in Gatekeeper. This can be inserted in three manner
  - Using the TeNOR User Interface:
  `Configuration -> PoPs`
  - Using the TeNOR script:
-  Execute the tenor_install.sh script and choose the option` **4. Add new PoP**
+  Execute the tenor_install.sh script and choose the option **4. Add new PoP**
  - Using the CLI:
 
  First of all, define the following variables:
@@ -99,6 +128,7 @@ The PoP information is saved in Gatekeeper. This can be inserted in three manner
  admin_tenant_name=tenantName
  keystonePass=password
  keystoneUser=admin
+ openstack_dns=8.8.8.8
 ```
 
  Get the Gatekeeper token (you can copy and paste in the command prompt):
@@ -111,12 +141,12 @@ Post PoP Information (you can copy and paste in the command prompt):
 ```
  curl -X POST http://$GATEKEEPER_HOST/admin/dc/ \
    -H 'X-Auth-Token: '$tokenId'' \
-   -d '{"msg": "PoP Testbed", "dcname":"default", "adminid":"'$keystoneUser'","password":"'$keystonePass'", "extrainfo":"pop-ip='$OPENSTACK_IP' tenant-name='$admin_tenant_name' keystone-endpoint=http://'$OPENSTACK_IP':35357/v2.0 orch-endpoint=http://'$OPENSTACK_IP':8004/v1 compute-endpoint=http://'$OPENSTACK_IP':8774/v2.1 neutron-endpoint=http://'$OPENSTACK_IP':9696/v2.0"}'
+   -d '{"msg": "PoP Testbed", "dcname":"default", "adminid":"'$keystoneUser'","password":"'$keystonePass'", "extrainfo":"pop-ip='$OPENSTACK_IP' tenant-name='$admin_tenant_name' keystone-endpoint=http://'$OPENSTACK_IP':35357/v2.0 orch-endpoint=http://'$OPENSTACK_IP':8004/v1 compute-endpoint=http://'$OPENSTACK_IP':8774/v2.1 neutron-endpoint=http://'$OPENSTACK_IP':9696/v2.0 dns='$openstack_dns'"}'
 ```
 
 ## User Interface
 
-TeNOR has a User Interface that provides a global view of the all the orchestration functionalities. Allows to read the descriptors, instantiatie a services, see the monitoring data and configure some parts.
+TeNOR has a User Interface that provides a global view of the all the orchestration functionalities. Allows to read the descriptors, instantiate services, see the monitoring data and configure TeNOR.
 
 This user interface is located in the `ui` folder and contains their own README file with the installation guide.
 
@@ -130,11 +160,12 @@ Make a request to the following address (NS Manager):
 curl -XGET http://localhost:4000/
 ```
 
-If nothing is received, make sure that all the modules are running.
+If nothing is received, make sure that the NS Manager is running.
+If you receive a response, means that the NS Manager is ready for recevie requests.
 
 ## Define a VNFD and a NSD
 
-The next step is start creating descriptors. Anyway, this repository contains a dummy descriptors that can be deployed without modification. You can find it in the NSD and VNFD validator modules.
+Once TeNOR is ready to use, you should define a VNF Descriptor and a NS Descriptor. This task has some complexity and this repository contains a dummy descriptors that can be deployed without modification. You can find it in the NSD and VNFD validator modules.
 
 The dummy NSD is located in:
 ` nsd-validator/assets/samples/nsd_example.json `
@@ -142,20 +173,28 @@ The dummy NSD is located in:
 The dummy VNFD is located in:
 ` vnfd-validator/assets/samples/vnfd_example.json `
 
-The next step is add the dummy descriptors to TeNOR system using the API. This step is expained in the following subsection.
+The next step is add the dummy descriptors to TeNOR system using the API. This step is explained in the following subsection.
 
 ## Create a VNFD and NSD and instantiate it
 
-In order to test TeNOR functionallity, you can follow the next steps (you can copy and paste in the command prompt):
+In order to test TeNOR functionality, you can follow the next steps (you can copy and paste in the command prompt):
 
-1. Add the VNFD in the catalogue
-` curl -XPOST localhost:4000/vnfs -H "Content-Type: application/json" --data-binary @vnfd-validator/assets/samples/vnfd_example.json `
-2. Add the NSD in the catalogue
-` curl -XPOST localhost:4000/network-services -H "Content-Type: application/json" --data-binary @nsd-validator/assets/samples/nsd_example.json `
-3. Get the NSD from the NS Catalogue (getting the first NSD)
-` ns_id=$(curl -XGET localhost:4000/network-services | python -c 'import json,sys;obj=json.load(sys.stdin);print obj[0]["nsd"]["id"]') `
+1. Add the VNFD in the VNF catalogue
+```
+ curl -XPOST localhost:4000/vnfs -H "Content-Type: application/json" --data-binary @vnfd-validator/assets/samples/vnfd_example.json 
+```
+2. Add the NSD in the NS catalogue
+```
+ curl -XPOST localhost:4000/network-services -H "Content-Type: application/json" --data-binary @nsd-validator/assets/samples/nsd_example.json 
+```
+3. Get the NSD ID (identification) from the NS Catalogue (getting the first NSD, so if more NSDs are defined, this command needs to be modified accordingly)
+```
+ ns_id=$(curl -XGET localhost:4000/network-services | python -c 'import json,sys;obj=json.load(sys.stdin);print obj[0]["nsd"]["id"]') 
+```
 4. Instantiate the NSD using the NSD ID extracted from the catalogue
-` curl -XPOST localhost:4000/ns-instances -H "Content-Type: application/json" --data '{"ns_id": "'$ns_id'", "callbackUrl": "https://httpbin.org/post", "flavour": "basic"}' `
+```
+ curl -XPOST localhost:4000/ns-instances -H "Content-Type: application/json" --data '{"ns_id": "'$ns_id'", "callbackUrl": "https://httpbin.org/post", "flavour": "basic"}' 
+```
 
 # Development
 

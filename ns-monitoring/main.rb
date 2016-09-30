@@ -29,8 +29,6 @@ require 'bunny'
 require 'bundler'
 Bundler.require :default, ENV['RACK_ENV'].to_sym
 
-class NSMonitoring < Sinatra::Application
-
   require_relative 'models/init'
   require_relative 'routes/init'
   require_relative 'helpers/init'
@@ -56,6 +54,7 @@ class NSMonitoring < Sinatra::Application
     set :logger, logger
   end
 
+class NSMonitoring < Sinatra::Application
   helpers MonitoringHelper
 
   Mongoid.load!('config/mongoid.yml')

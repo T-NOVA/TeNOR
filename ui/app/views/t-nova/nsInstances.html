@@ -48,13 +48,13 @@
                             <td>{{row.vendor}}</td>
                             <td>{{row.version}}</td>
                             <td>{{row.status}}
-                            <td>{{row.created_at| date:'yyyy-MM-dd HH:mm:ss'}}</td>
+                                <td>{{row.created_at| date:'yyyy-MM-dd HH:mm:ss'}}</td>
                                 <span ng-if="row.status === 'instantiated'">Instantiated</span>
                                 <span ng-if="row.status === 1">Tear-up</span>
                                 <span ng-if="row.status === 2">In progress</span>
                                 <span ng-if="row.status === 3">Terminated</span></td>
                             <td>
-                                <button ng-click="go('/nsMonitoring/' + row.id)" class="btn btn-success btn-xs" ng-disabled="row.status !== 'INSTANTIATED'">Monitoring</button>
+                                <button ng-click="go('/nsMonitoring/' + row.id)" class="btn btn-success btn-xs" ng-disabled="row.status !== 'INSTANTIATED' && row.status !== 'START'">Monitoring</button>
                                 <button ng-click="stop(row.id)" class="btn btn-warning btn-xs" ng-enabled="row.status === 'INSTANTIATED'">Stop</button>
                                 <button ng-click="start(row.id)" class="btn btn-success btn-xs" ng-enabled="row.status === 'STOPPED'">Start</button>
                                 <button ng-click="deleteDialog(row.id)" class="btn btn-danger btn-xs" ng-disabled="">Delete</button>

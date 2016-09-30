@@ -33,34 +33,38 @@ class Scaling < VnfProvisioning
     halt 400, 'NS Manager callback URL not found' unless scale_info.has_key?('vnfd')
 
     vnfr = scale_info['vnfr']
-
-    logger.error vnfr
-    logger.info vnfr['scale_resources']
-    logger.info scale_info['auth']
+    lifecycle_events_values = {}
+    event = "scaling_out"
 
     vnfr['scale_resources'].each do |resource|
-      logger.info resource
-      logger.info resource['id']
-      logger.debug "Sending request to Openstack for Scale OUT"
+      logger.debug resource
+      logger.info "Sending request to Openstack for Scale OUT"
       begin
-        response = parse_json(RestClient.post resource['scale_out'], "", :accept => :json)
+        logger.error resource['scale_out']
+        response = RestClient.post resource['scale_out'], "", :accept => :json
       rescue Errno::ECONNREFUSED
         halt 500, 'VIM unreachable'
       rescue => e
+        logger.error "ERROR sending scale_out to the VIM."
+        logger.error e
         logger.error e.response
         halt e.response.code, e.response.body
       end
-      logger.debug "Scale out ok."
+      logger.error response
+      logger.debug "Scale out from Openstack is ok."
 
-      logger.info "Authentication to VIM"
-      vim_info = vnfr['auth']
+      logger.info "Authentication to VIM for get IDs or IPs of the scaled_resource"
+      vim_info = scale_info['auth']
+      vim_info['keystone'] = vim_info['url']['keystone']
+      vim_info['heat'] = vim_info['url']['heat']
       token_info = request_auth_token(vim_info)
       tenant_id = token_info['access']['token']['tenant']['id']
       auth_token = token_info['access']['token']['id']
 
-      #get stack of AutoScalingGroup
+      logger.info "Getting AutoScaling resource"
+=begin
       begin
-        response = parse_json(RestClient.get "#{vim_info['heat']}/#{tenant_id}/stacks/#{resource['id']}", 'X-Auth-Token' => auth_token, :accept => :json)
+        response, errors = parse_json(RestClient.get "#{vim_info['heat']}/#{tenant_id}/stacks/#{resource['id']}", 'X-Auth-Token' => auth_token, :accept => :json)
       rescue Errno::ECONNREFUSED
         halt 500, 'VIM unreachable'
       rescue => e
@@ -74,7 +78,7 @@ class Scaling < VnfProvisioning
 
       #get instances of the scaling group
       begin
-        response = parse_json(RestClient.get "#{vim_info['heat']}/#{tenant_id}/stacks/#{resource['id']}/#{stack_id}/resources", 'X-Auth-Token' => auth_token, :accept => :json)
+        response, errors = parse_json(RestClient.get "#{vim_info['heat']}/#{tenant_id}/stacks/#{resource['id']}/#{stack_id}/resources", 'X-Auth-Token' => auth_token, :accept => :json)
       rescue Errno::ECONNREFUSED
         halt 500, 'VIM unreachable'
       rescue => e
@@ -89,112 +93,145 @@ class Scaling < VnfProvisioning
         logger.info res['physical_resource_id']
         logger.info res['resource_name']
       end
+=end
 
-      logger.info "Execute lifecycle events"
+      #get base stack in order to read the OutPuts, the outputs are updated in real time? sleep is required?
+      begin
+        response, errors = parse_json(RestClient.get vnfr['stack_url'], 'X-Auth-Token' => auth_token, :accept => :json)
+      rescue Errno::ECONNREFUSED
+        halt 500, 'VIM unreachable'
+      rescue => e
+        logger.error e.response
+        halt e.response.code, e.response.body
+      end
 
+      logger.info "General STACK resource:"
+      logger.info response['stack']['outputs']
+      outputs = response['stack']['outputs']
+      outputs.each do |output|
+        logger.debug vnfr['lifecycle_info']
+        logger.debug vnfr['lifecycle_info']['events']
+        logger.debug vnfr['lifecycle_info']['events'][event]
+        JSON.parse(vnfr['lifecycle_info']['events'][event]['template_file']).each do |id, parameter|
 
-
+          logger.debug parameter
+          parameter_match = parameter.delete(' ').match(/^get_attr\[(.*)\]$/i).to_a
+          string = parameter_match[1].split(",").map(&:strip)
+          key_string = string.join("#")
+          logger.debug "Key string: " + key_string.to_s + ". Out_key: " + output['output_key'].to_s
+          if output['output_key'] =~ /^.*#vdus/i
+            lifecycle_events_values[event] = {} unless lifecycle_events_values.has_key?(event)
+            if output['output_value'].is_a? Enumerable
+              logger.error output['output_value']
+              lifecycle_events_values[event][output['output_key']] = output['output_value'][output['output_value'].size - 1]
+            else
+              lifecycle_events_values[event][output['output_key']] = output['output_value']
+            end
+          elsif string[2] == "PublicIp" && output['output_key'] =~ /^.*#PublicIp/i
+            logger.error "Public...."
+            logger.error key_string
+            lifecycle_events_values[event] = {} unless lifecycle_events_values.has_key?(event)
+            if output['output_value'].is_a? Enumerable
+              logger.error output['output_value']
+              lifecycle_events_values[event][output['output_key']] = output['output_value'][output['output_value'].size - 1]
+            else
+              lifecycle_events_values[event][output['output_key']] = output['output_value']
+            end
+          end
+        end
+      end
     end
-
 
     logger.info "Lifecycle events..."
+    logger.info lifecycle_events_values
     logger.info vnfr['lifecycle_info']
-    logger.info vnfr['lifecycle_info']['events']
+    logger.info vnfr['vnf_addresses']['controller']
+    vnfr['lifecycle_events_values'][event] = lifecycle_events_values[event]
+    logger.info vnfr['lifecycle_events_values'][event]
 
-    halt 200, "Scale out ok"
-  end
-
-
-
-  # @method post_vnf_instances_scale_out
-  # @overload post '/vnf-instances/scaling/:id/scale_out'
-  # Post a Scale out request
-  # @param [JSON]
-  post "/:vnfr_id/scale_out_old" do
-
-    # Return if content-type is invalid
-    halt 415 unless request.content_type == 'application/json'
-
-    # Validate JSON format
-    scale_info = parse_json(request.body.read)
-    logger.debug 'Instantiation info: ' + scale_info.to_json
-    halt 400, 'NS Manager callback URL not found' unless scale_info.has_key?('vnfd')
-
-    vnfd = scale_info['vnfd']
-
-    begin
-      vnfr = Vnfr.find(params[:vnfr_id])
-    rescue Mongoid::Errors::DocumentNotFound => e
-      logger.error 'VNFR record not found'
-      halt 404
-    end
-
-    logger.debug "Generating new hot template for the new VDUs"
-
-    hot_generator_message = {
-        vnf: vnf,
-        networks_id: instantiation_info['networks'],
-        security_group_id: instantiation_info['security_group_id']
+    # Build mAPI request
+    mapi_request = {
+        event: event,
+        vnf_controller: vnfr['vnf_addresses']['controller'],
+        parameters: vnfr['lifecycle_events_values'][event]
     }
+    logger.debug 'mAPI request: ' + mapi_request.to_json
+
+    # Send request to the mAPI
     begin
-      hot = parse_json(RestClient.post settings.hot_generator + '/scale_hot/' + vnf_flavour, hot_generator_message.to_json, :content_type => :json, :accept => :json)
-    rescue Errno::ECONNREFUSED
-      halt 500, 'HOT Generator unreachable'
+      response = RestClient.put settings.mapi + '/vnf_api/' + params[:vnfr_id] + '/config/', mapi_request.to_json, :content_type => :json, :accept => :json
+    rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH
+      halt 500, 'mAPI unreachable'
     rescue => e
       logger.error e.response
       halt e.response.code, e.response.body
     end
 
-    #send hot to VIM
-    response = provision_vnf(vim_info, vnf['name'] +"_scale_out_" + SecureRandom.hex, hot)
-    logger.debug 'Provision response: ' + response.to_json
+    # Update the VNFR event history
+    vnfr['lifecycle_event_history'].push("Executed a #{mapi_request[:event]}")
+    #vnfr.update_attributes
 
-    #save stack_scale info to VNRF
-    resource = {}
-    resource['stack_url'] = response['stack']['links'][0]['href']
-    resource['id'] = response['stack']['id']
-    resource['type'] = 1
-
-    vnfr['vdu'] << resource
-    #the value is saved?
-
-    halt 200, "Scale out done."
-
+    halt 200, "Scale out ok"
   end
+
 
   # @method post_vnf_instances_scale_in
   # @overload post '/vnf-instances/scaling/:id/scale_in'
   # Post a Scale in request
   # @param [JSON]
   post "/:vnfr_id/scale_in" do
+    #TODO
 
     # Return if content-type is invalid
     halt 415 unless request.content_type == 'application/json'
 
     # Validate JSON format
     scale_info = parse_json(request.body.read)
-    logger.debug 'Scale out: ' + scale_info.to_json
+    #logger.debug 'Scale out: ' + scale_info.to_json
     halt 400, 'NS Manager callback URL not found' unless scale_info.has_key?('vnfd')
 
     vnfr = scale_info['vnfr']
+    event = "scaling_in"
 
-    logger.debug "Sending request to Openstack for Scale OUT"
+    vnfr['scale_resources'].each do |resource|
+      logger.debug resource
+      logger.info "Sending request to Openstack for Scale IN"
+      begin
+        logger.error resource['scale_out']
+        response = RestClient.post resource['scale_in'], "", :accept => :json
+      rescue Errno::ECONNREFUSED
+        halt 500, 'VIM unreachable'
+      rescue => e
+        logger.error "ERROR sending scale_in to the VIM."
+        logger.error e
+        logger.error e.response
+        halt e.response.code, e.response.body
+      end
+
+    end
+
+    # Build mAPI request
+    mapi_request = {
+        event: event,
+        vnf_controller: vnfr['vnf_addresses']['controller'],
+        parameters: vnfr['lifecycle_events_values'][event]
+    }
+    logger.debug 'mAPI request: ' + mapi_request.to_json
+
+    # Send request to the mAPI
     begin
-      response = parse_json(RestClient.post vnfr['scale_info']['scale_out'], "", :accept => :json)
-    rescue Errno::ECONNREFUSED
-      halt 500, 'VIM unreachable'
+      response = RestClient.put settings.mapi + '/vnf_api/' + params[:vnfr_id] + '/config/', mapi_request.to_json, :content_type => :json, :accept => :json
+    rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH
+      halt 500, 'mAPI unreachable'
     rescue => e
       logger.error e.response
       halt e.response.code, e.response.body
     end
-    logger.debug "Scale out ok."
 
-    #reading information from the VIM about the stack.
-
-    logger.debug "Response is null."
-
-
+    # Update the VNFR event history
+    vnfr['lifecycle_event_history'].push("Executed a #{mapi_request[:event]}")
     halt 200, "Scale in done."
+
   end
 
 end

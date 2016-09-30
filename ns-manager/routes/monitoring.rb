@@ -49,7 +49,8 @@ class MonitoringController < TnovaManager
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Monitoring unreachable'
     rescue => e
-      halt e.response.code, e.response.body
+      logger.error e
+      #halt e.response.code, e.response.body
     end
     #return response.code, response.body
     return 200, response.body

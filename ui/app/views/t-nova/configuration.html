@@ -32,4 +32,35 @@
             </form>
         </div>
     </div>
+    <div class="col-md-6 col-sm-6 col-xs-6">
+        <div class="x_panel">
+            <div class="x_title">Create new user
+            </div>
+            <form action="">
+                <fieldset>
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input ng-model="user.username" class="form-control" placeholder="" type="text">
+                    </div>
+                    <div class="form-group">
+                        <label>New password</label>
+                        <input ng-model="user.password" class="form-control" placeholder="Password" type="password" value="">
+                    </div>
+                    <div class="form-group">
+                        <label>Repeat new password</label>
+                        <input ng-model="user.password2" class="form-control" placeholder="Password" type="password" value="">
+                    </div>
+                    <div class="form-group">
+                        <label>Admin permissions</label>
+                        <input ng-model="user.isadmin" type="checkbox" name="vehicle" value="y"> Admin user
+                    </div>
+                </fieldset>
+                <div class="box-body">
+                    <div class="form-group">
+                        <button ng-click="registerUser(user)" type="button" class="btn btn-primary">Add</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>

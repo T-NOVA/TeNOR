@@ -24,14 +24,14 @@
             "SR-IOV": true,
             "device_pass_through": true
           },
-          "vcpus": 4,
+          "vcpus": 1,
           "vswitch_capabilities": {
             "version": "2.0",
             "type": "ovs",
             "overlay_tunnel": "GRE"
           },
           "data_processing_acceleration_library": "",
-          "memory": 4,
+          "memory": 1,
           "memory_parameters": {
             "large_pages_required": false,
             "numa_allocation_policy": ""
@@ -42,33 +42,7 @@
         "vm_image": "http://10.10.1.167:8080/NFS/files/itlgpu22.qcow2",
         "id": "vdu0",
         "networking_resources": "",
-        "monitoring_parameters_specific": [
-          {
-            "metric": "memory",
-            "unit": "%",
-            "desc": "Memory Free"
-          },
-          {
-            "metric": "cpu",
-            "unit": "%",
-            "desc": "Storage Free"
-          },
-          {
-            "metric": "bitrate",
-            "unit": "kbits/s",
-            "desc": "Transcoder Bitrate"
-          },
-          {
-            "metric": "framerate",
-            "unit": "fps",
-            "desc": "Transcoder framerate"
-          },
-          {
-            "metric": "TUrunning",
-            "unit": "int",
-            "desc": "Transcoder jobs running"
-          }
-        ],
+        "monitoring_parameters_specific": [],
         "wc_notify": true,
         "alias": "vTU22",
         "controller": true,
@@ -76,89 +50,67 @@
           {
             "vlink_ref": "vl0",
             "id": "CPnfwb"
+          }
+        ],
+        "monitoring_parameters": [],
+        "scale_in_out": {
+          "minimum": 1,
+          "maximum": 1
+        },
+        "vm_image_md5": "5cf898fd67b300cd427149f02656043b",
+        "vm_image_format": "qcow2"
+      },
+      {
+        "resource_requirements": {
+          "network_interface_bandwidth_unit": "",
+          "hypervisor_parameters": {
+            "version": "10002|12001|2.6.32-358.el6.x86_64",
+            "type": "QEMU-KVM"
           },
+          "memory_unit": "GB",
+          "network_interface_card_capabilities": {
+            "SR-IOV": true,
+            "mirroring": false
+          },
+          "storage": {
+            "size_unit": "GB",
+            "persistence": false,
+            "size": 20
+          },
+          "network_interface_bandwidth": "",
+          "platform_pcie_parameters": {
+            "SR-IOV": true,
+            "device_pass_through": true
+          },
+          "vcpus": 1,
+          "vswitch_capabilities": {
+            "version": "2.0",
+            "type": "ovs",
+            "overlay_tunnel": "GRE"
+          },
+          "data_processing_acceleration_library": "",
+          "memory": 1,
+          "memory_parameters": {
+            "large_pages_required": false,
+            "numa_allocation_policy": ""
+          },
+          "cpu_support_accelerator": "AES-NI"
+        },
+        "bootstrap_script": "#!/bin/bash\necho \"itlgpu22.qcow2\" > /tmp/version",
+        "vm_image": "http://10.10.1.167:8080/NFS/files/itlgpu22.qcow2",
+        "id": "vdu1",
+        "networking_resources": "",
+        "monitoring_parameters_specific": [],
+        "wc_notify": true,
+        "alias": "vTU23",
+        "controller": false,
+        "connection_points": [
           {
             "vlink_ref": "vl1",
             "id": "CPl5k3"
           }
         ],
-        "monitoring_parameters": [
-          {
-            "metric": "cpuidle",
-            "unit": "%",
-            "desc": "CPU Idle"
-          },
-          {
-            "metric": "cpu_util",
-            "unit": "%",
-            "desc": "CPU Utilization"
-          },
-          {
-            "metric": "fsfree",
-            "unit": "GB",
-            "desc": "Free Storage"
-          },
-          {
-            "metric": "memfree",
-            "unit": "MB",
-            "desc": "Free Memory"
-          },
-          {
-            "metric": "network_incoming",
-            "unit": "Mbps",
-            "desc": "Network Incoming"
-          },
-          {
-            "metric": "network_outgoing",
-            "unit": "Mbps",
-            "desc": "Network Outgoing"
-          },
-          {
-            "metric": "load_shortterm",
-            "unit": "%",
-            "desc": "Load Average (1 Minute)"
-          },
-          {
-            "metric": "load_midterm",
-            "unit": "%",
-            "desc": "Load Average (5 Minutes)"
-          },
-          {
-            "metric": "load_longterm",
-            "unit": "%",
-            "desc": "Load Average (15 Minutes)"
-          },
-          {
-            "metric": "processes_blocked",
-            "unit": "INT",
-            "desc": "Blocked Processes"
-          },
-          {
-            "metric": "processes_paging",
-            "unit": "INT",
-            "desc": "Paging Processes"
-          },
-          {
-            "metric": "processes_running",
-            "unit": "INT",
-            "desc": "Running Processes"
-          },
-          {
-            "metric": "processes_sleeping",
-            "unit": "INT",
-            "desc": "Sleeping Processes"
-          },
-          {
-            "metric": "processes_stopped",
-            "unit": "INT",
-            "desc": "Stopped Processes"
-          },
-          {
-            "metric": "processes_zombie",
-            "unit": "INT",
-            "desc": "Zombie Processes"
-          }
-        ],
+        "monitoring_parameters": [],
         "scale_in_out": {
           "minimum": 1,
           "maximum": 2
@@ -167,7 +119,7 @@
         "vm_image_format": "qcow2"
       }
     ],
-    "name": "vTU22",
+    "name": "vTU_scaling",
     "created_at": "2016-07-28T07:18:28Z",
     "modified_at": "2016-07-28T07:18:28Z",
     "provider_id": 7,
@@ -176,7 +128,8 @@
     "deployment_flavours": [
       {
         "vdu_reference": [
-          "vdu0"
+          "vdu0",
+          "vdu1"
         ],
         "constraint": "",
         "flavour_key": "gold",
@@ -185,103 +138,7 @@
           "vl1"
         ],
         "id": "flavor0",
-        "assurance_parameters": [
-          {
-            "violation": [
-              {
-                "interval": 360,
-                "breaches_count": 2
-              }
-            ],
-            "value": 10,
-            "penalty": {
-              "type": "Discount",
-              "expression": 10,
-              "validity": "P1D",
-              "unit": "%"
-            },
-            "formula": "memory LT 10",
-            "rel_id": "param0",
-            "id": "memory",
-            "unit": "%"
-          },
-          {
-            "violation": [
-              {
-                "interval": 360,
-                "breaches_count": 2
-              }
-            ],
-            "value": 10,
-            "penalty": {
-              "type": "Discount",
-              "expression": 10,
-              "validity": "P1D",
-              "unit": "GB"
-            },
-            "formula": "fsfree LT 10",
-            "rel_id": "param1",
-            "id": "fsfree",
-            "unit": "GB"
-          },
-          {
-            "violation": [
-              {
-                "interval": 360,
-                "breaches_count": 2
-              }
-            ],
-            "value": 100000,
-            "penalty": {
-              "type": "Discount",
-              "expression": 10,
-              "validity": "P1D",
-              "unit": "kbits/s"
-            },
-            "formula": "bitrate GT 100000",
-            "rel_id": "param2",
-            "id": "bitrate",
-            "unit": "kbits/s"
-          },
-          {
-            "violation": [
-              {
-                "interval": 360,
-                "breaches_count": 2
-              }
-            ],
-            "value": 5000,
-            "penalty": {
-              "type": "Discount",
-              "expression": 10,
-              "validity": "P1D",
-              "unit": "fps"
-            },
-            "formula": "framerate GT 5000",
-            "rel_id": "param3",
-            "id": "framerate",
-            "unit": "fps"
-          },
-          {
-            "violation": [
-              {
-                "interval": 360,
-                "breaches_count": 2
-              }
-            ],
-            "value": 10,
-            "penalty": {
-              "type": "Discount",
-              "expression": 10,
-              "validity": "P1D",
-              "unit": "int"
-            },
-            "formula": "TUrunning GT 10",
-            "rel_id": "param4",
-            "id": "TUrunning",
-            "unit": "int"
-          }
-        ]
+        "assurance_parameters": []
       }
     ],
     "version": "22",
@@ -295,27 +152,27 @@
         "flavor_id_ref": "flavor0",
         "events": {
           "start": {
-            "command": "/vTU/bin/vTUstart",
-            "template_file": "{\"controller\":\"get_attr[vdu0,CPnfwb,PublicIp]\"}",
+            "command": "/vTU/bin/vTU/start",
+            "template_file": "{\"controller\":\"get_attr[vdu0,CPnfwb,PublicIp]\", \"vdu1\":\"get_attr[vdu1,CPl5k3,PublicIp]\"}",
             "template_file_format": "JSON"
           },
           "stop": {
-            "command": "/vTU/bin/vTUstop",
+            "command": "/vTU/bin/vTU/stop",
             "template_file": "{}",
             "template_file_format": "JSON"
           },
           "restart": {
-            "command": "/vTU/bin/vTUrestart",
+            "command": "/vTU/bin/vTU/restart",
             "template_file": "{\"controller\":\"get_attr[vdu0,PublicIp]\"}",
             "template_file_format": "JSON"
           },
-          "scale-out": {
-            "command": "/vTU/bin/vTUscale_out",
-            "template_file": "{\"controller\":\"get_attr[vdu0,PublicIp]\"}",
+          "scaling_out": {
+            "command": "/vTU/bin/vTU/scaling_out",
+            "template_file": "{\"controller\":\"get_attr[vdu0,CPnfwb,PublicIp]\", \"vdu1\":\"uid\"}",
             "template_file_format": "JSON"
           },
-          "scale-in": {
-            "command": "/vTU/bin/vTUscale_in",
+          "scaling_in": {
+            "command": "/vTU/bin/vTU/scaling_out",
             "template_file": "{\"controller\":\"get_attr[vdu0,PublicIp]\"}",
             "template_file_format": "JSON"
           }
@@ -358,14 +215,14 @@
         "leaf_requirement": "Unlimited",
         "connectivity_type": "E-LINE",
         "vdu_reference": [
-          "vdu0"
+          "vdu1"
         ],
-        "external_access": false,
+        "external_access": true,
         "port_security_enabled": false,
         "connection_points_reference": [
           "CPl5k3"
         ],
-        "access": false,
+        "access": true,
         "alias": "vTU-data",
         "dhcp": false,
         "root_requirement": "Unlimited",
@@ -375,6 +232,6 @@
     ],
     "type": "vTU",
     "description": "Virtual Transcoding Unit Ver.23",
-    "id": 5966
+    "id": 5976
   }
 }

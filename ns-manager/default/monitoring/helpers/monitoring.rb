@@ -1,5 +1,5 @@
-# @see OrchestratorMonitoring
-class OrchestratorMonitoring < Sinatra::Application
+# @see TeNORMonitoring
+class TeNORMonitoring < Sinatra::Application
 
 	# Checks if a Port is open
 	#

@@ -24,9 +24,11 @@ module CommonMethods
 	# @param [String] flavour_key the T-NOVA flavour
 	# @param [Array] networks_id the IDs of the networks created by the NS Manager
 	# @param [String] security_group_id the ID of the T-NOVA security group
+	# @param [String] vnfr_id the ID of the VNFr
+	# @param [String] dns the DNS
 	# @return [Hash] the generated hot template
 	def self.generate_hot_template(vnfd, flavour_key, networks_id, routers_id, security_group_id, vnfr_id, dns, public_network_id)
-		hot = VnfdToHot.new(vnfd['name'], vnfd['description'], public_network_id)
+		hot = VnfdToHot.new(vnfd['name'].delete(" "), vnfd['description'], public_network_id)
 
 		begin
 			hot.build(vnfd, flavour_key, networks_id, routers_id, security_group_id, vnfr_id, dns)
@@ -72,11 +74,11 @@ module CommonMethods
 	# @param [String] dns_server the DNS Server to add to the networks
 	# @param [String] flavour the T-NOVA flavour
 	# @return [Hash] the generated networks hot template
-	def self.generate_network_hot_template(nsd, public_net_id, dns_server, flavour)
+	def self.generate_network_hot_template(nsd, public_net_id, dns_server, flavour, nsr_id)
 		hot = NsdToHot.new(nsd['id'], nsd['name'])
 
     begin
-      hot.build(nsd, public_net_id, dns_server, flavour)
+      hot.build(nsd, public_net_id, dns_server, flavour, nsr_id)
     rescue CustomException::NoExtensionError => e
       logger.error e.message
       halt 400, e.message
@@ -102,6 +104,18 @@ module CommonMethods
 		hot.build(provider_info)
 	end
 
+	# Generate a Netfloc HOT template
+	#
+	# @param [Hash] vnffgd
+	# @param [Hash] odl_username ODL username
+	# @param [Hash] odl_password ODL password
+	# @param [Hash] netfloc_ip_port Netfloc IP and Port
+	# @return [Hash] the generated netfloc hot template
+	def self.generate_netfloc_hot_template(ports, odl_username, odl_password, netfloc_ip_port)
+		hot = NetflocToHot.new('Netfloc', 'Resources for Netfloc integration')
+
+		hot.build(ports, odl_username, odl_password, netfloc_ip_port)
+	end
 
 	def self.is_num?(str)
 		!!Integer(str)

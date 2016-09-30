@@ -22,9 +22,13 @@ class RouterInterface < Resource
   # @param [String] resource_name the Router Interface resource name
   # @param [String] router_id the ID of the router
   # @param [String] subnet_id the ID of the subnet
-  def initialize(resource_name, router_id, subnet_id)
+  def initialize(resource_name, router_id, subnet_id=nil, port_id=nil)
     @type = 'OS::Neutron::RouterInterface'
-    @properties = {"router_id" => router_id, "subnet_id" => subnet_id}
+    if !subnet_id.nil?
+      @properties = {"router_id" => router_id, "subnet_id" => subnet_id}
+    else
+      @properties = {"router_id" => router_id, "port_id" => port_id}
+    end
     super(resource_name, @type, @properties)
   end
 end

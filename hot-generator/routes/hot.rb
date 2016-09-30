@@ -29,8 +29,8 @@ class HotGenerator < Sinatra::Application
 		halt 415 unless request.content_type == 'application/json'
 
 		# Validate JSON format
-		provision_info, errors = parse_json(request.body.read)
-		return 400, errors.to_json if errors
+		provision_info = JSON.parse(request.body.read)
+		#return 400, errors.to_json if errors
 
 		vnf = provision_info['vnf']
 
@@ -74,8 +74,11 @@ class HotGenerator < Sinatra::Application
 		halt 415 unless request.content_type == 'application/json'
 
 		# Validate JSON format
-		networkInfo, errors = parse_json(request.body.read)
-    return 400, errors.to_json if errors
+		networkInfo = JSON.parse(request.body.read)
+    #return 400, errors.to_json if errors
+
+		nsr_id = networkInfo['nsr_id']
+		halt 400, 'NSR ID not found' if nsr_id.nil?
 
 		nsd = networkInfo['nsd']
 		halt 400, 'NSD not found' if nsd.nil?
@@ -88,7 +91,7 @@ class HotGenerator < Sinatra::Application
 
 		# Build a HOT template
 		logger.debug 'T-NOVA flavour: ' + params[:flavour]
-		hot = CommonMethods.generate_network_hot_template(nsd, public_net_id, dns_server, params[:flavour])
+		hot = CommonMethods.generate_network_hot_template(nsd, public_net_id, dns_server, params[:flavour], nsr_id)
 
 		halt 200, hot.to_json
 	end
@@ -102,8 +105,8 @@ class HotGenerator < Sinatra::Application
 		halt 415 unless request.content_type == 'application/json'
 
 		# Validate JSON format
-		provider_info, errors = parse_json(request.body.read)
-    return 400, errors.to_json if errors
+		provider_info = JSON.parse(request.body.read)
+    #return 400, errors.to_json if errors
 
 		# Build a HOT template
 		hot = CommonMethods.generate_wicm_hot_template(provider_info)
@@ -122,8 +125,8 @@ class HotGenerator < Sinatra::Application
     halt 415 unless request.content_type == 'application/json'
 
     # Validate JSON format
-    provision_info, errors = parse_json(request.body.read)
-    return 400, errors.to_json if errors
+    provision_info = JSON.parse(request.body.read)
+    #return 400, errors.to_json if errors
 
     vnf = provision_info['vnf']
 
@@ -139,6 +142,36 @@ class HotGenerator < Sinatra::Application
     # Build a HOT template
 		logger.debug 'Scale T-NOVA flavour: ' + params[:flavour]
 		hot = CommonMethods.generate_hot_template_scaling(vnf['vnfd'], params[:flavour], networks_id, security_group_id)
+
+		halt 200, hot.to_json
+	end
+
+	# @method post_netflochot
+	# @overload post '/netfloc'
+	# 	Build a HOT to create the Netfloc integration
+	# Convert a VNFFG into a HOT
+	post '/netfloc' do
+		# Return if content-type is invalid
+		halt 415 unless request.content_type == 'application/json'
+
+		# Validate JSON format
+		provision_info = JSON.parse(request.body.read)
+		#return 400, errors.to_json if errors
+
+		ports = provision_info['ports']
+		halt 400, 'Ports not found' if ports.nil?
+
+		odl_username = provision_info['odl_username']
+		halt 400, 'ODL username not found' if odl_username.nil?
+
+		odl_password = provision_info['odl_password']
+		halt 400, 'ODL password not found' if odl_password.nil?
+
+		netfloc_ip_port = provision_info['netfloc_ip_port']
+		halt 400, 'Netfloc IP not found' if netfloc_ip_port.nil?
+
+		# Build a HOT template
+		hot = CommonMethods.generate_netfloc_hot_template(ports, odl_username, odl_password, netfloc_ip_port)
 
 		halt 200, hot.to_json
 	end

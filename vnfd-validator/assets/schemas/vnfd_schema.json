@@ -587,7 +587,7 @@
                 },
                 "additionalProperties": false
               },
-              "scale-in": {
+              "scaling_in": {
                 "id": "http://www.t-nova.eu/vnf_lifecycle_events/1/events/scaling_in",
                 "type": "object",
                 "properties": {
@@ -606,7 +606,7 @@
                 },
                 "additionalProperties": false
               },
-              "scale-out": {
+              "scaling_out": {
                 "id": "http://www.t-nova.eu/vnf_lifecycle_events/1/events/scaling_out",
                 "type": "object",
                 "properties": {

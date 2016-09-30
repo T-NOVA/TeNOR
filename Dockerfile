@@ -47,7 +47,7 @@ RUN git clone https://github.com/T-NOVA/TeNOR /root/TeNOR
 
 WORKDIR /root/TeNOR
 RUN cd /root/TeNOR && gem install bundle && bundle install && ./tenor_install.sh 1
-RUN cd /root/TeNOR/ui && npm install -g grunt grunt-cli bower && npm install
+RUN cd /root/TeNOR/ui && npm install -g grunt-cli bower && npm install
 RUN cd /root/TeNOR/ui && bower install --allow-root
 RUN cd /root/TeNOR/ui && gem install compass
 RUN ln -s /usr/local/bundle/bin/compass /usr/local/bin/compass
@@ -59,8 +59,10 @@ EXPOSE $TENOR_UI_PORT
 EXPOSE $GK_PORT
 EXPOSE $MONGODB_PORT
 
-ADD dependencies/tenor_dev.sh /root/TeNOR/tenor_development.sh
+RUN chown -R mongodb:mongodb /var/lib/mongodb
+RUN /etc/init.d/mongod start
 
 #ENTRYPOINT ["sh", "tenor_development.sh"]
 ENV RAILS_ENV development
-ENTRYPOINT sh tenor_development.sh && /bin/bash
+#ENTRYPOINT sh tenor_development.sh && /bin/bash
+ENTRYPOINT invoker start invoker.ini && /bin/bash

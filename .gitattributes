@@ -1,0 +1,3 @@
+#*.rb linguist-language=Ruby
+*/doc/* linguist-documentation
+ui/app/bower_components linguist-vendored

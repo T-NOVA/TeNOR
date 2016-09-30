@@ -46,7 +46,7 @@ class NsProvisionerController < TnovaManager
       halt 500, {'Content-Type' => "text/plain"}, "NS Provisioning not registred."
     end
 
-    # Get VNF by id
+    # Get NSD by id
     begin
       nsd = RestClient.get @service_ns_catalogue.host + ":" + @service_ns_catalogue.port.to_s + '/network-services/' + instantiation_info['ns_id'].to_s, 'X-Auth-Token' => @client_token
     rescue Errno::ECONNREFUSED
@@ -56,7 +56,18 @@ class NsProvisionerController < TnovaManager
       halt e.response.code, e.response.body
     end
 
-    provisioning = {:nsd => JSON.parse(nsd), :customer_id => "some_id", :nap_id => "some_id", :callback_url => instantiation_info['callbackUrl'], :flavour => instantiation_info['flavour'], :pop_list => popList, :pop_id => instantiation_info['pop_id'] }
+    logger.error "INSTANTIATION INFO: "
+    logger.error instantiation_info
+
+    provisioning = {
+        :nsd => JSON.parse(nsd),
+        :customer_id =>  instantiation_info['customer_id'],
+        :nap_id =>  instantiation_info['nap_id'],
+        :callback_url => instantiation_info['callbackUrl'],
+        :flavour => instantiation_info['flavour'],
+        :pop_list => popList,
+        :pop_id => instantiation_info['pop_id'],
+        :mapping_id => instantiation_info['mapping_id']}
 
     begin
       response = RestClient.post @service.host + ":" + @service.port.to_s + request.fullpath, provisioning.to_json, 'X-Auth-Token' => @client_token, :content_type => :json

@@ -1,19 +1,17 @@
 source 'https://rubygems.org'
 
 gem 'sinatra', '~>1.4'
-gem 'thin', '~>1.6'
-gem 'json', '~>1.8'
 gem 'sinatra-contrib', '~>1.4'
-gem 'nokogiri', '~>1.6'
+gem 'puma', '3.6.0'
+gem 'json', '~>1.8'
 gem 'json-schema', '~>2.5'
-gem 'rest-client', '~>1.8'
-gem 'logstash-logger'
+gem 'rest-client', '~>2.0'
+gem 'logstash-logger', '~>0.19.2'
 gem 'mongoid', '~>4.0' # MongoDB driver
 
 group :development do
 	gem 'rerun'
 	# Database
-
 end
 
 group :doc do

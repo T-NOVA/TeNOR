@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# # Set environment
+# Set environment
 ENV['RACK_ENV'] ||= 'development'
 
 require 'sinatra'
@@ -23,8 +23,7 @@ require 'sinatra/config_file'
 require 'yaml'
 require 'logstash-logger'
 
-# Require the bundler gem and then call Bundler.require to load in all gems
-# listed in Gemfile.
+# Require the bundler gem and then call Bundler.require to load in all gems listed in Gemfile.
 require 'bundler'
 Bundler.require :default, ENV['RACK_ENV'].to_sym
 
@@ -47,7 +46,7 @@ class TnovaManager < Sinatra::Application
 				outputs: [
 						{ type: :stdout, formatter: ::Logger::Formatter },
 						{ type: :file, path: "log/#{settings.environment}.log", sync: true},
-						{ host: settings.logstash_host, port: settings.logstash_port }
+						{ host: settings.logstash_host, port: settings.logstash_port, drop_messages_on_flush_error: true}
 				])
 		LogStashLogger.configure do |config|
 			config.customize_event do |event|
