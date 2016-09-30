@@ -168,6 +168,8 @@ configureFiles(){
 
     configureIps
 
+    rm **/config/config.yml
+
     for folder in $(find . -type d  \( -name "ns*" -o -name "vnf*" -o -name "hot-generator" \) ); do
         printf "$folder\n"
         cd $folder

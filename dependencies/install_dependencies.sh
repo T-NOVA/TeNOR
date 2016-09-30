@@ -72,7 +72,7 @@ function install_gatekeeper {
     echo "Downloading and installing go runtime from google servers, please wait ..."
     wget https://storage.googleapis.com/golang/go1.4.2.linux-amd64.tar.gz
     sudo tar -C /usr/local -xzf go1.4.2.linux-amd64.tar.gz
-
+    rm go1.4.2.linux-amd64.tar.gz
     sudo -k
 
     echo "configuring your environment for go projects ..."
@@ -134,42 +134,6 @@ function install_ruby {
     gem install bundler invoker
     echo "Installation of Bundler done."
 }
-function install_npm {
-    echo "Installing NodeJS and NPM..."
-    sudo apt-get install -y nodejs-legacy npm
-    echo "Installation of NodeJS and NPM done."
-
-    echo "Installing Grunt and Bower..."
-    sudo npm install -g grunt-cli bower
-
-    echo -e "Moving to UI folder...."
-
-    pwd
-
-    dir="$(basename $current_dir)"
-    if [ "$dir" = "dependencies" ]; then
-        cd ../ui
-    elif [ "$dir" = "TeNOR" ]; then
-        cd ui
-    else
-        echo "Script executed outside TeNOR folder. Install the UI manually or rerun the script."
-        return
-    fi
-
-    echo "Installing Grunt and Bower locally in UI folder."
-    sudo npm install
-
-    bower install
-
-    echo "Installing Compass..."
-    gem install foreman compass
-    echo "Installation of Compass done."
-
-    echo -e "Moving to dependencies folder...."
-    cd ../dependencies
-    echo "NPM dependencies done."
-}
-
 
 echo -e -n "\033[1;36mChecking if mongodb is installed"
 mongod --version > /dev/null 2>&1
@@ -250,3 +214,5 @@ echo "ruby            $(echo_if $(program_is_installed ruby))"
 echo "bundler         $(echo_if $(program_is_installed bundler))"
 echo "gatekeeper      $(echo_if $(program_is_installed $gatekeeper_script))"
 echo "rabbitmq             $(echo_if $(program_is_installed rabbitmq-server))"
+
+source . ~/.rvm/scripts/rvm

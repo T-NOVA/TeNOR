@@ -1,48 +1,51 @@
 'use strict';
 
 angular.module('tNovaApp')
-    .controller('PoPController', function ($scope, $window, tenorService, $interval, $modal, AuthService, infrRepoService) {
+    .controller('PoPController', function ($scope, $window, $interval, $modal, $alert, tenorService, AuthService, infrRepoService) {
 
-        console.log($window.localStorage.token);
-        AuthService.get($window.localStorage.token, "admin/dc/").then(function (d) {
-            console.log(d);
-            $scope.registeredDcList = [];
-            _.map(d.dclist, function (row, index) {
-                $scope.registeredDcList.push({
-                    id: d.dcid[index],
-                    name: row
-                })
-            });
-            console.log($scope.registeredDcList);
+        $scope.defaultPoP = {};
+        $scope.refreshPoPList = function () {
+            AuthService.get($window.localStorage.token, "admin/dc/").then(function (d) {
+                console.log(d);
+                $scope.registeredDcList = [];
+                _.map(d.dclist, function (row, index) {
+                    $scope.registeredDcList.push({
+                        id: d.dcid[index],
+                        name: row
+                    })
+                });
+                console.log($scope.registeredDcList);
 
-            var url = 'pop/';
-            infrRepoService.get(url).then(function (_data) {
-                $scope.pops = _data;
-                $scope.availableDcList = [];
-                angular.forEach(_data, function (pop, index, array) {
-                    url = pop.identifier.slice(1);
-                    infrRepoService.get(url).then(function (_data) {
+                var url = 'pop/';
+                infrRepoService.get(url).then(function (_data) {
+                    $scope.pops = _data;
+                    $scope.availableDcList = [];
+                    angular.forEach(_data, function (pop, index, array) {
+                        url = pop.identifier.slice(1);
+                        infrRepoService.get(url).then(function (_data) {
 
-                        var exist = _.some($scope.registeredDcList, function (c) {
-                            return _data.attributes['occi.epa.popuuid'] !== c;
+                            var exist = _.some($scope.registeredDcList, function (c) {
+                                return _data.attributes['occi.epa.popuuid'] !== c;
+                            });
+                            console.log(exist);
+                            if (!exist) {
+                                $scope.availableDcList.push(_data.attributes);
+                            }
                         });
-                        console.log(exist);
-                        if (!exist) {
-                            $scope.availableDcList.push(_data.attributes);
-                        }
                     });
                 });
             });
-        });
+        };
+        $scope.refreshPoPList();
 
         $scope.addDialog = function (id) {
             if (id === "") {
                 $scope.emptyId = true;
             }
-            $scope.object = {};
+            $scope.object = $scope.defaultPoP;
             $scope.object.id = id;
-            $scope.dc_default = {};
-            $scope.openstack_ip = "define openstack IP";
+            $scope.dc_default = $scope.defaultPoP;
+            $scope.openstack_ip = "";
             $scope.dc_default = {
                 msg: "Description",
                 id: "infrRepository-Pop-ID",
@@ -54,7 +57,7 @@ angular.module('tNovaApp')
                 compute_api: $scope.openstack_ip + ":8774/v2.1",
                 neutron_api: $scope.openstack_ip + ":9696/v2.0",
                 dns: "8.8.8.8"
-            }
+            };
             $modal({
                 title: "Registring DC - " + id,
                 template: "views/t-nova/modals/addPop.html",
@@ -101,8 +104,32 @@ angular.module('tNovaApp')
             console.log(pop);
             AuthService.post($window.localStorage.token, "admin/dc/", pop).then(function (d) {
                 console.log(d);
-                $scope.registeredDcList = d.dclist;
-                //this.$hide();
+                $scope.defaultPoP = {};
+                $alert({
+                    title: "Success: ",
+                    content: "PoP inserted correctly.",
+                    placement: 'top',
+                    type: 'success',
+                    keyboard: true,
+                    show: true,
+                    container: '#alerts-container',
+                    duration: 5
+                });
+                $scope.refreshPoPList();
+            }, function errorCallback(response) {
+                console.log("Error");
+                console.log(response);
+                $scope.defaultPoP = obj;
+                $alert({
+                    title: "Error: ",
+                    content: "PoP not created correctly.",
+                    placement: 'top',
+                    type: 'danger',
+                    keyboard: true,
+                    show: true,
+                    container: '#alerts-container',
+                    duration: 5
+                });
             });
             this.$hide();
         };
@@ -129,13 +156,15 @@ angular.module('tNovaApp')
                 template: "views/t-nova/modals/delete.html",
                 show: true,
                 scope: $scope,
-            });;
+            });
         };
 
         $scope.deleteItem = function (popId) {
             AuthService.delete($window.localStorage.token, "admin/dc/" + popId).then(function (data) {
                 console.log(data);
+                $scope.refreshPoPList();
             });
+            this.$hide();
         };
 
     });
