@@ -87,7 +87,6 @@ class ServiceConfigurationController < TnovaManager
     Thread do
 			logger.info "PUBLISHING SERVICES FROM NS MANAGER......... because: " + name
       ServiceConfigurationHelper.publishServices()
-      while not EM.reactor_running?; end
     end
 
     return 200
