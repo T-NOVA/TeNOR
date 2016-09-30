@@ -381,8 +381,6 @@ class Provisioning < VnfProvisioning
       scale_urls = {}
       scale_resources = []
       stack_info['stack']['outputs'].select do |output|
-        logger.info "OUTPUT_KEY.............................................................................................................."
-        logger.info output['output_key']
 
         if output['output_key'] == "private_key"
           private_key = output['output_value']
@@ -431,16 +429,10 @@ class Provisioning < VnfProvisioning
             unless event_info.nil?
               JSON.parse(event_info['template_file']).each do |id, parameter|
 
-                logger.error parameter
-
                 parameter_match = parameter.delete(' ').match(/^get_attr\[(.*)\]$/i).to_a
                 string = parameter_match[1].split(",").map(&:strip)
                 key_string = string.join("#")
                 logger.debug "Key string: " + key_string.to_s + ". Out_key: " + output['output_key'].to_s
-
-                logger.info string[1]
-                logger.info string[2]
-                logger.info string[3]
                 if string[1] == "PublicIp" #DEPRECATED: to be removed when all VNF developers uses the new form
                   vnf_addresses[output['output_key']] = output['output_value']
                   lifecycle_events_values[event] = {} unless lifecycle_events_values.has_key?(event)
@@ -455,11 +447,7 @@ class Provisioning < VnfProvisioning
                     lifecycle_events_values[event][key_string] = output['output_value']
                   end
                 elsif string[1] == "fixed_ips"#PrivateIp
-                  logger.info "FIXED_IPS"
-                  logger.info key_string
                   key_string2 = output['output_key'].partition("#")[2]
-                  logger.info key_string2
-                  logger.info output['output_key']
                   if key_string2 == key_string
                     vnf_addresses[output['output_key']] = output['output_value']
                     lifecycle_events_values[event] = {} unless lifecycle_events_values.has_key?(event)

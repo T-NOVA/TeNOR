@@ -76,7 +76,7 @@ pause(){
 installTenor(){
 	echo "Installing TeNOR..."
 
-	echo "Checking the Ruby version"
+	echo "Checking the Ruby version: " $RUBY_VERSION
 	ruby_version=`ruby -e "print(RUBY_VERSION < '2.2.0' ? '1' : '0' )"`
 	if [[ ! `which ruby` ]]; then
         echo "Ruby is not installed, please install a version higer than 2.2.0."
@@ -97,9 +97,7 @@ installTenor(){
         return
     fi
 
-    printf "\n\nStarting TeNOR installation script\n\n"
-
-    printf "\nBundle install of each NS/VNF Module\n"
+    printf "\n\nStarting TeNOR installation... Please wait, this can take some time.\n\n"
 
     declare -a tenor_ns_url=("ns_manager" "ns_provisioner" "nsd_validator" "ns_monitoring" "ns_catalogue" "sla_enforcement" )
     declare -a tenor_vnf_url=("vnf_manager" "vnf_provisioner" "vnfd_validator" "vnf_monitoring" "vnf_catalogue" )
@@ -166,7 +164,7 @@ configureIps(){
     logstash_port=${logstash_address##*:}
 }
 configureFiles(){
-    printf "\nConfigure NS/VNF modules\n"
+    printf "\nConfiguring NS/VNF modules\n\n"
 
     configureIps
 
@@ -182,15 +180,12 @@ configureFiles(){
         fi
 
         if [ ! -f config/config.yml ]; then
-            printf "Copy Config\n"
             cp config/config.yml.sample config/config.yml
         fi
         if [ -f config/mongoid.yml.sample ] &&  [ ! -f config/mongoid.yml ]; then
-            printf "Copy Mongo Config\n"
             cp config/mongoid.yml.sample config/mongoid.yml
         fi
         if [ -f config/database.yml.sample ] &&  [ ! -f config/database.yml ]; then
-            printf "Copy Cassandra Config\n"
             cp config/database.yml.sample config/database.yml
         fi
 
@@ -214,10 +209,10 @@ configureFiles(){
         cd ../
     done
 
-    printf "\n\nConfiguring UI...\n\n"
+    printf "\nConfiguring UI...\n\n"
     cp ui/app/config.js.sample ui/app/config.js
 
-    printf "\n\nConfiguration done.\n\n"
+    printf "\nConfiguration done.\n\n"
     pause
 }
 

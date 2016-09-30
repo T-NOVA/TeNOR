@@ -84,7 +84,7 @@ class ServiceConfigurationController < TnovaManager
 
 		registerService(request.body.read)
 
-    Thread do
+    Thread.new do
 			logger.info "PUBLISHING SERVICES FROM NS MANAGER......... because: " + name
       ServiceConfigurationHelper.publishServices()
     end

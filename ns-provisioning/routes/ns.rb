@@ -94,7 +94,6 @@ class Provisioner < NsProvisioning
     @instance.save!
 
     #call thread to process instantiation
-    #EM.defer(instantiate(instantiation_info), callback())
     Thread.new do
       instantiate(@instance, nsd, instantiation_info)
     end

@@ -3,7 +3,7 @@
 angular.module('tNovaApp')
     .controller('vnfController', function ($scope, $stateParams, $filter, tenorService, $interval, $modal) {
 
-        var page_num = 2;
+        var page_num = 200;
         var page = 0;
         $scope.dataCollection = [];
         $scope.getVnfList = function (page) {
@@ -14,7 +14,7 @@ angular.module('tNovaApp')
                         return -dt;
                     })
                     page = page++;
-                    $scope.getVnfList(page);
+                    //$scope.getVnfList(page);
                 }
             });
         };

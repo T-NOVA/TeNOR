@@ -42,7 +42,7 @@ class NsdValidator < Sinatra::Application
         outputs: [
             {type: :stdout, formatter: ::Logger::Formatter},
             {type: :file, path: "log/#{settings.environment}.log", sync: true},
-            {host: settings.logstash_host, port: settings.logstash_port}
+            {host: settings.logstash_host, port: settings.logstash_port, sync: false}
         ])
     LogStashLogger.configure do |config|
       config.customize_event do |event|
