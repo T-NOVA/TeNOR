@@ -1,10 +1,10 @@
 {"nsd":{
-  "id": "578e2db5e4b0356a4eb3d2b1",
-  "name": "test_scaling_vtu",
+  "id": "5700000000b0356a4e00001",
+  "name": "test_netfloc",
   "vendor": "1",
   "version": "1",
   "vnfds": [
-    "5976"
+    "70150", "70151"
   ],
   "vnffgd": {
     "vnffgs": [
@@ -19,15 +19,22 @@
           {
             "nfp_id": "nfp0",
             "graph": [
+              "vld0",
               "vld1"
             ],
             "connection_points": [
               "ns_ext_data_in",
-              "VNF#5976:ext_data"
+              "VNF#70150:ext_management",
+              "VNF#70151:ext_management2",
+              "ns_ext_data_in"
             ],
             "constituent_vnfs": [
               {
-                "vnf_ref_id": "5976",
+                "vnf_ref_id": "70150",
+                "vnf_flavor_key_ref": "gold"
+              },
+              {
+                "vnf_ref_id": "70151",
                 "vnf_flavor_key_ref": "gold"
               }
             ]
@@ -39,7 +46,14 @@
   "lifecycle_events": {
     "start": [
       {
-        "vnf_id": "5976",
+        "vnf_id": "70150",
+        "vnf_event": "start",
+        "event_rel_id": "rel_le0",
+        "event_id": "le0",
+        "sla_ref_id": "sla0"
+      },
+      {
+        "vnf_id": "70151",
         "vnf_event": "start",
         "event_rel_id": "rel_le0",
         "event_id": "le0",
@@ -52,11 +66,6 @@
   },
   "vnf_depedency": [],
   "monitoring_parameters": [
-    {
-      "desc": "Availability",
-      "metric": "availability",
-      "unit": "%"
-    }
   ],
   "vld": {
     "number_of_endpoints": 0,
@@ -81,7 +90,7 @@
       },
       {
         "vld_id": "vld1",
-        "alias": "data_in",
+        "alias": "management2",
         "root_requirements": "Unlimited",
         "leaf_requirement": "Unlimited",
         "qos": {
@@ -90,7 +99,7 @@
           "burst": ""
         },
         "connections": [
-          "VNF#5976:ext_data"
+          "VNF#5976:ext_management2"
         ],
         "connectivity_type": "E-LINE",
         "external_access": true,

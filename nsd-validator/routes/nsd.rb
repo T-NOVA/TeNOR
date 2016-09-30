@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 # @see NsdValidator
-class NsdValidator < Sinatra::Application
+class Validator < NsdValidator
 
 	# @method post_nsds
 	# @note You have to specify the correct Content-Type
@@ -25,7 +25,7 @@ class NsdValidator < Sinatra::Application
 	# 	@param [JSON]
 	# 	@example Header for JSON
 	# 		Content-Type: application/json
-	post '/nsds' do
+	post '/' do
 		# Read body content-type
 		content_type = request.content_type
 		body = request.body.read
