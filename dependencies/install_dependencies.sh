@@ -174,12 +174,11 @@ if [ -f ~/go/bin/auth-utils ]; then
   fi
 else
     if [ "$2" = "y" ]; then
-        install=$1
+        install=$2
     else
         echo "Do you want to install gatekeeper? (y/n)"
         read install
     fi
-
     if [ "$install" = "y" ]; then
       echo -e -n "\033[1;31mGatekeeper is not installed. Installing..."
       sudo apt-get install gcc -y
@@ -198,7 +197,7 @@ if [ $RUBY_IS_INSTALLED -eq 0 ]; then
         echo "Please, install a ruby version higher or equal to 2.2.5"
         echo -e -n "\033[1;31mRuby is not installed."
         if [ "$3" = "y" ]; then
-            install=$1
+            install=$3
         else
             echo -e "\nDo you want to install ruby? (y/n)"
             read install
@@ -213,7 +212,7 @@ if [ $RUBY_IS_INSTALLED -eq 0 ]; then
 else
     echo -e -n "\033[1;31mRuby is not installed."
     if [ "$3" = "y" ]; then
-        install=$1
+        install=$3
     else
         echo -e "\nDo you want to install ruby? (y/n)"
         read install
@@ -231,7 +230,7 @@ if [ $RABBITMQ_IS_INSTALLED -eq 0 ]; then
     echo ">>> RabbitMQ already installed"
 else
     if [ "$4" = "y" ]; then
-        install=$1
+        install=$4
     else
         echo "Do you want to install rabbitmq for monitoring? (y/n)"
         read install
