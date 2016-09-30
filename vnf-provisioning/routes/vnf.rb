@@ -247,6 +247,8 @@ class Provisioning < VnfProvisioning
         halt 500, 'mAPI unreachable'
       rescue RestClient::ResourceNotFound
         puts "Already removed from the mAPI."
+      rescue Errno::EHOSTUNREACH
+        puts "mAPI unrechable."
       rescue => e
         logger.error "Error removing vnfr from mAPI."
         puts e

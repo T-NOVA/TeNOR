@@ -99,7 +99,7 @@ class ServiceConfiguration < VNFManager
 
 		#registerService(request.body.read)
 
-		#EM.defer do
+		#Thread.new do
 		#	ServiceConfigurationHelper.publishServices()
 		#end
 

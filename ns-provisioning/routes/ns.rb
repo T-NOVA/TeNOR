@@ -164,7 +164,7 @@ class Provisioner < NsProvisioning
             auth = {:auth => {:tenant => pop_auth['tenant_name'], :username => pop_auth['username'], :password => pop_auth['password'], :url => {:keystone => popUrls[:keystone]}}, :callback_url => callback_url}
             begin
               response = RestClient.post settings.vnf_manager + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/destroy', auth.to_json, :content_type => :json
-            rescue Errno::ECONNREFUSED
+            rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH
               #halt 500, 'VNF Manager unreachable'
             rescue RestClient::ResourceNotFound
               puts "Already removed from the VIM."
