@@ -9,7 +9,7 @@ class App::Proxy < Sinatra::Base
     host = request.env["HTTP_X_HOST"]
 
     begin
-      response = RestClient.get host + "/" + params[:splat][0], :content_type => :json
+      response = RestClient.get host + "/" + params[:splat][0] + "?" + request.env['QUERY_STRING'], :content_type => :json
     rescue Errno::ECONNREFUSED
       halt 500, "Errno::ECONNREFUSED"
     rescue => e
