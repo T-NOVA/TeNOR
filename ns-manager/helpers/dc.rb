@@ -53,6 +53,8 @@ module GatekeeperHelper
 
     begin
       response = RestClient.get "#{settings.gatekeeper}/admin/dc/#{pop_id}", 'X-Auth-Token' => settings.gk_token, :content_type => :json
+    rescue RestClient::ResourceNotFound
+      halt 404, "PoP not found."
     rescue => e
       logger.error e
       if (defined?(e.response)).nil?
@@ -60,6 +62,7 @@ module GatekeeperHelper
         halt 503, "The PoP is not registered in Gatekeeper"
       end
     end
+    puts response
     #popInfo, errors = parse_json(response.body)
     #return 400, errors if errors
 

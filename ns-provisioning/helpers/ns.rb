@@ -71,7 +71,9 @@ module NsProvisioner
       end
 
       auth_info = @instance['authentication'].find { |auth| auth['pop_id'] == resource['pop_id'] }
-      popInfo = getPopInfo(resource['pop_id'])
+      popInfo, errors = getPopInfo(resource['pop_id'])
+      logger.error errors if errors
+      return 400, errors.to_json if errors
       popUrls = getPopUrls(popInfo['info'][0]['extrainfo'])
 
       begin
@@ -380,21 +382,8 @@ module NsProvisioner
         #save WICM stack info in NSR
 
         # Wait for the WICM - SFC provisioning to finish
-        status = "CREATING"
-        count = 0
-        while (status != "CREATE_COMPLETE" && status != "CREATE_FAILED")
-          sleep(5)
-          stack_info, errors = getStackInfo(popUrls[:orch], vnf_info['tenant_id'], stack_name, tenant_token)
-          status = stack_info['stack']['stack_status']
-          count = count +1
-          break if count > 10
-        end
-        if (status == "CREATE_FAILED")
-          logger.error "CREATE_FAILED"
-          logger.error response
-          recoverState(@instance, error)
-          return
-        end
+        stack_info, errors = create_stack_wait(popUrls[:orch], vnf_info['tenant_id'], stack_name, tenant_token, "NS WICM")
+        return 400, errors.to_json if errors
 
         resource_reservation = @instance['resource_reservation']
         resource_reservation << {:wicm_stack => stack, :pop_id => pop_auth['pop_id']}
@@ -433,25 +422,8 @@ module NsProvisioner
       #@instance.update_attribute('network_stack', stack)
 
       logger.info "Checking network stack creation..."
-      status = "CREATING"
-      count = 0
-      while (status != "CREATE_COMPLETE" && status != "CREATE_FAILED")
-        sleep(5)
-        stack_info, errors = getStackInfo(popUrls[:orch], pop_auth['tenant_id'], stack_name, tenant_token)
-        status = stack_info['stack']['stack_status']
-        count = count + 1
-        break if count > 10
-      end
-      if (status == "CREATE_FAILED")
-        logger.error "Error creating the stack."
-        logger.error stack_info
-        logger.error errors
-        @instance.push(lifecycle_event_history: "ERROR_CREATING the NS network")
-        @instance.update_attribute('status', "ERROR_CREATING")
-        @instance.push(audit_log: stack_info)
-        generateMarketplaceResponse(callback_url, generateError(nsd['id'], "FAILED", error))
-        return
-      end
+      stack_info, errors = create_stack_wait(popUrls[:orch], pop_auth['tenant_id'], stack_name, tenant_token, "NS Network")
+      return 400, errors.to_json if errors
 
       logger.info "Network stack CREATE_COMPLETE. Reading network information from stack..."
       sleep(3)

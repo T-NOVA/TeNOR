@@ -98,7 +98,6 @@ module HotHelper
     return 400, errors if errors
 
     return stack_info
-    status = stack_info['stack']['stack_status']
   end
 
   def getStackResources(url, tenant_id, name, tenant_token)
@@ -172,6 +171,36 @@ module HotHelper
     return 400, errors if errors
 
     return hot
+  end
+
+  def create_stack_wait(orch_url, tenant_id, stack_name, tenant_token, type)
+    status = "CREATING"
+    count = 0
+    while (status != "CREATE_COMPLETE" && status != "CREATE_FAILED")
+      sleep(5)
+      stack_info, errors = getStackInfo(orch_url, tenant_id, stack_name, tenant_token)
+      status = stack_info['stack']['stack_status']
+      count = count +1
+      break if count > 10
+    end
+    if (status == "CREATE_FAILED")
+      error = "Error creating the stack: " + type
+      logger.error error
+      logger.error stack_info
+      logger.error errors
+      @instance.push(lifecycle_event_history: "ERROR_CREATING the " + type)
+      @instance.update_attribute('status', "ERROR_CREATING")
+      @instance.push(audit_log: stack_info)
+      generateMarketplaceResponse(callback_url, generateError(nsd['id'], "FAILED", error))
+      logger.error "CRATE FAUILEEEEEEEEEEEEEEEEEEEEEEEEEED. RETURN ERROR CODE AND ERROR MESSAGE."
+      return 400, errors
+    elsif (status == "CREATE_COMPLETE")
+      return stack_info
+    end
+  end
+
+  def create2
+
   end
 
 end
