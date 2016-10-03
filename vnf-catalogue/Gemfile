@@ -8,6 +8,7 @@ gem 'json-schema', '~>2.5'
 gem 'nokogiri', '~>1.6'
 gem 'rest-client', '~>2.0'
 gem 'logstash-logger', '~>0.19.2'
+gem 'rake', '~>11.3.0'
 
 group :development, :test do
 	gem 'rerun'
