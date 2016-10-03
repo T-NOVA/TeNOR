@@ -12,7 +12,7 @@ Vagrant.configure(2) do |config|
     vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
   end
 
-	config.vm.network :forwarded_port, guest: 4000, host: 4000 # tenor port
+	#config.vm.network :forwarded_port, guest: 4000, host: 4000 # tenor port
 	config.vm.network :forwarded_port, guest: 8000, host: 8000 # gatekeeper port
 	config.vm.network :forwarded_port, guest: 9000, host: 9000 # tenor UI port
 
@@ -36,11 +36,10 @@ Vagrant.configure(2) do |config|
     rvm group add rvm vagrant
     rvm fix-permissions
     cd ~
-    git clone https://github.com/T-NOVA/TeNOR.git
-    cd TeNOR/dependencies
-    ./install_dependencies.sh
+    git clone https://github.com/TeNOR/TeNOR.git
+    cd TeNOR/
+    ./dependencies/install_dependencies.sh y y n n
 
-    cd ../
     #. ~/.rvm/scripts/rvm
     ./tenor_install.sh 1
     echo -e '#!/bin/bash \ncd /home/vagrant \ngo/bin/auth-utils &' > ~/gatekeeperd
@@ -49,7 +48,7 @@ Vagrant.configure(2) do |config|
     sudo chown root:root /etc/init.d/gatekeeperd
     sudo update-rc.d gatekeeperd defaults
     sudo update-rc.d gatekeeperd enable
-    sudo service gatekeeperd start
+    #sudo service gatekeeperd start
   SCRIPT
 
   config.vm.provision "shell", inline: $script, privileged: false
