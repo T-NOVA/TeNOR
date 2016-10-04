@@ -6,6 +6,8 @@ declare gatekeeper
 declare logstash_address
 declare cassandra_address
 CURRENT_PROGRESS=0
+bold=$(tput bold)
+normal=$(tput sgr0)
 
 show_menus() {
 	clear
@@ -97,7 +99,7 @@ installTenor(){
         return
     fi
 
-    printf "\n\nStarting TeNOR installation... Please wait, this can take some time.\n\n"
+    printf "\n\n${bold}Starting TeNOR installation... Please wait, this can take some time.${normal}\n\n"
 
     declare -a tenor_ns_url=("ns_manager" "ns_provisioner" "nsd_validator" "ns_monitoring" "ns_catalogue" "sla_enforcement" )
     declare -a tenor_vnf_url=("vnf_manager" "vnf_provisioner" "vnfd_validator" "vnf_monitoring" "vnf_catalogue" )
@@ -128,7 +130,7 @@ installTenor(){
 
     configureFiles
 
-    printf "\n\nTeNOR installation script finished\n\n"
+    printf "\n\n${bold}TeNOR installation script finished${normal}\n\n"
     exit
 }
 
@@ -139,6 +141,9 @@ configureIps(){
     GATEKEEPER="127.0.0.1:8000"
     LOGSTASH_ADDRESS="127.0.0.1:5228"
     CASSANDRA_ADDRESS="127.0.0.1"
+
+    echo -e "${bold}Please, insert the IPs and ports used in each service. In the case you have installed everything locally (localhost) you can press [ENTER] without write anything${normal}.\n\n"
+
 
     echo "Type the IP where is installed TeNOR, followed by [ENTER]:"
     read tenor_ip
@@ -321,7 +326,7 @@ read_options(){
         choice=$1
     else
         local choice
-	    read -p "Enter choice [ 1 - 7 ] " choice
+	    read -p "${bold}Enter choice [ 1 - 7 ]${normal} " choice
     fi
 
 	case $choice in

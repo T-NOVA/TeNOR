@@ -1,3 +1,9 @@
+## 0.5.1
+- UI PoP view. Hide remove modal and refresh list of PoPs.
+- Updated Installation Dependencies script, Dockerfile and Vagrantfile.
+- UI Fix Proxy in get method. Now forwarding query params.
+- Fix PoP not found in NS Provisioning.
+
 ## 0.5.0
 - UI changed Grunt to Ruby Sinatra App.
 - Changed Sinatra Server, Thin to Puma.
