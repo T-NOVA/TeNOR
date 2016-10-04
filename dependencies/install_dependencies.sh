@@ -1,4 +1,16 @@
 #!/bin/bash
+## Version: 0.1
+## Author: Josep Batallé
+## Organization: i2CAT
+
+## Utilization:
+## ./install_dependencies.sh  ->  Ask if wants to install each module.
+## ./install_dependencies.sh  y n n y  ->  Install some modules without ask. y => Yes, n => No
+## $1 -> MongoDB
+## $2 -> Gatekeeper
+## $3 -> Ruby
+## $4 -> RabbitMq
+##
 
 current_dir=$(pwd)
 
@@ -68,11 +80,12 @@ function install_gatekeeper {
     echo "Installing gatekeeper..."
     dir=$pwd
     cd $HOME
+    echo $HOME
 
     echo "Downloading and installing go runtime from google servers, please wait ..."
     wget https://storage.googleapis.com/golang/go1.4.2.linux-amd64.tar.gz
     sudo tar -C /usr/local -xzf go1.4.2.linux-amd64.tar.gz
-
+    rm go1.4.2.linux-amd64.tar.gz
     sudo -k
 
     echo "configuring your environment for go projects ..."
@@ -134,42 +147,6 @@ function install_ruby {
     gem install bundler invoker
     echo "Installation of Bundler done."
 }
-function install_npm {
-    echo "Installing NodeJS and NPM..."
-    sudo apt-get install -y nodejs-legacy npm
-    echo "Installation of NodeJS and NPM done."
-
-    echo "Installing Grunt and Bower..."
-    sudo npm install -g grunt-cli bower
-
-    echo -e "Moving to UI folder...."
-
-    pwd
-
-    dir="$(basename $current_dir)"
-    if [ "$dir" = "dependencies" ]; then
-        cd ../ui
-    elif [ "$dir" = "TeNOR" ]; then
-        cd ui
-    else
-        echo "Script executed outside TeNOR folder. Install the UI manually or rerun the script."
-        return
-    fi
-
-    echo "Installing Grunt and Bower locally in UI folder."
-    sudo npm install
-
-    bower install
-
-    echo "Installing Compass..."
-    gem install foreman compass
-    echo "Installation of Compass done."
-
-    echo -e "Moving to dependencies folder...."
-    cd ../dependencies
-    echo "NPM dependencies done."
-}
-
 
 echo -e -n "\033[1;36mChecking if mongodb is installed"
 mongod --version > /dev/null 2>&1
@@ -177,8 +154,12 @@ MONGO_IS_INSTALLED=$?
 if [ $MONGO_IS_INSTALLED -eq 0 ]; then
     echo ">>> MongoDB already installed"
 else
-    echo "Do you want to install mongodb? (y/n)"
-    read install
+    if [ "$1" = "y" ]; then
+        install=$1
+    else
+        echo "Do you want to install mongodb? (y/n)"
+        read install
+    fi
     if [ "$install" = "y" ]; then
       echo -e -n "\033[1;31mMongodb is not installed... Installing..."
       install_mongodb
@@ -192,8 +173,12 @@ if [ -f ~/go/bin/auth-utils ]; then
     cp go/src/github.com/piyush82/auth-utils/gatekeeper.cfg ~
   fi
 else
-    echo "Do you want to install gatekeeper? (y/n)"
-    read install
+    if [ "$2" = "y" ]; then
+        install=$2
+    else
+        echo "Do you want to install gatekeeper? (y/n)"
+        read install
+    fi
     if [ "$install" = "y" ]; then
       echo -e -n "\033[1;31mGatekeeper is not installed. Installing..."
       sudo apt-get install gcc -y
@@ -202,7 +187,7 @@ else
 fi
 
 echo -e -n "\033[1;36mChecking if ruby is installed"
-. ~/.rvm/scripts/rvm
+. ~/.rvm/scripts/rvm > /dev/null 2>&1
 ruby --version > /dev/null 2>&1
 RUBY_IS_INSTALLED=$?
 if [ $RUBY_IS_INSTALLED -eq 0 ]; then
@@ -211,8 +196,12 @@ if [ $RUBY_IS_INSTALLED -eq 0 ]; then
         echo -e "\nRuby version: " $RUBY_VERSION
         echo "Please, install a ruby version higher or equal to 2.2.5"
         echo -e -n "\033[1;31mRuby is not installed."
-        echo -e "\nDo you want to install ruby? (y/n)"
-        read install
+        if [ "$3" = "y" ]; then
+            install=$3
+        else
+            echo -e "\nDo you want to install ruby? (y/n)"
+            read install
+        fi
         if [ "$install" = "y" ]; then
             install_ruby
             . ~/.rvm/scripts/rvm
@@ -222,8 +211,12 @@ if [ $RUBY_IS_INSTALLED -eq 0 ]; then
     fi
 else
     echo -e -n "\033[1;31mRuby is not installed."
-    echo -e "\nDo you want to install ruby? (y/n)"
-    read install
+    if [ "$3" = "y" ]; then
+        install=$3
+    else
+        echo -e "\nDo you want to install ruby? (y/n)"
+        read install
+    fi
     if [ "$install" = "y" ]; then
         install_ruby
         . ~/.rvm/scripts/rvm
@@ -236,8 +229,13 @@ RABBITMQ_IS_INSTALLED=$?
 if [ $RABBITMQ_IS_INSTALLED -eq 0 ]; then
     echo ">>> RabbitMQ already installed"
 else
-    echo "Do you want to install rabbitmq for monitoring? (y/n)"
-    read install
+    if [ "$4" = "y" ]; then
+        install=$4
+    else
+        echo "Do you want to install rabbitmq for monitoring? (y/n)"
+        read install
+    fi
+
     if [ "$install" = "y" ]; then
       echo -e -n "\033[1;31mRabbitmq is not installed... Installing..."
       install_rabbitmq
@@ -250,3 +248,5 @@ echo "ruby            $(echo_if $(program_is_installed ruby))"
 echo "bundler         $(echo_if $(program_is_installed bundler))"
 echo "gatekeeper      $(echo_if $(program_is_installed $gatekeeper_script))"
 echo "rabbitmq             $(echo_if $(program_is_installed rabbitmq-server))"
+
+. ~/.rvm/scripts/rvm

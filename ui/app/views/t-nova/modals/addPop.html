@@ -16,31 +16,31 @@
                     <div class="box-body">
                         <div class="form-group">
                             <label for="msg">Description</label>
-                            <input ng-model="dc_default.msg" type="text" class="form-control" id="message" value="" />
+                            <input ng-model="dc_default.msg" type="text" class="form-control" id="msg" value="" placeholder="description" />
                         </div>
                     </div>
                     <div class="box-body">
                         <div class="form-group">
                             <label for="tenantName">Tenant name (admin tenant)</label>
-                            <input ng-model="dc_default.tenantName" type="text" class="form-control" id="message" value="" />
+                            <input ng-model="dc_default.tenantName" type="text" class="form-control" id="tenantName" value="" />
                         </div>
                     </div>
                     <div class="box-body">
                         <div class="form-group">
                             <label for="adminName">Admin user</label>
-                            <input ng-model="dc_default.adminName" type="text" class="form-control" id="adminuser" value="admin" />
+                            <input ng-model="dc_default.adminName" type="text" class="form-control" id="adminName" value="admin" />
                         </div>
                     </div>
                     <div class="box-body">
                         <div class="form-group">
                             <label for="adminPass">Admin pass</label>
-                            <input ng-model="dc_default.adminPass" type="password" class="form-control" id="adminpass" value="" />
+                            <input ng-model="dc_default.adminPass" type="password" class="form-control" id="adminPass" value="" />
                         </div>
                     </div>
                     <div class="box-body">
                         <div class="form-group">
                             <label for="openstack_ip">Openstack IP</label>
-                            <input ng-model="openstack_ip" type="text" class="form-control" id="openstack_ip" value="8.8.8.8" ng-change="updateOpenstackIP(openstack_ip)" />
+                            <input ng-model="openstack_ip" type="text" class="form-control" id="openstack_ip" value="8.8.8.8" ng-change="updateOpenstackIP(openstack_ip)" placeholder="define openstack IP"/>
                         </div>
                     </div>
                     <div class="box-body">

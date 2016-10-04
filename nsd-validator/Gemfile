@@ -6,6 +6,7 @@ gem 'puma', '3.6.0'
 gem 'json', '~>1.8'
 gem 'json-schema', '~>2.5'
 gem 'logstash-logger', '~>0.19.2'
+gem 'rake', '~>11.3.0'
 
 # Gatekeeper auth gem
 gem 'sinatra-gkauth', '~>0.3.0', path: '../sinatra-gkauth-gem'

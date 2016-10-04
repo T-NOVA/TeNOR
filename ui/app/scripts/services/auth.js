@@ -67,7 +67,7 @@ angular.module('tNovaApp')
                 },
                 function (response) {
                     console.log(response);
-                    deferred.resolve(response.data);
+                    deferred.reject(response.data);
                 }
             );
             return deferred.promise;
@@ -88,7 +88,7 @@ angular.module('tNovaApp')
                 },
                 function (response) {
                     console.log(response);
-                    deferred.resolve(response.data);
+                    deferred.reject(response.data);
                 }
             );
             return deferred.promise;
@@ -109,7 +109,7 @@ angular.module('tNovaApp')
                 },
                 function (response) {
                     console.log(response);
-                    deferred.resolve(response.data);
+                    deferred.reject(response.data);
                 }
             );
             return deferred.promise;

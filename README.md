@@ -3,39 +3,39 @@
 TeNOR is the NFV Orchestrator platform developed by the [T-NOVA](http://www.t-nova.eu) project, responsible for managing the entire NFV lifecycle service.
 
 ## Prerequisites
-- Gatekeeper (https://github.com/piyush82/auth-utils). Used for register TeNOR modules and save PoP information.
-- Service Mapping (https://github.com/T-NOVA/TeNOR/tree/master/service-mapper). Used when more than 1 PoP is available.
-- Infrastructure Repository (https://github.com/T-NOVA/infrastructure-repository). Used by the UI and the Service Mapping algorithm.
-- Middleware API (https://github.com/T-NOVA/mAPI) (optional but required for start/stop the Lifecycle events inside the VNFS)
-- VIM Monitoring (https://github.com/T-NOVA/vim-monitoring) (optional)
-- Netfloc (https://github.com/T-NOVA/netfloc) (optional)
-- Openstack Juno version or higher
-
-## Requirements
 - Ruby >= 2.2.5 (installation provided in dependencies/install_dependencies.sh)
 - Bundler (installation provided in dependencies/install_dependencies.sh)
+- Gatekeeper (https://github.com/piyush82/auth-utils). (installation provided in dependencies/install_dependencies.sh)
 - MongoDB (installation provided in dependencies/install_dependencies.sh)
+- Openstack Juno version or higher
+
+## Optional Requirements
+- Service Mapping (https://github.com/T-NOVA/TeNOR/tree/master/service-mapper). Used when more than 1 PoP is available.
+- Infrastructure Repository (https://github.com/T-NOVA/infrastructure-repository). Used by the UI and the Service Mapping algorithm.
+- Middleware API (https://github.com/T-NOVA/mAPI) (required for start/stop the Lifecycle events inside the VNFS)
+- VIM Monitoring (https://github.com/T-NOVA/vim-monitoring). Used for receive the monitoring from each VNF.
+- Netfloc (https://github.com/T-NOVA/netfloc). Used for the VNFFG.
+- WICM (https://github.com/T-NOVA/WICM).
 - Apache Cassandra (optional, used for monitoring) (installation provided in dependencies/install_cassandra.sh)
 - Logstash (optional) & ElasticSearch (optional)
-- Byobu (optional) 
 - RabbitMq (optional, used for monitoring) (installation provided in dependencies/install_dependencies.sh)
-- Openstack with Neutron ML2 Port Security plugin. Requires a change in /etc/nova/nova.conf with the following field: `security_group_api = nova`
 
 #Getting started
 
 ## Steps
-1. Install the minimum requirements (Ruby, Gatekeeper and MongoDB). Installation of these requirements provided in the `dependencies` folder. Use the `install_dependencies.sh` script if you want to install it automatically.
+1. Install the prerequisites (Ruby, Gatekeeper and MongoDB). The installation of these requirements is provided a script inside the `dependencies` folder. Use the `install_dependencies.sh` script if you want to install it automatically.
 2. Install TeNOR (internal dependencies and configurations). Installation script provided in the root folder `tenor_install.sh`.
 3. Start TeNOR.
-4. Register the internal modules (each microservice) and external modules (Mapping, mAPI, WICM, VIMMonitoring, Netfloc...).
-5. Register a Point of Presence (PoP) inserting the Openstack credentials into Gatekeeper.
+4. Register the internal modules (automatic) and external modules (Mapping, mAPI, WICM, VIMMonitoring, Netfloc...).
+5. Register a Network Function Virtualisation Infrastructure Point of Presence (NFVI-PoP) inserting the Openstack credentials into Gatekeeper.
+6. Test deploying a sample NSD/VNFD to the inserted NFVI-PoP.
 
 ## Installation
 We provide an installation script for Ubuntu 14.04 that helps with the installation of Ruby, Gatekeeper and MongoDB.
 
-In order to install Ruby, the MongoDB, Gatekeeper and NodeJS execute the following script inside the dependencies folder:
+In order to install Ruby, the MongoDB and Gatekeeper execute the following script:
 ```
-./install_dependencies.sh
+./dependencies/install_dependencies.sh
 ```
 
 For each requirement, the script will ask if you want to install it or not. Write `y` or `n` and press the Enter Key.
@@ -45,35 +45,52 @@ Once Ruby is installed (you can be sure of that using `ruby -v` command in the t
 ./tenor_install.sh
 ```
 
-and choose a number in the menu [1-7].
+A menu will appear and you can choose a number in the menu [1-7].
 
-For TeNOR installation, insert the number 1 and press the Enter Key. The installation will start automatically installing the Ruby Gem dependencies. After few minutes, the script will ask you a set of questions regarding the location of the MongoDB, Gatekeeper and Logstash. 
+For TeNOR installation, insert the number 1 and press the Enter Key. The installation will start automatically installing the Ruby Gem dependencies. After few minutes, the script will ask you a set of questions regarding the location of the MongoDB, Gatekeeper and Logstash. In the case of insert an emty values, the script will use the default values (localhost). 
 
-**Make sure that you have installed a Ruby version >= 2.2 and the `bundle` command is installed.**
+**Make sure that you have installed a Ruby version >= 2.2.5 and the `bundle` command is installed.**
 
 Once the installation finishes, TeNOR needs to be [started](#execution)
-
-## Docker (alternative installation)
-
-A Dockerfile is provided that generates a container with TeNOR, Gatekeeper and Mongodb installed.
 
 ## Vagrant (alternative installation)
 
 A Vagrantfile is provided with TeNOR, Gatekeeper and Mongodb installed.
+
+## Docker (alternative installation)
+
+A Dockerfile is provided that generates a container with TeNOR, Gatekeeper and Mongodb installed. Once is running, all the components are installed and running.
+
+1. Build it with:
+    
+    ````
+    docker build -t tnova/tenor .
+    ````
+2. Run the container with: 
+
+    ````
+    docker run -itd -p 4000:4000 -p 8000:8000 -p 9000:9000 -v /opt/mongo:/var/lib/mongodb -v /opt/gatekeeper:/root/gatekeeper tnova/tenor bash
+    ````
+3. Then, you can test TeNOR ([Test if TeNOR is installed and running](#test-if-tenor-is-installed-and-running)), and you can access to the command line with:
+
+    ````
+    docker exec -i -t $DOCKER_ID /bin/bash
+    ````
 
 ## Execution
 
 TeNOR can be executed in two ways:
 
 1. Using Invoker (http://invoker.codemancers.com) ([Help here](#using-invoker))
-```
-invoker start invoker.ini
-```
 
+    ````
+    invoker start invoker.ini
+    ````
 2. Using Byobu (modern Tmux). (sudo apt-get install byobu)  Useful for development purposes. ([Help here](#using-byobu))
-```
-./tenor_development.sh
-```
+
+    ````
+    ./tenor_development.sh
+    ````
 
 How to test if TeNOR is installed [Test if TeNOR is installed and running](#test-if-tenor-is-installed-and-running)
 
@@ -108,17 +125,17 @@ The registration of modules can be done with in three ways:
 
 The content of the loadModules.sh is a set of CuRL request to the NS Manager inserting the IP and PORT of each microservice. When the NS Manager recevies the requests, automatically register each module into Gatekeeper in order to generate a microservice-token.
 
-## Loading PoP information in Gatekeeper
+## Loading NFVI-PoP information in Gatekeeper
 
 The PoP information is saved in Gatekeeper. This can be inserted in three manners:
 
  - Using the TeNOR User Interface:
  `Configuration -> PoPs`
  - Using the TeNOR script:
-  Execute the tenor_install.sh script and choose the option **4. Add new PoP**
+  Execute the tenor_install.sh script and choose the option `4. Add new PoP`
  - Using the CLI:
 
- First of all, define the following variables:
+ First of all, define the following variables (you can copy and paste in the command prompt):
 
 ```
  GATEKEEPER_HOST=localhost:8000
@@ -180,21 +197,32 @@ The next step is add the dummy descriptors to TeNOR system using the API. This s
 In order to test TeNOR functionality, you can follow the next steps (you can copy and paste in the command prompt):
 
 1. Add the VNFD in the VNF catalogue
-```
- curl -XPOST localhost:4000/vnfs -H "Content-Type: application/json" --data-binary @vnfd-validator/assets/samples/vnfd_example.json 
-```
+
+    ````
+    curl -XPOST localhost:4000/vnfs -H "Content-Type: application/json" --data-binary @vnfd-validator/assets/samples/vnfd_example.json
+    ````
 2. Add the NSD in the NS catalogue
-```
- curl -XPOST localhost:4000/network-services -H "Content-Type: application/json" --data-binary @nsd-validator/assets/samples/nsd_example.json 
-```
+
+    ````
+    curl -XPOST localhost:4000/network-services -H "Content-Type: application/json" --data-binary @nsd-validator/assets/samples/nsd_example.json
+    ````
 3. Get the NSD ID (identification) from the NS Catalogue (getting the first NSD, so if more NSDs are defined, this command needs to be modified accordingly)
-```
- ns_id=$(curl -XGET localhost:4000/network-services | python -c 'import json,sys;obj=json.load(sys.stdin);print obj[0]["nsd"]["id"]') 
-```
+
+    ````
+    ns_id=$(curl -XGET localhost:4000/network-services | python -c 'import json,sys;obj=json.load(sys.stdin);print obj[0]["nsd"]["id"]')
+    ````
 4. Instantiate the NSD using the NSD ID extracted from the catalogue
-```
- curl -XPOST localhost:4000/ns-instances -H "Content-Type: application/json" --data '{"ns_id": "'$ns_id'", "callbackUrl": "https://httpbin.org/post", "flavour": "basic"}' 
-```
+
+    ````
+    curl -XPOST localhost:4000/ns-instances -H "Content-Type: application/json" --data '{"ns_id": "'$ns_id'", "callbackUrl": "https://httpbin.org/post", "flavour": "basic"}'
+    ````
+
+## Write a Lifecycle events
+In each VNFD can have 5 types of lifecycle event: start, stop, restart, scaling_out and scaling_in. For each type, some data can be requested, but basically, the different template is in the scaling actions.
+
+ - Get PublicIp of port in a VDU: get_attr[vdu0,CP5v7d,PublicIp]
+ - Get PrivateIp of port in a VDU: get_attr[CPr3k7,fixed_ips,0,ip_address]
+ - Get the last VDU for scaling-out: get_attr[vdu1,vdus]
 
 # Development
 

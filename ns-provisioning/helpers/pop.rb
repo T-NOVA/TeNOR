@@ -26,14 +26,21 @@ module PopHelper
   def getPopInfo(pop_id)
     begin
       response = RestClient.get "#{settings.manager}/gatekeeper/dc/#{pop_id}", :content_type => :json
+    rescue RestClient::ResourceNotFound
+      logger.error "PoP not found."
+      return 400, "PoP not found."
     rescue => e
       logger.error e
       puts "Raise...."
       return 400, "no exists"
       raise 'Pop id no exists'
     end
+    puts "ERROOOOOR"
+    puts response
     popInfo, errors = parse_json(response)
     return 400, errors if errors
+
+    puts popInfo
 
     return popInfo
   end

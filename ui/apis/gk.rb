@@ -66,7 +66,7 @@ class App::Gk < Sinatra::Base
     rescue => e
       puts "ERROR"
       puts e
-      halt 400
+      halt e.response.code, e.response.body
     end
     return response
   end
