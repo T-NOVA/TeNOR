@@ -3,6 +3,7 @@
 angular.module('tNovaApp')
     .controller('vnfController', function ($scope, $stateParams, $filter, tenorService, $interval, $modal) {
 
+        $scope.descriptor = {};
         var page_num = 200;
         var page = 0;
         $scope.dataCollection = [];
@@ -56,6 +57,39 @@ angular.module('tNovaApp')
                 $interval.cancel(promise);
             }
         });
+
+        $scope.uploadDialog = function(){
+            $modal({
+                title: "Upload a VNFD",
+                template: "views/t-nova/modals/upload.html",
+                show: true,
+                scope: $scope,
+            });
+        }
+
+        $scope.uploadFile = function(files){
+            var fd = new FormData();
+            //Take the first selected file
+            fd.append('file', files[0]);
+            var obj = JSON.parse(files);
+            console.log(obj);
+            tenorService.post('vnfs', obj).then(function (data) {
+                console.log(data);
+                $scope.getVnfList(page);
+            });
+            this.$hide();
+        }
+
+        $scope.loadFile = function (element) {
+            var file = element.files[0];
+            var reader = new FileReader();
+            reader.onload = function () { //event waits the file content
+                $scope.$apply(function () {
+                    $scope.descriptor = JSON.stringify(JSON.parse(reader.result), undefined, 4); //JSON.parse(reader.result);
+                });
+            };
+            reader.readAsText(file);
+        };
 
     })
     .controller('vnfInstancesController', function ($scope, $location, $filter, tenorService, $interval, $modal) {

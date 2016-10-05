@@ -14,8 +14,9 @@ angular.module('tNovaApp')
                         console.log("Set bigger")
                         element.css('height', windowElement.height() - 200);
                     } else {
-                        console.log("Set samll")
-                        element.css('height', scrollHeight);
+                        console.log("Set small")
+                        if(scrollHeight == 22) element.css('height', windowElement.height() - 200);
+                        else element.css('height', scrollHeight);
                     }
                 });
             }
