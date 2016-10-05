@@ -45,7 +45,7 @@ class ScalingController< TnovaManager
     begin
       instantiation_info, errors = parse_json(RestClient.get @service.host + ":" + @service.port.to_s + '/ns-instances/' + params['nsr_id'].to_s, :accept => :json)
     rescue Errno::ECONNREFUSED
-      halt 500, 'VNF Catalogue unreachable'
+      halt 500, 'NS Provisioning unreachable'
     rescue => e
       logger.error e
       logger.error e.response
@@ -105,7 +105,7 @@ class ScalingController< TnovaManager
     begin
       instantiation_info, errors = parse_json(RestClient.get @service.host + ":" + @service.port.to_s + '/ns-instances/' + params['nsr_id'].to_s, :accept => :json)
     rescue Errno::ECONNREFUSED
-      halt 500, 'VNF Catalogue unreachable'
+      halt 500, 'NS Provisioning unreachable'
     rescue => e
       logger.error e
       logger.error e.response

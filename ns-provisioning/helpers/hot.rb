@@ -24,9 +24,8 @@ module HotHelper
             error = { 'info' => 'HOT Generator unrechable.' }
             return 500, error
         rescue => e
-            puts e
-            logger.error 'RESPONSEEEE?'
-            logger.error 'E IS NUILLL' if e.nil?
+            logger.error e
+            logger.error 'E IS NIL' if e.nil?
             logger.error 'RESPONSE IS NIL?' if e.response.nil?
             # logger.error e.response
             return 500, e
@@ -184,9 +183,8 @@ module HotHelper
             @instance.push(lifecycle_event_history: 'ERROR_CREATING the ' + type)
             @instance.update_attribute('status', 'ERROR_CREATING')
             @instance.push(audit_log: stack_info)
-            generateMarketplaceResponse(callback_url, generateError(nsd['id'], 'FAILED', error))
             logger.error 'Creation of Network Stack failed.'
-            return 400, errors
+            return 400, error
         elsif status == 'CREATE_COMPLETE'
             return stack_info
         end

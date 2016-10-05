@@ -45,12 +45,6 @@ module GatekeeperHelper
   # @return [String] the object converted into the expected format.
   def getPopInfo(pop_id)
     AuthenticationHelper.loginGK()
-    #popList = getPopList()
-    #if popList.index(popId).nil?
-#      halt 400, "Pop id error"
-#    end
-#    pop_id = popList.index(popId) + 1
-
     begin
       response = RestClient.get "#{settings.gatekeeper}/admin/dc/#{pop_id}", 'X-Auth-Token' => settings.gk_token, :content_type => :json
     rescue RestClient::ResourceNotFound
@@ -62,9 +56,6 @@ module GatekeeperHelper
         halt 503, "The PoP is not registered in Gatekeeper"
       end
     end
-    puts response
-    #popInfo, errors = parse_json(response.body)
-    #return 400, errors if errors
 
     return response
   end

@@ -91,7 +91,7 @@ module NsProvisioner
         @instance['vnfrs'].each do |vnf|
             logger.error 'Delete users for VNFR: ' + vnf['vnfr_id'].to_s + ' from PoP: ' + vnf['pop_id'].to_s
 
-            popInfo = getPopInfo(vnf['pop_id'])
+            popInfo, errors = getPopInfo(vnf['pop_id'])
             logger.error errors if errors
             return 400, errors.to_json if errors
             popUrls = getPopUrls(popInfo['info'][0]['extrainfo'])
@@ -236,21 +236,27 @@ module NsProvisioner
             if @instance['project'].nil?
                 begin
                     token = openstackAdminAuthentication(popUrls[:keystone], popUrls[:tenant], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
-
+                    
                     if settings.default_tenant
+                        pop_auth['username'] = settings.default_user_name
                         pop_auth['tenant_name'] = settings.default_tenant_name
                         pop_auth['tenant_id'] = getTenantId(popUrls[:keystone], pop_auth['tenant_name'], token)
+                        pop_auth['user_id'] = getUserId(popUrls[:keystone], pop_auth['username'], token)
+                        pop_auth['password'] = 'secretsecret'
                         if pop_auth['tenant_id'].nil?
                             pop_auth['tenant_id'] = createTenant(popUrls[:keystone], pop_auth['tenant_name'], token)
+                        end
+                        if pop_auth['user_id'].nil?
+                            pop_auth['user_id'] = createUser(popUrls[:keystone], pop_auth['tenant_id'], pop_auth['username'], pop_auth['password'], token)
                         end
                     else
                         pop_auth['tenant_name'] = 'tenor_instance_' + @instance['id'].to_s
                         pop_auth['tenant_id'] = createTenant(popUrls[:keystone], pop_auth['tenant_name'], token)
+                        pop_auth['username'] = 'user_' + @instance['id'].to_s
+                        pop_auth['password'] = 'secretsecret'
+                        pop_auth['user_id'] = createUser(popUrls[:keystone], pop_auth['tenant_id'], pop_auth['username'], pop_auth['password'], token)
                     end
 
-                    pop_auth['username'] = 'user_' + @instance['id'].to_s
-                    pop_auth['password'] = 'secretsecret'
-                    pop_auth['user_id'] = createUser(popUrls[:keystone], pop_auth['tenant_id'], pop_auth['username'], pop_auth['password'], token)
 
                     logger.info 'Created user with admin role.'
                     putRoleAdmin(popUrls[:keystone], pop_auth['tenant_id'], pop_auth['user_id'], token)
