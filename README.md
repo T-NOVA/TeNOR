@@ -17,7 +17,7 @@ TeNOR is the NFV Orchestrator platform developed by the [T-NOVA](http://www.t-no
 - Netfloc (https://github.com/T-NOVA/netfloc). Used for the VNFFG.
 - WICM (https://github.com/T-NOVA/WICM).
 - Apache Cassandra (optional, used for monitoring) (installation provided in dependencies/install_cassandra.sh)
-- Logstash (optional) & ElasticSearch (optional)
+- ElasticSearch (optional)
 - RabbitMq (optional, used for monitoring) (installation provided in dependencies/install_dependencies.sh)
 
 #Getting started
@@ -47,7 +47,7 @@ Once Ruby is installed (you can be sure of that using `ruby -v` command in the t
 
 A menu will appear and you can choose a number in the menu [1-7].
 
-For TeNOR installation, insert the number 1 and press the Enter Key. The installation will start automatically installing the Ruby Gem dependencies. After few minutes, the script will ask you a set of questions regarding the location of the MongoDB, Gatekeeper and Logstash. In the case of insert an emty values, the script will use the default values (localhost). 
+For TeNOR installation, insert the number 1 and press the Enter Key. The installation will start automatically installing the Ruby Gem dependencies. After few minutes, the script will ask you a set of questions regarding the location of the MongoDB, Gatekeeper. In the case of insert an emty values, the script will use the default values (localhost).
 
 **Make sure that you have installed a Ruby version >= 2.2.5 and the `bundle` command is installed.**
 
@@ -62,11 +62,11 @@ A Vagrantfile is provided with TeNOR, Gatekeeper and Mongodb installed.
 A Dockerfile is provided that generates a container with TeNOR, Gatekeeper and Mongodb installed. Once is running, all the components are installed and running.
 
 1. Build it with:
-    
+
     ````
     docker build -t tnova/tenor .
     ````
-2. Run the container with: 
+2. Run the container with:
 
     ````
     docker run -itd -p 4000:4000 -p 8000:8000 -p 9000:9000 -v /opt/mongo:/var/lib/mongodb -v /opt/gatekeeper:/root/gatekeeper tnova/tenor bash
@@ -109,7 +109,7 @@ Byobu is a modern Tmux that allows to execute multiple shells in one terminal. T
 Basic keys for using Byobu:
 
  - F3 and F4 for navigate through the windows
- - F6 exit from Byobu 
+ - F6 exit from Byobu
 
 ## Registering modules in TeNOR and Gatekeeper
 TeNOR has a microservice architecture and requires a registration of each microservices to the system. The NS Manager (API gateway) is the responsible to manage this registration. The internal TeNOR modules are managed automatically, but external modules like mAPI, WICM, Infrastructure repository and Netfloc needs to be registered.

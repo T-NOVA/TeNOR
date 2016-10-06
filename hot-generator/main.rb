@@ -21,7 +21,7 @@ ENV['RACK_ENV'] ||= 'development'
 require 'sinatra'
 require 'sinatra/config_file'
 require 'yaml'
-require 'logstash-logger'
+require 'fluent-logger'
 require 'securerandom'
 
 # Require the bundler gem and then call Bundler.require to load in all gems listed in Gemfile.
@@ -40,6 +40,8 @@ class HotGenerator < Sinatra::Application
 
   configure do
     # Configure logging
+    logger = FluentLoggerSinatra::Logger.new('myapp', 'delayed_job', '127.0.0.1', 24224)
+logger.info("Delayed Job running on port ###")
     logger = LogStashLogger.new(
         type: :multi_logger,
         outputs: [
