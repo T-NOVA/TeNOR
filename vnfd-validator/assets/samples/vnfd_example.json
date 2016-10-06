@@ -61,21 +61,6 @@
             "metric": "cpuidle",
             "unit": "%",
             "desc": "CPU Idle"
-          },
-          {
-            "metric": "cpu_util",
-            "unit": "%",
-            "desc": "CPU Utilization"
-          },
-          {
-            "metric": "fsfree",
-            "unit": "GB",
-            "desc": "Free Storage"
-          },
-          {
-            "metric": "memfree",
-            "unit": "MB",
-            "desc": "Free Memory"
           }
         ],
         "scale_in_out": {
