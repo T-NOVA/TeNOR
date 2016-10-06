@@ -17,6 +17,7 @@ sla_enforcement: http://localhost:4016
 
 #optional fields
 default_tenant: true
+default_user_name: tenor_user
 default_tenant_name: tenor_tenant
 
 dependencies: [ns_monitoring, vnf_manager, wicm, mAPI, mapping, hot_generator, infr_repository, netfloc]

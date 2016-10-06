@@ -109,10 +109,10 @@ module NsProvisioner
                 #      deleteSecurityGroup(popUrls[:compute], vnf_info['tenant_id'], vnf_info['security_group_id'], tenant_token)
             end
 
-            logger.info "Removing user '" + auth_info['user_id'].to_s + "'..."
-            deleteUser(popUrls[:keystone], auth_info['user_id'], token)
-
             unless settings.default_tenant
+                logger.info "Removing user '" + auth_info['user_id'].to_s + "'..."
+                deleteUser(popUrls[:keystone], auth_info['user_id'], token)
+
                 logger.info "Removing tenant '" + auth_info['tenant_id'].to_s + "'..."
                 # deleteTenant(popUrls[:keystone], auth_info['tenant_id'], token)
             end
@@ -235,19 +235,22 @@ module NsProvisioner
 
             if @instance['project'].nil?
                 begin
-                    token = openstackAdminAuthentication(popUrls[:keystone], popUrls[:tenant], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
-                    
+                    token, errors = openstackAdminAuthentication(popUrls[:keystone], popUrls[:tenant], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
+                    logger.error errors if errors
+                    @instance.update_attribute('status', 'ERROR_CREATING') if errors
+                    return 400, errors.to_json if errors
+
                     if settings.default_tenant
                         pop_auth['username'] = settings.default_user_name
                         pop_auth['tenant_name'] = settings.default_tenant_name
                         pop_auth['tenant_id'] = getTenantId(popUrls[:keystone], pop_auth['tenant_name'], token)
-                        pop_auth['user_id'] = getUserId(popUrls[:keystone], pop_auth['username'], token)
+                        pop_auth['user_id'] = getUserId(popUrls[:keystone],  pop_auth['username'], token)
                         pop_auth['password'] = 'secretsecret'
                         if pop_auth['tenant_id'].nil?
                             pop_auth['tenant_id'] = createTenant(popUrls[:keystone], pop_auth['tenant_name'], token)
                         end
                         if pop_auth['user_id'].nil?
-                            pop_auth['user_id'] = createUser(popUrls[:keystone], pop_auth['tenant_id'], pop_auth['username'], pop_auth['password'], token)
+                            pop_auth['user_id'] = createUser(popUrls[:keystone], pop_auth['tenant_id'],  pop_auth['username'], pop_auth['password'], token)
                         end
                     else
                         pop_auth['tenant_name'] = 'tenor_instance_' + @instance['id'].to_s
@@ -257,12 +260,24 @@ module NsProvisioner
                         pop_auth['user_id'] = createUser(popUrls[:keystone], pop_auth['tenant_id'], pop_auth['username'], pop_auth['password'], token)
                     end
 
+                    if pop_auth['tenant_id'].nil? || pop_auth['user_id'].nil?
+                        error = "Tenant or user not created."
+                        logger.error error
+                        @instance.update_attribute('status', 'ERROR_CREATING')
+                        return 400, error.to_json
+                    end
 
                     logger.info 'Created user with admin role.'
                     putRoleAdmin(popUrls[:keystone], pop_auth['tenant_id'], pop_auth['user_id'], token)
 
                     logger.info 'Authentication using new user credentials.'
                     pop_auth['token'] = openstackAuthentication(popUrls[:keystone], pop_auth['tenant_id'], pop_auth['username'], pop_auth['password'])
+                    if pop_auth['token'].nil?
+                        error = "Authentication failed."
+                        logger.error error
+                        @instance.update_attribute('status', 'ERROR_CREATING')
+                        return 400, error.to_json
+                    end
 
                     logger.info 'Configuring Security Groups'
                     pop_auth['security_group_id'] = configureSecurityGroups(popUrls[:compute], pop_auth['tenant_id'], pop_auth['token'])
