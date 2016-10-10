@@ -15,8 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# @see NsProvisionerController
-class NsProvisionerController < TnovaManager
+# @see NsProvisioner
+class NsProvisioner < TnovaManager
 
   # @method post_ns_instances
   # @overload post "/ns-instances"
@@ -83,10 +83,10 @@ class NsProvisionerController < TnovaManager
   end
 
   # @method get_ns_instances_id
-  # @overload get "/ns-instances/:ns_instance_id"
+  # @overload get "/ns-instances/:nsr_id"
   # Get a ns-instance
-  # @param [string] Instance id
-  get "/:ns_instance_id" do
+  # @param [string] nsr_id Instance id
+  get "/:nsr_id" do
     begin
       @service = ServiceModel.find_by(name: "ns_provisioner")
     rescue Mongoid::Errors::DocumentNotFound => e
@@ -106,10 +106,10 @@ class NsProvisionerController < TnovaManager
   end
 
   # @method put_ns_instances
-  # @overload put "/ns-instances/:ns_instance_id"
+  # @overload put "/ns-instances/:nsr_id"
   # Update a ns-instance
-  # @param [string] Instance id
-  put '/:ns_instance_id' do
+  # @param [string] nsr_id Instance id
+  put '/:nsr_id' do
     begin
       @service = ServiceModel.find_by(name: "ns_provisioner")
     rescue Mongoid::Errors::DocumentNotFound => e
@@ -132,11 +132,10 @@ class NsProvisionerController < TnovaManager
   end
 
   # @method get_ns_instance_status
-  # @overload get "/ns-instances/:ns_instance_id/status"
+  # @overload get "/ns-instances/:nsr_id/status"
   # Get a ns-instance status
-  # @param [string] Instance id
-  # @param [string] Status
-  get '/:ns_instance_id/status' do
+  # @param [string] nsr_id Instance id
+  get '/:nsr_id/status' do
     begin
       @service = ServiceModel.find_by(name: "ns_provisioner")
     rescue Mongoid::Errors::DocumentNotFound => e
@@ -158,7 +157,6 @@ class NsProvisionerController < TnovaManager
   # @method get_ns_instances
   # @overload get "/ns-instances"
   # Get all ns-instances
-  # @param [string]
   get '/' do
     begin
       @service = ServiceModel.find_by(name: "ns_provisioner")
@@ -179,11 +177,11 @@ class NsProvisionerController < TnovaManager
   end
 
   # @method put_ns_instances
-  # @overload put "/ns-instances/:ns_instance_id/:status"
+  # @overload put "/ns-instances/:nsr_id/:status"
   # Update ns-instance status
-  # @param [string] Instance id
-  # @param [string] Status
-  put '/:ns_instance_id/:status' do
+  # @param [string] nsr_id Instance id
+  # @param [string] status Status
+  put '/:nsr_id/:status' do
     logger.info "Change status request of " + params[:ns_instance_id].to_s + " to " + params[:status].to_s
     begin
       @service = ServiceModel.find_by(name: "ns_provisioner")
@@ -215,10 +213,10 @@ class NsProvisionerController < TnovaManager
   end
 
   # @method delete_ns_instances
-  # @overload delete "/ns-instances/:id"
+  # @overload delete "/ns-instances/:nsr_id"
   # Delete a ns-instance
-  # @param [string] Instance id
-  delete '/:ns_instance_id' do
+  # @param [string] nsr_id Instance id
+  delete '/:nsr_id' do
     logger.info "Delete executed.... " + params[:ns_instance_id].to_s
     begin
       @service = ServiceModel.find_by(name: "ns_provisioner")
@@ -255,10 +253,10 @@ class NsProvisionerController < TnovaManager
   end
 
   # @method post_ns_instances_id_instantiate
-  # @overload post "/ns-instances/:ns_instance_id/instantiate"
+  # @overload post "/ns-instances/:nsr_id/instantiate"
   # Callback response of instantiation request. This method is called by the VNFManager.
-  # @param [string]
-  post '/:ns_instance_id/instantiate' do
+  # @param [string] nsr_id Instance id
+  post '/:nsr_id/instantiate' do
 
     callback_response, errors = parse_json(request.body.read)
 

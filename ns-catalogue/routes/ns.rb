@@ -47,13 +47,11 @@ class Catalogue < NsCatalogue
   # @overload get '/network-services/:external_ns_id'
   #	Show a NS
   #	@param [Integer] external_ns_id NS external ID
-  get '/:external_ns_id' do
-    begin
-      ns = Ns.find_by({"nsd.id" => params[:external_ns_id]})
-    rescue Mongoid::Errors::DocumentNotFound => e
-      halt 404
-    end
+  get '/:external_ns_id' do |id|
+    ns = Ns.find_by({"nsd.id" => params[:external_ns_id]})
+    halt(404, { message: 'Network Service Not Found'}.to_json) unless ns
     return 200, ns.nsd.to_json
+    #NsSerializer.new(ns).to_json
   end
 
   # @method post_network_services

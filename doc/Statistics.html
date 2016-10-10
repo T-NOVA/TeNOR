@@ -98,7 +98,7 @@
   
   <dl>
     <dt>Defined in:</dt>
-    <dd>routes/statistics.rb</dd>
+    <dd>ns-manager/routes/statistics.rb</dd>
   </dl>
   
 </div>
@@ -290,7 +290,7 @@ under the License.</p>
 42</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'routes/statistics.rb', line 40</span>
+      <pre class="code"><span class="info file"># File 'ns-manager/routes/statistics.rb', line 40</span>
 
 <span class='id identifier rubyid_get'>get</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/performance-stats</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>do</span>
   <span class='kw'>return</span> <span class='const'>PerformanceStatisticModel</span><span class='period'>.</span><span class='id identifier rubyid_all'>all</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span>
@@ -348,7 +348,7 @@ under the License.</p>
 27</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'routes/statistics.rb', line 25</span>
+      <pre class="code"><span class="info file"># File 'ns-manager/routes/statistics.rb', line 25</span>
 
 <span class='id identifier rubyid_get'>get</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/statistics</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>do</span>
   <span class='kw'>return</span> <span class='const'>StatisticModel</span><span class='period'>.</span><span class='id identifier rubyid_all'>all</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span>
@@ -392,7 +392,7 @@ under the License.</p>
 50</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'routes/statistics.rb', line 47</span>
+      <pre class="code"><span class="info file"># File 'ns-manager/routes/statistics.rb', line 47</span>
 
 <span class='id identifier rubyid_post'>post</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/performance-stats</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>do</span>
   <span class='id identifier rubyid_body'>body</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='op'>=</span> <span class='id identifier rubyid_parse_json'>parse_json</span><span class='lparen'>(</span><span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span><span class='rparen'>)</span>
@@ -456,7 +456,7 @@ under the License.</p>
 35</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'routes/statistics.rb', line 33</span>
+      <pre class="code"><span class="info file"># File 'ns-manager/routes/statistics.rb', line 33</span>
 
 <span class='id identifier rubyid_post'>post</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/statistics/:metric</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>do</span>
   <span class='id identifier rubyid_updateStatistics'>updateStatistics</span><span class='lparen'>(</span><span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>metric</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='rparen'>)</span>
@@ -471,7 +471,7 @@ under the License.</p>
 </div>
 
       <div id="footer">
-  Generated on Mon Oct 10 16:34:18 2016 by
+  Generated on Mon Oct 10 16:31:09 2016 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.5 (ruby-2.3.0).
 </div>

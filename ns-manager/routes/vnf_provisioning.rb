@@ -15,8 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# @see VnfProvisionerController
-class VnfProvisionerController < TnovaManager
+# @see VnfProvisioner
+class VnfProvisioner< TnovaManager
 
   # @method get_vnf_provisioning_instances
   # @overload get "/vnf-provisioning/vnf-instances"
@@ -44,7 +44,7 @@ class VnfProvisionerController < TnovaManager
   # @method get_vnf_provisioning_instances_id
   # @overload get "/vnf-provisioning/vnf-instances/:vnfr_id"
   # Get a specific vnf-instance
-  # @param [string] The VNFR id
+  # @param [string] vnfr_id The VNFR id
   get '/vnf-instances/:vnfr_id' do
     begin
       @service = ServiceModel.find_by(name: "vnf_manager")

@@ -15,13 +15,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# @see ScalingController
-class ScalingController< TnovaManager
+# @see NsScaling
+class NsScaling< TnovaManager
 
-  # @method post_ns_instances_scaling
-  # @overload post "/ns-instances/scaling/:id/scale_out"
+  # @method post_ns_instances_scaling_out
+  # @overload post "/ns-instances/scaling/:nsr_id/scale_out"
   # Manual scaling out given ns instance id
-  # @param [string] NS instance id
+  # @param [string] nsr_id NS instance id
   post '/:nsr_id/scale_out' do
 
     begin
@@ -78,10 +78,10 @@ class ScalingController< TnovaManager
     return response.code, response.body
   end
 
-  # @method post_ns_instances_scaling
-  # @overload post "/ns-instances/scaling/:id/scale_in"
+  # @method post_ns_instances_scaling_in
+  # @overload post "/ns-instances/scaling/:nsr_id/scale_in"
   # Manual scaling in given ns instance id
-  # @param [string] NS instance id
+  # @param [string] nsr_id NS instance id
   post '/:nsr_id/scale_in' do
 
     begin

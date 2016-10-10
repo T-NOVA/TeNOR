@@ -71,12 +71,14 @@
   <dl>
     <dt>Inherits:</dt>
     <dd>
-      <span class="inheritName">TnovaManager</span>
+      <span class="inheritName"><span class='object_link'><a href="TnovaManager.html" title="TnovaManager (class)">TnovaManager</a></span></span>
       
         <ul class="fullTree">
           <li>Object</li>
           
-            <li class="next">TnovaManager</li>
+            <li class="next">Sinatra::Application</li>
+          
+            <li class="next"><span class='object_link'><a href="TnovaManager.html" title="TnovaManager (class)">TnovaManager</a></span></li>
           
             <li class="next">ServiceConfiguration</li>
           
@@ -98,7 +100,7 @@
   
   <dl>
     <dt>Defined in:</dt>
-    <dd>ns-manager/routes/config.rb</dd>
+    <dd>routes/config.rb</dd>
   </dl>
   
 </div>
@@ -132,7 +134,7 @@ under the License.</p>
   <p class="tag_title">See Also:</p>
   <ul class="see">
     
-      <li>TnovaManager</li>
+      <li><span class='object_link'><a href="TnovaManager.html" title="TnovaManager (class)">TnovaManager</a></span></li>
     
   </ul>
 
@@ -324,6 +326,12 @@ under the License.</p>
 
 
   
+  
+  
+  
+  
+  
+  
 
   <div id="instance_method_details" class="method_details_list">
     <h2>Instance Method Details</h2>
@@ -362,7 +370,7 @@ under the License.</p>
 49</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'ns-manager/routes/config.rb', line 47</span>
+      <pre class="code"><span class="info file"># File 'routes/config.rb', line 47</span>
 
 <span class='id identifier rubyid_delete'>delete</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/services/:microservice</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>do</span>
 	<span class='const'>ServiceModel</span><span class='period'>.</span><span class='id identifier rubyid_find_by'>find_by</span><span class='lparen'>(</span><span class='label'>name:</span> <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>microservice</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_delete'>delete</span>
@@ -409,7 +417,7 @@ under the License.</p>
 60</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'ns-manager/routes/config.rb', line 54</span>
+      <pre class="code"><span class="info file"># File 'routes/config.rb', line 54</span>
 
 <span class='id identifier rubyid_get'>get</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/services</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>do</span>
     <span class='kw'>if</span> <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>name</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
@@ -465,7 +473,7 @@ under the License.</p>
 93</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'ns-manager/routes/config.rb', line 82</span>
+      <pre class="code"><span class="info file"># File 'routes/config.rb', line 82</span>
 
 <span class='id identifier rubyid_post'>post</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/services/publish/:microservice</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>do</span>
    <span class='id identifier rubyid_name'>name</span> <span class='op'>=</span>  <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:microservice</span><span class='rbracket'>]</span>
@@ -517,7 +525,7 @@ under the License.</p>
 33</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'ns-manager/routes/config.rb', line 31</span>
+      <pre class="code"><span class="info file"># File 'routes/config.rb', line 31</span>
 
 <span class='id identifier rubyid_post'>post</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/registerExternalService</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>do</span>
 	<span class='kw'>return</span> <span class='id identifier rubyid_registerExternalService'>registerExternalService</span><span class='lparen'>(</span><span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span><span class='rparen'>)</span>
@@ -560,7 +568,7 @@ under the License.</p>
 26</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'ns-manager/routes/config.rb', line 24</span>
+      <pre class="code"><span class="info file"># File 'routes/config.rb', line 24</span>
 
 <span class='id identifier rubyid_post'>post</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/registerService</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>do</span>
 	<span class='kw'>return</span> <span class='id identifier rubyid_registerService'>registerService</span><span class='lparen'>(</span><span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span><span class='rparen'>)</span>
@@ -605,7 +613,7 @@ under the License.</p>
 42</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'ns-manager/routes/config.rb', line 38</span>
+      <pre class="code"><span class="info file"># File 'routes/config.rb', line 38</span>
 
 <span class='id identifier rubyid_post'>post</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/unRegisterService/:microservice</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>do</span>
 	<span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Unregister service </span><span class='tstring_end'>&quot;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>microservice</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='rparen'>)</span>
@@ -651,7 +659,7 @@ under the License.</p>
 68</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'ns-manager/routes/config.rb', line 65</span>
+      <pre class="code"><span class="info file"># File 'routes/config.rb', line 65</span>
 
 <span class='id identifier rubyid_put'>put</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/services</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>do</span>
 	<span class='id identifier rubyid_updateService'>updateService</span><span class='lparen'>(</span><span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span><span class='rparen'>)</span>
@@ -667,7 +675,7 @@ under the License.</p>
 </div>
 
       <div id="footer">
-  Generated on Mon Oct 10 16:31:09 2016 by
+  Generated on Mon Oct 10 16:34:17 2016 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.5 (ruby-2.3.0).
 </div>
