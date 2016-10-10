@@ -55,6 +55,8 @@
                                 <span ng-if="row.status === 3">Terminated</span></td>
                             <td>
                                 <button ng-click="go('/nsMonitoring/' + row.id)" class="btn btn-success btn-xs" ng-disabled="row.status !== 'INSTANTIATED' && row.status !== 'START'">Monitoring</button>
+                                <button ng-click="scale_out(row.id)" class="btn btn-warning btn-xs" ng-enabled="row.status === 'INSTANTIATED'">Scale out</button>
+                                <button ng-click="scale_in(row.id)" class="btn btn-warning btn-xs" ng-enabled="row.status === 'INSTANTIATED'">Scale in</button>
                                 <button ng-click="stop(row.id)" class="btn btn-warning btn-xs" ng-enabled="row.status === 'INSTANTIATED'">Stop</button>
                                 <button ng-click="start(row.id)" class="btn btn-success btn-xs" ng-enabled="row.status === 'STOPPED'">Start</button>
                                 <button ng-click="deleteDialog(row.id)" class="btn btn-danger btn-xs" ng-disabled="">Delete</button>

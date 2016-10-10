@@ -126,7 +126,7 @@ module ProvisioningHelper
     #
     # @param [String] url the HEAT URL for the stack
     # @param [String] auth_token the auth token to authenticate with the VIM
-    def create_thread_to_monitor_stack(vnfr_id, stack_url, vim_info, ns_manager_callback)
+    def create_thread_to_monitor_stack(vnfr_id, stack_url, vim_info, ns_manager_callback, scale_resources=nil)
         # Check when stack change state
         thread = Thread.new do
             sleep_time = 10 # set wait time in seconds
@@ -151,14 +151,139 @@ module ProvisioningHelper
             # After stack create is complete, send information back to provisioning
             response[:ns_manager_callback] = ns_manager_callback
             response[:vim_info] = vim_info # Needed to delete the stack if it failed
-            begin
-                RestClient.post "http://localhost:#{settings.port}/vnf-provisioning/#{vnfr_id}/stack/#{response['stack']['stack_status'].downcase}", response.to_json, content_type: :json
-            rescue Errno::ECONNREFUSED
-                halt 500, 'VNF Provisioning unreachable'
-            rescue => e
-                logger.error e.response
+            if !scale_resources.nil?
+                vnf_complete_parsing(vnfr_id, response, scale_resources)
+            else
+                begin
+                    RestClient.post "http://localhost:#{settings.port}/vnf-provisioning/#{vnfr_id}/stack/#{response['stack']['stack_status'].downcase}", response.to_json, content_type: :json
+                rescue Errno::ECONNREFUSED
+                    halt 500, 'VNF Provisioning unreachable'
+                rescue => e
+                    logger.error e.response
+                end
             end
         end
+    end
+
+    def vnf_complete_parsing(vnfr_id, stack_info, scale_resources)
+        logger.debug 'Stack info: ' + stack_info.to_json
+
+        begin
+            vnfr = Vnfr.find(vnfr_id)
+        rescue Mongoid::Errors::DocumentNotFound => e
+            logger.error 'VNFR record not found'
+            halt 404
+        end
+
+        # Request an auth token
+        token_info = request_auth_token(stack_info[:vim_info])
+        auth_token = token_info['access']['token']['id']
+
+        lifecycle_events_values = {}
+        vnf_addresses = {}
+        scale_urls = {}
+        vms_id = {}
+        stack_info['stack']['outputs'].select do |output|
+            if output['output_key'] == 'private_key'
+                private_key = output['output_value']
+            elsif output['output_key'] =~ /^.*#id$/i
+                vms_id[output['output_key'].match(/^(.*)#id$/i)[1]] = output['output_value']
+            else
+              # other parameters
+              vnfr.lifecycle_info['events'].each do |event, event_info|
+                  next if event_info.nil?
+                  JSON.parse(event_info['template_file']).each do |id, parameter|
+                      parameter_match = parameter.delete(' ').match(/^get_attr\[(.*)\]$/i).to_a
+                      string = parameter_match[1].split(',').map(&:strip)
+                      key_string = string.join('#')
+                      if string[1] == 'PublicIp' # DEPRECATED: to be removed when all VNF developers uses the new form
+                          vnf_addresses[output['output_key']] = output['output_value']
+                          lifecycle_events_values[event] = {} unless lifecycle_events_values.key?(event)
+                          lifecycle_events_values[event][key_string] = output['output_value']
+                      elsif string[2] == 'PublicIp'
+                          if key_string == output['output_key']
+                              if id == 'controller'
+                                  vnf_addresses['controller'] = output['output_value']
+                              end
+                              vnf_addresses[output['output_key']] = output['output_value']
+                              lifecycle_events_values[event] = {} unless lifecycle_events_values.key?(event)
+                              lifecycle_events_values[event][key_string] = output['output_value']
+                          end
+                      elsif string[1] == 'fixed_ips' # PrivateIp
+                          key_string2 = output['output_key'].partition('#')[2]
+                          if key_string2 == key_string
+                              vnf_addresses[output['output_key']] = output['output_value']
+                              lifecycle_events_values[event] = {} unless lifecycle_events_values.key?(event)
+                              if output['output_value'].is_a?(Array)
+                                  lifecycle_events_values[event][key_string] = output['output_value'][0]
+                              else
+                                  lifecycle_events_values[event][key_string] = output['output_value']
+                              end
+                          end
+                      elsif output['output_key'] =~ /^#{parameter_match[1]}##{parameter_match[2]}$/i
+                          vnf_addresses[(parameter_match[1]).to_s] = output['output_value'] if parameter_match[2] == 'ip' && !vnf_addresses.key?((parameter_match[1]).to_s) # Only to populate VNF
+                          lifecycle_events_values[event] = {} unless lifecycle_events_values.key?(event)
+                          lifecycle_events_values[event]["#{parameter_match[1]}##{parameter_match[2]}"] = output['output_value']
+                      elsif output['output_key'] == id # 'controller'
+                          lifecycle_events_values[event] = {} unless lifecycle_events_values.key?(event)
+                          lifecycle_events_values[event][key_string] = output['output_value']
+                      end
+                  end
+              end
+            end
+        end
+
+        logger.debug 'VMs ID: ' + vms_id.to_json
+        logger.debug 'VNF Addresses: ' + vnf_addresses.to_json
+        logger.debug 'Lifecycle events values: ' + lifecycle_events_values.to_json
+        event = "scaling_out"
+
+        # Update the VNFR
+        vnfr.push(lifecycle_event_history: stack_info['stack']['stack_status'])
+
+        resource = vnfr['scale_resources'].find { |res| res['name'] == scale_resources[:name]}
+        resource = vnfr['scale_resources'][vnfr['scale_resources'].size - 1]
+        scaled_resource = vnfr['scale_resources'].find { |res| res['name'] == scale_resources[:name]}
+        vnfr.pull(scale_resources: resource)
+
+        scaled_resource['vnf_addresses'] = vnf_addresses
+        scaled_resource['vms_id'] = vms_id
+        scaled_resource['lifecycle_events_values'] = lifecycle_events_values
+        vnfr.push(scale_resources: scaled_resource)
+
+        if vnfr.lifecycle_info['authentication_type'] == 'PubKeyAuthentication'
+            if vnfr.lifecycle_info['authentication'] == ''
+                logger.info 'Public Authentication is empty. Included the key generated by Openstack.'
+                #        vnfr.lifecycle_info["authentication"] = private_key
+                #        vnfr.update_attributes!(lifecycle_info["authentication"] = private_key)
+            end
+        end
+
+        logger.info 'Registring values to mAPI if required...'
+        # Send the VNFR to the mAPI
+        vnfr['lifecycle_events_values'][event] = lifecycle_events_values[event]
+        logger.info vnfr['lifecycle_events_values'][event]
+        logger.info lifecycle_events_values
+
+        # Build mAPI request
+        mapi_request = {
+            event: event,
+            vnf_controller: vnfr['vnf_addresses']['controller'],
+            parameters: lifecycle_events_values['scaling_out']
+        }
+        logger.debug 'mAPI request: ' + mapi_request.to_json
+
+        response = sendCommandToMAPI(vnfr['id'], mapi_request)
+
+        # Update the VNFR event history
+        vnfr['lifecycle_event_history'].push("Executed a #{mapi_request[:event]}")
+
+        # Build message to send to the NS Manager callback
+        vnfi_id = []
+        vnfr.vms_id.each { |_key, value| vnfi_id << value }
+        message = { vnfd_id: vnfr.vnfd_reference, vnfi_id: vnfi_id, vnfr_id: vnfr.id, vnf_addresses: vnf_addresses, stack_resources: vnfr }
+        #nsmanager_callback(stack_info['ns_manager_callback'], message)
+
     end
 
     # Verify if the VDU images are accessible to download
@@ -193,7 +318,7 @@ module ProvisioningHelper
             halt e.response.code, e.response.body
         end
     end
-
+=begin
     def deleteStack(stack_url, auth_token)
         response = RestClient.delete stack_url, 'X-Auth-Token' => auth_token, :accept => :json
     rescue Errno::ECONNREFUSED
@@ -224,7 +349,7 @@ module ProvisioningHelper
 
         resources['resources']
     end
-
+=end
     def recoverMonitoredInstances
         # get list of VNF instances and filter for INIT instances
 
@@ -233,31 +358,7 @@ module ProvisioningHelper
         # create thread
         # create_thread_to_monitor_stack(vnfr_id, stack_url, vim_info, ns_manager_callback)
     end
-
-    def registerRequestmAPI(vnfr)
-        logger.debug 'Registring VNF to mAPI...'
-
-        # Send the VNFR to the mAPI
-        mapi_request = { id: vnfr.id.to_s, vnfd: { vnf_lifecycle_events: vnfr.lifecycle_info } }
-        logger.debug 'mAPI request: ' + mapi_request.to_json
-        begin
-            response = RestClient.post "#{settings.mapi}/vnf_api/", mapi_request.to_json, content_type: :json, accept: :json
-        rescue Errno::ECONNREFUSED
-            logger.error 'mAPI -> Connection Refused.'
-            message = { status: 'mAPI_unreachable', vnfd_id: vnfr.vnfd_reference, vnfr_id: vnfr.id }
-            logger.info 'mAPI is not reachable'
-        rescue Errno::EHOSTUNREACH
-            logger.error 'No route to mAPI host'
-        rescue => e
-            logger.error e
-            message = { status: 'mAPI_error', vnfd_id: vnfr.vnfd_reference, vnfr_id: vnfr.id }
-            logger.error message
-            logger.info 'mAPI is not reachable'
-        end
-        logger.info 'Recevied response??'
-        logger.info response
-    end
-
+=begin
     def delete_stack_with_wait(stack_url, auth_token)
         status = 'DELETING'
         count = 0
@@ -300,4 +401,5 @@ module ProvisioningHelper
         end
         response
     end
+=end
 end
