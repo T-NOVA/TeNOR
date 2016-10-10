@@ -53,12 +53,12 @@ class ScaleToHot
       # Get VDU for deployment
       vdu = vnfd['vdu'].detect { |vdu| vdu['id'] == vdu_ref }
       vdu_deployed_info = vdus_deployed_info.find { |vdu_info| vdu_info['id'] == vdu_ref }
-
-      image_name = vdu_deployed_info['image_id']
-      flavor_name = vdu_deployed_info['flavour_id']
+      next if vdu_deployed_info.nil?
 
       #networks_id << {'id' => vlink, 'alias' => vlink_json['alias'], 'heat' => net_name}
       if (vdu['scale_in_out']['maximum'] > 1)
+        image_name = vdu_deployed_info['image_id']
+        flavor_name = vdu_deployed_info['flavour_id']
         ports = create_ports(vdu['id'], vdu['connection_points'], vnfd['vlinks'], networks_id, security_group_id)
         server = create_server(vdu, image_name, flavor_name, ports, key)
       end

@@ -20,6 +20,7 @@ module ServiceConfigurationHelper
 
   def registerService(json)
     @json = JSON.parse(json)
+    @json[:type] = "internal"
 
     AuthenticationHelper.loginGK()
     gkServices = AuthenticationHelper.getGKServices()
@@ -74,6 +75,7 @@ module ServiceConfigurationHelper
 
   def registerExternalService()
     @json = JSON.parse(json)
+    @json[:type] = "external"
     begin
       @service = ServiceModel.find_by(:name => @json['name'])
       @service.update_attributes(@json)
@@ -133,12 +135,14 @@ module ServiceConfigurationHelper
     services = getServices()
     services.each do |service|
       puts "Sending dependencies to " + service['name']
-      begin
-        RestClient.post service['host'] + ":" + service['port'] + "/gk_dependencies", services.to_json, :content_type => :json
-      rescue => e
-        #logger.error e
-        #puts e
-        #halt 500, {'Content-Type' => 'text/plain'}, "Error sending dependencies to " +service['name']
+      if service['type'] == "internal"
+        begin
+          RestClient.post service['host'] + ":" + service['port'] + "/gk_dependencies", services.to_json, :content_type => :json
+        rescue => e
+          #logger.error e
+          #puts e
+          #halt 500, {'Content-Type' => 'text/plain'}, "Error sending dependencies to " +service['name']
+        end
       end
     end
   end
