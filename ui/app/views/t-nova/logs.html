@@ -1,52 +1,67 @@
 <h3>Logs</h3>
 
-<div class="col-md-12 ">
-    <div class="content-box-large ">
-        <div class="panel-heading ">
-            <div class="pull-right ">
-                <button type="button " class="btn btn-default " ng-model="day " data-html="1 " bs-options="day as day for day in days " bs-select ng-change="getLogs(day) ">
-                    Select <span class="caret "></span>
-                </button>
-                <button type="button " class="btn btn-default " ng-model="selectedSeverity " data-html="1 " bs-options="severity as severity for severity in severities " bs-select ng-change="getBySeverity() ">
-                    Select <span class="caret "></span>
-                </button>
-                <button type="button " class="btn btn-default " ng-model="selectedModule " data-html="1 " bs-options="module as module for module in modules " bs-select ng-change="getByModule() ">
-                    Select <span class="caret "></span>
-                </button>
+<div class="col-md-12">
+    <div class="content-box-large">
+        <div class="panel-heading">
+            <div class="pull-right">
+                <div class="form-group">
+                    <label class="control-label"><i class="fa fa-calendar"></i> <i class="fa fa-arrows-h"></i> <i class="fa fa-calendar"></i> Date range <small>(dynamic)</small></label><br>
+                    <div class="form-group col-xs-3">
+                        <input type="text" class="form-control" ng-model="fromDate" data-max-date="{{untilDate}}" placeholder="From" bs-datepicker ng-change="getLogs()">
+                    </div>
+                    <div class="form-group col-xs-3">
+                        <input type="text" class="form-control" ng-model="untilDate" data-min-date="{{fromDate}}" placeholder="Until" bs-datepicker ng-change="getLogs()">
+                    </div>
+                    <div class="form-group col-xs-3">
+                        <button type="button" class="btn btn-default" ng-model="selectedSeverity" data-html="1" bs-options="severity as severity for severity in severities" bs-select ng-change="getLogs()">
+                           Select <span class="caret"></span>
+                       </button>
+                    </div>
+                    <div class="form-group col-xs-3">
+                        <button type="button" class="btn btn-default" ng-model="selectedModule" data-html="1" bs-options="module as module for module in modules" bs-select ng-change="getLogs()">
+                           Select <span class="caret"></span>
+                       </button>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="panel-body ">
-            <div class="panel-collapse " role="tabpanel " bs-collapse-target>
-                <div class="panel-body ">
-                    <table st-table="logCollection " st-safe-src="log " class="table table-striped ">
+        <div class="panel-body">
+            <div class="panel-collapse" role="tabpanel" bs-collapse-target>
+                <div class="panel-body">
+                    <table st-table="logCollection" st-safe-src="log" class="table table-striped">
                         <thead>
                             <tr>
-                                <th data-title=" 'date' " class="col-sm-2 col-md-2 col-lg-2 ">Date</th>
-                                <th data-title=" 'status' " class="col-sm-1 col-md-1 col-lg-1 ">Type</th>
-                                <th data-title=" 'content' " class="col-sm-9 col-md-9 col-lg-9 ">Content</th>
+                                <th data-title=" 'date' " class="col-sm-1 col-md-1 col-lg-1">Date</th>
+                                <th data-title=" 'type' " class="col-sm-1 col-md-1 col-lg-1">Type</th>
+                                <th data-title=" 'module' " class="col-sm-1 col-md-1 col-lg-1">Module</th>
+                                <th data-title=" 'content' " class="col-sm-9 col-md-9 col-lg-9">Content</th>
                             </tr>
                             <tr>
-                                <th colspan="1 ">
-                                    <input st-search="created_at " class="form-control " placeholder="data search ... " type="text " />
+                                <th colspan="1">
+                                    <input st-search="time" class="form-control" placeholder="data search ..." type="text" />
                                 </th>
-                                <th colspan="1 ">
-                                    <input st-search="_source.severity " class="form-control " placeholder="search ... " type="text " />
+                                <th colspan="1">
+                                    <input st-search="severity" class="form-control" placeholder="search ..." type="text" />
                                 </th>
-                                <th colspan="1 ">
-                                    <input st-search="content " class="form-control " placeholder="content search ... " type="text " />
+                                <th colspan="1">
+                                    <input st-search="module" class="form-control" placeholder="search ..." type="text" />
+                                </th>
+                                <th colspan="1">
+                                    <input st-search="msg" class="form-control" placeholder="content search ..." type="text" />
                                 </th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr ng-repeat="row in logCollection ">
-                                <td>{{row._source['@timestamp'] | date:'yyyy-MM-dd HH:mm:ss'}}</td>
-                                <td>{{row._source.severity}}</td>
-                                <td>{{row._source.message}}</td>
+                            <tr ng-repeat="row in logCollection">
+                                <td>{{row.time | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+                                <td>{{row.severity}}</td>
+                                <td>{{row.module}}</td>
+                                <td>{{row.msg}}</td>
                             </tr>
                         </tbody>
                         <tfoot>
                             <tr>
-                                <td class="text-center " st-pagination=" " st-items-by-page="20 " colspan="3 ">
+                                <td class="text-center" st-pagination="" st-items-by-page="20" colspan="4">
                                 </td>
                             </tr>
                         </tfoot>
