@@ -164,11 +164,11 @@ configureIps(){
     if [ -z "$cassandra_address" ]; then cassandra_address=$CASSANDRA_ADDRESS; fi
 
     mongodb_host=${mongo_ip%%:*}
-    mongodb_port=${mongo_ip%%:*}
+    mongodb_port=${mongo_ip##*:}
 
     mkdir fluentd
     cat >fluentd/fluent.conf <<EOL
-    # In v1 configuration, type and id are @ prefix parameters.
+        # In v1 configuration, type and id are @ prefix parameters.
     # @type and @id are recommended. type and id are still available for backward compatibility
 
     ## built-in TCP input
@@ -221,12 +221,6 @@ configureIps(){
       port 24230
     </source>
 
-    ## match tag=apache.access and write to file
-    #<match apache.access>
-    #  @type file
-    #  path /var/log/fluent/access
-    #</match>
-
     ## match tag=debug.** and dump to console
     <match debug.**>
       @type stdout
@@ -235,10 +229,11 @@ configureIps(){
 
     <match **>
       @type mongo
-      host ${mongodb_host}
-      port ${mongodb_port}
+      host 127.0.0.1
+      port 27017
       database fluentd
-      collection tenor_logs
+      #collection tenor_logs
+      tag_mapped
 
       # for capped collection
       capped
@@ -251,6 +246,7 @@ configureIps(){
       # flush
       flush_interval 10s
     </match>
+
 EOL
 
 }
