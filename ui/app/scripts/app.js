@@ -251,7 +251,7 @@ angular.module('tNovaApp', ['ui.router', 'ngSanitize', 'tNovaApp.config', 'tNova
                             if (Math.floor(Date.now() / 1000) > $window.localStorage.expiration)
                                 $rootScope.logout();
                             else if (status === 401 && $window.localStorage.token !== null) {
-                                $location.path('/dashboard');
+                                $location.path('/login');
                             } else if (status === 401) {
                                 $location.path('/login');
                             } else {

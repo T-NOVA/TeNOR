@@ -358,5 +358,3 @@ do
 	read_options $choice
 	exit 0
 done
-
-

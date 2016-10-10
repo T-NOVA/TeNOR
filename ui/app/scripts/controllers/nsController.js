@@ -8,6 +8,7 @@ angular.module('tNovaApp')
             id: 0,
             name: "UniMi"
         }];
+        $scope.descriptor = {};
 
         $scope.getServiceList = function () {
             tenorService.get('network-services?limit=1000').then(function (data) {
@@ -141,6 +142,39 @@ angular.module('tNovaApp')
             $location.path(hash);
         };
 
+        $scope.uploadDialog = function(){
+            $modal({
+                title: "Upload a NSD",
+                template: "views/t-nova/modals/upload.html",
+                show: true,
+                scope: $scope,
+            });
+        }
+
+        $scope.uploadFile = function(files){
+            var fd = new FormData();
+            //Take the first selected file
+            fd.append('file', files[0]);
+            var obj = JSON.parse(files);
+            console.log(obj);
+            tenorService.post('network-services', obj).then(function (data) {
+                console.log(data);
+                $scope.getServiceList(page);
+            });
+            this.$hide();
+        }
+
+        $scope.loadFile = function (element) {
+            var file = element.files[0];
+            var reader = new FileReader();
+            reader.onload = function () { //event waits the file content
+                $scope.$apply(function () {
+                    $scope.descriptor = JSON.stringify(JSON.parse(reader.result), undefined, 4); //JSON.parse(reader.result);
+                });
+            };
+            reader.readAsText(file);
+        };
+
     })
     .controller('nsInstancesController', function ($scope, $location, $stateParams, $filter, tenorService, $interval, $modal) {
         var promise;
@@ -209,6 +243,18 @@ angular.module('tNovaApp')
                 template: "views/t-nova/modals/info/nsInstance.html",
                 show: true,
                 scope: $scope,
+            });
+        };
+
+        $scope.scale_out = function (id) {
+            tenorService.post("ns-instances/scaling/"+id+"/scale_out", {}).then(function (data) {
+                $scope.updateInstanceList();
+            });
+        };
+
+        $scope.scale_in = function (id) {
+            tenorService.post("ns-instances/scaling/"+id+"/scale_in", {}).then(function (data) {
+                $scope.updateInstanceList();
             });
         };
     })

@@ -16,3 +16,5 @@
 # limitations under the License.
 #
 require_relative 'vnf'
+require_relative 'mapi'
+require_relative 'hot'

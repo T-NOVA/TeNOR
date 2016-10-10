@@ -37,6 +37,8 @@ class VnfProvisioning < Sinatra::Application
 	require_relative 'models/init'
 
   helpers ProvisioningHelper
+	helpers MapiHelper
+	helpers HotHelper
 
 	register Sinatra::ConfigFile
 # Load configurations
