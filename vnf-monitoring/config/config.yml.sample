@@ -1,7 +1,7 @@
 ---
 servicename: vnf_monitoring
-environment: development
 manager: localhost:4567
+environment: development
 address: 0.0.0.0
 port: 4573
 max_conns: 1024
@@ -9,8 +9,8 @@ timeout: 30
 max_persistent_conns: 512
 daemonize: false
 threaded: true
-logstash_host: 127.0.0.1
-logstash_port: 5228
+logger_host: 127.0.0.1
+logger_port: 24224
 
 vnf_manager: http://10.10.1.61:4567
 vim_monitoring: http://10.10.1.62:8080

@@ -5,9 +5,8 @@ gem 'sinatra-contrib', '~>1.4'
 gem 'puma', '3.6.0'
 gem 'json', '~>1.8'
 gem 'json-schema', '~>2.5'
-gem 'logstash-logger', '~>0.19.2'
-gem 'bunny', '~>2.3.1'
 gem 'rake', '~>11.3.0'
+gem 'bunny', '~>2.3.1'
 
 group :development do
 	gem 'rerun'
@@ -18,4 +17,6 @@ group :doc do
 end
 
 gem 'cassandra-cql', '~>1.2.2'
+
 #gem 'sinatra-gkauth', '~>0.3.0', path: '../sinatra-gkauth-gem'
+gem 'fluent-logger-sinatra', '~>0.2.0', path: '../fluent-logger-sinatra'

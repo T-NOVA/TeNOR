@@ -110,7 +110,7 @@ angular.module('tNovaApp')
                 $alert({
                     title: "Creating new instance... ",
                     content: "",
-                    placement: 'top',
+                    placement: 'top',//top-right
                     type: 'success',
                     keyboard: true,
                     show: true,

@@ -21,7 +21,6 @@ ENV['RACK_ENV'] ||= 'development'
 require 'sinatra'
 require 'sinatra/config_file'
 require 'yaml'
-require 'logstash-logger'
 
 # Require the bundler gem and then call Bundler.require to load in all gems listed in Gemfile.
 require 'bundler'
@@ -35,28 +34,15 @@ register Sinatra::ConfigFile
 config_file 'config/config.yml'
 
 configure do
-	# Configure logging
-	logger = LogStashLogger.new(
-			type: :multi_logger,
-			outputs: [
-					{ type: :stdout, formatter: ::Logger::Formatter },
-					{ type: :file, path: "log/#{settings.environment}.log", sync: true},
-					{ host: settings.logstash_host, port: settings.logstash_port, sync: false}
-			])
-	LogStashLogger.configure do |config|
-		config.customize_event do |event|
-			event["module"] = settings.servicename
-		end
-	end
-	set :logger, logger
+    # Configure logging
+    logger = FluentLoggerSinatra::Logger.new('tenor', settings.servicename, settings.logger_host, settings.logger_port)
+    set :logger, logger
 end
 
 before do
-	env['rack.logger'] = settings.logger
+    env['rack.logger'] = settings.logger
 end
 
 class VnfdValidator < Sinatra::Application
-
-	helpers VnfdValidatorHelper
-
+    helpers VnfdValidatorHelper
 end

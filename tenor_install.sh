@@ -3,8 +3,8 @@
 declare tenor_ip
 declare mongo_ip
 declare gatekeeper
-declare logstash_address
 declare cassandra_address
+declare logger_address
 CURRENT_PROGRESS=0
 bold=$(tput bold)
 normal=$(tput sgr0)
@@ -141,8 +141,8 @@ configureIps(){
     TENOR_IP="127.0.0.1"
     MONGODB_IP="127.0.0.1:27017"
     GATEKEEPER="127.0.0.1:8000"
-    LOGSTASH_ADDRESS="127.0.0.1:5228"
     CASSANDRA_ADDRESS="127.0.0.1"
+    LOGGER_ADDRESS="127.0.0.1:24224"
 
     echo -e "${bold}Please, insert the IPs and ports used in each service. In the case you have installed everything locally (localhost) you can press [ENTER] without write anything${normal}.\n\n"
 
@@ -163,12 +163,15 @@ configureIps(){
     read cassandra_address
     if [ -z "$cassandra_address" ]; then cassandra_address=$CASSANDRA_ADDRESS; fi
 
+    logger_host=${LOGGER_ADDRESS%%:*}
+    logger_port=${LOGGER_ADDRESS##*:}
+
     mongodb_host=${mongo_ip%%:*}
     mongodb_port=${mongo_ip##*:}
 
-    mkdir fluentd
+    mkdir -p fluentd
     cat >fluentd/fluent.conf <<EOL
-        # In v1 configuration, type and id are @ prefix parameters.
+    # In v1 configuration, type and id are @ prefix parameters.
     # @type and @id are recommended. type and id are still available for backward compatibility
 
     ## built-in TCP input
@@ -229,9 +232,9 @@ configureIps(){
 
     <match **>
       @type mongo
-      host 127.0.0.1
-      port 27017
-      database fluentd
+      host ${mongodb_host}
+      port ${mongodb_port}
+      database ns_manager
       #collection tenor_logs
       tag_mapped
 
@@ -278,8 +281,8 @@ configureFiles(){
             cp config/database.yml.sample config/database.yml
         fi
 
-        sed -i -e 's/\(logstash_host:\).*/\1 '$logstash_host'/' config/config.yml
-        sed -i -e 's/\(logstash_port:\).*/\1 '$logstash_port'/' config/config.yml
+        sed -i -e 's/\(logger_host:\).*/\1 '$logger_host'/' config/config.yml
+        sed -i -e 's/\(logger_port:\).*/\1 '$logger_port'/' config/config.yml
         sed -i -e 's/\(gatekeeper:\).*/\1 '$gatekeeper'/' config/config.yml
         for i in "${tenor_ns_url[@]}"; do
             sed  -i -e  's/\('$i':\).*\:\(.*\)/\1 '$tenor_ip':\2/' config/config.yml

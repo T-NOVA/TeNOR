@@ -21,44 +21,34 @@ ENV['RACK_ENV'] ||= 'development'
 require 'sinatra'
 require 'sinatra/config_file'
 require 'yaml'
-require 'logstash-logger'
 require 'bunny'
 
-# Require the bundler gem and then call Bundler.require to load in all gems
-# listed in Gemfile.
+# Require the bundler gem and then call Bundler.require to load in all gems listed in Gemfile.
 require 'bundler'
 Bundler.require :default, ENV['RACK_ENV'].to_sym
 
-  require_relative 'models/init'
-  require_relative 'routes/init'
-  require_relative 'helpers/init'
+require_relative 'models/init'
+require_relative 'routes/init'
+require_relative 'helpers/init'
 
-  register Sinatra::ConfigFile
+register Sinatra::ConfigFile
 # Load configurations
-  config_file 'config/config.yml'
+config_file 'config/config.yml'
 
-  configure do
+configure do
     # Configure logging
-    logger = LogStashLogger.new(
-        type: :multi_logger,
-        outputs: [
-            {type: :stdout, formatter: ::Logger::Formatter},
-            {type: :file, path: "log/#{settings.environment}.log", sync: true},
-            {host: settings.logstash_host, port: settings.logstash_port}
-        ])
-    LogStashLogger.configure do |config|
-      config.customize_event do |event|
-        event["module"] = settings.servicename
-      end
-    end
+    logger = FluentLoggerSinatra::Logger.new('tenor', settings.servicename, settings.logger_host, settings.logger_port)
     set :logger, logger
-  end
+end
+
+before do
+    env['rack.logger'] = settings.logger
+end
 
 class NSMonitoring < Sinatra::Application
-  helpers MonitoringHelper
+    helpers MonitoringHelper
 
-  Mongoid.load!('config/mongoid.yml')
+    Mongoid.load!('config/mongoid.yml')
 
-  MonitoringHelper.startSubcription()
-
+    MonitoringHelper.startSubcription
 end

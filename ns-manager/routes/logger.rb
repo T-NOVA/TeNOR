@@ -24,47 +24,25 @@ class LoggerController < TnovaManager
     # @param [string]
     get '/' do
         modules = ["ns_manager", "ns_catalogue", "ns_provisioner", "ns_monitoring", "nsd_validator", "vnf_manager", "vnf_catalogue", "vnf_provisioner", "vnf_monitoring", "hot_generator", "vnfd_validator"]
-        puts params['module'].nil?
-        puts params['severity'].nil?
-        puts params['date'].nil?
         response = []
-
-        params['date'] = 1475704800000
-        puts params['from']
-        puts params['until']
         params['from'] = Time.at(params['from'].to_i)
         params['until'] = Time.at(params['until'].to_i)
-        puts params['from']
-        puts params['until']
-
         if !params['module'].nil?
-            puts params['from'].nil?
-            puts params['severity'].nil?
             if !params['severity'].nil? && params['from'].nil?
-                puts "FROM"
                 response = Tenor.prefix(params['module']).where(severity: params['severity'].downcase)
             elsif !params['severity'].nil? && !params['from'].nil?
-                puts "FROM"
                 response = Tenor.prefix(params['module']).where(severity: params['severity'].downcase).where(:time.gte => params['from'], :time.lte => params['until'])
             elsif params['severity'].nil? && !params['from'].nil?
-                puts "FIND..."
                 response = Tenor.prefix(params['module']).where(:time.gte => params['from'], :time.lte => params['until'])
             else
-                puts "ALL"
                 response = Tenor.prefix(params['module']).all
             end
         else
-            puts "LSE..."
-            puts params['severity'].nil?
-            puts params['from'].nil?
             if !params['severity'].nil? && params['from'].nil?
-                puts "FIND2..."
                 modules.each { |x| response.concat(Tenor.prefix(x).where(severity: params['severity'].downcase))}
             elsif !params['severity'].nil? && !params['from'].nil?
-                puts "FIND3..."
                 modules.each { |x| response.concat(Tenor.prefix(x).where(severity: params['severity'].downcase).where(:time.gte => params['from'], :time.lte => params['until']))}
             elsif params['severity'].nil? && !params['from'].nil?
-                puts "FIND2..."
                 modules.each { |x| response.concat(Tenor.prefix(x).where(:time.gte => params['from'], :time.lte => params['until']))}
             else
                 modules.each { |x| response.concat(Tenor.prefix(x).all)}
