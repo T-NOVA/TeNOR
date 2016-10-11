@@ -156,8 +156,7 @@ module NsProvisioner
                             settings.infr_repository
                         end
 
-        logger.info 'List of available PoPs:'
-        logger.info pop_list
+        logger.info 'List of available PoPs: ' + pop_list.to_s
 
         if pop_id.nil? && mapping_id.nil?
             logger.info 'Request from Marketplace.'
@@ -305,8 +304,7 @@ module NsProvisioner
 
         # generate networks in each PoP?
         if @instance['authentication'].size > 1
-            logger.info 'More than 1 PoP is defined.'
-            logger.info 'WICM is required.'
+            logger.info 'More than 1 PoP is defined. WICM is required.'
 
             # Request WICM to create a service
             wicm_message = {

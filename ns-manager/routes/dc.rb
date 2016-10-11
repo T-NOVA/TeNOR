@@ -21,8 +21,8 @@ class GatekeeperController < TnovaManager
   # @method get_gatekeeper_dc
   # @overload get '/gatekeeper/dc/:id'
   #	Returns a DCs
-  get '/dc/:popId' do
-    return getPopInfo(params[:popId])
+  get '/dc/:popId' do |pop_id|
+    return getPopInfo(pop_id)
   end
 
   # @method get_gatekeeper_dcs

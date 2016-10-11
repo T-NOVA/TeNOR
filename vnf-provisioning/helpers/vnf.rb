@@ -273,7 +273,7 @@ module ProvisioningHelper
         }
         logger.debug 'mAPI request: ' + mapi_request.to_json
 
-        response = sendCommandToMAPI(vnfr['id'], mapi_request)
+        response = sendCommandToMAPI(vnfr['id'], mapi_request) unless settings.mapi.nil?
 
         # Update the VNFR event history
         vnfr['lifecycle_event_history'].push("Executed a #{mapi_request[:event]}")

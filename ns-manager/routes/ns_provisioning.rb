@@ -56,8 +56,7 @@ class NsProvisioner < TnovaManager
       halt e.response.code, e.response.body
     end
 
-    logger.error "INSTANTIATION INFO: "
-    logger.error instantiation_info
+    logger.info "INSTANTIATION INFO: " + instantiation_info.to_s
 
     provisioning = {
         :nsd => JSON.parse(nsd),
@@ -77,7 +76,7 @@ class NsProvisioner < TnovaManager
       logger.error e.response
       halt e.response.code, e.response.body
     end
-    logger.error "Instantiation correct."
+    logger.info "Instantiation correct."
     updateStatistics('ns_instantiated_requests')
     return response.code, response.body
   end
@@ -182,7 +181,7 @@ class NsProvisioner < TnovaManager
   # @param [string] nsr_id Instance id
   # @param [string] status Status
   put '/:nsr_id/:status' do
-    logger.info "Change status request of " + params[:ns_instance_id].to_s + " to " + params[:status].to_s
+    logger.info "Change status request of " + params[:nsr_id].to_s + " to " + params[:status].to_s
     begin
       @service = ServiceModel.find_by(name: "ns_provisioner")
     rescue Mongoid::Errors::DocumentNotFound => e
@@ -190,7 +189,7 @@ class NsProvisioner < TnovaManager
     end
 
     begin
-      response = RestClient.get @service.host + ":" + @service.port.to_s + '/ns-instances/' + params['ns_instance_id'], 'X-Auth-Token' => @client_token, :content_type => :json
+      response = RestClient.get @service.host + ":" + @service.port.to_s + '/ns-instances/' + params['nsr_id'], 'X-Auth-Token' => @client_token, :content_type => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Provisioning unreachable'
     rescue => e
@@ -217,7 +216,7 @@ class NsProvisioner < TnovaManager
   # Delete a ns-instance
   # @param [string] nsr_id Instance id
   delete '/:nsr_id' do
-    logger.info "Delete executed.... " + params[:ns_instance_id].to_s
+    logger.info "Delete executed.... " + params[:nsr_id].to_s
     begin
       @service = ServiceModel.find_by(name: "ns_provisioner")
     rescue Mongoid::Errors::DocumentNotFound => e
@@ -225,7 +224,7 @@ class NsProvisioner < TnovaManager
     end
 
     begin
-      response = RestClient.get @service.host + ":" + @service.port.to_s + '/ns-instances/' + params['ns_instance_id'], 'X-Auth-Token' => @client_token, :content_type => :json
+      response = RestClient.get @service.host + ":" + @service.port.to_s + '/ns-instances/' + params['nsr_id'], 'X-Auth-Token' => @client_token, :content_type => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Provisioning unreachable'
     rescue => e
@@ -267,7 +266,7 @@ class NsProvisioner < TnovaManager
     end
 
     begin
-      response = RestClient.get @service.host + ":" + @service.port.to_s + '/ns-instances/' + params['ns_instance_id'], 'X-Auth-Token' => @client_token, :content_type => :json
+      response = RestClient.get @service.host + ":" + @service.port.to_s + '/ns-instances/' + params['nsr_id'], 'X-Auth-Token' => @client_token, :content_type => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Provisioning unreachable'
     rescue => e

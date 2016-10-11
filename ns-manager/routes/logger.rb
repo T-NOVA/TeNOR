@@ -19,7 +19,7 @@
 class LoggerController < TnovaManager
 
     # @method get_elastic
-    # @overload get '/elastic/*'
+    # @overload get '/logs/*'
     # Get logs from elasticsearch/logstash. Different strings allowed in order to filter the required data
     # @param [string]
     get '/' do

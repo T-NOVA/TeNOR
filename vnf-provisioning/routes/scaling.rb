@@ -151,10 +151,11 @@ class Scaling < VnfProvisioning
 
         # Send request to the mAPI
         response = sendCommandToMAPI(params[:vnfr_id], mapi_request)
-        
+
         #wait 60 seconds?
         logger.info "Waiting 60 seconds..."
         #sleep(60)
+
         vim_info = scale_info['auth']
         vim_info['keystone'] = vim_info['url']['keystone']
         vim_info['heat'] = vim_info['url']['heat']
