@@ -196,7 +196,7 @@ The next step is add the dummy descriptors to TeNOR system using the API. This s
 
 ## Create a VNFD and NSD and instantiate it
 
-In order to test TeNOR functionality, you can follow the next steps (you can copy and paste in the command prompt):
+In order to test TeNOR functionality, you can deploy a dummy NSD/VNFD located in the Validator folders. Follow the next steps in order to test TeNOR (you can copy and paste in the command prompt):
 
 1. Add the VNFD in the VNF catalogue
 

@@ -379,6 +379,8 @@ module NsProvisioner
 
             logger.info 'Generating network HOT template...'
             hot, errors = generateNetworkHotTemplate(sla_id, hot_generator_message)
+            @instance.update_attribute('status', 'ERROR_CREATING') if errors
+            @instance.push(audit_log: errors) if errors
             return 400, errors.to_json if errors
 
             logger.info 'Send network template to HEAT Orchestration'

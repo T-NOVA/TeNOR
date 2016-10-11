@@ -51,6 +51,7 @@ class NsProvisioning < Sinatra::Application
     helpers PopHelper
     helpers UtilsHelper
     helpers VimHelper
+    helpers UtilsHelper
     helpers HotHelper
 
     Mongoid.load!('config/mongoid.yml')
