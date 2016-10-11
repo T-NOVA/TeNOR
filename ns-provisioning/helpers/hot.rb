@@ -223,6 +223,7 @@ module HotHelper
                 status = 'DELETING'
             end
             break if status == 'DELETE_COMPLETE'
+            count += 1
             if count > 20
                 logger.error 'Stack can not be removed'
                 return 400, 'Stack can not be removed'

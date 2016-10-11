@@ -86,7 +86,7 @@ class Provisioner < NsProvisioning
             notification: instantiation_info['callback_url'],
             lifecycle_event_history: ['INIT'],
             audit_log: [],
-            marketplace_callback: instantiation_info['callbackUrl']
+            marketplace_callback: instantiation_info['callback_url']
         }
 
         @instance = Nsr.new(instance)

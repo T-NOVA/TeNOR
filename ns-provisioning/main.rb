@@ -53,6 +53,7 @@ class NsProvisioning < Sinatra::Application
     helpers VimHelper
     helpers UtilsHelper
     helpers HotHelper
+    helpers InstantiationHelper
 
     Mongoid.load!('config/mongoid.yml')
 end
