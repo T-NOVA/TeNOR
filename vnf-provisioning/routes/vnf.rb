@@ -300,12 +300,12 @@ class Provisioning < VnfProvisioning
         }
         logger.debug 'mAPI request: ' + mapi_request.to_json
         # Send request to the mAPI
-        sendCommandToMAPI(vnfr_id, mapi_request) unless settings.mapi.nil?
+        code, body = sendCommandToMAPI(vnfr_id, mapi_request) unless settings.mapi.nil?
 
         # Update the VNFR event history
         vnfr.push(lifecycle_event_history: "Executed a #{mapi_request[:event]}")
 
-        halt response.code, response.body
+        halt code, body
     end
 
     # @method post_vnf_provisioning_id_stack_status
