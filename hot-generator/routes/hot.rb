@@ -136,12 +136,18 @@ class HotGenerator < Sinatra::Application
     security_group_id = provision_info['security_group_id']
     halt 400, 'Security group ID not found' if security_group_id.nil?
 
+		vdus_deployed_info= provision_info['vdus_deployed_info']
+    halt 400, 'VDUs info not found' if vdus_deployed_info.nil?
+
+    public_network_id = provision_info['public_network_id']
+    halt 400, 'Public Network ID not found' if public_network_id.nil?
+
     logger.debug 'Networks IDs: ' + networks_id.to_json
     logger.debug 'Security Group ID: ' + security_group_id.to_json
 
     # Build a HOT template
 		logger.debug 'Scale T-NOVA flavour: ' + params[:flavour]
-		hot = CommonMethods.generate_hot_template_scaling(vnf['vnfd'], params[:flavour], networks_id, security_group_id)
+		hot = CommonMethods.generate_hot_template_scaling(vnf['vnfd'], params[:flavour], networks_id, security_group_id, public_network_id, vdus_deployed_info)
 
 		halt 200, hot.to_json
 	end

@@ -15,8 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# @see VNFManager
-class VNFCatalogueController < TnovaManager
+# @see VNFCatalogue
+class VNFCatalogue < TnovaManager
 
   # @method get_vnfs
   # @overload get "/vnfs"
@@ -41,10 +41,10 @@ class VNFCatalogueController < TnovaManager
 
   end
 
-  # @method get_vnfs
+  # @method get_vnfs_id
   # @overload get "/vnfs/:vnf_id"
   # Get specific VNF
-  # @param [string]
+  # @param [string] vnf_id The VNFD id
   get '/:vnf_id' do
     begin
       @service = ServiceModel.find_by(name: "vnf_manager")
@@ -96,7 +96,7 @@ class VNFCatalogueController < TnovaManager
   # @method put_vnfs
   # @overload put "/vnfs/:vnf_id"
   # Update a VNF
-  # @param [string]
+  # @param [string] vnf_id The VNFD id
   put '/:vnf_id' do
 
     # Return if content-type is invalid
@@ -124,7 +124,7 @@ class VNFCatalogueController < TnovaManager
   # @method delete_vnfs
   # @overload delete "/vnfs/:vnf_id"
   # Delete a VNFs
-  # @param [string]
+  # @param [string] vnf_id The VNFD id
   delete '/:vnf_id' do
 
     #check if some NSD is using it

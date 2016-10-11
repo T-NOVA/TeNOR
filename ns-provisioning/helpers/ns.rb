@@ -111,7 +111,7 @@ module NsProvisioner
 
             unless settings.default_tenant
                 logger.info "Removing user '" + auth_info['user_id'].to_s + "'..."
-                deleteUser(popUrls[:keystone], auth_info['user_id'], token)
+                #deleteUser(popUrls[:keystone], auth_info['user_id'], token)
 
                 logger.info "Removing tenant '" + auth_info['tenant_id'].to_s + "'..."
                 # deleteTenant(popUrls[:keystone], auth_info['tenant_id'], token)
@@ -238,6 +238,7 @@ module NsProvisioner
                     token, errors = openstackAdminAuthentication(popUrls[:keystone], popUrls[:tenant], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
                     logger.error errors if errors
                     @instance.update_attribute('status', 'ERROR_CREATING') if errors
+                    @instance.push(audit_log: errors) if errors
                     return 400, errors.to_json if errors
 
                     if settings.default_tenant
@@ -263,6 +264,7 @@ module NsProvisioner
                     if pop_auth['tenant_id'].nil? || pop_auth['user_id'].nil?
                         error = "Tenant or user not created."
                         logger.error error
+                        @instance.push(audit_log: errors) if errors
                         @instance.update_attribute('status', 'ERROR_CREATING')
                         return 400, error.to_json
                     end
@@ -275,6 +277,7 @@ module NsProvisioner
                     if pop_auth['token'].nil?
                         error = "Authentication failed."
                         logger.error error
+                        @instance.push(audit_log: errors) if errors
                         @instance.update_attribute('status', 'ERROR_CREATING')
                         return 400, error.to_json
                     end

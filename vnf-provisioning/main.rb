@@ -39,6 +39,10 @@ class VnfProvisioning < Sinatra::Application
     # Load configurations
     config_file 'config/config.yml'
 
+	helpers ProvisioningHelper
+	helpers MapiHelper
+	helpers HotHelper
+
     configure do
         # Configure logging
         logger = FluentLoggerSinatra::Logger.new('tenor', settings.servicename, settings.logger_host, settings.logger_port)

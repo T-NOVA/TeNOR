@@ -245,6 +245,18 @@ angular.module('tNovaApp')
                 scope: $scope,
             });
         };
+
+        $scope.scale_out = function (id) {
+            tenorService.post("ns-instances/scaling/"+id+"/scale_out", {}).then(function (data) {
+                $scope.updateInstanceList();
+            });
+        };
+
+        $scope.scale_in = function (id) {
+            tenorService.post("ns-instances/scaling/"+id+"/scale_in", {}).then(function (data) {
+                $scope.updateInstanceList();
+            });
+        };
     })
     .controller('nsMonitoringController', function ($scope, $stateParams, $filter, mDataService, $interval, tenorService) {
         var promise, promise1, promise2;

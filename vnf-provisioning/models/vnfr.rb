@@ -45,10 +45,13 @@ class Vnfr
 	field :audit_log, type: Array
 	field :stack_url, type: String
 	field :vms_id, type: Hash
+	field :vms, type: Array
 	field :scale_info, type:Hash
 	field :scale_resources, type: Array
 	field :outputs, type: Array
 	field :lifecycle_info, type: Hash
 	field :lifecycle_events_values, type: Hash
 	field :vdu, type: Array
+	field :security_group_id, type: String
+	field :public_network_id, type: String
 end

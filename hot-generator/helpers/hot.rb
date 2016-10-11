@@ -47,11 +47,11 @@ module CommonMethods
 		end
 	end
 
-	def self.generate_hot_template_scaling(vnfd, flavour_key, networks_id, security_group_id)
-		hot = ScaleToHot.new(vnfd['name'], vnfd['description'])
+	def self.generate_hot_template_scaling(vnfd, flavour_key, networks_id, security_group_id, public_network_id, vdus_deployed_info)
+		hot = ScaleToHot.new(vnfd['name'], vnfd['description'], public_network_id)
 
 		begin
-			hot.build(vnfd, flavour_key, networks_id, security_group_id)
+			hot.build(vnfd, flavour_key, networks_id, security_group_id, vdus_deployed_info)
 		rescue CustomException::NoExtensionError => e
 			logger.error e.message
 			halt 400, e.message

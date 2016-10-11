@@ -180,6 +180,8 @@ curl -XGET http://localhost:4000/
 If nothing is received, make sure that the NS Manager is running.
 If you receive a response, means that the NS Manager is ready for recevie requests.
 
+In order to see the available IPs for the NS Manager, visit the API Documentation (http://t-nova.github.io/TeNOR/)
+
 ## Define a VNFD and a NSD
 
 Once TeNOR is ready to use, you should define a VNF Descriptor and a NS Descriptor. This task has some complexity and this repository contains a dummy descriptors that can be deployed without modification. You can find it in the NSD and VNFD validator modules.
@@ -223,6 +225,9 @@ In each VNFD can have 5 types of lifecycle event: start, stop, restart, scaling_
  - Get PublicIp of port in a VDU: get_attr[vdu0,CP5v7d,PublicIp]
  - Get PrivateIp of port in a VDU: get_attr[CPr3k7,fixed_ips,0,ip_address]
  - Get the last VDU for scaling-out: get_attr[vdu1,vdus]
+ - Get the last PrivateIps for scaling-out: gig-adaet_attr[CPsx4l,fixed_ips,0,ip_address]
+ - Get the last PublicIps for scaling-out: get_attr[vdu0,CPudhr,PublicIp]
+ - Timeout before remove instance due scale-in event:
 
 # Development
 

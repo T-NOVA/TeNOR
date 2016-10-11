@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 # @see TnovaManager
-class ServiceConfigurationController < TnovaManager
+class ServiceConfiguration < TnovaManager
 
   # @method post_configs_registerService
   # @overload post '/configs/registerService'

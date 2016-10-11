@@ -15,8 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# @see TnovaManager
-class TnovaManager < Sinatra::Application
+# @see Statistics
+class Statistics < Sinatra::Application
 
   # @method get_statistics
   # @overload get "/statistics/"

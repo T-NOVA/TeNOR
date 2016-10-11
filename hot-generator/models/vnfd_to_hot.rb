@@ -63,7 +63,7 @@ class VnfdToHot
         networks_id << {'id' => vlink, 'alias' => vlink_json['alias'], 'heat_id' => vlink_json['existing_net_id']}
       else
         net_name, router_interface = create_networks(vlink_json, dns, router_id)
-        networks_id << {'id' => vlink, 'alias' => vlink_json['alias'], 'heat' => net_name}
+        networks_id << {'id' => vlink, 'alias' => vlink_json['alias'], 'heat' => vlink}
         router_interfaces << router_interface
       end
     end
@@ -87,7 +87,7 @@ class VnfdToHot
       end
 
       #create AutoScalingGroup if the VNF can scale
-      if (vdu['scale_in_out']['maximum'] > 1)
+      if (vdu['scale_in_out']['maximum'] > 10)
         #generate template for server
         nested_template = generate_nested_template(vdu, vnfd, networks_id, security_group_id, nets, router_interfaces, router_id)
 
@@ -122,8 +122,6 @@ class VnfdToHot
         create_server(vdu, image_name, flavor_name, ports, key, false)
       end
     end
-
-    puts @hot.to_json
 
     @hot
   end
@@ -209,13 +207,13 @@ class VnfdToHot
   end
 
   def create_networks(vlink, dns_server, router_id)
-    network_name = create_network(vlink['alias'], vlink['port_security_enabled'])
+    network_name = create_network(vlink['id'], vlink['alias'], vlink['port_security_enabled'])
     if vlink['net_segment'] && vlink['net_segment'] != ""
       cidr = vlink['net_segment']
     else
       cidr = "192." + rand(256).to_s + "." + rand(256).to_s + ".0/24"
     end
-    subnet_name = create_subnet(network_name, dns_server, cidr)
+    subnet_name = create_subnet(vlink['id'], dns_server, cidr)
     if vlink['connectivity_type'] == 'E-LAN'
       #create_router_interface(router_id, subnet_name)
     elsif vlink['connectivity_type'] == 'E-LINE'
@@ -227,9 +225,9 @@ class VnfdToHot
     return network_name, router_interface
   end
 
-  def create_network(network_name, port_security_enabled)
+  def create_network(resource_name, network_name, port_security_enabled)
     name = get_resource_name
-    @hot.resources_list << Network.new(name, network_name, port_security_enabled)
+    @hot.resources_list << Network.new(resource_name, network_name, port_security_enabled)
     name
   end
 

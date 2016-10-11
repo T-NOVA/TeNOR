@@ -21,10 +21,11 @@ class ScaleToHot
   #
   # @param [String] name the name for the HOT
   # @param [String] description the description for the HOT
-  def initialize(name, description)
+  def initialize(name, description, public_network_id)
     @hot = Hot.new(description)
     @name = name
     @outputs = {}
+    @public_network_id = public_network_id
   end
 
   # Converts VNFD to HOT
@@ -34,7 +35,8 @@ class ScaleToHot
   # @param [Array] networks_id the IDs of the networks created by NS Manager
   # @param [String] security_group_id the ID of the T-NOVA security group
   # @return [HOT] returns an HOT object
-  def build(vnfd, tnova_flavour, networks_id, security_group_id)
+  def build(vnfd, tnova_flavour, networks_id, security_group_id, vdus_deployed_info)
+
     # Parse needed outputs
     parse_outputs(vnfd['vnf_lifecycle_events'].find { |lifecycle| lifecycle['flavor_id_ref'] == tnova_flavour }['events'])
 
@@ -47,101 +49,22 @@ class ScaleToHot
 
     key = create_key_pair(SecureRandom.urlsafe_base64(9))
 
-    protocol_port = "80"
-    monitor = create_monitor("TCP")
-    pool = create_pool("HTTP", monitor, subnet_id, protocol_port)
-    lb = create_lb(protocol_port, pool, members)
-    create_lb_floating_ip(protocol_port, pool)
-
-    #duplicate VDUs according to the max number in scaling
-
-    members = []
     deployment_information['vdu_reference'].each do |vdu_ref|
       # Get VDU for deployment
       vdu = vnfd['vdu'].detect { |vdu| vdu['id'] == vdu_ref }
+      vdu_deployed_info = vdus_deployed_info.find { |vdu_info| vdu_info['id'] == vdu_ref }
+      next if vdu_deployed_info.nil?
 
-      image_name = create_image(vdu)
-      flavor_name = create_flavor(vdu)
-
-      ports = create_ports(vdu['connection_points'], vnfd['vlinks'], networks_id, security_group_id)
-      #ports = create_ports(vdu_ref, vdu['vnfc']['id'], vdu['vnfc']['networking'])
-
-      #if afinity is enabled, the vms should be host in the same hypervisor
-
-      server = create_server(vdu, image_name, flavor_name, ports, key)
-      #vdu['scale_in_out']['maximum']
+      #networks_id << {'id' => vlink, 'alias' => vlink_json['alias'], 'heat' => net_name}
       if (vdu['scale_in_out']['maximum'] > 1)
-        auto_scale_group = create_autoscale_group(60, vdu['scale_in_out']['maximum'], vdu['scale_in_out']['minimum'], vdu['id'])
-        create_scale_policy(auto_scale_group, 1)
-        create_scale_policy(auto_scale_group, -1)
-
-        members << { get_resource: server }
+        image_name = vdu_deployed_info['image_id']
+        flavor_name = vdu_deployed_info['flavour_id']
+        ports = create_ports(vdu['id'], vdu['connection_points'], vnfd['vlinks'], networks_id, security_group_id)
+        server = create_server(vdu, image_name, flavor_name, ports, key)
       end
     end
 
-    if (vdu['scale_in_out']['maximum'] > 1)
-      protocol_port = "80"
-      monitor = create_monitor("TCP")
-      pool = create_pool("HTTP", monitor, subnet_id, protocol_port)
-      lb = create_lb(protocol_port, pool, members)
-      port = create_lb_port("loadBalancer", network_id, security_group_id)
-      create_lb_floating_ip(port_name)
-    end
-
-    puts @hot
-
     @hot
-  end
-
-  def create_lb_port(port_name, network_id, security_group_id)
-    network_id = network['id']
-    @hot.resources_list << Port.new(port_name, network_id, security_group_id)
-    name
-  end
-
-  def create_autoscale_group(cooldown, max_size, min_size, resource)
-    name = get_resource_name
-    @hot.resources_list << AutoScalingGroup.new(name, cooldown, max_size, min_size, {get_resource: resource})
-    name
-  end
-
-  def create_scale_policy(auto_scaling_group, scaling_adjustment)
-    name = get_resource_name
-    @hot.resources_list << ScalingPolicy.new(name, {get_resource: auto_scaling_group}, scaling_adjustment)
-
-    if scaling_adjustment > 0
-      @hot.outputs_list << Output.new("scale_out_url", "Url of scale out.", {get_arr: [name, 'alarm_url']})
-    else
-      @hot.outputs_list << Output.new("scale_in_url", "Url of scale in.", {get_arr: [name, 'alarm_url']})
-    end
-    name
-  end
-
-  def create_monitor(type)
-    name = get_resource_name
-    @hot.resources_list << HealthMonitor.new(name, type)
-    name
-  end
-
-  def create_pool(protocol, monitor, subnet_id, port)
-    name = get_resource_name
-    @hot.resources_list << Pool.new(name, protocol, [{get_resource: monitor}], {get_param: subnet_id}, "ROUND_ROBIN", port)
-    name
-  end
-
-  def create_load_balancer(protocol_port, pool, members)
-    name = get_resource_name
-    @hot.resources_list << LoadBalancer.new(name, protocol_port, {get_resource: pool}, members)
-    name
-  end
-
-
-  def create_load_balancer_floating_ip(port_name)
-    floating_ip_name = get_resource_name
-    # TODO: Receive the floating ip pool name?
-    @hot.resources_list << FloatingIp.new(floating_ip_name, 'public')
-    @hot.resources_list << FloatingIpAssociation.new(get_resource_name, {get_resource: floating_ip_name}, {get_resource: port_name})
-    @hot.outputs_list << Output.new("#{port_name}#floating_ip", "#{port_name} LoadBalancer Floating IP", {get_attr: [floating_ip_name, 'floating_ip_address']})
   end
 
   # Creates an HEAT key pair resource
@@ -156,20 +79,6 @@ class ScaleToHot
     name
   end
 
-  # Creates an HEAT image resource from the VNFD
-  #
-  # @param [Hash] vdu the VDU from the VNFD
-  # @return [String] the name of the created resource
-  def create_image(vdu)
-    name = get_resource_name
-
-    raise CustomException::NoExtensionError, "#{vdu['vm_image']} does not have a file extension" if vdu['vm_image_format'].empty?
-    raise CustomException::InvalidExtensionError, "#{vdu['vm_image']} has an invalid extension. Allowed extensions: ami, ari, aki, vhd, vmdk, raw, qcow2, vdi and iso" unless ['ami', 'ari', 'aki', 'vhd', 'vmdk', 'raw', 'qcow2', 'vdi', 'iso'].include? vdu['vm_image_format']
-
-    @hot.resources_list << Image.new(name, vdu['vm_image_format'], vdu['vm_image'])
-    name
-  end
-
   # Creates an HEAT port resource from the VNFD
   #
   # @param [String] vdu_id the VDU ID from the VNFD
@@ -178,7 +87,7 @@ class ScaleToHot
   # @param [Array] networks_id the IDs of the networks created by NS Manager
   # @param [String] security_group_id the ID of the T-NOVA security group
   # @return [Array] a list of ports
-  def create_ports(connection_points, vlinks, networks_id, security_group_id)
+  def create_ports(vdu_id, connection_points, vlinks, networks_id, security_group_id)
     ports = []
 
     connection_points.each do |connection_point|
@@ -186,10 +95,10 @@ class ScaleToHot
       #detect, and return error if not.
       network = networks_id.detect { |network| network['alias'] == vlink['alias'] }
       if network != nil
-        network_id = network['id']
+        network_id = network['physical_resource_id']
         port_name = "#{connection_point['id']}"
         ports << {port: {get_resource: port_name}}
-        @hot.resources_list << Port.new(port_name, network_id, security_group_id)
+        @hot.resources_list << Port.new(port_name, network_id, nil)
 
         # Check if it's necessary to create an output for this resource
         if @outputs.has_key?('ip') && @outputs['ip'].include?(port_name)
@@ -200,30 +109,19 @@ class ScaleToHot
         if vlink['access']
           floating_ip_name = get_resource_name
           # TODO: Receive the floating ip pool name?
-          @hot.resources_list << FloatingIp.new(floating_ip_name, 'public')
-          @hot.resources_list << FloatingIpAssociation.new(get_resource_name, {get_resource: floating_ip_name}, {get_resource: port_name})
-          @hot.outputs_list << Output.new("#{port_name}#floating_ip", "#{port_name} Floating IP", {get_attr: [floating_ip_name, 'floating_ip_address']})
+          @hot.resources_list << FloatingIp.new(floating_ip_name, @public_network_id)
+          @hot.resources_list << FloatingIpAssociation.new(get_resource_name, {get_resource: floating_ip_name}, {get_resource: port_name}, [])
+          #          @hot.outputs_list << Output.new("#{port_name}#floating_ip", "#{port_name} Floating IP", {get_attr: [floating_ip_name, 'floating_ip_address']})
+          @hot.outputs_list << Output.new("#{vdu_id}##{connection_point['id']}#PublicIp", "#{port_name} Floating IP", {get_attr: [floating_ip_name, 'floating_ip_address']})
+          @hot.outputs_list << Output.new("#{vdu_id}##{connection_point['id']}#fixed_ips#0#ip_address", "#{port_name} private address", {"get_attr" => [port_name,'fixed_ips',0,'ip_address']})
+        else
+          @hot.outputs_list << Output.new("#{vdu_id}##{connection_point['id']}#fixed_ips#0#ip_address", "#{port_name} private address", {"get_attr" => [port_name,'fixed_ips',0,'ip_address']})
         end
       end
 
     end
 
     ports
-  end
-
-  # Creates an HEAT flavor resource from the VNFD
-  #
-  # @param [Hash] vdu the VDU from the VNFD
-  # @return [String] the name of the created resource
-  def create_flavor(vdu)
-    name = get_resource_name
-    storage_info = vdu['resource_requirements']['storage']
-    @hot.resources_list << Flavor.new(
-        name,
-        unit_converter(storage_info['size'], storage_info['size_unit'], 'gb'),
-        unit_converter(vdu['resource_requirements']['memory'], vdu['resource_requirements']['memory_unit'], 'mb'),
-        vdu['resource_requirements']['vcpus'])
-    name
   end
 
   # Creates an HEAT server resource from the VNFD
@@ -235,8 +133,8 @@ class ScaleToHot
   def create_server(vdu, image_name, flavour_name, ports, key_name)
     @hot.resources_list << Server.new(
         vdu['id'],
-        {get_resource: flavour_name},
-        {get_resource: image_name},
+        flavour_name,
+        image_name,
         ports,
         add_wait_condition(vdu),
         {get_resource: key_name})
