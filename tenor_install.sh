@@ -3,8 +3,8 @@
 declare tenor_ip
 declare mongo_ip
 declare gatekeeper
-declare logstash_address
 declare cassandra_address
+declare logger_address
 CURRENT_PROGRESS=0
 bold=$(tput bold)
 normal=$(tput sgr0)
@@ -128,6 +128,8 @@ installTenor(){
         fi
     done
 
+    fluent-gem install fluent-plugin-mongo
+
     configureFiles
 
     printf "\n\n${bold}TeNOR installation script finished${normal}\n\n"
@@ -139,8 +141,8 @@ configureIps(){
     TENOR_IP="127.0.0.1"
     MONGODB_IP="127.0.0.1:27017"
     GATEKEEPER="127.0.0.1:8000"
-    LOGSTASH_ADDRESS="127.0.0.1:5228"
     CASSANDRA_ADDRESS="127.0.0.1"
+    LOGGER_ADDRESS="127.0.0.1:24224"
 
     echo -e "${bold}Please, insert the IPs and ports used in each service. In the case you have installed everything locally (localhost) you can press [ENTER] without write anything${normal}.\n\n"
 
@@ -157,16 +159,99 @@ configureIps(){
     read gatekeeper
     if [ -z "$gatekeeper" ]; then gatekeeper=$GATEKEEPER; fi
 
-    echo "Type the IP:PORT (xxx.xxx.xxx.xxx:xxxx) where is installed Logstash, followed by [ENTER]:"
-    read logstash_address
-    if [ -z "$logstash_address" ]; then logstash_address=$LOGSTASH_ADDRESS; fi
-
     echo "Type the IP (xxx.xxx.xxx.xxx) where is installed Cassandra, followed by [ENTER]:"
     read cassandra_address
     if [ -z "$cassandra_address" ]; then cassandra_address=$CASSANDRA_ADDRESS; fi
 
-    logstash_host=${logstash_address%%:*}
-    logstash_port=${logstash_address##*:}
+    logger_host=${LOGGER_ADDRESS%%:*}
+    logger_port=${LOGGER_ADDRESS##*:}
+
+    mongodb_host=${mongo_ip%%:*}
+    mongodb_port=${mongo_ip##*:}
+
+    mkdir -p fluentd
+    cat >fluentd/fluent.conf <<EOL
+    # In v1 configuration, type and id are @ prefix parameters.
+    # @type and @id are recommended. type and id are still available for backward compatibility
+
+    ## built-in TCP input
+    ## $ echo <json> | fluent-cat <tag>
+    <source>
+      @type forward
+      @id forward_input
+    </source>
+
+    ## built-in UNIX socket input
+    #<source>
+    #  @type unix
+    #</source>
+
+    # HTTP input
+    # http://localhost:8888/<tag>?json=<json>
+    <source>
+      @type http
+      @id http_input
+
+      port 8888
+    </source>
+
+    ## File input
+    ## read apache logs with tag=apache.access
+    #<source>
+    #  @type tail
+    #  format apache
+    #  path /var/log/httpd-access.log
+    #  tag apache.access
+    #</source>
+
+    # Listen HTTP for monitoring
+    # http://localhost:24220/api/plugins
+    # http://localhost:24220/api/plugins?type=TYPE
+    # http://localhost:24220/api/plugins?tag=MYTAG
+    <source>
+      @type monitor_agent
+      @id monitor_agent_input
+
+      port 24220
+    </source>
+
+    # Listen DRb for debug
+    <source>
+      @type debug_agent
+      @id debug_agent_input
+
+      bind 127.0.0.1
+      port 24230
+    </source>
+
+    ## match tag=debug.** and dump to console
+    <match debug.**>
+      @type stdout
+      @id stdout_output
+    </match>
+
+    <match **>
+      @type mongo
+      host ${mongodb_host}
+      port ${mongodb_port}
+      database ns_manager
+      #collection tenor_logs
+      tag_mapped
+
+      # for capped collection
+      capped
+      capped_size 1024m
+
+      # authentication
+      # user mongouser
+      # password mongouser_pass
+
+      # flush
+      flush_interval 10s
+    </match>
+
+EOL
+
 }
 configureFiles(){
     printf "\nConfiguring NS/VNF modules\n\n"
@@ -196,8 +281,8 @@ configureFiles(){
             cp config/database.yml.sample config/database.yml
         fi
 
-        sed -i -e 's/\(logstash_host:\).*/\1 '$logstash_host'/' config/config.yml
-        sed -i -e 's/\(logstash_port:\).*/\1 '$logstash_port'/' config/config.yml
+        sed -i -e 's/\(logger_host:\).*/\1 '$logger_host'/' config/config.yml
+        sed -i -e 's/\(logger_port:\).*/\1 '$logger_port'/' config/config.yml
         sed -i -e 's/\(gatekeeper:\).*/\1 '$gatekeeper'/' config/config.yml
         for i in "${tenor_ns_url[@]}"; do
             sed  -i -e  's/\('$i':\).*\:\(.*\)/\1 '$tenor_ip':\2/' config/config.yml

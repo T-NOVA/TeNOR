@@ -1,5 +1,6 @@
 ---
 servicename: vnf_manager
+manager: localhost:4000
 environment: development
 address: 0.0.0.0
 port: 4567
@@ -8,9 +9,8 @@ timeout: 30
 max_persistent_conns: 512
 daemonize: false
 threaded: true
-logstash_host: 84.88.40.160
-logstash_port: 5228
-manager: localhost:4000
+logger_host: 127.0.0.1
+logger_port: 24224
 
 vnf_catalogue: http://localhost:4569
 vnf_provisioning: http://localhost:4572

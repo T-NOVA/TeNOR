@@ -17,7 +17,7 @@ TeNOR is the NFV Orchestrator platform developed by the [T-NOVA](http://www.t-no
 - Netfloc (https://github.com/T-NOVA/netfloc). Used for the VNFFG.
 - WICM (https://github.com/T-NOVA/WICM).
 - Apache Cassandra (optional, used for monitoring) (installation provided in dependencies/install_cassandra.sh)
-- Logstash (optional) & ElasticSearch (optional)
+- ElasticSearch (optional)
 - RabbitMq (optional, used for monitoring) (installation provided in dependencies/install_dependencies.sh)
 
 #Getting started
@@ -47,7 +47,7 @@ Once Ruby is installed (you can be sure of that using `ruby -v` command in the t
 
 A menu will appear and you can choose a number in the menu [1-7].
 
-For TeNOR installation, insert the number 1 and press the Enter Key. The installation will start automatically installing the Ruby Gem dependencies. After few minutes, the script will ask you a set of questions regarding the location of the MongoDB, Gatekeeper and Logstash. In the case of insert an emty values, the script will use the default values (localhost).
+For TeNOR installation, insert the number 1 and press the Enter Key. The installation will start automatically installing the Ruby Gem dependencies. After few minutes, the script will ask you a set of questions regarding the location of the MongoDB, Gatekeeper. In the case of insert an emty values, the script will use the default values (localhost).
 
 **Make sure that you have installed a Ruby version >= 2.2.5 and the `bundle` command is installed.**
 
