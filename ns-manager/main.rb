@@ -74,6 +74,6 @@ class TnovaManager < Sinatra::Application
     ServiceConfigurationHelper.publishServices
 
     get '/' do
-        return 200, interfaces_list.to_json
+        return 200, JSON.pretty_generate(interfaces_list)
     end
 end

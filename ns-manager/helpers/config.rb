@@ -134,7 +134,7 @@ module ServiceConfigurationHelper
   def self.publishServices
     services = getServices()
     services.each do |service|
-      puts "Sending dependencies to " + service['name']
+      logger.debug "Sending dependencies to " + service['name']
       if service['type'] == "internal"
         begin
           RestClient.post service['host'] + ":" + service['port'] + "/gk_dependencies", services.to_json, :content_type => :json
@@ -171,6 +171,56 @@ module ServiceConfigurationHelper
             'purpose' => 'REST API Structure and Capability Discovery'
         },
         {
+            'uri' => '/network-services',
+            'method' => 'GET',
+            'purpose' => 'Get list of Network Services'
+        },
+        {
+            'uri' => '/network-services/{id}',
+            'method' => 'GET',
+            'purpose' => 'Get a Network Service'
+        },
+        {
+            'uri' => '/network-services',
+            'method' => 'POST',
+            'purpose' => 'Create a new Network Service'
+        },
+        {
+            'uri' => '/network-services/{id}',
+            'method' => 'PUT',
+            'purpose' => 'Update a new Network Service'
+        },
+        {
+            'uri' => '/network-services/{id}',
+            'method' => 'DELETE',
+            'purpose' => 'Delete a new Network Service'
+        },
+        {
+            'uri' => '/vnfs',
+            'method' => 'GET',
+            'purpose' => 'Get list of VNFs'
+        },
+        {
+            'uri' => '/vnfs',
+            'method' => 'POST',
+            'purpose' => 'Create a new VNFs'
+        },
+        {
+            'uri' => '/vnfs/{id}',
+            'method' => 'PUT',
+            'purpose' => 'Update a VNF'
+        },
+        {
+            'uri' => '/ns-instances',
+            'method' => 'POST',
+            'purpose' => 'Create an instance request'
+        },
+        {
+            'uri' => '/ns-instances',
+            'method' => 'GET',
+            'purpose' => 'Get list of instances'
+        },
+        {
             'uri' => '/configs/registerService',
             'method' => 'POST',
             'purpose' => 'Register a service configuration'
@@ -195,52 +245,11 @@ module ServiceConfigurationHelper
             'method' => 'PUT',
             'purpose' => 'Update service status'
         },
-        {
-            'uri' => '/network-services',
-            'method' => 'GET',
-            'purpose' => 'Redirects a GET request to the specified micro-service'
-        },
-        {
-            'uri' => '/network-services',
-            'method' => 'POST',
-            'purpose' => 'Redirects a GET request to the specified micro-service'
-        },
-        {
-            'uri' => '/network-services/{id}',
-            'method' => 'PUT',
-            'purpose' => 'Redirects a GET request to the specified micro-service'
-        },
-        {
-            'uri' => '/network-services/{id}',
-            'method' => 'DELETE',
-            'purpose' => 'Redirects a GET request to the specified micro-service'
-        },
-        {
-            'uri' => '/vnfs',
-            'method' => 'POST',
-            'purpose' => 'Redirects a GET request to the specified micro-service'
-        },
-        {
-            'uri' => '/vnfs/{id}',
-            'method' => 'PUT',
-            'purpose' => 'Redirects a GET request to the specified micro-service'
-        },
-        {
-            'uri' => '/{path}',
-            'method' => 'POST',
-            'purpose' => 'Redirects a POST request to the specified micro-service'
-        },
-        {
-            'uri' => '/{path}',
-            'method' => 'DELETE',
-            'purpose' => 'Redirects a DELETE request to the specified micro-service'
-        },
-        {
-            'uri' => '/ns-instances',
-            'method' => 'POST',
-            'purpose' => 'Create an instance request'
-        }
     ]
   end
 
+  # Global, memoized, lazy initialized instance of a logger
+  def self.logger
+    @logger ||= TnovaManager.logger
+  end
 end
