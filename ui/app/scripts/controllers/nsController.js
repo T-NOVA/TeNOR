@@ -9,6 +9,7 @@ angular.module('tNovaApp')
             name: "UniMi"
         }];
         $scope.descriptor = {};
+        var page = 0;
 
         $scope.getServiceList = function () {
             tenorService.get('network-services?limit=1000').then(function (data) {
