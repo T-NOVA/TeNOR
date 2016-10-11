@@ -21,9 +21,7 @@ class App::Gk < Sinatra::Base
       puts e
       halt 400
     end
-    puts "Response..."
     return response
-
   end
 
   post '/rest/gk/api/token/' do

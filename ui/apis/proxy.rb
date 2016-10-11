@@ -13,8 +13,7 @@ class App::Proxy < Sinatra::Base
     rescue Errno::ECONNREFUSED
       halt 500, "Errno::ECONNREFUSED"
     rescue => e
-      puts "ERROR"
-      puts e
+      puts "ERROR - " + e.to_s
       halt 400
     end
     return response
