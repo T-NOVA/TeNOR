@@ -27,7 +27,6 @@ angular.module('tNovaApp')
         $scope.summaryData.SM_request = 0;
         $scope.summaryData.SM_rate = 0;
         $scope.summaryData.SM_execution_time = 0;
-        console.log($scope.summaryData);
         //Summary monitoring data
         tenorService.get('statistics/generic').then(function (data) {
             if (data) {
