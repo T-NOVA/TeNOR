@@ -1,5 +1,5 @@
 config = YAML.load_file("config/config.yml")
-quiet false
+#quiet false
 threads 8,32
 port config['port']
 environment config['environment']
