@@ -322,7 +322,7 @@ class Provisioner < NsProvisioning
         logger.info 'Sending statistic information to NS Manager'
         Thread.new do
             begin
-                RestClient.post settings.manager + '/performance-stats', @instance.to_json, content_type: :json
+                RestClient.post settings.manager + '/statistics/performance_stats', @instance.to_json, content_type: :json
             rescue => e
                 logger.error e
             end

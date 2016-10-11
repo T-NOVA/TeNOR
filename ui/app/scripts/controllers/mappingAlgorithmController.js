@@ -64,7 +64,7 @@ angular.module('tNovaApp')
         var instantiations = 0;
         var mappings = 0;
         $loading.start('scatter');
-        tenorService.get("performance-stats").then(function (data) {
+        tenorService.get("statistics/performance_stats").then(function (data) {
             instances = data;
             console.log(instances.length);
             var d;
@@ -210,7 +210,7 @@ angular.module('tNovaApp')
 
         $scope.chart_options = {};
         $scope.chart_options.data = [];
-        tenorService.get('statistics').then(function (data) {
+        tenorService.get('statistics/generic').then(function (data) {
             var ns_instantiated = data.filter(function (d) {
                 return d.name == 'ns_instantiated_requests';
             })[0];
