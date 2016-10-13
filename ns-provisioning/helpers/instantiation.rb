@@ -34,7 +34,6 @@ module InstantiationHelper
 
         pop_auth = {}
         pop_auth['pop_id'] = pop_id
-
         popInfo, errors = getPopInfo(pop_id)
         logger.error errors if errors
         generateMarketplaceResponse(callback_url, generateError(nsd_id, 'FAILED', 'Internal error: error getting pop information.')) if errors
@@ -51,7 +50,6 @@ module InstantiationHelper
         end
 
         token = ''
-
         if @instance['project'].nil?
             begin
                 token, errors = openstackAdminAuthentication(popUrls[:keystone], popUrls[:tenant], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
@@ -59,7 +57,7 @@ module InstantiationHelper
                 @instance.update_attribute('status', 'ERROR_CREATING') if errors
                 @instance.push(audit_log: errors) if errors
                 return 400, errors.to_json if errors
-
+                
                 if settings.default_tenant
                     pop_auth['username'] = settings.default_user_name
                     pop_auth['tenant_name'] = settings.default_tenant_name
@@ -111,7 +109,7 @@ module InstantiationHelper
                 error = { 'info' => 'Error creating the Openstack credentials.' }
                 logger.error error
                 recoverState(@instance, error)
-                return
+                return 400, error
             end
         end
 

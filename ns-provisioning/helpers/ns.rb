@@ -48,6 +48,15 @@ module NsProvisioner
         message
     end
 
+    # Updates the instance status with the Error message.
+    def handleError(instance, errors)
+        @instance = instance
+        logger.error errors
+        @instance.update_attribute('status', 'ERROR_CREATING') unless @instance.destroyed?
+        @instance.push(audit_log: errors) unless @instance.destroyed?
+        return 400, errors.to_json if errors
+    end
+
     # Recover the state due to fail during the instatiation or when the instance should be removed
     #
     # @param [JSON] instance NSr
@@ -144,6 +153,7 @@ module NsProvisioner
         nap_id = instantiation_info['nap_id']
         customer_id = instantiation_info['customer_id']
         slaInfo = nsd['sla'].find { |sla| sla['sla_key'] == flavour }
+
         if slaInfo.nil?
             return generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], 'FAILED', 'Internal error: SLA inconsistency'))
         end
@@ -211,7 +221,8 @@ module NsProvisioner
             logger.info 'Check if authentication is created for this PoP'
             authentication = @instance['authentication'].find { |auth| auth['pop_id'] == pop_id }
             next unless authentication.nil?
-            pop_auth = create_authentication(@instance, nsd['id'], vnf, pop_id, callback_url)
+            pop_auth, errors = create_authentication(@instance, nsd['id'], vnf, pop_id, callback_url)
+            return handleError(@instance, errors) if errors
             @instance['authentication'] << pop_auth
         end
 
@@ -262,13 +273,11 @@ module NsProvisioner
                 stack_name = 'WICM_SFC_' + @instance['id'].to_s
                 template = { stack_name: stack_name, template: hot_template }
                 stack, errors = sendStack(popUrls[:orch], vnf_info['tenant_id'], template, tenant_token)
-                logger.error errors
-                return 400, errors.to_json if errors
-                # save WICM stack info in NSR
+                return handleError(@instance, errors) if errors
 
                 # Wait for the WICM - SFC provisioning to finish
                 stack_info, errors = create_stack_wait(popUrls[:orch], vnf_info['tenant_id'], stack_name, tenant_token, 'NS WICM')
-                return 400, errors.to_json if errors
+                return handleError(@instance, errors) if errors
 
                 resource_reservation = @instance['resource_reservation']
                 resource_reservation << { wicm_stack: stack, pop_id: pop_auth['pop_id'] }
@@ -279,6 +288,7 @@ module NsProvisioner
         if @instance['authentication'].size == 1
             logger.debug 'Only 1 PoP is defined'
             # generate networks for this PoP
+            puts  @instance['authentication']
             pop_auth = @instance['authentication'][0]
             tenant_token = pop_auth['token']
             popUrls = pop_auth['urls']
@@ -294,28 +304,25 @@ module NsProvisioner
 
             logger.info 'Generating network HOT template...'
             hot, errors = generateNetworkHotTemplate(sla_id, hot_generator_message)
-            @instance.update_attribute('status', 'ERROR_CREATING') if errors
-            @instance.push(audit_log: errors) if errors
-            return 400, errors.to_json if errors
+            return handleError(@instance, errors) if errors
 
             logger.info 'Send network template to HEAT Orchestration'
             stack_name = 'network_' + @instance['id'].to_s
             template = { stack_name: stack_name, template: hot }
             stack, errors = sendStack(popUrls[:orch], pop_auth['tenant_id'], template, tenant_token)
-            logger.error errors if errors
-            return 400, errors.to_json if errors
+            return handleError(@instance, errors) if errors
 
             stack_id = stack['stack']['id']
 
             logger.info 'Checking network stack creation...'
             stack_info, errors = create_stack_wait(popUrls[:orch], pop_auth['tenant_id'], stack_name, tenant_token, 'NS Network')
-            return 400, errors.to_json if errors
+            return handleError(@instance, errors) if errors
 
             logger.info 'Network stack CREATE_COMPLETE. Reading network information from stack...'
             sleep(3)
             network_resources, errors = getStackResources(popUrls[:orch], pop_auth['tenant_id'], stack_name, tenant_token)
-            logger.error errors if errors
-            return 400, errors.to_json if errors
+            return handleError(@instance, errors) if errors
+
             stack_networks = network_resources['resources'].find_all { |res| res['resource_type'] == 'OS::Neutron::Net' }
             stack_routers = network_resources['resources'].find_all { |res| res['resource_type'] == 'OS::Neutron::Router' }
 
