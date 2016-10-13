@@ -83,10 +83,10 @@ angular.module('tNovaApp')
         $scope.lastLogs = function () {
             $scope.fromDate = Date.now() + -1*24*3600*1000;
             $scope.untilDate = Date.now();
-            var url = "logs/?module=ns-manager&severity=INFO&from=" + new Date($scope.fromDate).getTime()/1000 + "&until=" + new Date($scope.untilDate).getTime()/1000;
+            var url = "logs/?module=ns_provisioner&severity=INFO&from=" + new Date($scope.fromDate).getTime()/1000 + "&until=" + new Date($scope.untilDate).getTime()/1000;
             tenorService.get(url).then(function (data) {
                 if (!data) return;
-                $scope.lastHistory = data;
+                $scope.lastHistory = data.slice(0,20);
             });
         };
 
