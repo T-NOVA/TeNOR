@@ -23,7 +23,7 @@ module ApplicationHelper
     # @param [JSON] message some JSON message
     # @return [Hash, nil] if the parsed message is a valid JSON
     # @return [Hash, String] if the parsed message is an invalid JSON
-    def self.parse_json(message)
+    def parse_json(message)
         # Check JSON message format
         begin
             parsed_message = JSON.parse(message) # parse json message
