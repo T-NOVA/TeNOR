@@ -8,6 +8,7 @@ angular.module('tNovaApp')
         var page = 0;
         $scope.dataCollection = [];
         $scope.getVnfList = function (page) {
+            $scope.dataCollection = [];
             tenorService.get('vnfs?offset=' + page + '&limit=' + page_num).then(function (data) {
                 if (data !== []) {
                     $scope.dataCollection = _.sortBy(angular.extend($scope.dataCollection, data), function (o) {
@@ -36,7 +37,7 @@ angular.module('tNovaApp')
         };
         $scope.deleteItem = function (id) {
             tenorService.delete('vnfs/' + id).then(function (data) {
-                $scope.getVnfList();
+                $scope.getVnfList(page);
             });
             this.$hide();
         };

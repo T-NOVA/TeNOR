@@ -21,9 +21,9 @@ class Provisioning < VnfProvisioning
     # @overload get '/vnf-provisioning/network-service/:ns_id'
     #   Get all the VNFRs of a specific NS
     # Get all the VNFRs of a specific NS
-    get '/network-service/:nsr_id' do
+    get '/network-service/:nsr_id' do |nsr_id|
         begin
-            vnfrs = Vnfr.where(nsr_instance: params[:nsr_id])
+            vnfrs = Vnfr.where(nsr_instance: nsr_id)
         rescue => e
             logger.error e.response
             halt e.response.code, e.response.body
@@ -180,9 +180,9 @@ class Provisioning < VnfProvisioning
     # @overload get '/vnf-provisioning/vnf-instances/:vnfr_id
     #   Get a specific VNFR by its ID
     # Get a specific VNFR by its ID
-    get '/vnf-instances/:vnfr_id' do
+    get '/vnf-instances/:vnfr_id' do |vnfr_id|
         begin
-            vnfr = Vnfr.find(params[:vnfr_id])
+            vnfr = Vnfr.find(vnfr_id)
         rescue Mongoid::Errors::DocumentNotFound => e
             halt 404
         end
@@ -195,8 +195,8 @@ class Provisioning < VnfProvisioning
     #   @param [String] vnfr_id the VNFR ID
     #   @param [JSON] the VNF to instantiate and auth info
     # Destroy a VNF
-    post '/vnf-instances/:vnfr_id/destroy' do
-        logger.info 'Start removing process for VNFR: ' + params['vnfr_id'].to_s
+    post '/vnf-instances/:vnfr_id/destroy' do |vnfr_id|
+        logger.info 'Start removing process for VNFR: ' + vnfr_id.to_s
         # Return if content-type is invalid
         halt 415 unless request.content_type == 'application/json'
 
@@ -204,7 +204,6 @@ class Provisioning < VnfProvisioning
         destroy_info = parse_json(request.body.read)
         logger.debug 'Destroy info: ' + destroy_info.to_json
 
-        vnfr_id = params[:vnfr_id]
         begin
             vnfr = Vnfr.find(vnfr_id)
         rescue Mongoid::Errors::DocumentNotFound => e
@@ -271,7 +270,7 @@ class Provisioning < VnfProvisioning
     #   @param [String] vnfr_id the VNFR ID
     #   @param [JSON]
     # Request to execute a lifecycle event
-    put '/vnf-instances/:vnfr_id/config' do
+    put '/vnf-instances/:vnfr_id/config' do |vnfr_id|
         # Return if content-type is invalid
         halt 415 unless request.content_type == 'application/json'
 
@@ -282,7 +281,6 @@ class Provisioning < VnfProvisioning
         halt 400, 'Invalid event type.' unless ['start', 'stop', 'restart', 'scale-in', 'scale-out'].include? config_info['event'].downcase
 
         # Get VNFR stack info
-        vnfr_id = params[:vnfr_id]
         begin
             vnfr = Vnfr.find(vnfr_id)
         rescue Mongoid::Errors::DocumentNotFound => e
@@ -302,12 +300,12 @@ class Provisioning < VnfProvisioning
         }
         logger.debug 'mAPI request: ' + mapi_request.to_json
         # Send request to the mAPI
-        sendCommandToMAPI(vnfr_id, mapi_request)
+        code, body = sendCommandToMAPI(vnfr_id, mapi_request) unless settings.mapi.nil?
 
         # Update the VNFR event history
         vnfr.push(lifecycle_event_history: "Executed a #{mapi_request[:event]}")
 
-        halt response.code, response.body
+        halt code, body
     end
 
     # @method post_vnf_provisioning_id_stack_status

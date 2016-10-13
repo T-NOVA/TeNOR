@@ -6,25 +6,22 @@
                 <h4 class="modal-title" ng-bind="title"></h4>
             </div>
             <div class="box-body">
-                <div class="col-md-12 col-xs-12">
-                    <label>Upload json file</label>
-                <div class="form-group">
-                    <div class="col-sm-10">
-                        <div class="col-sm-8">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label for="file" class="col-sm-2 control-label">Upload json file</label>
+                        <div class="col-sm-10">
                             <input type="file" ng-model="descriptor" class="form-control" id="file" onchange="angular.element(this).scope().loadFile(this)">
-                            </select>
                         </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-12 col-xs-12">
+                <div class="modal-body">
+                    <div modalscroll style="overflow-y: scroll;">
+                        <pre class="beautify" ng-bind-html="descriptor | prettify"></pre>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="col-md-12 col-xs-12">
-            <div class="modal-body">
-                <div modalscroll style="overflow-y: scroll;">
-                    <pre class="beautify" ng-bind-html="descriptor | prettify"></pre>
-                </div>
-            </div>
-        </div>
             <div class="modal-footer">
                 <button ng-click="uploadFile(descriptor)" type="submit" class="btn btn-primary">Submit</button>
             </div>

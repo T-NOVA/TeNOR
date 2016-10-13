@@ -23,6 +23,10 @@ module HotHelper
         rescue Errno::ECONNREFUSED
             error = { 'info' => 'HOT Generator unrechable.' }
             return 500, error
+        rescue RestClient::ExceptionWithResponse => e
+            logger.error e
+            logger.error e.response.body
+            return e.response.code, e.response.body
         rescue => e
             logger.error e
             logger.error 'E IS NIL' if e.nil?
@@ -43,6 +47,10 @@ module HotHelper
             error = { 'info' => 'HOT Generator unreachable.' }
             recoverState(popInfo, vnf_info, @instance, error)
             return
+        rescue RestClient::ExceptionWithResponse => e
+            logger.error e
+            logger.error e.response.body
+            return e.response.code, e.response.body
         rescue => e
             logger.error e
             logger.error e.response
@@ -63,6 +71,10 @@ module HotHelper
             error = { 'info' => 'VIM unrechable.' }
             return 500, error
         rescue RestClient::ExceptionWithResponse => e
+            logger.error e
+            logger.error e.response.body
+            return e.response.code, e.response.body
+        rescue RestClient::ExceptionWithResponse => e
             # logger.error e
             logger.error e.response
             error = { 'info' => 'Error creating the network stack.' }
@@ -81,6 +93,10 @@ module HotHelper
             error = { 'info' => 'VIM unrechable.' }
             recoverState(popInfo, vnf_info, @instance, error)
             return
+        rescue RestClient::ExceptionWithResponse => e
+            logger.error e
+            logger.error e.response.body
+            return e.response.code, e.response.body
         rescue => e
             logger.error e
             logger.error e.response
@@ -101,6 +117,10 @@ module HotHelper
             error = { 'info' => 'VIM unrechable.' }
             recoverState(popInfo, vnf_info, @instance, error)
             return
+        rescue RestClient::ExceptionWithResponse => e
+            logger.error e
+            logger.error e.response.body
+            return e.response.code, e.response.body
         rescue => e
             logger.error e
             logger.error e.response
@@ -121,6 +141,10 @@ module HotHelper
             error = { 'info' => 'VIM unrechable.' }
             recoverState(popInfo, vnf_info, @instance, error)
             return
+        rescue RestClient::ExceptionWithResponse => e
+            logger.error e
+            logger.error e.response.body
+            return e.response.code, e.response.body
         rescue => e
             logger.error e
             logger.error e.response
@@ -223,6 +247,7 @@ module HotHelper
                 status = 'DELETING'
             end
             break if status == 'DELETE_COMPLETE'
+            count += 1
             if count > 20
                 logger.error 'Stack can not be removed'
                 return 400, 'Stack can not be removed'

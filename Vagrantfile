@@ -2,21 +2,21 @@
 # vi: set ft=ruby :
 
 Vagrant.configure(2) do |config|
+    config.vm.box = 'ubuntu/trusty64'
 
-  config.vm.box = "ubuntu/trusty64"
+    config.vm.provider :virtualbox do |vb|
+        vb.customize ['modifyvm', :id, '--memory', '2048'] # is not required, but recommended
+        vb.customize ['modifyvm', :id, '--cpus', '2'] # is not required, but recommended
+        vb.customize ['modifyvm', :id, '--natdnshostresolver1', 'on']
+        vb.customize ['modifyvm', :id, '--natdnsproxy1', 'on']
+    end
 
-	config.vm.provider :virtualbox do |vb|
-		vb.customize ["modifyvm", :id, "--memory", "2048"] # is not required, but recommended
-    vb.customize ["modifyvm", :id, "--cpus", "2"] # is not required, but recommended
-    vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
-    vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
-  end
+    # config.vm.network :forwarded_port, guest: 4000, host: 4000 # tenor port
+    config.vm.network :forwarded_port, guest: 8000, host: 8000 # gatekeeper port
+    config.vm.network :forwarded_port, guest: 9000, host: 9000 # tenor UI port
+    config.vm.network :forwarded_port, guest: 27017, host: 27017 # tenor UI port
 
-	#config.vm.network :forwarded_port, guest: 4000, host: 4000 # tenor port
-	config.vm.network :forwarded_port, guest: 8000, host: 8000 # gatekeeper port
-	config.vm.network :forwarded_port, guest: 9000, host: 9000 # tenor UI port
-
-  $script = <<-SCRIPT
+    $script = <<-SCRIPT
     sudo apt-get update
     sudo apt-get install -y gcc git
     sudo apt-get remove --purge ruby-rvm ruby
@@ -51,24 +51,23 @@ Vagrant.configure(2) do |config|
     #sudo service gatekeeperd start
   SCRIPT
 
-  config.vm.provision "shell", inline: $script, privileged: false
+    config.vm.provision 'shell', inline: $script, privileged: false
 
-  # Create a public network, which generally matched to bridged network.
-  # Bridged networks make the machine appear as another physical device on
-  # your network.
-  # config.vm.network "public_network"
+    # Create a public network, which generally matched to bridged network.
+    # Bridged networks make the machine appear as another physical device on
+    # your network.
+    # config.vm.network "public_network"
 
-  # Share an additional folder to the guest VM. The first argument is
-  # the path on the host to the actual folder. The second argument is
-  # the path on the guest to mount the folder. And the optional third
-  # argument is a set of non-required options.
-  # config.vm.synced_folder "../data", "/vagrant_data"
+    # Share an additional folder to the guest VM. The first argument is
+    # the path on the host to the actual folder. The second argument is
+    # the path on the guest to mount the folder. And the optional third
+    # argument is a set of non-required options.
+    # config.vm.synced_folder "../data", "/vagrant_data"
 
-  # Define a Vagrant Push strategy for pushing to Atlas. Other push strategies
-  # such as FTP and Heroku are also available. See the documentation at
-  # https://docs.vagrantup.com/v2/push/atlas.html for more information.
-  # config.push.define "atlas" do |push|
-  #   push.app = "YOUR_ATLAS_USERNAME/YOUR_APPLICATION_NAME"
-  # end
-
+    # Define a Vagrant Push strategy for pushing to Atlas. Other push strategies
+    # such as FTP and Heroku are also available. See the documentation at
+    # https://docs.vagrantup.com/v2/push/atlas.html for more information.
+    # config.push.define "atlas" do |push|
+    #   push.app = "YOUR_ATLAS_USERNAME/YOUR_APPLICATION_NAME"
+    # end
 end

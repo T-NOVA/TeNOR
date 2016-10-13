@@ -6,75 +6,95 @@
                 <h4 class="modal-title" ng-bind="title"></h4>
             </div>
             <div class="modal-body">
-                <form name="editForm">
-                    <div class="box-body">
-                        <div class="form-group">
-                            <label for="id">Pop id (id which PoP will be identified)</label>
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label for="pop_id" class="col-sm-4 control-label">Pop id (id which PoP will be identified)</label>
+                        <div class="col-sm-8">
                             <input ng-model="dc_default.id" type="text" class="form-control" id="pop_id" ng-readonly="emptyId" />
                         </div>
                     </div>
                     <div class="box-body">
                         <div class="form-group">
-                            <label for="msg">Description</label>
-                            <input ng-model="dc_default.msg" type="text" class="form-control" id="msg" value="" placeholder="description" />
+                            <label for="msg" class="col-sm-4 control-label">Description</label>
+                            <div class="col-sm-8">
+                                <input ng-model="dc_default.msg" type="text" class="form-control" id="msg" value="" placeholder="description" />
+                            </div>
                         </div>
                     </div>
                     <div class="box-body">
                         <div class="form-group">
-                            <label for="tenantName">Tenant name (admin tenant)</label>
-                            <input ng-model="dc_default.tenantName" type="text" class="form-control" id="tenantName" value="" />
+                            <label for="tenantName" class="col-sm-4 control-label">Tenant name (admin tenant)</label>
+                            <div class="col-sm-8">
+                                <input ng-model="dc_default.tenantName" type="text" class="form-control" id="tenantName" value="" />
+                            </div>
                         </div>
                     </div>
                     <div class="box-body">
                         <div class="form-group">
-                            <label for="adminName">Admin user</label>
-                            <input ng-model="dc_default.adminName" type="text" class="form-control" id="adminName" value="admin" />
+                            <label for="adminName" class="col-sm-4 control-label">Admin user</label>
+                            <div class="col-sm-8">
+                                <input ng-model="dc_default.adminName" type="text" class="form-control" id="adminName" value="admin" />
+                            </div>
                         </div>
                     </div>
                     <div class="box-body">
                         <div class="form-group">
-                            <label for="adminPass">Admin pass</label>
-                            <input ng-model="dc_default.adminPass" type="password" class="form-control" id="adminPass" value="" />
+                            <label for="adminPass" class="col-sm-4 control-label">Admin pass</label>
+                            <div class="col-sm-8">
+                                <input ng-model="dc_default.adminPass" type="password" class="form-control" id="adminPass" value="" />
+                            </div>
                         </div>
                     </div>
                     <div class="box-body">
                         <div class="form-group">
-                            <label for="openstack_ip">Openstack IP</label>
-                            <input ng-model="openstack_ip" type="text" class="form-control" id="openstack_ip" value="8.8.8.8" ng-change="updateOpenstackIP(openstack_ip)" placeholder="define openstack IP"/>
+                            <label for="openstack_ip" class="col-sm-4 control-label">Openstack IP</label>
+                            <div class="col-sm-8">
+                                <input ng-model="openstack_ip" type="text" class="form-control" id="openstack_ip" value="8.8.8.8" ng-change="updateOpenstackIP(openstack_ip)" placeholder="define openstack IP" />
+                            </div>
                         </div>
                     </div>
                     <div class="box-body">
                         <div class="form-group">
-                            <label for="keystone_api">Keystone API</label>
-                            <input ng-model="dc_default.keystone_api" type="text" class="form-control" id="openstack_ip" value="{{openstack_ip}}" />
+                            <label for="keystone_api" class="col-sm-4 control-label">Keystone API</label>
+                            <div class="col-sm-8">
+                                <input ng-model="dc_default.keystone_api" type="text" class="form-control" id="openstack_ip" value="{{openstack_ip}}" />
+                            </div>
                         </div>
                     </div>
                     <div class="box-body">
                         <div class="form-group">
-                            <label for="tenantName">Heat API</label>
-                            <input ng-model="dc_default.heat_api" type="text" class="form-control" id="openstack_ip" value="8.8.8.8" />
+                            <label for="tenantName" class="col-sm-4 control-label">Heat API</label>
+                            <div class="col-sm-8">
+                                <input ng-model="dc_default.heat_api" type="text" class="form-control" id="openstack_ip" value="" />
+                            </div>
                         </div>
                     </div>
                     <div class="box-body">
                         <div class="form-group">
-                            <label for="tenantName">Compute API</label>
-                            <input ng-model="dc_default.compute_api" type="text" class="form-control" id="openstack_ip" value="8.8.8.8" />
+                            <label for="tenantName" class="col-sm-4 control-label">Compute API</label>
+                            <div class="col-sm-8">
+                                <input ng-model="dc_default.compute_api" type="text" class="form-control" id="openstack_ip" value="" />
+                            </div>
                         </div>
                     </div>
                     <div class="box-body">
                         <div class="form-group">
-                            <label for="tenantName">Neutron API</label>
-                            <input ng-model="dc_default.neutron_api" type="text" class="form-control" id="openstack_ip" value="8.8.8.8" />
+                            <label for="tenantName" class="col-sm-4 control-label">Neutron API</label>
+                            <div class="col-sm-8">
+                                <input ng-model="dc_default.neutron_api" type="text" class="form-control" id="openstack_ip" value="" />
+                            </div>
                         </div>
                     </div>
                     <div class="box-body">
                         <div class="form-group">
-                            <label for="tenantName">DNS</label>
-                            <input ng-model="dc_default.dns" type="text" class="form-control" id="openstack_ip" value="8.8.8.8" />
+                            <label for="tenantName" class="col-sm-4 control-label">DNS</label>
+                            <div class="col-sm-8">
+                                <input ng-model="dc_default.dns" type="text" class="form-control" id="openstack_ip" value="8.8.8.8" />
+                            </div>
                         </div>
                     </div>
-                    <div class="box-body">
-                        <div class="form-group">
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
                             <button ng-click="registerDc(dc_default)" type="submit" class="btn btn-primary">Submit</button>
                         </div>
                     </div>

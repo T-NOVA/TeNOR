@@ -18,29 +18,37 @@
 # @see LoggerController
 class LoggerController < TnovaManager
 
-	# @method get_elastic
-	# @overload get '/elastic/*'
-	# Get logs from elasticsearch/logstash. Different strings allowed in order to filter the required data
-	# @param [string]
-  get '/*' do
-  	begin
-  		response = RestClient::Request.new(
-		    :method => :get,
-		    :url => settings.elasticsearch + request.fullpath.split("elastic")[1].to_s,
-				:user => settings.logstash_user,
-		    :password => settings.logstash_password,
-		    :headers => { :accept => :json,
-		    :content_type => :json }
-		  ).execute
-		rescue Errno::ECONNREFUSED
-			halt 500, 'ElasticSerch/Logstash unreachable'
-		rescue => e
-			puts e
-			halt 400, 'Error'
-			#halt e.response.code, e.response.body
-		end
+    # @method get_elastic
+    # @overload get '/logs/*'
+    # Get logs from elasticsearch/logstash. Different strings allowed in order to filter the required data
+    # @param [string]
+    get '/' do
+        modules = ["ns_manager", "ns_catalogue", "ns_provisioner", "ns_monitoring", "nsd_validator", "vnf_manager", "vnf_catalogue", "vnf_provisioner", "vnf_monitoring", "hot_generator", "vnfd_validator"]
+        response = []
+        params['from'] = Time.at(params['from'].to_i)
+        params['until'] = Time.at(params['until'].to_i)
+        if !params['module'].nil?
+            if !params['severity'].nil? && params['from'].nil?
+                response = Tenor.prefix(params['module']).where(severity: params['severity'].downcase)
+            elsif !params['severity'].nil? && !params['from'].nil?
+                response = Tenor.prefix(params['module']).where(severity: params['severity'].downcase).where(:time.gte => params['from'], :time.lte => params['until'])
+            elsif params['severity'].nil? && !params['from'].nil?
+                response = Tenor.prefix(params['module']).where(:time.gte => params['from'], :time.lte => params['until'])
+            else
+                response = Tenor.prefix(params['module']).all
+            end
+        else
+            if !params['severity'].nil? && params['from'].nil?
+                modules.each { |x| response.concat(Tenor.prefix(x).where(severity: params['severity'].downcase))}
+            elsif !params['severity'].nil? && !params['from'].nil?
+                modules.each { |x| response.concat(Tenor.prefix(x).where(severity: params['severity'].downcase).where(:time.gte => params['from'], :time.lte => params['until']))}
+            elsif params['severity'].nil? && !params['from'].nil?
+                modules.each { |x| response.concat(Tenor.prefix(x).where(:time.gte => params['from'], :time.lte => params['until']))}
+            else
+                modules.each { |x| response.concat(Tenor.prefix(x).all)}
+            end
+        end
 
-    return response
-  end
-
+        response.to_json
+    end
 end

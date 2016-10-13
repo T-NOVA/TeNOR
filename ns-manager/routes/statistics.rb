@@ -15,38 +15,36 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# @see TnovaManager
-class TnovaManager < Sinatra::Application
+# @see Statistics
+class Statistics < TnovaManager
+    # @method get_statistics
+    # @overload get "/statistics/"
+    # Get statistics list
+    # @param [string]
+    get '/generic' do
+        return StatisticModel.all.to_json
+    end
 
-  # @method get_statistics
-  # @overload get "/statistics/"
-  # Get statistics list
-  # @param [string]
-  get '/statistics' do
-    return StatisticModel.all.to_json
-  end
+    # @method post_statistics
+    # @overload post "/statistics"
+    # Post a statistic value
+    # @param [string] Metric name
+    post '/generic/:metric' do |metric|
+        updateStatistics(metric)
+    end
 
-  # @method post_statistics
-  # @overload post "/statistics"
-  # Post a statistic value
-  # @param [string] Metric name
-  post "/statistics/:metric" do
-    updateStatistics(params['metric'])
-  end
+    # @method get_performance_stats
+    # @overload get "/performance_stats"
+    # Get information about performance
+    get '/performance_stats' do
+        return PerformanceStatisticModel.all.to_json
+    end
 
-  # @method get_performance_stats
-  # @overload get "/performance-stats"
-  # Get information about performance
-  get "/performance-stats" do
-    return PerformanceStatisticModel.all.to_json
-  end
-
-  # @method post_performance_stats
-  # @overload get "/performance-stats"
-  # Post performance values
-  post "/performance-stats" do
-    body, errors = parse_json(request.body.read)
-    savePerformance(body)
-  end
-
+    # @method post_performance_stats
+    # @overload get "/performance_stats"
+    # Post performance values
+    post '/performance_stats' do
+        body, errors = parse_json(request.body.read)
+        savePerformance(body)
+    end
 end

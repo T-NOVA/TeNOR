@@ -13,8 +13,7 @@ class App::Proxy < Sinatra::Base
     rescue Errno::ECONNREFUSED
       halt 500, "Errno::ECONNREFUSED"
     rescue => e
-      puts "ERROR"
-      puts e
+      puts "ERROR - " + e.to_s
       halt 400
     end
     return response
@@ -30,6 +29,9 @@ class App::Proxy < Sinatra::Base
       response = RestClient.post host + "/" + params[:splat][0], body, :content_type => :json
     rescue Errno::ECONNREFUSED
       halt 500, "Errno::ECONNREFUSED"
+    rescue RestClient::Unauthorized => e
+        puts e
+        halt 401, "Unauthorized"
     rescue => e
       puts "ERROR"
       puts e

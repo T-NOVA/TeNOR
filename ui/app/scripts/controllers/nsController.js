@@ -9,6 +9,7 @@ angular.module('tNovaApp')
             name: "UniMi"
         }];
         $scope.descriptor = {};
+        var page = 0;
 
         $scope.getServiceList = function () {
             tenorService.get('network-services?limit=1000').then(function (data) {
@@ -110,7 +111,7 @@ angular.module('tNovaApp')
                 $alert({
                     title: "Creating new instance... ",
                     content: "",
-                    placement: 'top',
+                    placement: 'top',//top-right
                     type: 'success',
                     keyboard: true,
                     show: true,

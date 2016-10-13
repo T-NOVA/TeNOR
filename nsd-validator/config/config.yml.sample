@@ -1,7 +1,7 @@
 ---
 servicename: nsd_validator
-environment: development
 manager: localhost:4000
+environment: development
 address: 0.0.0.0
 port: 4015
 max_conns: 1024
@@ -9,8 +9,8 @@ timeout: 30
 max_persistent_conns: 512
 daemonize: false
 threaded: true
-logstash_host: 127.0.0.1
-logstash_port: 5228
+logger_host: 127.0.0.1
+logger_port: 24224
 
 xml_schema: assets/schemas/nsd.xsd
 json_schema: assets/schemas/nsd_schema.json

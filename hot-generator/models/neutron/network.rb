@@ -25,7 +25,7 @@ class Network < Resource
   # @param [String] port_security_enabled the security of the ports
   def initialize(resource_name, name, port_security_enabled = nil)
     type = 'OS::Neutron::Net'
-    #properties = {'name' => name, 'port_security_enabled' => port_security_enabled}
+    #port_security_enabled.nil?  ? properties = {'name' => name} : properties = {'name' => name, 'port_security_enabled' => port_security_enabled}
     properties = {'name' => name}
     super(resource_name, type, properties)
   end

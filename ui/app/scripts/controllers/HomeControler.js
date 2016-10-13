@@ -27,9 +27,8 @@ angular.module('tNovaApp')
         $scope.summaryData.SM_request = 0;
         $scope.summaryData.SM_rate = 0;
         $scope.summaryData.SM_execution_time = 0;
-        console.log($scope.summaryData);
         //Summary monitoring data
-        tenorService.get('statistics').then(function (data) {
+        tenorService.get('statistics/generic').then(function (data) {
             if (data) {
                 data.forEach(function (d) {
                     $scope.summaryData[d.name] = d.value;
@@ -82,14 +81,14 @@ angular.module('tNovaApp')
         };
 
         $scope.lastLogs = function () {
-            var url = "elastic/_search?pretty=1&sort=_index:desc&size=11";
+            $scope.fromDate = Date.now() + -1*24*3600*1000;
+            $scope.untilDate = Date.now();
+            var url = "logs/?module=ns_provisioner&severity=INFO&from=" + new Date($scope.fromDate).getTime()/1000 + "&until=" + new Date($scope.untilDate).getTime()/1000;
             tenorService.get(url).then(function (data) {
                 if (!data) return;
-                console.log(data.hits.hits);
-                $scope.lastHistory = data.hits.hits;
-                console.log(data.hits.hits[0]);
-                console.log(data.hits.hits[1]);
+                $scope.lastHistory = data.slice(0,20);
             });
         };
+
         $scope.lastLogs();
     });

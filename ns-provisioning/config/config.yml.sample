@@ -1,6 +1,6 @@
 ---
-manager: http://127.0.0.1:4000
 servicename: ns_provisioner
+manager: localhost:4000
 environment: development
 address: 0.0.0.0
 port: 4012
@@ -9,8 +9,8 @@ timeout: 30
 max_persistent_conns: 512
 daemonize: false
 threaded: true
-logstash_host: 127.0.0.1
-logstash_port: 5228
+logger_host: 127.0.0.1
+logger_port: 24224
 
 mapping: http://localhost:4042
 sla_enforcement: http://localhost:4016

@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 # @see TnovaManager
-class MonitoringController < TnovaManager
+class NsMonitoring < TnovaManager
 
   # @method get_instances_monitoring_data
   # @overload get '/instances/:instance_id/monitoring-data/'

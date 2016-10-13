@@ -86,7 +86,7 @@ class Provisioner < NsProvisioning
             notification: instantiation_info['callback_url'],
             lifecycle_event_history: ['INIT'],
             audit_log: [],
-            marketplace_callback: instantiation_info['callbackUrl']
+            marketplace_callback: instantiation_info['callback_url']
         }
 
         @instance = Nsr.new(instance)
@@ -322,7 +322,7 @@ class Provisioner < NsProvisioning
         logger.info 'Sending statistic information to NS Manager'
         Thread.new do
             begin
-                RestClient.post settings.manager + '/performance-stats', @instance.to_json, content_type: :json
+                RestClient.post settings.manager + '/statistics/performance_stats', @instance.to_json, content_type: :json
             rescue => e
                 logger.error e
             end

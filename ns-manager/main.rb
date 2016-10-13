@@ -21,7 +21,6 @@ ENV['RACK_ENV'] ||= 'development'
 require 'sinatra'
 require 'sinatra/config_file'
 require 'yaml'
-require 'logstash-logger'
 
 # Require the bundler gem and then call Bundler.require to load in all gems listed in Gemfile.
 require 'bundler'
@@ -34,60 +33,47 @@ config_file 'config/config.yml'
 Mongoid.load!('config/mongoid.yml')
 
 class TnovaManager < Sinatra::Application
+    require_relative 'models/init'
+    require_relative 'routes/init'
+    require_relative 'helpers/init'
 
-  require_relative 'models/init'
-  require_relative 'routes/init'
-  require_relative 'helpers/init'
+    configure do
+        # Configure logging
+        logger = FluentLoggerSinatra::Logger.new('tenor', settings.servicename, settings.logger_host, settings.logger_port)
+        set :logger, logger
+    end
 
-	configure do
-		# Configure logging
-		logger = LogStashLogger.new(
-				type: :multi_logger,
-				outputs: [
-						{ type: :stdout, formatter: ::Logger::Formatter },
-						{ type: :file, path: "log/#{settings.environment}.log", sync: true},
-						{ host: settings.logstash_host, port: settings.logstash_port, drop_messages_on_flush_error: true}
-				])
-		LogStashLogger.configure do |config|
-			config.customize_event do |event|
-				event["module"] = settings.servicename
-			end
-		end
-		set :logger, logger
-	end
+    before do
+        env['rack.logger'] = settings.logger
 
-	before do
-		env['rack.logger'] = settings.logger
+        if settings.environment == 'development'
+            @client_token = 'test-token-client-id'
+            return
+        end
 
-		if settings.environment == 'development'
-			@client_token = "test-token-client-id"
-			return
-		end
+        pass if request.path_info == '/'
+        # Validate every request with Gatekeeper
+        @client_token = request.env['HTTP_X_AUTH_TOKEN']
+        begin
+            response = RestClient.get "#{settings.gatekeeper}/token/validate/#{@client_token}", 'X-Auth-Service-Key' => settings.service_key, :content_type => :json
+        rescue Errno::ECONNREFUSED
+            halt 500, 'Gatekeeper unreachable'
+        rescue => e
+            # logger.error e.response
+            halt e.response.code, e.response.body
+        end
+    end
 
-		pass if request.path_info == '/'
-		# Validate every request with Gatekeeper
-		@client_token = request.env['HTTP_X_AUTH_TOKEN']
-		begin
-			response = RestClient.get "#{settings.gatekeeper}/token/validate/#{@client_token}", 'X-Auth-Service-Key' => settings.service_key, :content_type => :json
-		rescue Errno::ECONNREFUSED
-			halt 500, 'Gatekeeper unreachable'
-		rescue => e
-			logger.error e.response
-			halt e.response.code, e.response.body
-		end
-	end
+    helpers ApplicationHelper
+    helpers ServiceConfigurationHelper
+    helpers AuthenticationHelper
+    helpers GatekeeperHelper
+    helpers StatisticsHelper
 
-	helpers ApplicationHelper
-	helpers ServiceConfigurationHelper
-	helpers AuthenticationHelper
-	helpers GatekeeperHelper
-	helpers StatisticsHelper
+    AuthenticationHelper.loginGK
+    ServiceConfigurationHelper.publishServices
 
-  AuthenticationHelper.loginGK()
-	ServiceConfigurationHelper.publishServices()
-
-  get '/' do
-    return 200, interfaces_list.to_json
-  end
-
+    get '/' do
+        return 200, JSON.pretty_generate(interfaces_list)
+    end
 end

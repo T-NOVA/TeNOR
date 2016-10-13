@@ -188,6 +188,20 @@ module ProvisioningHelper
                 private_key = output['output_value']
             elsif output['output_key'] =~ /^.*#id$/i
                 vms_id[output['output_key'].match(/^(.*)#id$/i)[1]] = output['output_value']
+                vnfr.lifecycle_info['events'].each do |event, event_info|
+                    next if event_info.nil?
+                    JSON.parse(event_info['template_file']).each do |id, parameter|
+                        parameter_match = parameter.delete(' ').match(/^get_attr\[(.*)\]$/i).to_a
+                        string = parameter_match[1].split(',').map(&:strip)
+                        key_string = string.join('#')
+                        key_string2 = output['output_key'].partition('#')
+                        logger.info key_string + " - " + output['output_key'].to_s
+                        if string[1] == 'vdus' && string[0] ==  key_string2[0]# PrivateIp
+                            lifecycle_events_values[event] = {} unless lifecycle_events_values.key?(event)
+                            lifecycle_events_values[event][key_string] = output['output_value']
+                        end
+                    end
+                end
             else
               # other parameters
               vnfr.lifecycle_info['events'].each do |event, event_info|
@@ -220,7 +234,7 @@ module ProvisioningHelper
                                   lifecycle_events_values[event][key_string] = output['output_value']
                               end
                           end
-                      elsif output['output_key'] =~ /^#{parameter_match[1]}##{parameter_match[2]}$/i
+                     elsif output['output_key'] =~ /^#{parameter_match[1]}##{parameter_match[2]}$/i
                           vnf_addresses[(parameter_match[1]).to_s] = output['output_value'] if parameter_match[2] == 'ip' && !vnf_addresses.key?((parameter_match[1]).to_s) # Only to populate VNF
                           lifecycle_events_values[event] = {} unless lifecycle_events_values.key?(event)
                           lifecycle_events_values[event]["#{parameter_match[1]}##{parameter_match[2]}"] = output['output_value']
@@ -273,7 +287,7 @@ module ProvisioningHelper
         }
         logger.debug 'mAPI request: ' + mapi_request.to_json
 
-        response = sendCommandToMAPI(vnfr['id'], mapi_request)
+        response = sendCommandToMAPI(vnfr['id'], mapi_request) unless settings.mapi.nil?
 
         # Update the VNFR event history
         vnfr['lifecycle_event_history'].push("Executed a #{mapi_request[:event]}")

@@ -55,7 +55,7 @@ class Scaling < VnfProvisioning
                     scaled_vdu.push(scaled_resource['vdus'].find { |v| v == vdu['id'] })
                 end
             end
-            if scaled_vdu.size < vdu['scale_in_out']['maximum'] + 30 # - 1
+            if scaled_vdu.size < vdu['scale_in_out']['maximum'] - 1
                 vdu_info = vnfr['vms'].find { |res| res['id'] == vdu['id'] }
                 vdus_to_scale << vdu_info
             end
@@ -151,10 +151,11 @@ class Scaling < VnfProvisioning
 
         # Send request to the mAPI
         response = sendCommandToMAPI(params[:vnfr_id], mapi_request)
-        
+
         #wait 60 seconds?
         logger.info "Waiting 60 seconds..."
         #sleep(60)
+
         vim_info = scale_info['auth']
         vim_info['keystone'] = vim_info['url']['keystone']
         vim_info['heat'] = vim_info['url']['heat']

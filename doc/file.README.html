@@ -256,6 +256,8 @@ Execute the tenor_install.sh script and choose the option <code>4. Add new PoP</
 <p>If nothing is received, make sure that the NS Manager is running.
 If you receive a response, means that the NS Manager is ready for recevie requests.</p>
 
+<p>In order to see the available IPs for the NS Manager, visit the API Documentation (<a href="http://t-nova.github.io/TeNOR/">http://t-nova.github.io/TeNOR/</a>)</p>
+
 <h2>Define a VNFD and a NSD</h2>
 
 <p>Once TeNOR is ready to use, you should define a VNF Descriptor and a NS Descriptor. This task has some complexity and this repository contains a dummy descriptors that can be deployed without modification. You can find it in the NSD and VNFD validator modules.</p>
@@ -270,7 +272,7 @@ If you receive a response, means that the NS Manager is ready for recevie reques
 
 <h2>Create a VNFD and NSD and instantiate it</h2>
 
-<p>In order to test TeNOR functionality, you can follow the next steps (you can copy and paste in the command prompt):</p>
+<p>In order to test TeNOR functionality, you can deploy a dummy NSD/VNFD located in the Validator folders. Follow the next steps in order to test TeNOR (you can copy and paste in the command prompt):</p>
 
 <ol>
 <li><p>Add the VNFD in the VNF catalogue</p>
@@ -301,7 +303,7 @@ If you receive a response, means that the NS Manager is ready for recevie reques
 <li>Get the last VDU for scaling-out: get_attr[vdu1,vdus]</li>
 <li>Get the last PrivateIps for scaling-out: gig-adaet_attr[CPsx4l,fixed_ips,0,ip_address]</li>
 <li>Get the last PublicIps for scaling-out: get_attr[vdu0,CPudhr,PublicIp]</li>
-<li>Timeout before remove instance due scale-in event: </li>
+<li>Timeout before remove instance due scale-in event:</li>
 </ul>
 
 <h1>Development</h1>
@@ -368,7 +370,7 @@ If you receive a response, means that the NS Manager is ready for recevie reques
 </div></div>
 
       <div id="footer">
-  Generated on Mon Oct 10 15:37:29 2016 by
+  Generated on Mon Oct 10 16:31:09 2016 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.5 (ruby-2.3.0).
 </div>

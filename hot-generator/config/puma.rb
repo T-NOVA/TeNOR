@@ -1,5 +1,5 @@
 config = YAML.load_file("config/config.yml")
-quiet false
+#quiet false
 port config['port']
 environment config['environment']
 daemonize config['daemonize']

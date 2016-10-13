@@ -1,5 +1,6 @@
 ---
 servicename: vnf_monitoring_repo
+manager: localhost:4567
 environment: development
 address: 0.0.0.0
 port: 4018
@@ -8,8 +9,8 @@ timeout: 30
 max_persistent_conns: 512
 daemonize: false
 threaded: true
-logstash_host: 127.0.0.1
-logstash_port: 5228
+logger_host: 127.0.0.1
+logger_port: 24224
 
 gk:
 service_key:

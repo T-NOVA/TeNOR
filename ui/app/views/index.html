@@ -127,20 +127,20 @@
             </div>
         </div>
     </div>
-    <div class="col-md-10">
-        <div class="dashboard_graph">
-            <div class="row x_title">
-                <div class="col-md-6">
+    <div class="col-md-10 col-sm-10 col-xs-10">
+        <div class="x_panel">
+            <div class="x_title">
+
                     <h3>Last history entries</h3>
                 </div>
                 <div class="list-group" style="width: 100%">
                     <a href="#" class="list-group-item" ng-repeat="history in lastHistory">
-                        <span class="badge">{{history._source['@timestamp']| date:'yyyy-MM-dd HH:mm:ss'}}</span>
-                        <i class="fa fa-fw fa-calendar"></i>{{history._source.severity}} - {{history._source.module}} - {{history._source.message}}
+                        <span class="badge">{{row.time | date:'yyyy-MM-dd HH:mm:ss'}}</span>
+                        <i class="fa fa-fw fa-calendar"></i>{{history.severity}} - {{history.module}} - {{history.msg}}
                     </a>
                 </div>
                 <div class="text-right">
-                    <a ui-sref="root.modules">View All Activity
+                    <a ui-sref="root.logs">View All Activity
                         <i class="fa fa-arrow-circle-right"></i>
                     </a>
                 </div>

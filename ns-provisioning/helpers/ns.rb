@@ -48,6 +48,15 @@ module NsProvisioner
         message
     end
 
+    # Updates the instance status with the Error message.
+    def handleError(instance, errors)
+        @instance = instance
+        logger.error errors
+        @instance.update_attribute('status', 'ERROR_CREATING') unless @instance.destroyed?
+        @instance.push(audit_log: errors) unless @instance.destroyed?
+        return 400, errors.to_json if errors
+    end
+
     # Recover the state due to fail during the instatiation or when the instance should be removed
     #
     # @param [JSON] instance NSr
@@ -144,6 +153,7 @@ module NsProvisioner
         nap_id = instantiation_info['nap_id']
         customer_id = instantiation_info['customer_id']
         slaInfo = nsd['sla'].find { |sla| sla['sla_key'] == flavour }
+
         if slaInfo.nil?
             return generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], 'FAILED', 'Internal error: SLA inconsistency'))
         end
@@ -156,8 +166,7 @@ module NsProvisioner
                             settings.infr_repository
                         end
 
-        logger.info 'List of available PoPs:'
-        logger.info pop_list
+        logger.info 'List of available PoPs: ' + pop_list.to_s
 
         if pop_id.nil? && mapping_id.nil?
             logger.info 'Request from Marketplace.'
@@ -204,6 +213,7 @@ module NsProvisioner
 
         # if mapping of all VNFs are in the same PoP. Create Authentication and network 1 time
         mapping['vnf_mapping'].each do |vnf|
+
             logger.info 'Start authentication process of ' + vnf.to_s
             pop_id = vnf['maps_to_PoP'].gsub('/pop/', '')
 
@@ -211,91 +221,8 @@ module NsProvisioner
             logger.info 'Check if authentication is created for this PoP'
             authentication = @instance['authentication'].find { |auth| auth['pop_id'] == pop_id }
             next unless authentication.nil?
-            logger.info 'Authentication not created for this PoP. Starting creation of credentials.'
-
-            pop_auth = {}
-            pop_auth['pop_id'] = pop_id
-
-            popInfo, errors = getPopInfo(pop_id)
-            logger.error errors if errors
-            generateMarketplaceResponse(callback_url, generateError(nsd['id'], 'FAILED', 'Internal error: error getting pop information.')) if errors
-            return 400, errors.to_json if errors
-
-            extra_info = popInfo['info'][0]['extrainfo']
-            popUrls = getPopUrls(extra_info)
-            pop_auth['urls'] = popUrls
-
-            # create credentials for pop_id
-            if popUrls[:keystone].nil? || popUrls[:orch].nil? || popUrls[:tenant].nil?
-                generateMarketplaceResponse(callback_url, generateError(nsd['id'], 'FAILED', 'Internal error: Keystone and/or openstack urls missing.'))
-                return
-            end
-
-            token = ''
-
-            if @instance['project'].nil?
-                begin
-                    token, errors = openstackAdminAuthentication(popUrls[:keystone], popUrls[:tenant], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
-                    logger.error errors if errors
-                    @instance.update_attribute('status', 'ERROR_CREATING') if errors
-                    @instance.push(audit_log: errors) if errors
-                    return 400, errors.to_json if errors
-
-                    if settings.default_tenant
-                        pop_auth['username'] = settings.default_user_name
-                        pop_auth['tenant_name'] = settings.default_tenant_name
-                        pop_auth['tenant_id'] = getTenantId(popUrls[:keystone], pop_auth['tenant_name'], token)
-                        pop_auth['user_id'] = getUserId(popUrls[:keystone],  pop_auth['username'], token)
-                        pop_auth['password'] = 'secretsecret'
-                        if pop_auth['tenant_id'].nil?
-                            pop_auth['tenant_id'] = createTenant(popUrls[:keystone], pop_auth['tenant_name'], token)
-                        end
-                        if pop_auth['user_id'].nil?
-                            pop_auth['user_id'] = createUser(popUrls[:keystone], pop_auth['tenant_id'],  pop_auth['username'], pop_auth['password'], token)
-                        end
-                    else
-                        pop_auth['tenant_name'] = 'tenor_instance_' + @instance['id'].to_s
-                        pop_auth['tenant_id'] = createTenant(popUrls[:keystone], pop_auth['tenant_name'], token)
-                        pop_auth['username'] = 'user_' + @instance['id'].to_s
-                        pop_auth['password'] = 'secretsecret'
-                        pop_auth['user_id'] = createUser(popUrls[:keystone], pop_auth['tenant_id'], pop_auth['username'], pop_auth['password'], token)
-                    end
-
-                    if pop_auth['tenant_id'].nil? || pop_auth['user_id'].nil?
-                        error = "Tenant or user not created."
-                        logger.error error
-                        @instance.push(audit_log: errors) if errors
-                        @instance.update_attribute('status', 'ERROR_CREATING')
-                        return 400, error.to_json
-                    end
-
-                    logger.info 'Created user with admin role.'
-                    putRoleAdmin(popUrls[:keystone], pop_auth['tenant_id'], pop_auth['user_id'], token)
-
-                    logger.info 'Authentication using new user credentials.'
-                    pop_auth['token'] = openstackAuthentication(popUrls[:keystone], pop_auth['tenant_id'], pop_auth['username'], pop_auth['password'])
-                    if pop_auth['token'].nil?
-                        error = "Authentication failed."
-                        logger.error error
-                        @instance.push(audit_log: errors) if errors
-                        @instance.update_attribute('status', 'ERROR_CREATING')
-                        return 400, error.to_json
-                    end
-
-                    logger.info 'Configuring Security Groups'
-                    pop_auth['security_group_id'] = configureSecurityGroups(popUrls[:compute], pop_auth['tenant_id'], pop_auth['token'])
-
-                    logger.info 'Tenant id: ' + pop_auth['tenant_id']
-                    logger.info 'Username: ' + pop_auth['username']
-                rescue => e
-                    logger.error e
-                    error = { 'info' => 'Error creating the Openstack credentials.' }
-                    logger.error error
-                    recoverState(@instance, error)
-                    return
-                end
-            end
-
+            pop_auth, errors = create_authentication(@instance, nsd['id'], vnf, pop_id, callback_url)
+            return handleError(@instance, errors) if errors
             @instance['authentication'] << pop_auth
         end
 
@@ -305,8 +232,7 @@ module NsProvisioner
 
         # generate networks in each PoP?
         if @instance['authentication'].size > 1
-            logger.info 'More than 1 PoP is defined.'
-            logger.info 'WICM is required.'
+            logger.info 'More than 1 PoP is defined. WICM is required.'
 
             # Request WICM to create a service
             wicm_message = {
@@ -347,13 +273,11 @@ module NsProvisioner
                 stack_name = 'WICM_SFC_' + @instance['id'].to_s
                 template = { stack_name: stack_name, template: hot_template }
                 stack, errors = sendStack(popUrls[:orch], vnf_info['tenant_id'], template, tenant_token)
-                logger.error errors
-                return 400, errors.to_json if errors
-                # save WICM stack info in NSR
+                return handleError(@instance, errors) if errors
 
                 # Wait for the WICM - SFC provisioning to finish
                 stack_info, errors = create_stack_wait(popUrls[:orch], vnf_info['tenant_id'], stack_name, tenant_token, 'NS WICM')
-                return 400, errors.to_json if errors
+                return handleError(@instance, errors) if errors
 
                 resource_reservation = @instance['resource_reservation']
                 resource_reservation << { wicm_stack: stack, pop_id: pop_auth['pop_id'] }
@@ -364,6 +288,7 @@ module NsProvisioner
         if @instance['authentication'].size == 1
             logger.debug 'Only 1 PoP is defined'
             # generate networks for this PoP
+            puts  @instance['authentication']
             pop_auth = @instance['authentication'][0]
             tenant_token = pop_auth['token']
             popUrls = pop_auth['urls']
@@ -379,26 +304,25 @@ module NsProvisioner
 
             logger.info 'Generating network HOT template...'
             hot, errors = generateNetworkHotTemplate(sla_id, hot_generator_message)
-            return 400, errors.to_json if errors
+            return handleError(@instance, errors) if errors
 
             logger.info 'Send network template to HEAT Orchestration'
             stack_name = 'network_' + @instance['id'].to_s
             template = { stack_name: stack_name, template: hot }
             stack, errors = sendStack(popUrls[:orch], pop_auth['tenant_id'], template, tenant_token)
-            logger.error errors if errors
-            return 400, errors.to_json if errors
+            return handleError(@instance, errors) if errors
 
             stack_id = stack['stack']['id']
 
             logger.info 'Checking network stack creation...'
             stack_info, errors = create_stack_wait(popUrls[:orch], pop_auth['tenant_id'], stack_name, tenant_token, 'NS Network')
-            return 400, errors.to_json if errors
+            return handleError(@instance, errors) if errors
 
             logger.info 'Network stack CREATE_COMPLETE. Reading network information from stack...'
             sleep(3)
             network_resources, errors = getStackResources(popUrls[:orch], pop_auth['tenant_id'], stack_name, tenant_token)
-            logger.error errors if errors
-            return 400, errors.to_json if errors
+            return handleError(@instance, errors) if errors
+
             stack_networks = network_resources['resources'].find_all { |res| res['resource_type'] == 'OS::Neutron::Net' }
             stack_routers = network_resources['resources'].find_all { |res| res['resource_type'] == 'OS::Neutron::Router' }
 
@@ -433,86 +357,12 @@ module NsProvisioner
         vnfrs = []
         # for each VNF, instantiate
         mapping['vnf_mapping'].each do |vnf|
-            logger.info 'Start instantiation process of ' + vnf.to_s
-            pop_id = vnf['maps_to_PoP'].gsub('/pop/', '')
-            vnf_id = vnf['vnf'].delete('/')
-            pop_auth = @instance['authentication'].find { |pop| pop['pop_id'] == pop_id }
-            popUrls = pop_auth['urls']
-
-            # needs to be migrated to the VNFGFD
-            sla_info = slaInfo['constituent_vnf'].find { |cvnf| cvnf['vnf_reference'] == vnf_id }
-            if sla_info.nil?
-                logger.error 'NO SLA found with the VNF ID that has the NSD.'
-                error = { 'info' => 'Error with the VNF ID. NO SLA found with the VNF ID that has the NSD.' }
-                recoverState(@instance, error)
-            end
-            vnf_flavour = sla_info['vnf_flavour_id_reference']
-            logger.debug 'VNF Flavour: ' + vnf_flavour
-
-            vnf_provisioning_info = {
-                ns_id: nsd['id'],
-                vnf_id: vnf_id,
-                flavour: vnf_flavour,
-                vim_id: pop_id,
-                auth: {
-                    url: {
-                        keystone: popUrls[:keystone],
-                        orch: popUrls[:orch]
-                    },
-                    tenant: pop_auth['tenant_name'],
-                    username: pop_auth['username'],
-                    token: pop_auth['token'],
-                    password: pop_auth['password']
-                },
-                reserved_resources: @instance['resource_reservation'].find { |resources| resources[:pop_id] == pop_id },
-                security_group_id: pop_auth['security_group_id'],
-                callback_url: settings.manager + '/ns-instances/' + @instance['id'] + '/instantiate'
-            }
-
-            logger.debug vnf_provisioning_info
-            @instance.push(lifecycle_event_history: 'INSTANTIATING ' + vnf_id.to_s + ' VNF')
-            @instance.update_attribute('instantiation_start_time', DateTime.now.iso8601(3).to_s)
-
-            begin
-                response = RestClient.post settings.vnf_manager + '/vnf-provisioning/vnf-instances', vnf_provisioning_info.to_json, content_type: :json
-            rescue => e
-                @instance.push(lifecycle_event_history: 'ERROR_CREATING ' + vnf_id.to_s + ' VNF')
-                @instance.update_attribute('status', 'ERROR_CREATING')
-                logger.error e.response
-                if e.response.nil?
-                    if e.response.code.nil?
-                        logger.error e
-                        logger.error 'Response code not defined.'
-                    else
-                        error = ''
-                        if e.response.code == 404
-                            error = 'The VNFD is not defined in the VNF Catalogue.'
-                            @instance.push(audit_log: error)
-                        else
-                            if e.response.body.nil?
-                                error = 'Instantiation error. Response from the VNF Manager with no information.'
-                            else
-                                @instance.push(audit_log: e.response.body)
-                                error = 'Instantiation error. Response from the VNF Manager: ' + e.response.body
-                            end
-                        end
-                        logger.error error
-                        generateMarketplaceResponse(callback_url, generateError(nsd['id'], 'FAILED', error))
-                        return
-                    end
-                end
-                logger.error 'Handle error.'
-                return
-            end
-
-            vnfr, errors = parse_json(response)
-            logger.error errors if errors
-
+            response = instantiate_vnf(@instance, nsd['id'], vnf, slaInfo)
             vnfrs << {
-                vnfd_id: vnfr['vnfd_reference'],
+                vnfd_id: response['vnfd_reference'],
                 vnfi_id: [],
-                vnfr_id: vnfr['_id'],
-                pop_id: pop_id
+                vnfr_id: response['_id'],
+                pop_id: response['pop_id']
             }
             @instance.update_attribute('vnfrs', vnfrs)
         end

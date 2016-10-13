@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 # @see TnovaManager
-class ServiceConfigurationController < TnovaManager
+class ServiceConfiguration < TnovaManager
 
   # @method post_configs_registerService
   # @overload post '/configs/registerService'
@@ -85,7 +85,7 @@ class ServiceConfigurationController < TnovaManager
 		registerService(request.body.read)
 
     Thread.new do
-			logger.info "PUBLISHING SERVICES FROM NS MANAGER......... because: " + name
+			logger.debug "Publishing" + name + "to other services services..."
       ServiceConfigurationHelper.publishServices()
     end
 

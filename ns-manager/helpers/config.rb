@@ -134,7 +134,7 @@ module ServiceConfigurationHelper
   def self.publishServices
     services = getServices()
     services.each do |service|
-      puts "Sending dependencies to " + service['name']
+      logger.debug "Sending dependencies to " + service['name']
       if service['type'] == "internal"
         begin
           RestClient.post service['host'] + ":" + service['port'] + "/gk_dependencies", services.to_json, :content_type => :json
@@ -160,87 +160,8 @@ module ServiceConfigurationHelper
 
   end
 
-  # Method which lists all available interfaces
-  #
-  # @return [Array] the array containing a list of all interfaces
-  def interfaces_list
-    [
-        {
-            'uri' => '/',
-            'method' => 'GET',
-            'purpose' => 'REST API Structure and Capability Discovery'
-        },
-        {
-            'uri' => '/configs/registerService',
-            'method' => 'POST',
-            'purpose' => 'Register a service configuration'
-        },
-        {
-            'uri' => '/configs/unRegisterService/{microservice}',
-            'method' => 'POST',
-            'purpose' => 'Unregister a service configuration'
-        },
-        {
-            'uri' => '/configs/services',
-            'method' => 'GET',
-            'purpose' => 'List all services configuration'
-        },
-        {
-            'uri' => '/configs/services',
-            'method' => 'PUT',
-            'purpose' => 'Update service configuration'
-        },
-        {
-            'uri' => '/configs/services/{name}/status',
-            'method' => 'PUT',
-            'purpose' => 'Update service status'
-        },
-        {
-            'uri' => '/network-services',
-            'method' => 'GET',
-            'purpose' => 'Redirects a GET request to the specified micro-service'
-        },
-        {
-            'uri' => '/network-services',
-            'method' => 'POST',
-            'purpose' => 'Redirects a GET request to the specified micro-service'
-        },
-        {
-            'uri' => '/network-services/{id}',
-            'method' => 'PUT',
-            'purpose' => 'Redirects a GET request to the specified micro-service'
-        },
-        {
-            'uri' => '/network-services/{id}',
-            'method' => 'DELETE',
-            'purpose' => 'Redirects a GET request to the specified micro-service'
-        },
-        {
-            'uri' => '/vnfs',
-            'method' => 'POST',
-            'purpose' => 'Redirects a GET request to the specified micro-service'
-        },
-        {
-            'uri' => '/vnfs/{id}',
-            'method' => 'PUT',
-            'purpose' => 'Redirects a GET request to the specified micro-service'
-        },
-        {
-            'uri' => '/{path}',
-            'method' => 'POST',
-            'purpose' => 'Redirects a POST request to the specified micro-service'
-        },
-        {
-            'uri' => '/{path}',
-            'method' => 'DELETE',
-            'purpose' => 'Redirects a DELETE request to the specified micro-service'
-        },
-        {
-            'uri' => '/ns-instances',
-            'method' => 'POST',
-            'purpose' => 'Create an instance request'
-        }
-    ]
+  # Global, memoized, lazy initialized instance of a logger
+  def self.logger
+    @logger ||= TnovaManager.logger
   end
-
 end

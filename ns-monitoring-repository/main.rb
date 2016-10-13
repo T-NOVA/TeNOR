@@ -14,6 +14,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
 # Set environment
 env = ENV['RACK_ENV'] ||= 'development'
 
@@ -21,10 +22,8 @@ require 'sinatra'
 require 'sinatra/config_file'
 require 'yaml'
 require 'cassandra-cql'
-require 'logstash-logger'
 
-# Require the bundler gem and then call Bundler.require to load in all gems
-# listed in Gemfile.
+# Require the bundler gem and then call Bundler.require to load in all gems listed in Gemfile.
 require 'bundler'
 Bundler.require :default, ENV['RACK_ENV'].to_sym
 
@@ -36,43 +35,29 @@ register Sinatra::ConfigFile
 config_file 'config/config.yml'
 
 configure do
-	# Configure logging
-	logger = LogStashLogger.new(
-			type: :multi_logger,
-			outputs: [
-					{ type: :stdout, formatter: ::Logger::Formatter },
-					{ type: :file, path: "log/#{settings.environment}.log", sync: true},
-					{ host: settings.logstash_host, port: settings.logstash_port }
-			])
-	LogStashLogger.configure do |config|
-		config.customize_event do |event|
-			event["module"] = settings.servicename
-		end
-	end
-	set :logger, logger
+    # Configure logging
+    logger = FluentLoggerSinatra::Logger.new('tenor', settings.servicename, settings.logger_host, settings.logger_port)
+    set :logger, logger
 
-	BASEDIR = File.join(File.dirname(__FILE__), '.')
+    BASEDIR = File.join(File.dirname(__FILE__), '.')
 
-	cassandra_config_file = File.join(BASEDIR, 'config', 'database.yml')
-	cassandra_config = YAML::load_file(cassandra_config_file)[env]
-	@db = CassandraCQL::Database.new("#{cassandra_config['host']}:9160", {username: cassandra_config['username'], password: cassandra_config['password']})
-	@db.execute("USE #{cassandra_config['keyspace']}")
-	set :db, @db
+    cassandra_config_file = File.join(BASEDIR, 'config', 'database.yml')
+    cassandra_config = YAML.load_file(cassandra_config_file)[env]
+    @db = CassandraCQL::Database.new("#{cassandra_config['host']}:9160", username: cassandra_config['username'], password: cassandra_config['password'])
+    @db.execute("USE #{cassandra_config['keyspace']}")
+    set :db, @db
 end
 
 before do
+    cassandra_config_file = File.join(BASEDIR, 'config', 'database.yml')
+    cassandra_config = YAML.load_file(cassandra_config_file)[env]
+    @db = CassandraCQL::Database.new("#{cassandra_config['host']}:9160", username: cassandra_config['username'], password: cassandra_config['password'])
+    @db.execute("USE #{cassandra_config['keyspace']}")
 
-	cassandra_config_file = File.join(BASEDIR, 'config', 'database.yml')
-	cassandra_config = YAML::load_file(cassandra_config_file)[env]
-	@db = CassandraCQL::Database.new("#{cassandra_config['host']}:9160", {username: cassandra_config['username'], password: cassandra_config['password']})
-	@db.execute("USE #{cassandra_config['keyspace']}")
-
-	#env['rack.logger'] = logger
+    # env['rack.logger'] = logger
 end
 
 class NsMonitoringRepository < Sinatra::Application
-
-	helpers MonitoringHelper
-	MonitoringHelper.startSubcription()
+    helpers MonitoringHelper
+    MonitoringHelper.startSubcription
 end
-

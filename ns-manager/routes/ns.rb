@@ -15,8 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# @see Catalogue
-class Catalogue < TnovaManager
+# @see TnovaManager
+class NsCatalogue < TnovaManager
 
   # @method get_network_services
   # @overload get "/network-services"
@@ -42,10 +42,10 @@ class Catalogue < TnovaManager
 
   end
 
-  # @method get_network_services
+  # @method get_network_services_id
   # @overload get "/network-services/:id"
   # Get a Network Service
-  # @param [string] Network service id
+  # @param [string] id Network service id
   get '/:id' do
 
     begin
@@ -126,7 +126,7 @@ class Catalogue < TnovaManager
   # @method put_network_services
   # @overload put "/network-services/:id"
   # Update a new Network Service
-  # @param [string] Network service id
+  # @param [string] id Network service id
   put '/:external_ns_id' do
 
     # Return if content-type is invalid
@@ -154,7 +154,7 @@ class Catalogue < TnovaManager
   # @method delete_network_services
   # @overload delete "/network-services/:id"
   # Delete a new Network Service
-  # @param [string] Network service id
+  # @param [string] id Network service id
   delete '/:external_ns_id' do
 
     begin

@@ -17,7 +17,6 @@ TeNOR is the NFV Orchestrator platform developed by the [T-NOVA](http://www.t-no
 - Netfloc (https://github.com/T-NOVA/netfloc). Used for the VNFFG.
 - WICM (https://github.com/T-NOVA/WICM).
 - Apache Cassandra (optional, used for monitoring) (installation provided in dependencies/install_cassandra.sh)
-- Logstash (optional) & ElasticSearch (optional)
 - RabbitMq (optional, used for monitoring) (installation provided in dependencies/install_dependencies.sh)
 
 #Getting started
@@ -47,7 +46,7 @@ Once Ruby is installed (you can be sure of that using `ruby -v` command in the t
 
 A menu will appear and you can choose a number in the menu [1-7].
 
-For TeNOR installation, insert the number 1 and press the Enter Key. The installation will start automatically installing the Ruby Gem dependencies. After few minutes, the script will ask you a set of questions regarding the location of the MongoDB, Gatekeeper and Logstash. In the case of insert an emty values, the script will use the default values (localhost).
+For TeNOR installation, insert the number 1 and press the Enter Key. The installation will start automatically installing the Ruby Gem dependencies. After few minutes, the script will ask you a set of questions regarding the location of the MongoDB, Gatekeeper. In the case of insert an emty values, the script will use the default values (localhost).
 
 **Make sure that you have installed a Ruby version >= 2.2.5 and the `bundle` command is installed.**
 
@@ -167,6 +166,11 @@ TeNOR has a User Interface that provides a global view of the all the orchestrat
 
 This user interface is located in the `ui` folder and contains their own README file with the installation guide.
 
+The UI uses Gatekeeper for authentication, so by default you need to use the default created user in Gatekeeper: t-nova-admin. Then, for the login:
+
+- Username: t-nova-admin
+- Password: Eq7K8h9gpg
+
 #Initial steps
 
 ## Test if TeNOR is installed and running
@@ -196,7 +200,7 @@ The next step is add the dummy descriptors to TeNOR system using the API. This s
 
 ## Create a VNFD and NSD and instantiate it
 
-In order to test TeNOR functionality, you can follow the next steps (you can copy and paste in the command prompt):
+In order to test TeNOR functionality, you can deploy a dummy NSD/VNFD located in the Validator folders. Follow the next steps in order to test TeNOR (you can copy and paste in the command prompt):
 
 1. Add the VNFD in the VNF catalogue
 
@@ -218,6 +222,9 @@ In order to test TeNOR functionality, you can follow the next steps (you can cop
     ````
     curl -XPOST localhost:4000/ns-instances -H "Content-Type: application/json" --data '{"ns_id": "'$ns_id'", "callbackUrl": "https://httpbin.org/post", "flavour": "basic"}'
     ````
+
+## Logs
+TeNOR uses Fluentd in order to store the logs. As TeNOR uses MongoDB for store all the information, the logs are also stored there. The UI inlcudes a view that allows to browser through the logs based on the date, severity and module.
 
 ## Write a Lifecycle events
 In each VNFD can have 5 types of lifecycle event: start, stop, restart, scaling_out and scaling_in. For each type, some data can be requested, but basically, the different template is in the scaling actions.

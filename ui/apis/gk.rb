@@ -13,7 +13,7 @@ class App::Gk < Sinatra::Base
       response = RestClient.get host + "/" + params[:splat][0], :content_type => :json, :'X-Auth-Token' => token
     rescue Errno::ECONNREFUSED
       halt 500, "Errno::ECONNREFUSED"
-    rescue RestClient::Unauthorized => e¡
+    rescue RestClient::Unauthorized => e
       puts e
       halt 401, "Unauthorized"
     rescue => e
@@ -21,9 +21,7 @@ class App::Gk < Sinatra::Base
       puts e
       halt 400
     end
-    puts "Response..."
     return response
-
   end
 
   post '/rest/gk/api/token/' do
