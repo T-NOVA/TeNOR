@@ -312,9 +312,7 @@ configureFiles(){
 
 addNewPop(){
     echo "Adding new PoP..."
-    GATEKEEPER_HOST=localhost:8000
-    GATEKEEPER_PASS=Eq7K8h9gpg
-    GATEKEEPER_USER_ID=1
+    TENOR_HOST=localhost:4000
     OPENSTACK_NAME=default
     OPENSTACK_IP=localhost
     ADMIN_TENANT_NAME=admin
@@ -322,9 +320,11 @@ addNewPop(){
     KEYSTONEUSER=admin
     OPENSTACK_DNS=8.8.8.8
 
-    echo "Type the Gatekeeper hosts (localhost:8000), followed by [ENTER]:"
-    read gatekeeper_host
-    if [ -z "$gatekeeper_host" ]; then gatekeeper_host=$GATEKEEPER_HOST; fi
+    echo -e "Please, insert the IPs and ports used requested. ${bold}You can press [ENTER] without write anything in the case of local installation.${normal}\n\n"
+
+    echo "Type the address where TeNOR is RUNNING (localhost:4000), followed by [ENTER]:"
+    read tenor_host
+    if [ -z "$tenor_host" ]; then tenor_host=$TENOR_HOST; fi
 
     echo "Type the Openstack name, followed by [ENTER]:"
     read openstack_name
@@ -350,11 +350,12 @@ addNewPop(){
     read openstack_dns
     if [ -z "$openstack_dns" ]; then openstack_dns=$OPENSTACK_DNS; fi
 
-    tokenId=$(curl -XPOST http://$gatekeeper_host/token/ -H "X-Auth-Password:$GATEKEEPER_PASS" -H "X-Auth-Uid:$GATEKEEPER_USER_ID" | python -c 'import json,sys;obj=json.load(sys.stdin);print obj["token"]["id"]')
-    curl -X POST http://$gatekeeper_host/admin/dc/ \
-    -H 'X-Auth-Token: '$tokenId'' \
-    -d '{"msg": "PoP Testbed", "dcname":"'$openstack_name'", "adminid":"'$keystoneUser'","password":"'$keystonePass'", "extrainfo":"pop-ip='$openstack_ip' tenant-name='$admin_tenant_name' keystone-endpoint=http://'$openstack_ip':35357/v2.0 orch-endpoint=http://'$openstack_ip':8004/v1 compute-endpoint=http://'$openstack_ip':8774/v2.1 neutron-endpoint=http://'$openstack_ip':9696/v2.0 dns='$openstack_dns'"}'
+    response=$(curl -XPOST http://$tenor_host/gatekeeper/dc -H "Content-Type: application/json" \
+    -d '{"msg": "PoP Testbed", "dcname":"'$openstack_name'", "adminid":"'$keystoneUser'","password":"'$keystonePass'", "extrainfo":"pop-ip='$openstack_ip' tenant-name='$admin_tenant_name' keystone-endpoint=http://'$openstack_ip':35357/v2.0 orch-endpoint=http://'$openstack_ip':8004/v1 compute-endpoint=http://'$openstack_ip':8774/v2.1 neutron-endpoint=http://'$openstack_ip':9696/v2.0 dns='$openstack_dns'"}')
 
+    echo -e "\n\n"
+    echo $response
+    echo -e "\n\n"
     pause
 }
 

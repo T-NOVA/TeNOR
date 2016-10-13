@@ -102,7 +102,8 @@ angular.module('tNovaApp')
                 "extrainfo": "pop-ip=" + obj.openstack_ip + " tenant-name=" + obj.tenantName + " keystone-endpoint=http://" + obj.keystone_api + " orch-endpoint=http://" + obj.heat_api + " compute-endpoint=http://" + obj.compute_api + " neutron-endpoint=http://" + obj.neutron_api + " dns=" + obj.dns
             };
             console.log(pop);
-            AuthService.post($window.localStorage.token, "admin/dc/", pop).then(function (d) {
+            tenorService.post('gatekeeper/dc', pop).then(function (d) {
+            //AuthService.post($window.localStorage.token, "admin/dc/", pop).then(function (d) {
                 console.log(d);
                 $scope.defaultPoP = {};
                 $alert({

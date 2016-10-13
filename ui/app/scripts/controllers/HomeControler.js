@@ -90,6 +90,5 @@ angular.module('tNovaApp')
             });
         };
 
-            var url = "elastic/_search?pretty=1&sort=_index:desc&size=11";
         $scope.lastLogs();
     });

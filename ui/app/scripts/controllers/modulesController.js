@@ -41,7 +41,6 @@ angular.module('tNovaApp')
             tenorService.post("configs/registerService", JSON.stringify(service)).then(function (data) {});
         };
 
-
         $scope.options = {
             //start: new Date($scope.ngModel[$scope.ngModel.length - 1]._source['@timestamp']),
             start: new Date(),
@@ -60,53 +59,53 @@ angular.module('tNovaApp')
         };
 
         $scope.timeLine = [];
-        var url = "_cat/indices?";
-        url = "elastic/*/_stats/store"
-        tenorService.get(url).then(function (data) {
-            if (!data) return;
-            var indices = Object.keys(data.indices);
-            angular.forEach(indices, function (index) {
-                $scope.timelineLog(index);
-            });
-        });
 
-        $scope.timelineLog = function (data) {
+        $scope.log = [];
+        $scope.severities = ["ERROR", "DEBUG", "INFO", "WARN"];
+        $scope.modules = ["ns_manager", "ns_catalogue", "ns_provisioner", "ns_monitoring", "nsd_validator", "vnf_manager", "vnf_catalogue", "vnf_provisioner", "vnf_monitoring", "hot_generator", "vnfd_validator"];
+        $scope.days = [];
+        $scope.selectedDay = "";
+        $scope.selectedSeverity = "ERROR";
+        $scope.selectedModule = undefined;
+        $scope.fromDate = Date.now() + -1*24*3600*1000;
+        $scope.untilDate = Date.now();
+        var url;
+
+        $scope.timelineLog = function (module) {
             //console.log(data);
-            var url = "elastic/" + data + "/_search?pretty=1&q=*&size=50";
-            //url = "logstash-2016.01.27/_search?q=module:vnf-catalogue";
-            //url = "logstash-2016.01.27/_search";
+            url = "logs/?module=" + module + "&severity=" + $scope.selectedSeverity + "&from=" + new Date($scope.fromDate).getTime()/1000 + "&until=" + new Date($scope.untilDate).getTime()/1000;
             tenorService.get(url).then(function (data) {
                 if (!data) return;
-                //console.log(data.hits.hits);
-                //$scope.timeLine.concat( data.hits.hits);
-                $scope.log = $scope.log.concat(data.hits.hits);
-                angular.forEach(data.hits.hits, function (element) {
+                $scope.log = $scope.log.concat(data);
+                angular.forEach(data, function (element) {
+                    console.log(element);
                     $scope.data.items.add({
                         id: element.id,
-                        content: element._source.module + " - " + element._source.message,
-                        start: new Date(element._source['@timestamp']).getTime(),
+                        content: element.module + " - " + element.msg,
+                        start: new Date(element.time).getTime(),
                         type: 'point'
                     });
                 })
             });
         };
-        $scope.selectedSeverity = "";
-        $scope.log = [];
 
-        $scope.severities = ["ERROR", "DEBUG", "INFO"];
+        $scope.log = [];
+        angular.forEach($scope.modules, function (module) {
+            $scope.timelineLog(module);
+        });
 
         $scope.selectSeverity = function (severity) {
             $scope.data.items.clear();
             console.log($scope.selectedSeverity);
-            url = "elastic/_search?pretty=1&size=200&q=severity:" + $scope.selectedSeverity;
+            url = "logs/?severity=" + $scope.selectedSeverity + "&from=" + new Date($scope.fromDate).getTime()/1000 + "&until=" + new Date($scope.untilDate).getTime()/1000;
             tenorService.get(url).then(function (data) {
-                $scope.log = data.hits.hits;
+                $scope.log = data;
                 if (!data) return;
-                angular.forEach(data.hits.hits, function (element) {
+                angular.forEach(data, function (element) {
                     $scope.data.items.add({
                         id: element.id,
-                        content: element._source.module + " - " + element._source.message,
-                        start: new Date(element._source['@timestamp']).getTime(),
+                        content: element.module + " - " + element.msg,
+                        start: new Date(element.time).getTime(),
                         type: 'point'
                     });
                 });

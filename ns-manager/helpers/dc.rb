@@ -79,10 +79,28 @@ module GatekeeperHelper
         popUrls[:compute] = item.split('=')[1]
       elsif key == 'orch-endpoint'
         popUrls[:orch] = item.split('=')[1]
+      elsif key == 'tenant-name'
+        popUrls[:tenantname] = item.split('=')[1]
       end
     end
 
     return popUrls
+  end
+
+  def registerPop(pop_info)
+    AuthenticationHelper.loginGK()
+    begin
+      response = RestClient.post "#{settings.gatekeeper}/admin/dc/", pop_info.to_json, 'X-Auth-Token' => settings.gk_token, :content_type => :json
+    rescue RestClient::ResourceNotFound
+      halt 404, "PoP not found."
+    rescue => e
+      logger.error e
+      if (defined?(e.response)).nil?
+        error = {:info => "The PoP is not registered in Gatekeeper"}
+        halt 503, "The PoP is not registered in Gatekeeper"
+      end
+    end
+    return response
   end
 
 end
