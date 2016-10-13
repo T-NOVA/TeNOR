@@ -55,7 +55,7 @@ class Scaling < VnfProvisioning
                     scaled_vdu.push(scaled_resource['vdus'].find { |v| v == vdu['id'] })
                 end
             end
-            if scaled_vdu.size < vdu['scale_in_out']['maximum'] + 30 # - 1
+            if scaled_vdu.size < vdu['scale_in_out']['maximum'] - 1
                 vdu_info = vnfr['vms'].find { |res| res['id'] == vdu['id'] }
                 vdus_to_scale << vdu_info
             end
