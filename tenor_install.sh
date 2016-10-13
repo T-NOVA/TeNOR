@@ -104,11 +104,14 @@ installTenor(){
     declare -a tenor_ns_url=("ns_manager" "ns_provisioner" "nsd_validator" "ns_monitoring" "ns_catalogue" "sla_enforcement" )
     declare -a tenor_vnf_url=("vnf_manager" "vnf_provisioner" "vnfd_validator" "vnf_monitoring" "vnf_catalogue" )
 
-    bundle install --quiet
-
-    max=14
     count=0
+    max=15
     progress 0
+
+    bundle install --quiet
+    count=$((count+1))
+    progress  $(( 100 * $count / $max )) ""
+
     array=(*/)
     for folder in "${array[@]}"; do
         #printf "$folder\n"
@@ -144,8 +147,7 @@ configureIps(){
     CASSANDRA_ADDRESS="127.0.0.1"
     LOGGER_ADDRESS="127.0.0.1:24224"
 
-    echo -e "${bold}Please, insert the IPs and ports used in each service. In the case you have installed everything locally (localhost) you can press [ENTER] without write anything${normal}.\n\n"
-
+    echo -e "Please, insert the IPs and ports used in each service. ${bold}You can press [ENTER] without write anything in the case of local installation.${normal}\n\n"
 
     echo "Type the IP where is installed TeNOR, followed by [ENTER]:"
     read tenor_ip
