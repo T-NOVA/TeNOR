@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 # @see Statistics
-class Statistics < Sinatra::Application
+class Statistics < TnovaManager
     # @method get_statistics
     # @overload get "/statistics/"
     # Get statistics list
