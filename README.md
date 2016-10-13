@@ -17,7 +17,6 @@ TeNOR is the NFV Orchestrator platform developed by the [T-NOVA](http://www.t-no
 - Netfloc (https://github.com/T-NOVA/netfloc). Used for the VNFFG.
 - WICM (https://github.com/T-NOVA/WICM).
 - Apache Cassandra (optional, used for monitoring) (installation provided in dependencies/install_cassandra.sh)
-- ElasticSearch (optional)
 - RabbitMq (optional, used for monitoring) (installation provided in dependencies/install_dependencies.sh)
 
 #Getting started
@@ -167,6 +166,11 @@ TeNOR has a User Interface that provides a global view of the all the orchestrat
 
 This user interface is located in the `ui` folder and contains their own README file with the installation guide.
 
+The UI uses Gatekeeper for authentication, so by default you need to use the default created user in Gatekeeper: t-nova-admin. Then, for the login:
+
+- Username: t-nova-admin
+- Password: Eq7K8h9gpg
+
 #Initial steps
 
 ## Test if TeNOR is installed and running
@@ -218,6 +222,9 @@ In order to test TeNOR functionality, you can deploy a dummy NSD/VNFD located in
     ````
     curl -XPOST localhost:4000/ns-instances -H "Content-Type: application/json" --data '{"ns_id": "'$ns_id'", "callbackUrl": "https://httpbin.org/post", "flavour": "basic"}'
     ````
+
+## Logs
+TeNOR uses Fluentd in order to store the logs. As TeNOR uses MongoDB for store all the information, the logs are also stored there. The UI inlcudes a view that allows to browser through the logs based on the date, severity and module.
 
 ## Write a Lifecycle events
 In each VNFD can have 5 types of lifecycle event: start, stop, restart, scaling_out and scaling_in. For each type, some data can be requested, but basically, the different template is in the scaling actions.
