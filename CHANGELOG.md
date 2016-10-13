@@ -1,3 +1,13 @@
+## 0.6.0
+- UI Modal with form that allows to upload VNFDs and NSDs using a JSON file.
+- New version of Scaling, create a new heat template without using AutoScalingGroup template. AutoscalingGroup removes arbitrarily the instances in the scale_in.
+- Migration from Logstash to Fluentd. See Specific pull request for more info.
+- Updated UI logs in order to read the Fluentd logs.
+- Updated Log messages.
+- Code refactor. Beautification and simplification.
+- NS provisioning instantiation splited in functions. Better error handling.
+- The NS manager receives the PoP registration and test the credentials before save the PoP into Gatekeeper.
+
 ## 0.5.1
 - UI PoP view. Hide remove modal and refresh list of PoPs.
 - Updated Installation Dependencies script, Dockerfile and Vagrantfile.
@@ -36,7 +46,7 @@
 - NS Provisioning default tenant name specified in config file. Can be disabled. By default disabled.
 - Fix grunt installaltion.
 - Refactor NS Provisioning errors.
- 
+
 
 ## 0.3.0
 - UI infinite monitoring request fixed.
