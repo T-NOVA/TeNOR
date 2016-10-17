@@ -24,7 +24,7 @@ class NsProvisioner < TnovaManager
   post '/' do
 
     AuthenticationHelper.loginGK()
-    popList = getPopList()
+    popList = JSON.parse(getPopList())
     if popList.empty?
       halt 400, "No PoPs registereds."
     end

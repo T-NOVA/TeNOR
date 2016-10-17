@@ -49,6 +49,7 @@ module PopHelper
         urls = extraInfo.split(' ')
 
         popUrls = {}
+        popUrls[:dns] = []
 
         for item in urls
             key = item.split('=')[0]
@@ -63,10 +64,11 @@ module PopHelper
             elsif key == 'tenant-name'
                 popUrls[:tenant] = item.split('=')[1]
             elsif key == 'dns'
-                popUrls[:dns] = item.split('=')[1]
+                if !item.split('=')[1].nil?
+                    popUrls[:dns] << item.split('=')[1]
+                end
             end
         end
-
         popUrls
     end
 

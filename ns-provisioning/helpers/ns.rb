@@ -49,6 +49,9 @@ module NsProvisioner
     end
 
     # Updates the instance status with the Error message.
+    # @param [JSON] instance NSr
+    # @param [JSON] error message
+    # @return [Integer, Dynamic] the error response
     def handleError(instance, errors)
         @instance = instance
         logger.error errors
@@ -170,7 +173,7 @@ module NsProvisioner
 
         if pop_id.nil? && mapping_id.nil?
             logger.info 'Request from Marketplace.'
-            pop_id = pop_list[0] if pop_list.size == 1
+            pop_id = pop_list[0]['id'] if pop_list.size == 1
         elsif !mapping_id.nil?
             # call specified mapping with the id
             # TODO
@@ -206,7 +209,6 @@ module NsProvisioner
         end
 
         @instance.push(lifecycle_event_history: 'MAPPED FOUND')
-        logger.debug @instance
 
         @instance['vnfrs'] = []
         @instance['authentication'] = []
@@ -293,7 +295,8 @@ module NsProvisioner
             tenant_token = pop_auth['token']
             popUrls = pop_auth['urls']
 
-            publicNetworkId = publicNetworkId(popUrls[:neutron], tenant_token)
+            publicNetworkId, errors = publicNetworkId(popUrls[:neutron], tenant_token)
+            return handleError(@instance, errors) if errors
 
             hot_generator_message = {
                 nsr_id: @instance['id'],
@@ -301,7 +304,6 @@ module NsProvisioner
                 public_net_id: publicNetworkId,
                 dns_server: popUrls[:dns]
             }
-
             logger.info 'Generating network HOT template...'
             hot, errors = generateNetworkHotTemplate(sla_id, hot_generator_message)
             return handleError(@instance, errors) if errors

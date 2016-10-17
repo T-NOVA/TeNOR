@@ -36,7 +36,7 @@ module GatekeeperHelper
     popList, errors = parse_json(response)
     return 400, errors if errors
 
-    return popList['dcid']
+    return popList['dcid'].zip(popList['dclist']).map{|k, v| {id: k, name: v}}.to_json
   end
 
   # Get list of PoPs

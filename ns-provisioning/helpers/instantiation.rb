@@ -57,7 +57,7 @@ module InstantiationHelper
                 @instance.update_attribute('status', 'ERROR_CREATING') if errors
                 @instance.push(audit_log: errors) if errors
                 return 400, errors.to_json if errors
-                
+
                 if settings.default_tenant
                     pop_auth['username'] = settings.default_user_name
                     pop_auth['tenant_name'] = settings.default_tenant_name
@@ -69,6 +69,10 @@ module InstantiationHelper
                     end
                     if pop_auth['user_id'].nil?
                         pop_auth['user_id'] = createUser(popUrls[:keystone], pop_auth['tenant_id'], pop_auth['username'], pop_auth['password'], token)
+                    else
+                        if !settings.default_user_password.nil?
+                            pop_auth['password'] = settings.default_user_password
+                        end
                     end
                 else
                     pop_auth['tenant_name'] = 'tenor_instance_' + @instance['id'].to_s
@@ -168,6 +172,18 @@ module InstantiationHelper
 
         begin
             response = RestClient.post settings.vnf_manager + '/vnf-provisioning/vnf-instances', vnf_provisioning_info.to_json, content_type: :json
+=begin        rescue RestClient::ExceptionWithResponse => e
+            puts "Excepion with response"
+            puts e
+            logger.error e
+            logger.error e.response
+            if !e.response.nil?
+                logger.error e.response.body
+            end
+            #return e.response.code, e.response.body
+            logger.error 'Handle error.'
+            return
+=end
         rescue => e
             @instance.push(lifecycle_event_history: 'ERROR_CREATING ' + vnf_id.to_s + ' VNF')
             @instance.update_attribute('status', 'ERROR_CREATING')
