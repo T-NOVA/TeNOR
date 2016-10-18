@@ -207,11 +207,11 @@ module InstantiationHelper
                     end
                     logger.error error
                     generateMarketplaceResponse(callback_url, generateError(nsd_id, 'FAILED', error))
-                    return
+                    return 400, error
                 end
             end
             logger.error 'Handle error.'
-            return
+            return 400, "Error wiht the VNF"
         end
 
         vnf_manager_response, errors = parse_json(response)

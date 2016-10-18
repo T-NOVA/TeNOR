@@ -95,7 +95,7 @@ module NsProvisioner
             logger.debug 'Removing reserved stack...'
             response, errors = delete_stack_with_wait(stack_url, tenant_token)
             logger.error errors if errors
-            halt 400, errors if errors
+            return 400, errors if errors
             logger.info 'Reserved stack removed correctly'
         end
 
@@ -174,6 +174,7 @@ module NsProvisioner
         if pop_id.nil? && mapping_id.nil?
             logger.info 'Request from Marketplace.'
             pop_id = pop_list[0]['id'] if pop_list.size == 1
+            pop_id = pop_list[0]['id']
         elsif !mapping_id.nil?
             # call specified mapping with the id
             # TODO
@@ -359,7 +360,9 @@ module NsProvisioner
         vnfrs = []
         # for each VNF, instantiate
         mapping['vnf_mapping'].each do |vnf|
-            response = instantiate_vnf(@instance, nsd['id'], vnf, slaInfo)
+            response, errors = instantiate_vnf(@instance, nsd['id'], vnf, slaInfo)
+            return handleError(@instance, errors) if errors
+
             vnfrs << {
                 vnfd_id: response['vnfd_reference'],
                 vnfi_id: [],
