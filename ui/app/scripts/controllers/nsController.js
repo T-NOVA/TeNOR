@@ -317,7 +317,7 @@ angular.module('tNovaApp')
                     }
                     _.each(data, function (t) {
                         t['x'] = t.date * 1000;
-                        t['y'] = Math.floor(t.value);
+                        t['y'] = parseFloat(t.value);
                     });
                     $scope.monitoringData.add(data);
                     lastEndDate = data[data.length - 1].date - 1;
@@ -329,7 +329,7 @@ angular.module('tNovaApp')
                     if (data.length == 0) return
                     _.each(data, function (t) {
                         t['x'] = t.date * 1000;
-                        t['y'] = Math.floor(t.value);
+                        t['y'] = parseFloat(t.value);
                     });
                     $scope.monitoringData.add(data);
                     lastStartDate = data[data.length - 1].date;
