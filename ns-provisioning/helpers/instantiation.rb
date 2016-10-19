@@ -58,36 +58,42 @@ module InstantiationHelper
                 @instance.push(audit_log: errors) if errors
                 return 400, errors.to_json if errors
 
-                if settings.default_tenant
-                    pop_auth['username'] = settings.default_user_name
-                    pop_auth['tenant_name'] = settings.default_tenant_name
-                    pop_auth['tenant_id'] = getTenantId(popUrls[:keystone], pop_auth['tenant_name'], token)
-                    pop_auth['user_id'] = getUserId(popUrls[:keystone], pop_auth['username'], token)
-                    pop_auth['password'] = 'secretsecret'
-                    if pop_auth['tenant_id'].nil?
-                        pop_auth['tenant_id'] = createTenant(popUrls[:keystone], pop_auth['tenant_name'], token)
-                    end
-                    if pop_auth['user_id'].nil?
-                        pop_auth['user_id'] = createUser(popUrls[:keystone], pop_auth['tenant_id'], pop_auth['username'], pop_auth['password'], token)
-                    else
-                        if !settings.default_user_password.nil?
-                            pop_auth['password'] = settings.default_user_password
-                        end
-                    end
+                if !popUrls[:isAdmin]
+                    pop_auth['username'] = popInfo['info'][0]['adminuser']
+                    pop_auth['tenant_name'] = popUrls[:tenant]
+                    pop_auth['password'] = popInfo['info'][0]['password']
                 else
-                    pop_auth['tenant_name'] = 'tenor_instance_' + @instance['id'].to_s
-                    pop_auth['tenant_id'] = createTenant(popUrls[:keystone], pop_auth['tenant_name'], token)
-                    pop_auth['username'] = 'user_' + @instance['id'].to_s
-                    pop_auth['password'] = 'secretsecret'
-                    pop_auth['user_id'] = createUser(popUrls[:keystone], pop_auth['tenant_id'], pop_auth['username'], pop_auth['password'], token)
-                end
+                    if settings.default_tenant
+                        pop_auth['username'] = settings.default_user_name
+                        pop_auth['tenant_name'] = settings.default_tenant_name
+                        pop_auth['tenant_id'] = getTenantId(popUrls[:keystone], pop_auth['tenant_name'], token)
+                        pop_auth['user_id'] = getUserId(popUrls[:keystone], pop_auth['username'], token)
+                        pop_auth['password'] = 'secretsecret'
+                        if pop_auth['tenant_id'].nil?
+                            pop_auth['tenant_id'] = createTenant(popUrls[:keystone], pop_auth['tenant_name'], token)
+                        end
+                        if pop_auth['user_id'].nil?
+                            pop_auth['user_id'] = createUser(popUrls[:keystone], pop_auth['tenant_id'], pop_auth['username'], pop_auth['password'], token)
+                        else
+                            if !settings.default_user_password.nil?
+                                pop_auth['password'] = settings.default_user_password
+                            end
+                        end
+                    else
+                        pop_auth['tenant_name'] = 'tenor_instance_' + @instance['id'].to_s
+                        pop_auth['tenant_id'] = createTenant(popUrls[:keystone], pop_auth['tenant_name'], token)
+                        pop_auth['username'] = 'user_' + @instance['id'].to_s
+                        pop_auth['password'] = 'secretsecret'
+                        pop_auth['user_id'] = createUser(popUrls[:keystone], pop_auth['tenant_id'], pop_auth['username'], pop_auth['password'], token)
+                    end
 
-                if pop_auth['tenant_id'].nil? || pop_auth['user_id'].nil?
-                    error = 'Tenant or user not created.'
-                    logger.error error
-                    @instance.push(audit_log: errors) if errors
-                    @instance.update_attribute('status', 'ERROR_CREATING')
-                    return 400, error.to_json
+                    if pop_auth['tenant_id'].nil? || pop_auth['user_id'].nil?
+                        error = 'Tenant or user not created.'
+                        logger.error error
+                        @instance.push(audit_log: errors) if errors
+                        @instance.update_attribute('status', 'ERROR_CREATING')
+                        return 400, error.to_json
+                    end
                 end
 
                 logger.info 'Created user with admin role.'

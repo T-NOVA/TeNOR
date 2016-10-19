@@ -67,6 +67,8 @@ module PopHelper
                 if !item.split('=')[1].nil?
                     popUrls[:dns] << item.split('=')[1]
                 end
+            elseif key == 'isAdmin'
+                popUrls[:isAdmin] = item.split('=')[1]
             end
         end
         popUrls
