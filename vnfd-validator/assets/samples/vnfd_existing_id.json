@@ -44,7 +44,7 @@
         "monitoring_parameters_specific": [
         ],
         "wc_notify": true,
-        "vm_image": "6b8e0030-7001-4fb2-b4e0-b6a1fdcb44c5",
+        "vm_image": "-------------------- INSERT THE IMAGE ID --------------------",
         "controller": true,
         "connection_points": [
           {
