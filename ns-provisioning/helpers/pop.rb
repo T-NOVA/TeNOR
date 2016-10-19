@@ -64,11 +64,10 @@ module PopHelper
             elsif key == 'tenant-name'
                 popUrls[:tenant] = item.split('=')[1]
             elsif key == 'dns'
-                if !item.split('=')[1].nil?
-                    popUrls[:dns] << item.split('=')[1]
-                end
-            elseif key == 'isAdmin'
-                popUrls[:isAdmin] = item.split('=')[1]
+                popUrls[:dns] << item.split('=')[1] unless item.split('=')[1].nil?
+            elsif key == 'isAdmin'
+                popUrls[:isAdmin] = false
+                popUrls[:isAdmin] = true unless item.split('=')[1].to_s == 'true'
             end
         end
         popUrls

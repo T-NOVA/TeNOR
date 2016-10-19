@@ -52,16 +52,22 @@ module InstantiationHelper
         token = ''
         if @instance['project'].nil?
             begin
-                token, errors = openstackAdminAuthentication(popUrls[:keystone], popUrls[:tenant], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
+                user_authentication, errors = openstackUserAuthentication(popUrls[:keystone], popUrls[:tenant], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
                 logger.error errors if errors
                 @instance.update_attribute('status', 'ERROR_CREATING') if errors
                 @instance.push(audit_log: errors) if errors
                 return 400, errors.to_json if errors
 
+                token = user_authentication['access']['token']['id']
+
                 if !popUrls[:isAdmin]
                     pop_auth['username'] = popInfo['info'][0]['adminuser']
                     pop_auth['tenant_name'] = popUrls[:tenant]
                     pop_auth['password'] = popInfo['info'][0]['password']
+
+                    #get tenant and user ids
+                    pop_auth['tenant_id'] = user_authentication['access']['token']['tenant']['id']
+                    pop_auth['user_id'] = user_authentication['access']['user']['id']
                 else
                     if settings.default_tenant
                         pop_auth['username'] = settings.default_user_name
