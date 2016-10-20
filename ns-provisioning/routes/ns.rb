@@ -137,6 +137,7 @@ class Provisioner < NsProvisioning
 
         if params[:status] === 'terminate'
             logger.info 'Starting thread for removing VNF and NS instances.'
+            Thread.abort_on_exception = false
             Thread.new do
                 # operation = proc {
                 @nsInstance['vnfrs'].each do |vnf|
@@ -151,7 +152,7 @@ class Provisioner < NsProvisioning
                         logger.error 'Pop id no exists.'
                          return
                     end
-                    
+
                     pop_auth = @nsInstance['authentication'].find { |pop| pop['pop_id'] == vnf['pop_id'] }
                     popUrls = pop_auth['urls']
                     callback_url = settings.manager + '/ns-instances/' + @instance['id']
