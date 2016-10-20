@@ -298,6 +298,7 @@ configureFiles(){
         fi
         if [ -f config/database.yml ]; then
             sed -i -e 's/127.0.0.1:27017/'$cassandra_address'/' config/database.yml
+            rake db:migration
         fi
 
         cd ../
@@ -398,11 +399,9 @@ registerMicroservice(){
 
 insertSamples(){
     echo "Inserting VNF..."
-    curl -XPOST localhost:4000/vnfs -H "Content-Type: application/json" --data-binary @vnfd-validator/assets/samples/vnfd_example.json
-    vnf_id=$(curl -XGET localhost:4000/vnfs | python -c 'import json,sys;obj=json.load(sys.stdin);print obj[0]["vnfd"]["id"]')
+    vnf_id=$(curl -XPOST localhost:4000/vnfs -H "Content-Type: application/json" --data-binary @vnfd-validator/assets/samples/vnfd_example.json | ruby -r rubygems -r json -e "puts JSON[STDIN.read]['vnfd']['id'];")
     echo "Inserting NS..."
-    curl -XPOST localhost:4000/network-services -H "Content-Type: application/json" --data-binary @nsd-validator/assets/samples/nsd_example.json
-    ns_id=$(curl -XGET localhost:4000/network-services | python -c 'import json,sys;obj=json.load(sys.stdin);print obj[0]["nsd"]["id"]')
+    ns_id=$(curl -XPOST localhost:4000/network-services -H "Content-Type: application/json" --data-binary @nsd-validator/assets/samples/nsd_example.json | ruby -r rubygems -r json -e "puts JSON[STDIN.read]['nsd']['id'];")
     echo "NSD id: " $ns_id
     echo "VNFD id: " $vnf_id
 
