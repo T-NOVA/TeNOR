@@ -45,24 +45,25 @@ module VnfMonitoringHelper
   def self.save_monitoring(instance_id, json)
     @db = Sinatra::Application.settings.db
     json.each do |item|
-      puts "Inserting"
       @db.execute("INSERT INTO vnfmonitoring (instanceid, date, metricname, unit, value) VALUES ('#{instance_id.to_s}', #{item['timestamp']}, '#{item['type']}', '#{item['unit']}', '#{item['value']}' )")
     end
   end
 
+  def self.delete_monitoring(instance_id)
+    @db = Sinatra::Application.settings.db
+    @db.execute("DELETE FROM vnfmonitoring WHERE instanceid='#{instance_id.to_s}'")    
+  end
+
   def self.startSubcription()
-    puts "Start subscription"
     Thread.new {
       Thread.current["name"] = "vnf_repository";
       ch = @channel
       puts " [*] Waiting for logs."
       t = ch.queue("vnf_repository", :exclusive => false).subscribe do |delivery_info, metadata, payload|
-        puts "Receving subcription data "
         json = JSON.parse(payload)
         array = [json]
         VnfMonitoringHelper.save_monitoring(json['instance_id'], array)
       end
-
     }
   end
 end

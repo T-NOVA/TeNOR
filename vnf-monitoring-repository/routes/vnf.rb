@@ -60,4 +60,12 @@ class VnfMonitoringRepository < Sinatra::Application
     halt 200
   end
 
+  # @method delete_vnf_monitoring
+  # @overload delete '/vnf-monitoring/:instance_id'
+  # Delete monitoring data
+  delete '/vnf-monitoring/:instance_id' do |instance_id|
+    VnfMonitoringHelper.delete_monitoring(instance_id)
+    halt 200, "Removed monitoring data correctly."
+  end
+
 end
