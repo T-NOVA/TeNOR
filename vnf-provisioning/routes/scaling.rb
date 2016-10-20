@@ -141,11 +141,20 @@ class Scaling < VnfProvisioning
             halt 200, "Nothing to scale in."
         end
 
+        resource = vnfr['scale_resources'][vnfr['scale_resources'].size - 1]
+        logger.debug resource
+        logger.debug "Using scaling-in saved events..."
+        scaling_in_events = {}
+        resource['lifecycle_events_values']['scaling_in'].each do |param, value|
+            scaling_in_events[param] = value
+        end
+        logger.debug vnfr['lifecycle_events_values'][event]
+
         # Build mAPI request
         mapi_request = {
             event: event,
             vnf_controller: vnfr['vnf_addresses']['controller'],
-            parameters: vnfr['lifecycle_events_values'][event]
+            parameters: scaling_in_events
         }
         logger.debug 'mAPI request: ' + mapi_request.to_json
 
