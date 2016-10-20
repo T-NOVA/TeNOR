@@ -47,9 +47,13 @@ class Catalogue < NsCatalogue
   # @overload get '/network-services/:external_ns_id'
   #	Show a NS
   #	@param [Integer] external_ns_id NS external ID
-  get '/:external_ns_id' do |id|
-    ns = Ns.find_by({"nsd.id" => params[:external_ns_id]})
-    halt(404, { message: 'Network Service Not Found'}.to_json) unless ns
+  get '/:id' do |id|
+    begin
+      ns = Ns.find_by({"nsd.id" => id})
+    rescue Mongoid::Errors::DocumentNotFound => e
+      logger.error 'NSD not found.'
+      halt 404
+    end
     return 200, ns.nsd.to_json
     #NsSerializer.new(ns).to_json
   end
@@ -73,6 +77,7 @@ class Catalogue < NsCatalogue
     begin
       RestClient.post settings.nsd_validator + '/nsds', ns.to_json, :content_type => :json
     rescue Errno::ECONNREFUSED
+      logger.error 'NSD Validator unreachable'
       halt 500, 'NSD Validator unreachable'
     rescue => e
       logger.error e
@@ -83,6 +88,7 @@ class Catalogue < NsCatalogue
       ns = Ns.find_by({"nsd.id" => ns['nsd']['id'], "nsd.version" => ns['nsd']['version'], "nsd.vendor" => ns['nsd']['vendor']})
       logger.error ns
       if ns != nil
+        logger.error 'ERROR: Duplicated NS ID, Version or Vendor'
         return 409, 'ERROR: Duplicated NS ID, Version or Vendor'
       end
     rescue Mongoid::Errors::DocumentNotFound => e
