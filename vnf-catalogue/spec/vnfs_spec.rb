@@ -149,7 +149,7 @@ RSpec.describe VnfCatalogue do
 				expect(JSON.parse response_found.body).to be_a Hash
 			end
 
-			it 'responds with a 200' do 
+			it 'responds with a 200' do
 				expect(response_found.status).to eq 200
 			end
 		end
@@ -165,7 +165,7 @@ RSpec.describe VnfCatalogue do
 				expect(response_not_found.body).to be_empty
 			end
 
-			it 'responds with a 404' do			
+			it 'responds with a 404' do
 				expect(response_not_found.status).to eq 404
 			end
 		end
@@ -177,7 +177,7 @@ RSpec.describe VnfCatalogue do
 				expect(response_found.body).to be_empty
 			end
 
-			it 'responds with a 200' do				
+			it 'responds with a 200' do
 				expect(response_found.status).to eq 200
 			end
 		end

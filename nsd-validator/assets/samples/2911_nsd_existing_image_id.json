@@ -1,10 +1,10 @@
 {"nsd":{
-  "id": "578e2db5e4b0356a4eb0d2b1",
+  "id": "578e2db5e4b0356a4eb0d2b76",
   "name": "testnsd",
   "vendor": "1",
   "version": "1",
   "vnfds": [
-    "2910"
+    "2911"
   ],
   "vnffgd": {
     "vnffgs": [
@@ -23,11 +23,11 @@
             ],
             "connection_points": [
               "ns_ext_data_in",
-              "VNF#2910:ext_data"
+              "VNF#2911:ext_data"
             ],
             "constituent_vnfs": [
               {
-                "vnf_ref_id": "2910",
+                "vnf_ref_id": "2911",
                 "vnf_flavor_key_ref": "gold"
               }
             ]
@@ -39,7 +39,7 @@
   "lifecycle_events": {
     "start": [
       {
-        "vnf_id": "2910",
+        "vnf_id": "2911",
         "vnf_event": "start",
         "event_rel_id": "rel_le0",
         "event_id": "le0",
@@ -72,7 +72,7 @@
           "burst": ""
         },
         "connections": [
-          "VNF#2910:ext_management"
+          "VNF#2911:ext_int-net"
         ],
         "connectivity_type": "E-LINE",
         "external_access": true,
@@ -90,7 +90,7 @@
           "burst": ""
         },
         "connections": [
-          "VNF#2910:ext_data"
+          "VNF#2911:ext_ext-net-eth2"
         ],
         "connectivity_type": "E-LINE",
         "external_access": true,
@@ -104,7 +104,7 @@
       "id": "sla0",
       "assurance_parameters": [
         {
-          "formula": "MAX(VNF:2910.cpu_util)",
+          "formula": "MAX(VNF:2911.cpu_util)",
           "id": "cpu_util",
           "name": "cpu_util",
           "penalty": {
@@ -136,7 +136,7 @@
           "number_of_instances": 1,
           "redundancy_model": "Active",
           "vnf_flavour_id_reference": "gold",
-          "vnf_reference": "2910"
+          "vnf_reference": "2911"
         }
       ],
       "sla_key": "basic"
