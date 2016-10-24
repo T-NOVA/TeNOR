@@ -97,7 +97,7 @@ class Provisioner < NsProvisioning
             instantiate(@instance, nsd, instantiation_info)
         end
 
-        return 201, instance.to_json
+        return 201, @instance.to_json
     end
 
     # @method put_ns_instance_id
