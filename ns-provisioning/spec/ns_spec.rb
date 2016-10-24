@@ -1,5 +1,5 @@
 #
-# TeNOR - VNF Provisioning
+# TeNOR - NS Provisioning
 #
 # Copyright 2014-2016 i2CAT Foundation, Portugal Telecom Inovação
 #
@@ -17,9 +17,9 @@
 #
 require_relative 'spec_helper'
 
-RSpec.describe VnfProvisioning do
+RSpec.describe NsProvisioning do
     def app
-        Provisioning
+        Provisioner
     end
 
     before do
@@ -30,8 +30,8 @@ RSpec.describe VnfProvisioning do
         end
     end
 
-    describe 'GET /vnf-provisioning' do
-        let(:response) { get '/vnf-instances' }
+    describe 'GET /ns-instances' do
+        let(:response) { get '/' }
 
         it 'responds with a 200' do
             expect(response.status).to eq 200
@@ -46,24 +46,24 @@ RSpec.describe VnfProvisioning do
         end
     end
 
-    describe 'POST /vnf-provisioning' do
+    describe 'POST /ns-instances' do
         context 'given an invalid content type' do
             it 'responds with a 415' do
-                post '/vnf-instances', {}.to_json, 'CONTENT_TYPE' => 'application/x-www-form-urlencoded'
+                post '/', {}.to_json, 'CONTENT_TYPE' => 'application/x-www-form-urlencoded'
                 expect(last_response.status).to eq 415
             end
         end
         context 'given a valid request' do
             it 'provisions a new VNF in the VIM' do
-                response = post '/vnf-instances', File.read(File.expand_path('../fixtures/instantiation_info.json', __FILE__)), 'CONTENT_TYPE' => 'application/json'
+                response = post '/', File.read(File.expand_path('../fixtures/instantiation_info.json', __FILE__)), 'CONTENT_TYPE' => 'application/json'
                 expect(last_response.status).to eq 201
             end
         end
     end
 
-    describe 'GET /vnf-provisioning' do
+    describe 'GET /ns-instances' do
         context 'when there are no VNF instances' do
-            let(:response) { get '/vnf-instances' }
+            let(:response) { get '/' }
 
             it 'returns an array' do
                 expect(JSON.parse(response.body)).to be_an Array
@@ -79,8 +79,8 @@ RSpec.describe VnfProvisioning do
         end
 
         context 'when there are one or more VNF instances' do
-            before { create(:vnfr) }
-            let(:response) { get '/vnf-instances' }
+            before { create(:nsr) }
+            let(:response) { get '/' }
 
             it 'does not return an empty body' do
                 expect(JSON.parse(response.body)).to_not be_empty
@@ -100,11 +100,11 @@ RSpec.describe VnfProvisioning do
         end
     end
 
-    describe 'GET /vnf-provisioning' do
-        let(:vnfr) { create :vnfr }
+    describe 'GET /ns-instances' do
+        let(:nsr) { create :nsr }
 
-        context 'when the VNFr is not found' do
-            let(:response_not_found) { get '/vnf-instances/' + (vnfr._id.to_i + 1).to_s }
+        context 'when the nsr is not found' do
+            let(:response_not_found) { get '/' + (nsr._id.to_i + 1).to_s }
 
             it 'responds with an empty body' do
                 expect(response_not_found.body).to be_empty
@@ -116,7 +116,7 @@ RSpec.describe VnfProvisioning do
         end
 
         context 'when the VNF is found' do
-            let(:response_found) { get '/vnf-instances/' + vnfr._id.to_s }
+            let(:response_found) { get '/' + nsr._id.to_s }
 
             it 'response body should not be empty' do
                 expect(JSON(response_found.body)).to_not be_empty
@@ -132,26 +132,26 @@ RSpec.describe VnfProvisioning do
         end
     end
 
-    describe 'POST /vnf-provisioning' do
+    describe 'POST /ns-instances' do
         context 'given an invalid content type' do
             it 'responds with a 415' do
-                post '/vnf-instances', {}.to_json, 'CONTENT_TYPE' => 'application/x-www-form-urlencoded'
+                post '/', {}.to_json, 'CONTENT_TYPE' => 'application/x-www-form-urlencoded'
                 expect(last_response.status).to eq 415
             end
         end
         context 'given a valid request' do
             it 'provisions a new VNF in the VIM' do
-                response = post '/vnf-instances', File.read(File.expand_path('../fixtures/instantiation_info.json', __FILE__)), 'CONTENT_TYPE' => 'application/json'
+                response = post '/', File.read(File.expand_path('../fixtures/instantiation_info.json', __FILE__)), 'CONTENT_TYPE' => 'application/json'
                 expect(last_response.status).to eq 201
             end
         end
     end
 
-    describe 'DELETE /vnf-provisioning' do
-		let(:vnfr) { create :vnfr }
+    describe 'DELETE /ns-instances' do
+		let(:nsr) { create :nsr }
 
 		context 'when the VNF instance is not found' do
-            let(:response_not_found) { post '/vnf-instances/' + (vnfr._id.to_i + 1).to_s + '/destroy', {}.to_json, 'CONTENT_TYPE' => 'application/json'}
+            let(:response_not_found) { put '/' + (nsr._id.to_i + 1).to_s + '/terminate', {}.to_json, 'CONTENT_TYPE' => 'application/json'}
 
 			it 'responds with an empty body' do
 				expect(response_not_found.body).to be_empty
@@ -162,8 +162,8 @@ RSpec.describe VnfProvisioning do
 			end
 		end
 
-		context 'when the VNFR is found' do
-            let(:response_found) { post '/vnf-instances/' + vnfr._id.to_s + '/destroy', File.read(File.expand_path('../fixtures/destroy_info.json', __FILE__)), 'CONTENT_TYPE' => 'application/json'}
+		context 'when the nsr is found' do
+            let(:response_found) { put '/' + nsr._id.to_s + '/terminate', File.read(File.expand_path('../fixtures/destroy_info.json', __FILE__)), 'CONTENT_TYPE' => 'application/json'}
 
 			it 'responds with an empty body' do
 				expect(response_found.body).to be_empty

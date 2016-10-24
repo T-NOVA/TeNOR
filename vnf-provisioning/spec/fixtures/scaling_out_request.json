@@ -1,24 +1,5 @@
 {
-    "ns_id": "ns_id",
-    "vnf_id": "vnf_id",
-    "flavour": "gold",
-    "vim_id": "popName",
-    "auth": {
-        "url": {
-            "keystone": "http://vimurl:5000",
-            "orch": "http://vimurl:9000"
-        },
-        "tenant": "tenant_name",
-        "username": "username",
-        "password": "password"
-    },
-    "networks": [],
-    "security_group_id": "sec_group_id",
-    "callback_url": "localhost:4000/ns-instances/ns_id/instantiate",
-    "reserved_resources": {
-        "public_network_id": "public_net"
-    },
-    "vnf": {
+    "vnfd": {
         "_id": "5715fb18b18cfb0747000075",
         "created_at": "2016-04-19T09:32:08.942+00:00",
         "name": "TEMP",

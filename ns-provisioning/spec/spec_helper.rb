@@ -1,5 +1,5 @@
 #
-# TeNOR - VNF Provisioning
+# TeNOR - NS Provisioning
 #
 # Copyright 2014-2016 i2CAT Foundation, Portugal Telecom Inovação
 #
@@ -54,20 +54,10 @@ RSpec.configure do |config|
         stub_request(:post, 'http://localhost/stackurl')
             .with(headers: { 'Accept' => '*/*', 'User-Agent' => 'Ruby' })
             .to_return(status: 200, body: 'stubbed response', headers: {})
-        stub_request(:any, 'localhost/stackurl')
-            .with(headers: { 'Accept' => '*/*', 'User-Agent' => 'Ruby' })
-            .to_return(status: 200, body: '', headers: {})
-        stub_request(:get, 'www.example.com').to_return(status: 201, body: 'Return....')
-        #mAPI
-        stub_request(:delete, 'http://admin:changeme@10.10.1.67:1234/vnf_api/12/').to_return(status: 200)
-        # NFS Store for image validation
-        stub_request(:head, 'http://10.10.1.167:8080/NFS/files/trusty-server-cloudimg-amd64-disk1.img').to_return(status: 200)
-        # hot generator
-        stub_request(:post, 'http://localhost:4571/hot/flavor0').to_return(status: 200, body: File.read(File.join('spec', 'fixtures', 'hot.json')))
         # keystone
         stub_request(:post, 'http://vimurl:5000/tokens').to_return(status: 200, body: File.read(File.join('spec', 'fixtures', 'authentication.json')))
-        # heat stack
-        stub_request(:post, 'http://vimurl:9000/tenant_id/stacks').to_return(status: 200, body: File.read(File.join('spec', 'fixtures', 'heat_response.json')))
+
+        stub_request(:post, 'http://localhost:4567/vnf-instances/scaling/13/scale_out').to_return(status: 200, body: File.read(File.join('spec', 'fixtures', 'authentication.json')))
     end
 
     # rspec-expectations config goes here. You can use an alternate

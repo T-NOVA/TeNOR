@@ -1,5 +1,5 @@
 #
-# TeNOR - VNF Provisioning
+# TeNOR - NS Provisioning
 #
 # Copyright 2014-2016 i2CAT Foundation, Portugal Telecom Inovação
 #
@@ -17,7 +17,7 @@
 #
 require_relative 'spec_helper'
 
-RSpec.describe VnfProvisioning do
+RSpec.describe NsProvisioning do
     def app
         Scaling
     end
@@ -30,16 +30,16 @@ RSpec.describe VnfProvisioning do
         end
     end
 
-    describe 'POST /vnf-instances/scaling/:vnfr_id/scale_out' do
+    describe 'POST /ns-instances/scaling/:nsr_id/scale_out' do
         context 'given a valid request' do
-            it 'provisions a new VNF in the VIM' do
-                # response = post '/vnfr_id/scale_in', {vnfd: {id: 1}}.to_json, 'CONTENT_TYPE' => 'application/json'
+            it 'provisions a new NS in the VIM' do
+                # response = post '/nsr_id/scale_in', {nsd: {id: 1}}.to_json, 'CONTENT_TYPE' => 'application/json'
                 # expect(last_response.status).to eq 200
             end
         end
     end
 
-    describe 'POST /vnf-instances/scaling' do
+    describe 'POST /ns-instances/scaling' do
         context 'given an invalid content type' do
             it 'responds with a 415' do
                 post '/invalid/scale_out', {}.to_json, 'CONTENT_TYPE' => 'application/x-www-form-urlencoded'
@@ -47,7 +47,7 @@ RSpec.describe VnfProvisioning do
             end
         end
 
-        context 'given an invalid vnfr_id' do
+        context 'given an invalid nsr_id' do
             it 'responds with a 404' do
                 post '/invalid/scale_out', {}.to_json, 'CONTENT_TYPE' => 'application/json'
                 expect(last_response.status).to eq 404
@@ -55,8 +55,8 @@ RSpec.describe VnfProvisioning do
         end
     end
 
-    describe 'POST /vnf-instances/scaling' do
-      let(:vnfr) { create :vnfr }
+    describe 'POST /ns-instances/scaling' do
+      let(:nsr) { create :nsr }
         context 'given an invalid scaling request' do
             it 'responds with a 404' do
                 post '/invalid/scale_out', {}.to_json, 'CONTENT_TYPE' => 'application/json'
@@ -65,15 +65,15 @@ RSpec.describe VnfProvisioning do
         end
 
         context 'given a valid request' do
-            it 'scale_out a VNF' do
-                response = post '/'+ vnfr._id.to_s + '/scale_out', File.read(File.expand_path('../fixtures/scaling_out_request.json', __FILE__)), 'CONTENT_TYPE' => 'application/json'
+            it 'scale_out a NS' do
+                response = post '/'+ nsr._id.to_s + '/scale_out', File.read(File.expand_path('../fixtures/scaling_out_request.json', __FILE__)), 'CONTENT_TYPE' => 'application/json'
                 puts last_response
                 expect(last_response.status).to eq 200
             end
         end
     end
 
-    describe 'POST /vnf-instances/scaling' do
+    describe 'POST /ns-instances/scaling' do
         context 'given an invalid content type' do
             it 'responds with a 415' do
                 post '/invalid/scale_in', {}.to_json, 'CONTENT_TYPE' => 'application/x-www-form-urlencoded'
@@ -81,7 +81,7 @@ RSpec.describe VnfProvisioning do
             end
         end
 
-        context 'given an invalid vnfr_id' do
+        context 'given an invalid nsr_id' do
             it 'responds with a 404' do
                 post '/invalid/scale_in', {}.to_json, 'CONTENT_TYPE' => 'application/json'
                 expect(last_response.status).to eq 404
@@ -89,8 +89,8 @@ RSpec.describe VnfProvisioning do
         end
     end
 
-    describe 'POST /vnf-instances/scaling' do
-      let(:vnfr) { create :vnfr }
+    describe 'POST /ns-instances/scaling' do
+      let(:nsr) { create :nsr }
         context 'given an invalid scaling request' do
             it 'responds with a 404' do
                 post '/invalid/scale_in', {}.to_json, 'CONTENT_TYPE' => 'application/json'
@@ -99,8 +99,8 @@ RSpec.describe VnfProvisioning do
         end
 
         context 'given a valid request' do
-            it 'scale_in a VNF' do
-                response = post '/'+ vnfr._id.to_s + '/scale_in', File.read(File.expand_path('../fixtures/scaling_out_request.json', __FILE__)), 'CONTENT_TYPE' => 'application/json'
+            it 'scale_in a NS' do
+                response = post '/'+ nsr._id.to_s + '/scale_in', File.read(File.expand_path('../fixtures/scaling_out_request.json', __FILE__)), 'CONTENT_TYPE' => 'application/json'
                 puts last_response
                 expect(last_response.status).to eq 200
             end

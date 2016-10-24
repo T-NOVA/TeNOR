@@ -38,7 +38,7 @@ class Provisioner < NsProvisioning
         begin
             instance = Nsr.find(params['id'])
         rescue Mongoid::Errors::DocumentNotFound => e
-            halt 404, "Instance not found."
+            halt 404
         end
         return instance.to_json
     end
@@ -97,7 +97,7 @@ class Provisioner < NsProvisioning
             instantiate(@instance, nsd, instantiation_info)
         end
 
-        return 200, instance.to_json
+        return 201, instance.to_json
     end
 
     # @method put_ns_instance_id
@@ -225,7 +225,7 @@ class Provisioner < NsProvisioning
             @nsInstance
         end
 
-        halt 200, 'Updated correctly.'
+        halt 200
     end
 
     get '/ns-instances-mapping' do

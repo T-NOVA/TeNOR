@@ -182,7 +182,7 @@ class Provisioning < VnfProvisioning
     # Get a specific VNFR by its ID
     get '/vnf-instances/:vnfr_id' do |vnfr_id|
         begin
-            vnfr = Vnfr.find(vnfr_id)
+            vnfr =  Vnfr.find(vnfr_id)
         rescue Mongoid::Errors::DocumentNotFound => e
             halt 404
         end
@@ -254,8 +254,7 @@ class Provisioning < VnfProvisioning
         else
             # Delete the VNFR from mAPI
             logger.info 'Sending delete command to mAPI...'
-            logger.debug "VNFR: "
-            logger.debug vnfr_id
+            logger.debug "VNFR: " + vnfr_id
             sendDeleteCommandToMAPI(vnfr_id)
         end
 
