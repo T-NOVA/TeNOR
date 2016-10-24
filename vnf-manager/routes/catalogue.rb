@@ -20,8 +20,8 @@ class Catalogue < VNFManager
 
   # @method post_vnfs
   # @overload post '/vnfs'
-  # 	Post a VNF in JSON format
-  # 	@param [JSON] the VNF
+  # Post a VNF in JSON format
+  # @param [JSON] the VNF
   # Post a VNF
   post '/' do
     # Return if content-type is invalid
@@ -32,10 +32,15 @@ class Catalogue < VNFManager
 
     # Forward request to VNF Catalogue
     begin
-      response = RestClient.post settings.vnf_catalogue + request.fullpath, vnf.to_json, 'X-Auth-Token' => @client_token, :content_type => :json
+      response = RestClient.post settings.vnf_catalogue + '/vnfs', vnf.to_json, 'X-Auth-Token' => @client_token, :content_type => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'VNF Catalogue unreachable'
+    rescue RestClient::ExceptionWithResponse => e
+      logger.error e
+      halt e.response.code, e.response.body
     rescue => e
+      logger.error "ERROR"
+      logger.error e
       logger.error e.response
       halt e.response.code, e.response.body
     end
@@ -48,7 +53,7 @@ class Catalogue < VNFManager
   #       Update a VNF
   #       @param [Integer] external_vnf_id VNF external ID
   # Update a VNF
-  put '/:external_vnf_id' do
+  put '/:external_vnf_id' do |external_vnf_id|
     # Return if content-type is invalid
     halt 415 unless request.content_type == 'application/json'
 
@@ -57,7 +62,7 @@ class Catalogue < VNFManager
 
     # Forward request to VNF Catalogue
     begin
-      response = RestClient.put settings.vnf_catalogue + request.fullpath, vnf.to_json, 'X-Auth-Token' => @client_token, :content_type => :json
+      response = RestClient.put settings.vnf_catalogue + '/vnfs/' + external_vnf_id, vnf.to_json, 'X-Auth-Token' => @client_token, :content_type => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'VNF Catalogue unreachable'
     rescue => e
@@ -70,12 +75,12 @@ class Catalogue < VNFManager
 
   # @method get_vnfs
   # @overload get '/vnfs'
-  #       Returns a list of VNFs
+  # Returns a list of VNFs
   # List all VNFs
   get '/' do
     # Forward request to VNF Catalogue
     begin
-      response = RestClient.get settings.vnf_catalogue + request.fullpath, 'X-Auth-Token' => @client_token
+      response = RestClient.get settings.vnf_catalogue + '/vnfs', 'X-Auth-Token' => @client_token
     rescue Errno::ECONNREFUSED
       halt 500, 'VNF Catalogue unreachable'
     rescue => e
@@ -99,10 +104,10 @@ class Catalogue < VNFManager
   #       Show a VNF
   #       @param [Integer] external_vnf_id VNF external ID
   # Show a VNF
-  get '/:external_vnf_id' do
+  get '/:external_vnf_id' do |external_vnf_id|
     # Forward request to VNF Catalogue
     begin
-      response = RestClient.get settings.vnf_catalogue + request.fullpath, 'X-Auth-Token' => @client_token
+      response = RestClient.get settings.vnf_catalogue + '/vnfs/' + external_vnf_id, 'X-Auth-Token' => @client_token
     rescue Errno::ECONNREFUSED
       halt 500, 'VNF Catalogue unreachable'
     rescue => e
@@ -118,10 +123,10 @@ class Catalogue < VNFManager
   #       Delete a VNF by its external ID
   #       @param [Integer] external_vnf_id VNF external ID
   # Delete a VNF
-  delete '/:external_vnf_id' do
+  delete '/:external_vnf_id' do |external_vnf_id|
     # Forward request to VNF Catalogue
     begin
-      response = RestClient.delete settings.vnf_catalogue + request.fullpath, 'X-Auth-Token' => @client_token
+      response = RestClient.delete settings.vnf_catalogue + '/vnfs/' + external_vnf_id, 'X-Auth-Token' => @client_token
     rescue Errno::ECONNREFUSED
       halt 500, 'VNF Catalogue unreachable'
     rescue => e

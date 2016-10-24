@@ -13,8 +13,9 @@ group :development, :test do
 	gem 'rerun'
 	gem 'rspec'
 	gem 'rack-test'
+	gem 'database_cleaner'
 	gem 'factory_girl'
-	gem "webmock"
+	gem 'webmock'
 end
 
 group :doc do

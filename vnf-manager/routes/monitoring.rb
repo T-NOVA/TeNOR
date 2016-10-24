@@ -19,18 +19,16 @@
 class Monitoring < VNFManager
 
   # @method post_vnf_monitoring_id_parameters
-  # @overload get '/vnf-monitoring/:vnfi_id/monitoring-parameters'
+  # @overload post '/vnf-monitoring/:vnfi_id/monitoring-parameters'
   #   Send monitoring info to VNF Monitoring
   #   @param [Integer] vnfi_id the VNF Instance ID
   # Send monitoring info to VNF Monitoring
-  post '/:vnfr_id/monitoring-parameters' do
+  post '/:vnfr_id/monitoring-parameters' do |vnfr_id|
     # Return if content-type is invalid
     halt 415 unless request.content_type == 'application/json'
 
     # Validate JSON format
     monitoring_info = parse_json(request.body.read)
-    vnfr_id = params['vnfr_id']
-
     #vnfr_id = monitoring_info['vnfr_id']
 
     begin
@@ -51,11 +49,11 @@ class Monitoring < VNFManager
 
     monitoring_info['vnfr'] = vnfr
     monitoring_info['vnfd'] = vnfd
-    puts monitoring_info
+    logger.debug monitoring_info
 
     # Forward the request to the VNF Monitoring
     begin
-      response = RestClient.post "#{settings.vnf_monitoring}/vnf-monitoring/#{params[:vnfr_id]}/monitoring-parameters", monitoring_info.to_json, 'X-Auth-Token' => @client_token, :content_type => :json, :accept => :json
+      response = RestClient.post "#{settings.vnf_monitoring}/vnf-monitoring/#{vnfr_id}/monitoring-parameters", monitoring_info.to_json, 'X-Auth-Token' => @client_token, :content_type => :json, :accept => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'VNF Monitoring unreachable'
     rescue => e
@@ -67,20 +65,43 @@ class Monitoring < VNFManager
   end
 
   # @method post_vnf_monitoring_id_readings
-  # @overload get '/vnf-monitoring/:vnfi_id/readings'
+  # @overload get '/vnf-monitoring/:vnfr_id/readings'
   # Recevie monitoring data
-  # @param [Integer] vnfi_id the VNF Instance ID
-  post '/:vnfi_id/readings' do
+  # @param [Integer] vnfr_id the VNF Instance ID
+  post '/:vnfr_id/readings' do |vnfr_id|
     # Return if content-type is invalid
     halt 415 unless request.content_type == 'application/json'
 
     # Validate JSON format
     monitoring_info = parse_json(request.body.read)
 
+    begin
+      response = RestClient.get settings.vnf_provisioning + "/vnf-provisioning/vnf-instances/" + vnfr_id, :content_type => :json, :accept => :json
+    rescue RestClient::NotFound => e
+      puts e
+      puts e.response
+      logger.debug "This VNF instance no exists. Getting list of subcriptions in order to get the Subcription ID."
+
+      begin
+        response = RestClient.delete settings.vnf_monitoring + "/vnf-monitoring/subcription/" + vnfr_id, :content_type => :json, :accept => :json
+      rescue => e
+        logger.error e
+        logger.error "Error removing subcription"
+        halt 400, "Error removing subcription"
+      end
+      halt 200, "Removed subcription because the VNFR is not defined."
+    rescue => e
+      logger.error e
+      logger.error e.response
+      halt e.response.code, e.response.body
+      halt 400, "VIM Provisioning Module not available"
+    end
+    vnfr, errors = parse_json(response)
+    return 400, errors.to_json if errors
+
     # Forward the request to the VNF Monitoring
     begin
-      #vnf-monitoring/:vnfi_id/readings
-      response = RestClient.post "#{settings.vnf_monitoring}/vnf-monitoring/#{params[:vnfi_id]}/readings", monitoring_info.to_json, 'X-Auth-Token' => @client_token, :content_type => :json, :accept => :json
+      response = RestClient.post "#{settings.vnf_monitoring}/vnf-monitoring/#{vnfr_id}/readings", monitoring_info.to_json, 'X-Auth-Token' => @client_token, :content_type => :json, :accept => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'VNF Monitoring unreachable'
     rescue => e
@@ -110,7 +131,7 @@ class Monitoring < VNFManager
   end
 
   # @method get_monitoring_data_100
-  # @overload delete '/vnf-monitoring/:vnfi_id/monitoring-data/last100'
+  # @overload get '/vnf-monitoring/:vnfi_id/monitoring-data/last100'
   #	Get monitoring data, last 100 values
   #	@param [Integer] instance_id
   get '/:vnfi_id/monitoring-data/last100/' do
@@ -119,6 +140,25 @@ class Monitoring < VNFManager
     rescue Errno::ECONNREFUSED
       halt 500, 'VNF Monitoring unreachable'
     rescue => e
+      logger.error e.response
+      halt e.response.code, e.response.body
+    end
+
+    halt response.code, response.body
+  end
+
+  # @method delete_monitoring_data
+  # @overload delete '/vnf-monitoring/:vnfi_id/monitoring-data/last100'
+  #	Delete subcription and monitoring info
+  #	@param [Integer] instance_id
+  delete '/:vnfr_id/monitoring-data' do |vnfr_id|
+    begin
+      response = RestClient.delete "#{settings.vnf_monitoring}/vnf-monitoring/subcription/#{vnfr_id}", 'X-Auth-Token' => @client_token, :content_type => :json, :accept => :json
+    rescue Errno::ECONNREFUSED
+      halt 500, 'VNF Monitoring unreachable'
+    rescue => e
+      logger.error "ERRORORRR"
+
       logger.error e.response
       halt e.response.code, e.response.body
     end

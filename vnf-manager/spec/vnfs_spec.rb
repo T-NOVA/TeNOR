@@ -19,10 +19,9 @@ require_relative 'spec_helper'
 
 RSpec.describe VNFManager do
 	def app
-		VNFManager
+		Catalogue
 	end
 
-=begin
 	describe 'GET /' do
 		let(:response) { get '/' }
 
@@ -38,10 +37,10 @@ RSpec.describe VNFManager do
 			expect(JSON.parse response.body).to all be_a Hash
 		end
 	end
-=end
+
 	describe 'GET /vnfs' do
 		context 'when there are no VNFs' do
-			let(:response) { get '/vnfs' }
+			let(:response) { get '/' }
 
 			it 'returns an array' do
 				expect(JSON.parse response.body).to be_an Array
@@ -56,11 +55,11 @@ RSpec.describe VNFManager do
 			end
 		end
 	end
-=begin
+
 	describe 'POST /vnfs' do
 		context 'given an invalid content type' do
 			let(:vnf) { build(:vnf) }
-			let(:response) { post '/vnfs', vnf.marshal_dump.to_json, rack_env={'CONTENT_TYPE' => 'application/x-www-form-urlencoded'} }
+			let(:response) { post '/', vnf.marshal_dump.to_json, rack_env={'CONTENT_TYPE' => 'application/x-www-form-urlencoded'} }
 
 			it 'responds with a 415' do
 				expect(response.status).to eq 415
@@ -73,7 +72,7 @@ RSpec.describe VNFManager do
 
 		context 'given an invalid VNF' do
 			let(:vnf) { build(:invalid_vnf) }
-			let(:response) { post '/vnfs', vnf.marshal_dump.to_json, rack_env={'CONTENT_TYPE' => 'application/json'} }
+			let(:response) { post '/', vnf.marshal_dump.to_json, rack_env={'CONTENT_TYPE' => 'application/json'} }
 
 			it 'responds with a 400' do
 				expect(response.status).to eq 400
@@ -86,7 +85,7 @@ RSpec.describe VNFManager do
 
 		context 'given a valid VNF' do
 			let(:vnf) { build(:vnf) }
-			let(:response) { post '/vnfs', vnf.marshal_dump.to_json, rack_env={'CONTENT_TYPE' => 'application/json'} }
+			let(:response) { post '/', vnf.marshal_dump.to_json, rack_env={'CONTENT_TYPE' => 'application/json'} }
 
 			it 'responds with a 200' do
 				expect(response.status).to eq 200
@@ -96,11 +95,12 @@ RSpec.describe VNFManager do
 				expect(JSON.parse response.body).to be_a Hash
 			end
 		end
-	end
 
+	end
+=begin
 	describe 'GET /vnfs' do
 		context 'when there are one or more VNFs' do
-			let(:response) { get '/vnfs' }
+			let(:response) { get '/' }
 
 			it 'does not return an empty body' do
 				expect(JSON.parse response.body).to_not be_empty
@@ -121,10 +121,10 @@ RSpec.describe VNFManager do
 	end
 
 	describe 'GET /vnfs/:external_vnf_id' do
-		let(:vnf_list) { JSON.parse (get '/vnfs').body }
+		let(:vnf_list) { JSON.parse (get '/').body }
 
 		context 'when the VNF is not found' do
-			let(:response_not_found) { get '/vnfs/' + (vnf_list.last['_id'].to_i + 1).to_s }
+			let(:response_not_found) { get '/' + (vnf_list.last['_id'].to_i + 1).to_s }
 
 			it 'responds with an empty body' do
 				expect(response_not_found.body).to be_empty
@@ -136,7 +136,7 @@ RSpec.describe VNFManager do
 		end
 
 		context 'when the VNF is found' do
-			let(:response_found) { get '/vnfs/' + vnf_list.last['_id'] }
+			let(:response_found) { get '/' + vnf_list.last['_id'] }
 
 			it 'response body should not be empty' do
 				expect(JSON response_found.body).to_not be_empty
@@ -146,12 +146,12 @@ RSpec.describe VNFManager do
 				expect(JSON.parse response_found.body).to be_a Hash
 			end
 
-			it 'responds with a 200' do 
+			it 'responds with a 200' do
 				expect(response_found.status).to eq 200
 			end
 		end
 	end
-
+=begin
 	describe 'DELETE /vnfs/:external_vnf_id' do
 		let(:vnf_list) { JSON.parse (get '/vnfs').body }
 
@@ -162,7 +162,7 @@ RSpec.describe VNFManager do
 				expect(response_not_found.body).to be_empty
 			end
 
-			it 'responds with a 404' do			
+			it 'responds with a 404' do
 				expect(response_not_found.status).to eq 404
 			end
 		end
@@ -174,7 +174,7 @@ RSpec.describe VNFManager do
 				expect(response_found.body).to be_empty
 			end
 
-			it 'responds with a 200' do				
+			it 'responds with a 200' do
 				expect(response_found.status).to eq 200
 			end
 		end

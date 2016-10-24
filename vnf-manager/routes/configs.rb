@@ -47,7 +47,12 @@ class ServiceConfiguration < VNFManager
 	# Get all configs
 	get '/' do
 		if params['name']
-			  return ServiceModel.find_by(name: params["name"]).to_json
+			begin
+				response = ServiceModel.find_by(name: params["name"]).to_json
+			rescue Mongoid::Errors::DocumentNotFound => e
+				halt 404
+			end
+			  return response
 	    else
 			  return ServiceModel.all.to_json
 	    end
@@ -64,6 +69,8 @@ class ServiceConfiguration < VNFManager
 			response = RestClient.get settings.ns_manager + '/configs/services', {params: {name: params[:config_id]}}, 'X-Auth-Token' => @client_token
 		rescue Errno::ECONNREFUSED
 			halt 500, 'NS Manager unreachable'
+		rescue RestClient::NotFound => e
+				halt 404
 		rescue => e
 			logger.error e.response
 			halt e.response.code, e.response.body
