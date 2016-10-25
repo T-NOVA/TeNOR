@@ -17,6 +17,23 @@
 #
 # @see NSProvisioner
 module VimHelper
+
+    def openstackUserAuthentication(keystoneUrl, tenantName, user, password)
+        auth = { auth: { tenantName: tenantName, passwordCredentials: { username: user, password: password } } }
+
+        begin
+            response = RestClient.post keystoneUrl + '/tokens', auth.to_json, content_type: :json
+        rescue => e
+            logger.error e
+            logger.error e.response.body
+        end
+
+        authentication, errors = parse_json(response)
+        return 400, errors if errors
+
+        authentication
+    end
+
     def openstackAdminAuthentication(keystoneUrl, tenantName, user, password)
         auth = { auth: { tenantName: tenantName, passwordCredentials: { username: user, password: password } } }
 

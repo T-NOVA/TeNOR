@@ -52,46 +52,58 @@ module InstantiationHelper
         token = ''
         if @instance['project'].nil?
             begin
-                token, errors = openstackAdminAuthentication(popUrls[:keystone], popUrls[:tenant], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
+                user_authentication, errors = openstackUserAuthentication(popUrls[:keystone], popUrls[:tenant], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
                 logger.error errors if errors
                 @instance.update_attribute('status', 'ERROR_CREATING') if errors
                 @instance.push(audit_log: errors) if errors
                 return 400, errors.to_json if errors
 
-                if settings.default_tenant
-                    pop_auth['username'] = settings.default_user_name
-                    pop_auth['tenant_name'] = settings.default_tenant_name
-                    pop_auth['tenant_id'] = getTenantId(popUrls[:keystone], pop_auth['tenant_name'], token)
-                    pop_auth['user_id'] = getUserId(popUrls[:keystone], pop_auth['username'], token)
-                    pop_auth['password'] = 'secretsecret'
-                    if pop_auth['tenant_id'].nil?
-                        pop_auth['tenant_id'] = createTenant(popUrls[:keystone], pop_auth['tenant_name'], token)
-                    end
-                    if pop_auth['user_id'].nil?
-                        pop_auth['user_id'] = createUser(popUrls[:keystone], pop_auth['tenant_id'], pop_auth['username'], pop_auth['password'], token)
-                    else
-                        if !settings.default_user_password.nil?
-                            pop_auth['password'] = settings.default_user_password
-                        end
-                    end
+                token = user_authentication['access']['token']['id']
+
+                if !popUrls[:is_admin]
+                    pop_auth['username'] = popInfo['info'][0]['adminuser']
+                    pop_auth['tenant_name'] = popUrls[:tenant]
+                    pop_auth['password'] = popInfo['info'][0]['password']
+
+                    #get tenant and user ids
+                    pop_auth['tenant_id'] = user_authentication['access']['token']['tenant']['id']
+                    pop_auth['user_id'] = user_authentication['access']['user']['id']
                 else
-                    pop_auth['tenant_name'] = 'tenor_instance_' + @instance['id'].to_s
-                    pop_auth['tenant_id'] = createTenant(popUrls[:keystone], pop_auth['tenant_name'], token)
-                    pop_auth['username'] = 'user_' + @instance['id'].to_s
-                    pop_auth['password'] = 'secretsecret'
-                    pop_auth['user_id'] = createUser(popUrls[:keystone], pop_auth['tenant_id'], pop_auth['username'], pop_auth['password'], token)
-                end
+                    if settings.default_tenant
+                        pop_auth['username'] = settings.default_user_name
+                        pop_auth['tenant_name'] = settings.default_tenant_name
+                        pop_auth['tenant_id'] = getTenantId(popUrls[:keystone], pop_auth['tenant_name'], token)
+                        pop_auth['user_id'] = getUserId(popUrls[:keystone], pop_auth['username'], token)
+                        pop_auth['password'] = 'secretsecret'
+                        if pop_auth['tenant_id'].nil?
+                            pop_auth['tenant_id'] = createTenant(popUrls[:keystone], pop_auth['tenant_name'], token)
+                        end
+                        if pop_auth['user_id'].nil?
+                            pop_auth['user_id'] = createUser(popUrls[:keystone], pop_auth['tenant_id'], pop_auth['username'], pop_auth['password'], token)
+                        else
+                            if !settings.default_user_password.nil?
+                                pop_auth['password'] = settings.default_user_password
+                            end
+                        end
+                    else
+                        pop_auth['tenant_name'] = 'tenor_instance_' + @instance['id'].to_s
+                        pop_auth['tenant_id'] = createTenant(popUrls[:keystone], pop_auth['tenant_name'], token)
+                        pop_auth['username'] = 'user_' + @instance['id'].to_s
+                        pop_auth['password'] = 'secretsecret'
+                        pop_auth['user_id'] = createUser(popUrls[:keystone], pop_auth['tenant_id'], pop_auth['username'], pop_auth['password'], token)
+                    end
 
-                if pop_auth['tenant_id'].nil? || pop_auth['user_id'].nil?
-                    error = 'Tenant or user not created.'
-                    logger.error error
-                    @instance.push(audit_log: errors) if errors
-                    @instance.update_attribute('status', 'ERROR_CREATING')
-                    return 400, error.to_json
-                end
+                    if pop_auth['tenant_id'].nil? || pop_auth['user_id'].nil?
+                        error = 'Tenant or user not created.'
+                        logger.error error
+                        @instance.push(audit_log: errors) if errors
+                        @instance.update_attribute('status', 'ERROR_CREATING')
+                        return 400, error.to_json
+                    end
 
-                logger.info 'Created user with admin role.'
-                putRoleAdmin(popUrls[:keystone], pop_auth['tenant_id'], pop_auth['user_id'], token)
+                    logger.info 'Created user with admin role.'
+                    putRoleAdmin(popUrls[:keystone], pop_auth['tenant_id'], pop_auth['user_id'], token)
+                end
 
                 logger.info 'Authentication using new user credentials.'
                 pop_auth['token'] = openstackAuthentication(popUrls[:keystone], pop_auth['tenant_id'], pop_auth['username'], pop_auth['password'])
@@ -154,12 +166,14 @@ module InstantiationHelper
             auth: {
                 url: {
                     keystone: popUrls[:keystone],
-                    orch: popUrls[:orch]
+                    orch: popUrls[:orch],
+                    compute: popUrls[:compute]
                 },
                 tenant: pop_auth['tenant_name'],
                 username: pop_auth['username'],
                 token: pop_auth['token'],
-                password: pop_auth['password']
+                password: pop_auth['password'],
+                is_admin: pop_auth['is_admin'],
             },
             reserved_resources: @instance['resource_reservation'].find { |resources| resources[:pop_id] == pop_id },
             security_group_id: pop_auth['security_group_id'],

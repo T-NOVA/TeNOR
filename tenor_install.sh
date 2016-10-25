@@ -337,24 +337,28 @@ addNewPop(){
     read openstack_ip
     if [ -z "$openstack_ip" ]; then openstack_ip=$OPENSTACK_IP; fi
 
-    echo "Type the Openstack admin name, followed by [ENTER]:"
+    echo "Type the Openstack name, followed by [ENTER]:"
     read keystoneUser
     if [ -z "$keystoneUser" ]; then keystoneUser=$KEYSTONEUSER; fi
 
-    echo "Type the Openstack admin password, followed by [ENTER]:"
+    echo "Type the Openstack password, followed by [ENTER]:"
     read -s keystonePass
     if [ -z "$keystonePass" ]; then keystonePass=$KEYSTONEPASS; fi
 
-    echo "Type the Openstack admin tenant name, followed by [ENTER]:"
+    echo "Type the Openstack tenant name, followed by [ENTER]:"
     read admin_tenant_name
     if [ -z "$admin_tenant_name" ]; then admin_tenant_name=$ADMIN_TENANT_NAME; fi
+
+    echo "Type true or false if the Openstack user is admin, followed by [ENTER]:"
+    read admin_tenant_name
+    if [ -z "$admin_user_type" ]; then admin_user_type=$ADMIN_TENANT_NAME; fi
 
     echo "Type the Openstack DNS IP, followed by [ENTER]:"
     read openstack_dns
     if [ -z "$openstack_dns" ]; then openstack_dns=$OPENSTACK_DNS; fi
 
     response=$(curl -XPOST http://$tenor_host/gatekeeper/dc -H "Content-Type: application/json" \
-    -d '{"msg": "PoP Testbed", "dcname":"'$openstack_name'", "adminid":"'$keystoneUser'","password":"'$keystonePass'", "extrainfo":"pop-ip='$openstack_ip' tenant-name='$admin_tenant_name' keystone-endpoint=http://'$openstack_ip':35357/v2.0 orch-endpoint=http://'$openstack_ip':8004/v1 compute-endpoint=http://'$openstack_ip':8774/v2.1 neutron-endpoint=http://'$openstack_ip':9696/v2.0 dns='$openstack_dns'"}')
+    -d '{"msg": "PoP Testbed", "dcname":"'$openstack_name'", "isAdmin": "'$admin_user_type'" "adminid":"'$keystoneUser'","password":"'$keystonePass'", "extrainfo":"pop-ip='$openstack_ip' tenant-name='$admin_tenant_name' keystone-endpoint=http://'$openstack_ip':35357/v2.0 orch-endpoint=http://'$openstack_ip':8004/v1 compute-endpoint=http://'$openstack_ip':8774/v2.1 neutron-endpoint=http://'$openstack_ip':9696/v2.0 dns='$openstack_dns'"}')
 
     echo -e "\n\n"
     echo $response
