@@ -60,7 +60,7 @@ module InstantiationHelper
 
                 token = user_authentication['access']['token']['id']
 
-                if !popUrls[:isAdmin]
+                if !popUrls[:is_admin]
                     pop_auth['username'] = popInfo['info'][0]['adminuser']
                     pop_auth['tenant_name'] = popUrls[:tenant]
                     pop_auth['password'] = popInfo['info'][0]['password']
@@ -100,10 +100,10 @@ module InstantiationHelper
                         @instance.update_attribute('status', 'ERROR_CREATING')
                         return 400, error.to_json
                     end
-                end
 
-                logger.info 'Created user with admin role.'
-                putRoleAdmin(popUrls[:keystone], pop_auth['tenant_id'], pop_auth['user_id'], token)
+                    logger.info 'Created user with admin role.'
+                    putRoleAdmin(popUrls[:keystone], pop_auth['tenant_id'], pop_auth['user_id'], token)
+                end
 
                 logger.info 'Authentication using new user credentials.'
                 pop_auth['token'] = openstackAuthentication(popUrls[:keystone], pop_auth['tenant_id'], pop_auth['username'], pop_auth['password'])
@@ -166,12 +166,14 @@ module InstantiationHelper
             auth: {
                 url: {
                     keystone: popUrls[:keystone],
-                    orch: popUrls[:orch]
+                    orch: popUrls[:orch],
+                    compute: popUrls[:compute]
                 },
                 tenant: pop_auth['tenant_name'],
                 username: pop_auth['username'],
                 token: pop_auth['token'],
-                password: pop_auth['password']
+                password: pop_auth['password'],
+                is_admin: pop_auth['is_admin'],
             },
             reserved_resources: @instance['resource_reservation'].find { |resources| resources[:pop_id] == pop_id },
             security_group_id: pop_auth['security_group_id'],
