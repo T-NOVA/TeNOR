@@ -27,11 +27,11 @@ module CommonMethods
 	# @param [String] vnfr_id the ID of the VNFr
 	# @param [String] dns the DNS
 	# @return [Hash] the generated hot template
-	def self.generate_hot_template(vnfd, flavour_key, networks_id, routers_id, security_group_id, vnfr_id, dns, public_network_id)
+	def self.generate_hot_template(vnfd, flavour_key, networks_id, routers_id, security_group_id, vnfr_id, dns, public_network_id, flavours)
 		hot = VnfdToHot.new(vnfd['name'].delete(" "), vnfd['description'], public_network_id)
 
 		begin
-			hot.build(vnfd, flavour_key, networks_id, routers_id, security_group_id, vnfr_id, dns)
+			hot.build(vnfd, flavour_key, networks_id, routers_id, security_group_id, vnfr_id, dns, flavours)
 		rescue CustomException::NoExtensionError => e
 			logger.error e.message
 			halt 400, e.message

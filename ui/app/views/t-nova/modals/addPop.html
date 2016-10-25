@@ -23,7 +23,7 @@
                     </div>
                     <div class="box-body">
                         <div class="form-group">
-                            <label for="tenantName" class="col-sm-4 control-label">Tenant name (admin tenant)</label>
+                            <label for="tenantName" class="col-sm-4 control-label">Tenant name</label>
                             <div class="col-sm-8">
                                 <input ng-model="dc_default.tenantName" type="text" class="form-control" id="tenantName" value="" />
                             </div>
@@ -31,15 +31,19 @@
                     </div>
                     <div class="box-body">
                         <div class="form-group">
-                            <label for="adminName" class="col-sm-4 control-label">Admin user</label>
-                            <div class="col-sm-8">
+                            <label for="adminName" class="col-sm-4 control-label">User</label>
+                            <div class="col-sm-6">
                                 <input ng-model="dc_default.adminName" type="text" class="form-control" id="adminName" value="admin" />
+
+                            </div>
+                            <div class="col-sm-2">
+                                <label><input type="checkbox" ng-model="dc_default.isAdmin" value="true">Is admin?</label>
                             </div>
                         </div>
                     </div>
                     <div class="box-body">
                         <div class="form-group">
-                            <label for="adminPass" class="col-sm-4 control-label">Admin pass</label>
+                            <label for="adminPass" class="col-sm-4 control-label">Password</label>
                             <div class="col-sm-8">
                                 <input ng-model="dc_default.adminPass" type="password" class="form-control" id="adminPass" value="" />
                             </div>

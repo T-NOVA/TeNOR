@@ -56,9 +56,12 @@ class HotGenerator < Sinatra::Application
     public_network_id = provision_info['public_network_id']
     halt 400, 'Public Network ID not found' if public_network_id.nil?
 
+		flavours = provision_info['flavours']
+    #halt 400, 'Public Network ID not found' if flavours.nil?
+
 		# Build a HOT template
 		logger.debug 'T-NOVA flavour: ' + params[:flavour]
-		hot = CommonMethods.generate_hot_template(vnf['vnfd'], params[:flavour], networks_id, routers_id, security_group_id, vnfr_id, dns_server, public_network_id)
+		hot = CommonMethods.generate_hot_template(vnf['vnfd'], params[:flavour], networks_id, routers_id, security_group_id, vnfr_id, dns_server, public_network_id, flavours)
 
 		halt 200, hot.to_json
 	end

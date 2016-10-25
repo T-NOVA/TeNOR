@@ -54,6 +54,7 @@ angular.module('tNovaApp')
                 id: "infrRepository-Pop-ID",
                 adminid: "admin",
                 password: "adminpass",
+                isAdmin: false,
                 openstack_ip: $scope.openstack_ip,
                 keystone_api: $scope.openstack_ip + ":35357/v2.0",
                 heat_api: $scope.openstack_ip + ":8004/v1",
@@ -80,6 +81,7 @@ angular.module('tNovaApp')
                 adminName: $scope.dc_default.adminName,
                 tenantName: $scope.dc_default.tenantName,
                 adminPass: $scope.dc_default.adminPass,
+                isAdmin: $scope.dc_default.isAdmin,
                 openstack_ip: openstack_ip,
                 keystone_api: openstack_ip + ":" + keystone_version,
                 heat_api: openstack_ip + ":" + heat_version,
@@ -95,7 +97,7 @@ angular.module('tNovaApp')
                 "dcname": obj.id,
                 "adminid": obj.adminName,
                 "password": obj.adminPass,
-                "extrainfo": "pop-ip=" + obj.openstack_ip + " tenant-name=" + obj.tenantName + " keystone-endpoint=http://" + obj.keystone_api + " orch-endpoint=http://" + obj.heat_api + " compute-endpoint=http://" + obj.compute_api + " neutron-endpoint=http://" + obj.neutron_api + " dns=" + obj.dns
+                "extrainfo": "pop-ip=" + obj.openstack_ip + " tenant-name=" + obj.tenantName + " isAdmin=" + obj.isAdmin + " keystone-endpoint=http://" + obj.keystone_api + " orch-endpoint=http://" + obj.heat_api + " compute-endpoint=http://" + obj.compute_api + " neutron-endpoint=http://" + obj.neutron_api + " dns=" + obj.dns
             };
             console.log(pop);
             tenorService.post('gatekeeper/dc', pop).then(function (d) {

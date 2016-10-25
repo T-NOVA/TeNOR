@@ -105,6 +105,16 @@ class Provisioning < VnfProvisioning
 
         # Convert VNF to HOT (call HOT Generator)
         halt 400, 'No T-NOVA flavour defined.' unless instantiation_info.key?('flavour')
+
+        vim_info = {
+            'keystone' => instantiation_info['auth']['url']['keystone'],
+            'tenant' => instantiation_info['auth']['tenant'],
+            'username' => instantiation_info['auth']['username'],
+            'password' => instantiation_info['auth']['password'],
+            'heat' => instantiation_info['auth']['url']['orch'],
+            'compute' => instantiation_info['auth']['url']['compute']
+        }
+
         logger.debug 'Send VNFD to Hot Generator'
         hot_generator_message = {
             vnf: vnf,
@@ -115,6 +125,20 @@ class Provisioning < VnfProvisioning
             public_network_id: instantiation_info['reserved_resources']['public_network_id'],
             dns_server: instantiation_info['reserved_resources']['dns_server']
         }
+        if !instantiation_info['auth']['is_admin']
+            token_info = request_auth_token(vim_info)
+            auth_token = token_info['access']['token']['id']
+            tenant_id = token_info['access']['token']['tenant']['id']
+            flavors = []
+            vnf['vnfd']['vdu'].each do |vdu|
+                flavour_id = get_vdu_flavour(vdu, vim_info['compute'], tenant_id, auth_token)
+                if flavour_id.nil?
+                    halt 400, "No flavours available for the vdu " + vdu['id'].to_s
+                end
+                flavors << {:id => vdu['id'], :flavour_id => flavour_id}
+            end
+            hot_generator_message['flavours'] = flavors
+        end
         begin
             hot = parse_json(RestClient.post(settings.hot_generator + '/hot/' + vnf_flavour, hot_generator_message.to_json, content_type: :json, accept: :json))
         rescue Errno::ECONNREFUSED
@@ -125,13 +149,6 @@ class Provisioning < VnfProvisioning
         end
 
         logger.debug 'HEAT template generated'
-        vim_info = {
-            'keystone' => instantiation_info['auth']['url']['keystone'],
-            'tenant' => instantiation_info['auth']['tenant'],
-            'username' => instantiation_info['auth']['username'],
-            'password' => instantiation_info['auth']['password'],
-            'heat' => instantiation_info['auth']['url']['orch']
-        }
 
         # Request VIM to provision a VNF
         response = provision_vnf(vim_info, vnf['vnfd']['name'].delete(' ') + '_' + vnfr.id, hot)
