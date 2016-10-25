@@ -185,6 +185,27 @@ class HotGenerator < Sinatra::Application
 		halt 200, hot.to_json
 	end
 
+	# @method post_userhot
+	# @overload post '/userhot'
+	# Build a HOT to create the Users and Projects
+	post '/userhot' do
+		# Return if content-type is invalid
+		halt 415 unless request.content_type == 'application/json'
+
+		# Validate JSON format
+		credentials_info = JSON.parse(request.body.read)
+		return 400, errors.to_json if errors
+
+		halt 400, 'Username not found' if credentials_info['username'].nil?
+		halt 400, 'Password not found' if credentials_info['password'].nil?
+		halt 400, 'Project name not found' if credentials_info['project_name'].nil?
+
+		# Build a HOT template
+		hot = CommonMethods.generate_user_hot_template(credentials_info)
+
+		halt 200, hot.to_json
+	end
+
 	get '/files/:file_name' do
     File.read(File.join('assets/templates', params[:file_name]))
 	end

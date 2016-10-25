@@ -128,7 +128,7 @@ class VnfdToHot
       end
     end
 
-    puts @hot.to_yaml
+    #puts @hot.to_yaml
 
     @hot
   end

@@ -117,6 +117,16 @@ module CommonMethods
 		hot.build(ports, odl_username, odl_password, netfloc_ip_port)
 	end
 
+	# Generate a User HOT template
+	#
+	# @param [Hash] credentials_info information about the user and project
+	# @return [Hash] the generated user hot template
+	def self.generate_user_hot_template(credentials_info)
+		hot = UserToHot.new('User', 'Resources for User and tenant')
+
+		hot.build(credentials_info)
+	end
+
 	def self.is_num?(str)
 		!!Integer(str)
 	rescue ArgumentError, TypeError
