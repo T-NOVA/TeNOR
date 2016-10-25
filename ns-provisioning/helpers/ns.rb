@@ -295,6 +295,9 @@ module NsProvisioner
             pop_auth = @instance['authentication'][0]
             tenant_token = pop_auth['token']
             popUrls = pop_auth['urls']
+            puts popUrls
+            puts pop_auth
+            puts tenant_token
 
             publicNetworkId, errors = publicNetworkId(popUrls[:neutron], tenant_token)
             return handleError(@instance, errors) if errors
