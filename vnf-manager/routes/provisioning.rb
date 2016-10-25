@@ -114,13 +114,22 @@ class Provisioning < VNFManager
         #       @param [String] vnfr_id the VNFR ID
         #       @param [JSON] information about VIM
         # Request to de-allocate the resources of a VNF
-        post '/vnf-instances/:vnfr_id/destroy' do
+        post '/vnf-instances/:vnfr_id/destroy' do |vnfr_id|
                 # Return if content-type is invalid
                 halt 415 unless request.content_type == 'application/json'
 
+                begin
+                        response = RestClient.delete settings.vnf_monitoring + "/vnf-monitoring/subcription/#{vnfr_id}", 'X-Auth-Token' => @client_token, :content_type => :json, :accept => :json
+                rescue Errno::ECONNREFUSED
+                        #halt 500, 'VNF Monitoring unreachable'
+                rescue => e
+                        logger.error e.response
+                        #halt e.response.code, e.response.body
+                end
+
                 # Forward the request to the VNF Provisioning
                 begin
-                        response = RestClient.post settings.vnf_provisioning + '/vnf-provisioning/vnf-instances/' + params[:vnfr_id] + '/destroy', request.body, 'X-Auth-Token' => @client_token, :content_type => :json
+                        response = RestClient.post settings.vnf_provisioning + "/vnf-provisioning/vnf-instances/#{vnfr_id}/destroy", request.body, 'X-Auth-Token' => @client_token, :content_type => :json
                 rescue Errno::ECONNREFUSED
                         halt 500, 'VNF Provisioning unreachable'
                 rescue => e

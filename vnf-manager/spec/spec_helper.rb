@@ -41,10 +41,16 @@ settings = YAML.load_file('./config/config.yml')
 
 RSpec.configure do |config|
   config.include Rack::Test::Methods
+  WebMock.disable_net_connect!(allow_localhost: true)
   config.include FactoryGirl::Syntax::Methods
   FactoryGirl.definition_file_paths = %w{./spec/factories}
   FactoryGirl.find_definitions
 
+  config.before do
+    Mongoid.purge!
+    #Mongoid.raise_not_found_error = false
+  end
+=begin
   config.after(:all) do
     response = RestClient.get 'http://localhost:4569/vnfs'
     vnfs_list = JSON.parse response.body
@@ -52,16 +58,31 @@ RSpec.configure do |config|
       RestClient.delete settings['vnf_catalogue'] + '/vnfs/' + vnf['_id']
     end
   end
-
+=end
   config.before(:each) do
     stub_request(:get, "http://localhost:4000/configs/services/publish/vnf_manager").
         with(:headers => {'Accept'=>'*/*; q=0.5, application/xml', 'Accept-Encoding'=>'gzip, deflate', 'Content-Type'=>'application/json', 'User-Agent'=>'Ruby'}).
         to_return(:status => 200, :body => "", :headers => {})
-    stub_request(:get, "http://localhost:4012/vnfs").
-        with(:headers => {'Accept'=>'*/*; q=0.5, application/xml', 'Accept-Encoding'=>'gzip, deflate', 'Content-Type'=>'application/json', 'User-Agent'=>'Ruby'}).
-        to_return(:status => 200, :body => "", :headers => {})
+    stub_request(:get, "localhost:4569/vnfs").
+        #with(:headers => {'Accept'=>'*/*; q=0.5, application/xml', 'Accept-Encoding'=>'gzip, deflate', 'Content-Type'=>'application/json', 'User-Agent'=>'Ruby'}).
+        to_return(:status => 200, :body => "[]", :headers => {})
+    stub_request(:get, "localhost:4569/vnfs/test").
+      to_return(:status => 200, :body => "{}", :headers => {})
+
+    stub_request(:post, "localhost:4569/vnfs").#.with(:body => hash_excluding("name")).
+    #.with(:body => hash_excluding(:name)).
+    #.with(body: {data: {_id: 1, vnfd: {:test => "test_1"}}}).
+      to_return(:status => 400, :body => "Error", :headers => {})
+
+    stub_request(:post, "localhost:4569/vnfs").with(:body => hash_including('_id', :name)).
+        to_return(:status => 200, :body => "{}", :headers => {})
+
+    stub_request(:post, "localhost:4569/vnfs").
+      with(body: /^.*world$/, headers: {"Content-Type" => "application/json"}).
+      with(body: hash_including({data: {a: '1', b: 'five'}})).
+      to_return(body: "abc")
   end
-  
+
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest
   # assertions if you prefer.

@@ -20,7 +20,7 @@ class LoggerController < TnovaManager
 
     # @method get_elastic
     # @overload get '/logs/*'
-    # Get logs from elasticsearch/logstash. Different strings allowed in order to filter the required data
+    # Get logs from fluentd-mongodb. Different strings allowed in order to filter the required data
     # @param [string]
     get '/' do
         modules = ["ns_manager", "ns_catalogue", "ns_provisioner", "ns_monitoring", "nsd_validator", "vnf_manager", "vnf_catalogue", "vnf_provisioner", "vnf_monitoring", "hot_generator", "vnfd_validator"]

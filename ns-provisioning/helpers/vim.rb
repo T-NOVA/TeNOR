@@ -173,6 +173,9 @@ module VimHelper
         if network.nil?
             network = networks['networks'].find { |role| role['router:external'] }
         end
+        if network.nil?
+            return 400, "No external network defined in Openstack."
+        end
         network['id']
     end
 

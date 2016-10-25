@@ -2,7 +2,7 @@ require_relative 'spec_helper'
 
 RSpec.describe NsCatalogue do
 	def app
-		NsCatalogue
+		Catalogue
   end
 
 	before do
@@ -15,7 +15,7 @@ RSpec.describe NsCatalogue do
 
 	describe 'POST /network-services' do
 		context 'given an invalid content type' do
-			let(:response) { post '/network-services', {name: 'teste'}.to_json, rack_env={'CONTENT_TYPE' => 'application/x-www-form-urlencoded'} }
+			let(:response) { post '/', {name: 'teste'}.to_json, rack_env={'CONTENT_TYPE' => 'application/x-www-form-urlencoded'} }
 
 			it 'responds with a 415' do
 				expect(response.status).to eq 415
@@ -27,7 +27,7 @@ RSpec.describe NsCatalogue do
 		end
 
 		context 'given a valid NS' do
-			let(:response) { post '/network-services', {nsd: {id: "id1", name: 'teste2', version: "2", vendor: "aasdas"}}.to_json, rack_env={'CONTENT_TYPE' => 'application/json'} }
+			let(:response) { post '/', {nsd: {id: "id1", name: 'teste2', version: "2", vendor: "aasdas"}}.to_json, rack_env={'CONTENT_TYPE' => 'application/json'} }
 
 			it 'responds with a 200' do
 				expect(response.status).to eq 200
@@ -41,7 +41,7 @@ RSpec.describe NsCatalogue do
 
 	describe 'GET /network-services' do
 		context 'when there are no NSs' do
-			let(:response) { get '/network-services' }
+			let(:response) { get '/' }
 
 			it 'returns an array' do
 				expect(JSON.parse response.body).to be_an Array
@@ -58,7 +58,7 @@ RSpec.describe NsCatalogue do
 
 		context 'when there are one or more NSs' do
 			before { create_pair(:ns) }
-			let(:response) { get '/network-services' }
+			let(:response) { get '/' }
 
 			it 'does not return an empty body' do
 				expect(JSON.parse response.body).to_not be_empty
@@ -83,7 +83,7 @@ RSpec.describe NsCatalogue do
 
 		context 'when the NS is not found' do
 
-			let(:response_not_found) { get '/network-services/' + 'aaa' }
+			let(:response_not_found) { get '/' + 'aaa' }
 
 			it 'responds with an empty body' do
 				expect(response_not_found.body).to be_empty
@@ -95,7 +95,7 @@ RSpec.describe NsCatalogue do
 		end
 
 		context 'when the NS is found' do
-      let(:response_found) { get '/network-services/' + ns.nsd[:id] }
+      let(:response_found) { get '/' + ns.nsd[:id] }
 
 			it 'response body should not be empty' do
 				expect(JSON response_found.body).to_not be_empty
@@ -115,7 +115,7 @@ RSpec.describe NsCatalogue do
 		let(:ns) { create :ns }
 
 		context 'when the NS is not found' do
-			let(:response_not_found) { delete '/network-services/' + 'invalidId' }
+			let(:response_not_found) { delete '/' + 'invalidId'}
 
 			it 'responds with an empty body' do
 				expect(response_not_found.body).to be_empty
@@ -127,7 +127,7 @@ RSpec.describe NsCatalogue do
 		end
 
 		context 'when the NS is found' do
-			let(:response_found) { delete '/network-services/' + ns.nsd[:id] }
+			let(:response_found) { delete '/' + ns.nsd[:id] }
 
 			it 'responds with an empty body' do
 				expect(response_found.body).to be_empty

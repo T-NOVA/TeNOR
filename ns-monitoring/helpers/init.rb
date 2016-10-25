@@ -16,3 +16,5 @@
 # limitations under the License.
 #
 require_relative 'monitoring'
+require_relative 'expression_evaluator'
+require_relative 'sla'

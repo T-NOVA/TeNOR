@@ -44,7 +44,7 @@
         "monitoring_parameters_specific": [
         ],
         "wc_notify": true,
-        "vm_image": "6b8e0030-7001-4fb2-b4e0-b6a1fdcb44c5",
+        "vm_image": "-------------------- INSERT THE IMAGE ID --------------------",
         "controller": true,
         "connection_points": [
           {
@@ -149,14 +149,12 @@
           "vdu0"
         ],
         "external_access": true,
-        "existing_net_id" : "53641d17-dd1e-4e56-aa22-a37a3c1e0da8",
         "connection_points_reference": [
           "CPfs0h"
         ],
         "access": true,
-        "alias": "int-net",
-        "dhcp": false,
-        "net_segment": "10.0.0.39",
+        "alias": "management",
+        "dhcp": true,
         "root_requirement": "Unlimited",
         "qos": "",
         "id": "vl0"
@@ -167,22 +165,20 @@
         "vdu_reference": [
           "vdu0"
         ],
-        "external_access": false,
-        "existing_net_id" : "60e11da1-0229-412c-8a9e-ca5a8ae54e7e",
+        "external_access": true,
         "connection_points_reference": [
           "CPng8r"
         ],
         "access": true,
-        "alias": "ext-net-eth2",
-        "dhcp": false,
-        "net_segment": "10.0.0.13",
+        "alias": "management",
+        "dhcp": true,
         "root_requirement": "Unlimited",
         "qos": "",
         "id": "vl1"
-      }
+      },
     ],
     "type": "vPXAAS",
     "description": "Test VNF example with Existing ID",
-    "id": 1296
+    "id": 2911
   }
 }

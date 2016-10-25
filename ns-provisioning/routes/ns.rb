@@ -22,13 +22,13 @@ class Provisioner < NsProvisioning
     # @overload get "/ns-instances"
     # Gets all ns-instances
     get '/' do
-        @nsInstances = if params[:status]
+        instances = if params[:status]
                            Nsr.where(status: params[:status])
                        else
                            Nsr.all
                        end
 
-        return @nsInstances.to_json
+        return instances.to_json
     end
 
     # @method get_ns_instance_id
@@ -36,11 +36,11 @@ class Provisioner < NsProvisioning
     # Get a ns-instance
     get '/:id' do
         begin
-            @nsInstance = Nsr.find(params['id'])
+            instance = Nsr.find(params['id'])
         rescue Mongoid::Errors::DocumentNotFound => e
-            halt(404)
+            halt 404
         end
-        return @nsInstance.to_json
+        return instance.to_json
     end
 
     # @method post_ns_instances
@@ -97,7 +97,7 @@ class Provisioner < NsProvisioning
             instantiate(@instance, nsd, instantiation_info)
         end
 
-        return 200, instance.to_json
+        return 201, @instance.to_json
     end
 
     # @method put_ns_instance_id
@@ -137,6 +137,7 @@ class Provisioner < NsProvisioning
 
         if params[:status] === 'terminate'
             logger.info 'Starting thread for removing VNF and NS instances.'
+            Thread.abort_on_exception = false
             Thread.new do
                 # operation = proc {
                 @nsInstance['vnfrs'].each do |vnf|
@@ -144,11 +145,14 @@ class Provisioner < NsProvisioning
                     logger.info 'Pop_id: ' + vnf['pop_id'].to_s
                     raise 'VNF not defined' if vnf['pop_id'].nil?
 
-                    popInfo = getPopInfo(vnf['pop_id'])
+                    popInfo, errors = getPopInfo(vnf['pop_id'])
+                    raise 400, errors if errors
+
                     if popInfo == 400
                         logger.error 'Pop id no exists.'
-                        return
+                         return
                     end
+
                     pop_auth = @nsInstance['authentication'].find { |pop| pop['pop_id'] == vnf['pop_id'] }
                     popUrls = pop_auth['urls']
                     callback_url = settings.manager + '/ns-instances/' + @instance['id']
@@ -221,7 +225,7 @@ class Provisioner < NsProvisioning
             @nsInstance
         end
 
-        halt 200, 'Updated correctly.'
+        halt 200
     end
 
     get '/ns-instances-mapping' do

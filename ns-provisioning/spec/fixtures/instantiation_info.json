@@ -1,0 +1,274 @@
+{
+    "nsd": {
+        "nsd": {
+            "id": "578e2db5e4b0356a4eb0d2b1",
+            "name": "testnsd",
+            "vendor": "1",
+            "version": "1",
+            "vnfds": [
+                "2910"
+            ],
+            "vnffgd": {
+                "vnffgs": [{
+                    "vnffg_id": "vnffg0",
+                    "number_of_endpoints": 1,
+                    "number_of_virtual_links": 1,
+                    "dependent_virtual_links": [
+                        "vld1"
+                    ],
+                    "network_forwarding_path": [{
+                        "nfp_id": "nfp0",
+                        "graph": [
+                            "vld1"
+                        ],
+                        "connection_points": [
+                            "ns_ext_data_in",
+                            "VNF#2910:ext_data"
+                        ],
+                        "constituent_vnfs": [{
+                            "vnf_ref_id": "2910",
+                            "vnf_flavor_key_ref": "gold"
+                        }]
+                    }]
+                }]
+            },
+            "lifecycle_events": {
+                "start": [{
+                    "vnf_id": "2910",
+                    "vnf_event": "start",
+                    "event_rel_id": "rel_le0",
+                    "event_id": "le0",
+                    "sla_ref_id": "sla0"
+                }],
+                "stop": [],
+                "scale_out": [],
+                "scale_in": []
+            },
+            "vnf_depedency": [],
+            "monitoring_parameters": [{
+                "desc": "Availability",
+                "metric": "availability",
+                "unit": "%"
+            }],
+            "vld": {
+                "number_of_endpoints": 0,
+                "virtual_links": [{
+                    "vld_id": "vld0",
+                    "alias": "management",
+                    "root_requirements": "Unlimited",
+                    "leaf_requirement": "Unlimited",
+                    "qos": {
+                        "average": "",
+                        "peak": "",
+                        "burst": ""
+                    },
+                    "connections": [
+                        "VNF#2910:ext_management"
+                    ],
+                    "connectivity_type": "E-LINE",
+                    "external_access": true,
+                    "merge": true,
+                    "sla_ref_id": "sla0"
+                }, {
+                    "vld_id": "vld1",
+                    "alias": "data_in",
+                    "root_requirements": "Unlimited",
+                    "leaf_requirement": "Unlimited",
+                    "qos": {
+                        "average": "",
+                        "peak": "",
+                        "burst": ""
+                    },
+                    "connections": [
+                        "VNF#2910:ext_data"
+                    ],
+                    "connectivity_type": "E-LINE",
+                    "external_access": true,
+                    "merge": true,
+                    "sla_ref_id": "sla0"
+                }]
+            },
+            "sla": [{
+                "id": "sla0",
+                "assurance_parameters": [{
+                    "formula": "MAX(VNF:2910.cpu_util)",
+                    "id": "cpu_util",
+                    "name": "cpu_util",
+                    "penalty": {
+                        "type": "Discount",
+                        "unit": "%",
+                        "validity": "P1D",
+                        "value": 1
+                    },
+                    "unit": "%",
+                    "value": "LE(10)",
+                    "violations": [{
+                        "breaches_count": 2,
+                        "interval": 60
+                    }]
+                }],
+                "billing": {
+                    "model": "PAYG",
+                    "price": {
+                        "price_per_period": 1,
+                        "setup": 4,
+                        "unit": "EUR"
+                    }
+                },
+                "constituent_vnf": [{
+                    "number_of_instances": 1,
+                    "redundancy_model": "Active",
+                    "vnf_flavour_id_reference": "gold",
+                    "vnf_reference": "2910"
+                }],
+                "sla_key": "basic"
+            }],
+            "auto_scale_policy": {
+                "criteria": []
+            },
+            "connection_points": [],
+            "vnf_dependency": [],
+            "provider": "T-Nova",
+            "description": "test nsd",
+            "provider_id": "1",
+            "descriptor_version": "1"
+        }
+    },
+    "flavour": "flavor0",
+    "callback_url": "callbackurl",
+    "ns_id": "ns_id",
+    "vnf_id": "vnf_id",
+    "flavour": "gold",
+    "vim_id": "popName",
+    "auth": {
+        "url": {
+            "keystone": "http://vimurl:5000",
+            "orch": "http://vimurl:9000"
+        },
+        "tenant": "tenant_name",
+        "username": "username",
+        "password": "password"
+    },
+    "networks": [],
+    "security_group_id": "sec_group_id",
+    "callback_url": "localhost:4000/ns-instances/ns_id/instantiate",
+    "reserved_resources": {
+        "public_network_id": "public_net"
+    },
+    "vnf": {
+        "_id": "5715fb18b18cfb0747000075",
+        "created_at": "2016-04-19T09:32:08.942+00:00",
+        "name": "TEMP",
+        "updated_at": "2016-04-19T09:32:08.942+00:00",
+        "version": 1,
+        "vnf-manager": "TEMP",
+        "vnfd": {
+            "vdu": [{
+                "resource_requirements": {
+                    "network_interface_bandwidth_unit": "",
+                    "hypervisor_parameters": {
+                        "version": "10002|12001|2.6.32-358.el6.x86_64",
+                        "type": "QEMU-KVM"
+                    },
+                    "memory_unit": "GB",
+                    "network_interface_card_capabilities": {
+                        "SR-IOV": true,
+                        "mirroring": false
+                    },
+                    "storage": {
+                        "size_unit": "GB",
+                        "persistence": false,
+                        "size": 8
+                    },
+                    "network_interface_bandwidth": "",
+                    "platform_pcie_parameters": {
+                        "SR-IOV": true,
+                        "device_pass_through": true
+                    },
+                    "vcpus": 1,
+                    "vswitch_capabilities": {
+                        "version": "2.0",
+                        "type": "ovs",
+                        "overlay_tunnel": "GRE"
+                    },
+                    "data_processing_acceleration_library": "",
+                    "memory": 2,
+                    "memory_parameters": {
+                        "large_pages_required": false,
+                        "numa_allocation_policy": ""
+                    },
+                    "cpu_support_accelerator": "AES-NI"
+                },
+                "vm_image": "http://10.10.1.167:8080/NFS/files/trusty-server-cloudimg-amd64-disk1.img",
+                "networking_resources": "",
+                "monitoring_parameters_specific": [],
+                "id": "vdu0",
+                "alias": "vdu0",
+                "controller": false,
+                "connection_points": [],
+                "monitoring_parameters": [],
+                "scale_in_out": {
+                    "minimum": 1,
+                    "maximum": 1
+                },
+                "vm_image_md5": "910A917DC844E860232262B66C0250DC",
+                "vm_image_format": "qcow2"
+            }],
+            "name": "vnf_name",
+            "created_at": "2016-04-19T09:32:08Z",
+            "modified_at": "2016-04-19T09:32:08Z",
+            "provider_id": 4,
+            "trade": false,
+            "descriptor_version": "1",
+            "deployment_flavours": [{
+                "vdu_reference": [
+                    "vdu0"
+                ],
+                "constraint": "",
+                "flavour_key": "gold",
+                "vlink_reference": [],
+                "id": "flavor0",
+                "assurance_parameters": []
+            }],
+            "version": "1",
+            "vnf_lifecycle_events": [{
+                "authentication_username": "ubuntu",
+                "driver": "ssh",
+                "authentication_type": "PubKeyAuthentication",
+                "authentication": "",
+                "authentication_port": 22,
+                "flavor_id_ref": "flavor0",
+                "events": {
+                    "start": {
+                        "command": "/home/ubuntu/start",
+                        "template_file": "{\"controller\":\"get_attr[vdu0,PublicIp]\", \"vdu0\":\"get_attr[vdu1,PublicIp]\"}",
+                        "template_file_format": "JSON"
+                    },
+                    "stop": {
+                        "command": "/home/ubuntu/stop",
+                        "template_file": "{}",
+                        "template_file_format": "JSON"
+                    }
+                },
+                "vnf_container": "/home/ubuntu/"
+            }],
+            "billing_model": {
+                "price": {
+                    "min_per_period": 1,
+                    "max_per_period": 1,
+                    "setup": 1,
+                    "unit": "EUR"
+                },
+                "model": "PAYG",
+                "period": "P1D"
+            },
+            "provider": "Viotech",
+            "release": "T-NOVA",
+            "vlinks": [],
+            "type": "vHG",
+            "description": "",
+            "id": 1601
+        },
+        "$$hashKey": "object:4848"
+    }
+}

@@ -47,6 +47,8 @@ end
 
 class NSMonitoring < Sinatra::Application
     helpers MonitoringHelper
+    helpers ExpressionEvaluatorHelper
+    helpers SlaHelper
 
     Mongoid.load!('config/mongoid.yml')
 

@@ -14,6 +14,7 @@ module Mongoid
     def serializable_hash(options = nil)
       h = super(options)
       h['id'] = h.delete('_id') if(h.has_key?('_id'))
+      h.delete('authentication') if(h.has_key?('authentication'))
       h
     end
   end
@@ -51,4 +52,5 @@ class Nsr
   field :mapping_time, type: Time
   field :instantiation_start_time, type: Time
   field :instantiation_end_time, type: Time
+
 end

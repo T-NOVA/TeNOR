@@ -5,26 +5,38 @@ require 'rest-client'
 module Sinatra
   module Gk_Auth
     module Helpers
-
+      $time = 5
+      $max_retries = 150 #in seconds
       def initialize
         puts "Initializing gem GK..."
-
         service_info = {:name => settings.servicename, :host => settings.address, :port => settings.port, :path => "" }
-        publish_service(service_info)
+        if settings.environment != "development"
+          publish_service(service_info)
+        end
 
+        if settings.environment == "development"
+          puts "Running the module in development mode."
+          Thread.new {
+            response = publish_service(service_info)
+          }
+        end
         return
       end
 
       def publish_service(service_info)
         puts "Publishing service..."
         begin
-          RestClient.post settings.manager + '/configs/services/publish/' + settings.servicename, service_info.to_json, :accept => :json, :content_type => :json
+          response = RestClient.post settings.manager + '/configs/services/publish/' + settings.servicename, service_info.to_json, :accept => :json, :content_type => :json
         rescue => e
-          puts "Error registring or receiving dependencies to the Manager"
+          puts "Error registring or receiving dependencies to the Manager, waiting: " + $time.to_s + " seconds for next try..."
           puts e
-          sleep(10)#wait 10 seconds
+          sleep($time)#wait $time seconds
+          $time = $time*2
+          $time = 5 if $time > $max_retries
           publish_service(service_info)
         end
+        puts response
+        return response
       end
 
       def authorized?

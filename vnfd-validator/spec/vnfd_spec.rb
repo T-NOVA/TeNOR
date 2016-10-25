@@ -49,7 +49,7 @@ RSpec.describe VnfdValidator do
 		end
 
 		context 'given a valid VNFD' do
-			let(:response) { post '/vnfds', JSON.parse(File.read(File.expand_path("../../assets/samples/vnfd_example.json", __FILE__))).to_json, rack_env={'CONTENT_TYPE' => 'application/json'} }
+			let(:response) { post '/vnfds', JSON.parse(File.read(File.expand_path("../../assets/samples/vnfd_example.json", __FILE__)))['vnfd'].to_json, rack_env={'CONTENT_TYPE' => 'application/json'} }
 
 			it 'responds with a 200' do
 				expect(response.status).to eq 200

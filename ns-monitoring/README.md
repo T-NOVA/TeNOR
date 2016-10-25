@@ -28,6 +28,12 @@ bundle install
 
 Which will install all the gems.
 
+```sh
+rake db:migration
+```
+
+Which create the Database schema.
+
 ### Tests
 
 For tests execute  
@@ -59,4 +65,3 @@ The following shows how to start the API server:
 ```sh
 rake start
 ```
-

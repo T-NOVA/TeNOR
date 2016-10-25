@@ -41,34 +41,24 @@ module MonitoringHelper
     return parsed_message, nil
   end
 
-  def create_monitoring_metric_object(json)
-
-    monitoring_metrics = NsMonitoringParameter.new(json)
-    return monitoring_metrics
-  end
-
   # Subcription thread method
   #
   # @param [JSON] message monitoring information
   def self.subcriptionThread(monitoring)
-    logger.info "Subcription thread"
-    logger.info "NSr: " + monitoring['nsi_id'].to_s
-    nsr_id = monitoring['nsi_id'].to_s
+    logger.info "Subcription thread for NSr: " + monitoring['nsi_id'].to_s
+    nsi_id = monitoring['nsi_id'].to_s
     vnf_instances = monitoring['vnf_instances']
+    parameters = monitoring['parameters']
 
     ch = @channel
-
     vnf_instances.each do |vnf_instance|
-      logger.debug "VNF_Instance_id:"
-      logger.debug vnf_instance['vnfr_id'] #vnf_id
+      logger.debug "VNF_Instance_id: " + vnf_instance['vnfr_id']
       begin
-        puts "Create another subcription"
         t = ch.queue(vnf_instance['vnfr_id'], :exclusive => false).subscribe do |delivery_info, metadata, payload|
-          logger.info "Receving subcription data " + vnf_instance['vnfr_id'].to_s
+
+          logger.info "Receving subcription data of" + vnf_instance['vnfr_id'].to_s
           measurements = JSON.parse(payload)
-          puts measurements
-          puts "Mon Metrics:"
-          nsi_id = nsr_id
+          logger.debug measurements.to_json
 
           begin
             @queue = VnfQueue.find_or_create_by(:nsi_id => nsi_id, :vnfi_id => vnf_instance['vnfr_id'], :parameter_id => measurements['type'])
@@ -76,32 +66,58 @@ module MonitoringHelper
           rescue => e
             puts e
           end
-          puts @queue
+          logger.debug @queue
           begin
             @list_vnfs_parameters = VnfQueue.where(:nsi_id => nsi_id, :parameter_id => measurements['type'])
             if @list_vnfs_parameters.length == vnf_instances.length
-              logger.debug "Lisf of vnfs_params is equal."
-              logger.debug "Send to Expression Evaluator."
+              #logger.debug "Lisf of vnfs_params is equal."
+              logger.debug @list_vnfs_parameters.to_json
+              param = parameters.find {|p| p['name'] == measurements['type'] }
+              if param.nil?
+                logger.debug "Params outside the SLA (assurance parameters field)"
+                calculation = measurements['value']
+              else
+                logger.info "Params inside the SLA (checking SLA)..."
+                values = []
+                @list_vnfs_parameters.each do |p|
+                  values << p['value']
+                end
 
-              expression_response = 10
+                logger.debug "Send to Expression Evaluator."
+                calculation = ExpressionEvaluatorHelper.calc_expression(param['formula'], values)
+                logger.debug "Calculation response: " + calculation.to_s
 
+                begin
+                  sla = Sla.find_by!(nsi_id: nsi_id)
+                  sla_breach = sla.process_reading(param, calculation)
+                  #if sla_breach
+                    #logger.info "Breach reached!"
+                  #end
+                rescue ActiveRecord::RecordNotFound => e
+                  logger.error "SLA information not found for NSR " + nsi_id
+                  #return 404, "Could not find an SLA for NS Instance ID #{nsi_id}"
+                end
+
+                #logger.debug "Calculation: " + calculation
+                #if SlaHelper.check_breach_sla(param['value'], calculation)
+                  #SlaHelper.process_breach()
+                #end
+              end
               ns_measurement = {
                   :instance_id => nsi_id,
                   :type => @queue['parameter_id'],
                   :unit => @queue['unit'],
-                  :value => expression_response,
+                  :value => calculation,
                   :timestamp => @queue['timestamp']
               }
-              puts ns_measurement
+              logger.debug ns_measurement
 
               q = ch.queue("ns_monitoring")
-              logger.info "Publishing values...."
               q.publish(ns_measurement.to_json, :persistent => true)
 
-              #remove database
               VnfQueue.destroy_all(:nsi_id => nsi_id, :parameter_id => measurements['parameter_id'])
             else
-              puts "NO equal. Wait next value"
+              logger.error "NO equal. Wait next value"
             end
           rescue => e
             puts e
@@ -121,19 +137,15 @@ module MonitoringHelper
     logger.info "Getting list of instances..."
     begin
       response = RestClient.get Sinatra::Application.settings.ns_provisioner + '/ns-instances', :content_type => :json
-      #puts response
       @ns_instances = JSON.parse(response)
 
-      logger.info "Getting monitoring for each instance..."
-      #for each instance, create a thread for subcribe to monitoring
+      logger.info "Creating a monitoring thread for each instance..."
       @ns_instances.each do |instance|
-        #get mnonitoring data for instance
-        logger.debug instance['id']
         begin
           monitoring = NsMonitoringParameter.find_by("nsi_id" => instance['id'])
           nsi_id = monitoring['nsi_id'].to_s
           logger.info "Creating thread for NS instance " + nsi_id.to_s
-          logger.debug monitoring
+          logger.debug monitoring # to remove
 
           Thread.new {
             Thread.current["name"] = nsi_id;
@@ -141,13 +153,22 @@ module MonitoringHelper
             Thread.stop
           }
         rescue Mongoid::Errors::DocumentNotFound => e
-          logger.debug "No monitoring data in the BD"
-          #halt 400, "Monitoring Metric instance no exists"
+          logger.debug "No monitoring configuration in the BD for NSr_id " +  instance['id']
         end
       end
     rescue => e
       puts "Error!"
       puts e
+    end
+  end
+
+  def destroy_monitoring_data(nsi_id)
+    logger.error "Destroy Monitoring Data of " + nsi_id
+    begin
+      response = RestClient.delete settings.ns_monitoring_repo + "/ns-monitoring/#{nsi_id}", content_type: :json
+    rescue => e
+      logger.error e.response
+      # return e.response.code, e.response.body
     end
   end
 

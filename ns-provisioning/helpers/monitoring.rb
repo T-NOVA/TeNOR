@@ -39,7 +39,7 @@ module MonitoringHelper
       assurance_parameters = s['assurance_parameters']
       assurance_parameters.each_with_index {|x, i|
         paramsVnf << {:id => i+1, :name => x['name'], :unit => x['unit']}
-        paramsNs << {:id => i+1, :name => x['name'], :formula => x['formula']}
+        paramsNs << {:id => i+1, :name => x['name'], :formula => x['formula'], :value => x['value']}
       }
     }
     monitoring[:parameters] = paramsNs

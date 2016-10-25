@@ -18,27 +18,92 @@
 require_relative 'spec_helper'
 
 RSpec.describe VnfProvisioning do
-  def app
-    Scaling
-  end
-
-  before do
-    begin
-      DatabaseCleaner.start
-    ensure
-      DatabaseCleaner.clean
+    def app
+        Scaling
     end
-  end
 
-  describe 'POST /vnf-instances/scaling/:vnfr_id/scale_in' do
-
-    context 'given a valid request' do
-
-      it 'provisions a new VNF in the VIM' do
-        response = post '/vnfr_id/scale_in', {vnfd: {id: 1}}.to_json, 'CONTENT_TYPE' => 'application/json'
-        expect(last_response.status).to eq 200
-      end
+    before do
+        begin
+            DatabaseCleaner.start
+        ensure
+            DatabaseCleaner.clean
+        end
     end
-  end
 
+    describe 'POST /vnf-instances/scaling/:vnfr_id/scale_out' do
+        context 'given a valid request' do
+            it 'provisions a new VNF in the VIM' do
+                # response = post '/vnfr_id/scale_in', {vnfd: {id: 1}}.to_json, 'CONTENT_TYPE' => 'application/json'
+                # expect(last_response.status).to eq 200
+            end
+        end
+    end
+
+    describe 'POST /vnf-instances/scaling' do
+        context 'given an invalid content type' do
+            it 'responds with a 415' do
+                post '/invalid/scale_out', {}.to_json, 'CONTENT_TYPE' => 'application/x-www-form-urlencoded'
+                expect(last_response.status).to eq 415
+            end
+        end
+
+        context 'given an invalid vnfr_id' do
+            it 'responds with a 404' do
+                post '/invalid/scale_out', {}.to_json, 'CONTENT_TYPE' => 'application/json'
+                expect(last_response.status).to eq 404
+            end
+        end
+    end
+
+    describe 'POST /vnf-instances/scaling' do
+      let(:vnfr) { create :vnfr }
+        context 'given an invalid scaling request' do
+            it 'responds with a 404' do
+                post '/invalid/scale_out', {}.to_json, 'CONTENT_TYPE' => 'application/json'
+                expect(last_response.status).to eq 404
+            end
+        end
+
+        context 'given a valid request' do
+            it 'scale_out a VNF' do
+                response = post '/'+ vnfr._id.to_s + '/scale_out', File.read(File.expand_path('../fixtures/scaling_out_request.json', __FILE__)), 'CONTENT_TYPE' => 'application/json'
+                puts last_response
+                expect(last_response.status).to eq 200
+            end
+        end
+    end
+
+    describe 'POST /vnf-instances/scaling' do
+        context 'given an invalid content type' do
+            it 'responds with a 415' do
+                post '/invalid/scale_in', {}.to_json, 'CONTENT_TYPE' => 'application/x-www-form-urlencoded'
+                expect(last_response.status).to eq 415
+            end
+        end
+
+        context 'given an invalid vnfr_id' do
+            it 'responds with a 404' do
+                post '/invalid/scale_in', {}.to_json, 'CONTENT_TYPE' => 'application/json'
+                expect(last_response.status).to eq 404
+            end
+        end
+    end
+
+    describe 'POST /vnf-instances/scaling' do
+      let(:vnfr) { create :vnfr }
+        context 'given an invalid scaling request' do
+            it 'responds with a 404' do
+                post '/invalid/scale_in', {}.to_json, 'CONTENT_TYPE' => 'application/json'
+                expect(last_response.status).to eq 404
+            end
+        end
+
+        context 'given a valid request' do
+            it 'scale_in a VNF' do
+                response = post '/'+ vnfr._id.to_s + '/scale_in', File.read(File.expand_path('../fixtures/scaling_out_request.json', __FILE__)), 'CONTENT_TYPE' => 'application/json'
+                puts last_response
+                expect(last_response.status).to eq 200
+            end
+        end
+    end
 end

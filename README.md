@@ -126,39 +126,12 @@ The content of the loadModules.sh is a set of CuRL request to the NS Manager ins
 
 ## Loading NFVI-PoP information in Gatekeeper
 
-The PoP information is saved in Gatekeeper. This can be inserted in three manners:
+The PoP information is saved in Gatekeeper. First of all, TeNOR recevies the registration requests and validates the authentication. If it works, TeNOR saves the PoP in Gatekeeper. The PoP can be inserted in two manners:
 
  - Using the TeNOR User Interface:
  `Configuration -> PoPs`
  - Using the TeNOR script:
   Execute the tenor_install.sh script and choose the option `4. Add new PoP`
- - Using the CLI:
-
- First of all, define the following variables (you can copy and paste in the command prompt):
-
-```
- GATEKEEPER_HOST=localhost:8000
- GATEKEEPER_PASS=Eq7K8h9gpg
- GATEKEEPER_USER_ID=1
- OPENSTACK_IP=localhost
- admin_tenant_name=tenantName
- keystonePass=password
- keystoneUser=admin
- openstack_dns=8.8.8.8
-```
-
- Get the Gatekeeper token (you can copy and paste in the command prompt):
-
-```
-tokenId=$(curl -XPOST http://$GATEKEEPER_HOST/token/ -H "X-Auth-Password:$GATEKEEPER_PASS" -H "X-Auth-Uid:$GATEKEEPER_USER_ID" | python -c 'import json,sys;obj=json.load(sys.stdin);print obj["token"]["id"]')
-```
-
-Post PoP Information (you can copy and paste in the command prompt):
-```
- curl -X POST http://$GATEKEEPER_HOST/admin/dc/ \
-   -H 'X-Auth-Token: '$tokenId'' \
-   -d '{"msg": "PoP Testbed", "dcname":"default", "adminid":"'$keystoneUser'","password":"'$keystonePass'", "extrainfo":"pop-ip='$OPENSTACK_IP' tenant-name='$admin_tenant_name' keystone-endpoint=http://'$OPENSTACK_IP':35357/v2.0 orch-endpoint=http://'$OPENSTACK_IP':8004/v1 compute-endpoint=http://'$OPENSTACK_IP':8774/v2.1 neutron-endpoint=http://'$OPENSTACK_IP':9696/v2.0 dns='$openstack_dns'"}'
-```
 
 ## User Interface
 
@@ -184,7 +157,7 @@ curl -XGET http://localhost:4000/
 If nothing is received, make sure that the NS Manager is running.
 If you receive a response, means that the NS Manager is ready for recevie requests.
 
-In order to see the available IPs for the NS Manager, visit the API Documentation (http://t-nova.github.io/TeNOR/)
+In order to see the available APIs for the NS Manager, visit the API Documentation (http://t-nova.github.io/TeNOR/)
 
 ## Define a VNFD and a NSD
 
@@ -198,7 +171,7 @@ The dummy VNFD is located in:
 
 The next step is add the dummy descriptors to TeNOR system using the API. This step is explained in the following subsection.
 
-## Create a VNFD and NSD and instantiate it
+### Upload a VNFD and NSD and instantiate it
 
 In order to test TeNOR functionality, you can deploy a dummy NSD/VNFD located in the Validator folders. Follow the next steps in order to test TeNOR (you can copy and paste in the command prompt):
 
@@ -223,8 +196,19 @@ In order to test TeNOR functionality, you can deploy a dummy NSD/VNFD located in
     curl -XPOST localhost:4000/ns-instances -H "Content-Type: application/json" --data '{"ns_id": "'$ns_id'", "callbackUrl": "https://httpbin.org/post", "flavour": "basic"}'
     ````
 
+### Other examples
+
+We provide several examples with different functionalities. The VNFD_validator contains the VNFD examples and the NSD_validator folders the associtated NSDs.
+
+The provided examples are:
+- vnfd-validator/assets/samples/2911_vnfd_existing_image_id.json -> You can reuse an image already loaded in Openstack. Modify the IMAGE_ID field.
+- vnfd-validator/assets/samples/2912_vnfd_existing_network_id.json -> You can reuse a network already created in Openstack. Modify the NETWORK_ID field.
+- vnfd-validator/assets/samples/2913_vnfd_scaling.json -> You can see how scale out/in works with this example.
+
+You can test it using the same commands shown before but chaning the file.
+
 ## Logs
-TeNOR uses Fluentd in order to store the logs. As TeNOR uses MongoDB for store all the information, the logs are also stored there. The UI inlcudes a view that allows to browser through the logs based on the date, severity and module.
+TeNOR uses Fluentd in order to store the logs in a MongoDB. The UI inlcudes a view that allows to browser through the logs based on the date, severity and module.
 
 ## Write a Lifecycle events
 In each VNFD can have 5 types of lifecycle event: start, stop, restart, scaling_out and scaling_in. For each type, some data can be requested, but basically, the different template is in the scaling actions.
@@ -255,6 +239,9 @@ Each microservice is listening in different port. This port is configured in the
 |    VNF Catalogue    |    4572    |
 |    VNF Monitoring    |    4573    |
 
+# Bug reports and Feature requests
+
+Please use [Github Issue Tracker](https://github.com/T-NOVA/TeNOR/issues) for feature requests or bug reports.
 
 # License
 Each module is published under different licenses, please take a look on each License file.

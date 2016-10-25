@@ -43,7 +43,7 @@ class GatekeeperController < TnovaManager
         begin
             response = RestClient.post extrainfo[:keystone] + '/tokens', auth.to_json, content_type: :json
         rescue Errno::ECONNREFUSED => e
-            return 500, "Connection refused"
+            return 500, 'Connection refused'
         rescue RestClient::ExceptionWithResponse => e
             logger.error e
             logger.error e.response.body
@@ -60,5 +60,21 @@ class GatekeeperController < TnovaManager
         # authentication ok, save it to gatekeeper
         registerPop(pop_info)
         return getPopList
+    end
+
+    # @method delete_gatekeeper_dc_id
+    # @overload get '/gatekeeper/dc/:id'
+    #	Delete a DC
+    delete '/dc/:popId' do |pop_id|
+        AuthenticationHelper.loginGK
+        begin
+            response = RestClient.delete "#{settings.gatekeeper}/admin/dc/#{pop_id}", 'X-Auth-Token' => settings.gk_token, :content_type => :json
+        rescue => e
+            logger.error e
+            if defined?(e.response).nil?
+                error = { info: 'The PoP list in Gatekeeper is empty' }
+                halt 503, 'The PoP list in Gatekeeper is empty '
+            end
+        end
     end
 end

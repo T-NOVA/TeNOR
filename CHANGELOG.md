@@ -1,3 +1,12 @@
+## 0.6.1
+- DNS as array. You can specify multiple DNS when a PoP is added.
+- Updated Monitoring. Implemented and included SLA management and Expression Evaluator in NS Monitoring.
+- Implemented delete method for remove monitoring data when instance is removed.
+- NS Provisioning improved.
+- Implemented autoscaling.
+- Fix responses errors.
+- Updated tests.
+
 ## 0.6.0
 - UI Modal with form that allows to upload VNFDs and NSDs using a JSON file.
 - New version of Scaling, create a new heat template without using AutoScalingGroup template. AutoscalingGroup removes arbitrarily the instances in the scale_in.

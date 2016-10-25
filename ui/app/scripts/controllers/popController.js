@@ -4,16 +4,19 @@ angular.module('tNovaApp')
     .controller('PoPController', function ($scope, $window, $interval, $modal, $alert, tenorService, AuthService, infrRepoService) {
 
         $scope.defaultPoP = {};
+        $scope.registeredDcList = [];
         $scope.refreshPoPList = function () {
-            AuthService.get($window.localStorage.token, "admin/dc/").then(function (d) {
+            tenorService.get('gatekeeper/dc').then(function (d) {
+            //AuthService.get($window.localStorage.token, "admin/dc/").then(function (d) {
                 console.log(d);
-                $scope.registeredDcList = [];
-                _.map(d.dclist, function (row, index) {
+                $scope.registeredDcList = d;
+
+                /*_.map(d.dclist, function (row, index) {
                     $scope.registeredDcList.push({
                         id: d.dcid[index],
                         name: row
                     })
-                });
+                });*/
                 console.log($scope.registeredDcList);
 
                 var url = 'pop/';
@@ -87,13 +90,6 @@ angular.module('tNovaApp')
         }
 
         $scope.registerDc = function (obj) {
-            var message = {
-                "msg": "PoP Testbed",
-                "dcname": "infrRepository-Pop-ID",
-                "adminid": "keystonUser",
-                "password": "keystonePass",
-                "extrainfo": "pop-ip=OPENSTACK_IP tenant-name=admin keystone-endpoint=http://OPENSTACK_IP:35357/v2.0 orch-endpoint=http://OPENSTACK_IP:8004/v1"
-            };
             var pop = {
                 "msg": obj.msg,
                 "dcname": obj.id,
@@ -136,10 +132,9 @@ angular.module('tNovaApp')
         };
 
         $scope.getPopInfo = function (popId) {
-            AuthService.get($window.localStorage.token, "admin/dc/" + popId).then(function (data) {
+            tenorService.get('gatekeeper/dc/' + popId).then(function (data) {
                 console.log(data);
                 $scope.popInfo = data;
-                //remove d.info[0].password
                 $scope.jsonObj = JSON.stringify(data, undefined, 4);
                 $modal({
                     title: "Pop - " + popId,
@@ -161,7 +156,7 @@ angular.module('tNovaApp')
         };
 
         $scope.deleteItem = function (popId) {
-            AuthService.delete($window.localStorage.token, "admin/dc/" + popId).then(function (data) {
+            tenorService.delete('gatekeeper/dc/' + popId).then(function (data) {
                 console.log(data);
                 $scope.refreshPoPList();
             });

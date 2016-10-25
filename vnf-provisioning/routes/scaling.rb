@@ -21,17 +21,9 @@ class Scaling < VnfProvisioning
     # @overload post '/vnf-instances/scaling/:id/scale_out'
     # Post a Scale out request
     # @param [JSON]
-    post '/:vnfr_id/scale_out' do
+    post '/:vnfr_id/scale_out' do |vnfr_id|
         # Return if content-type is invalid
         halt 415 unless request.content_type == 'application/json'
-
-        # Validate JSON format
-        scale_info = parse_json(request.body.read)
-        # logger.debug 'Scale out: ' + scale_info.to_json
-        halt 400, 'NS Manager callback URL not found' unless scale_info.key?('vnfd')
-
-        vnfd = scale_info['vnfd']
-        #vnfr = scale_info['vnfr']
 
         begin
             vnfr = Vnfr.find(params[:vnfr_id])
@@ -40,11 +32,16 @@ class Scaling < VnfProvisioning
             halt 404
         end
 
+        # Validate JSON format
+        scale_info = parse_json(request.body.read)
+        # logger.debug 'Scale out: ' + scale_info.to_json
+        halt 400, 'VNFD not found' unless scale_info.key?('vnfd')
+
+        vnfd = scale_info['vnfd']
         vnf_flavour = vnfd['vnfd']['deployment_flavours'].find { |dF| dF['flavour_key'] == vnfr['deployment_flavour'] }['id']
 
         # check if the VNFD can scale_info
         vdus_to_scale = []
-
         vnfd['vnfd']['vdu'].each do |vdu|
             next unless vdu['scale_in_out']['maximum'] > 1
             logger.info "VDU #{vdu['id']} can scale."
@@ -117,18 +114,8 @@ class Scaling < VnfProvisioning
     # Post a Scale in request
     # @param [JSON]
     post '/:vnfr_id/scale_in' do
-        # TODO
 
-        # Return if content-type is invalid
         halt 415 unless request.content_type == 'application/json'
-
-        # Validate JSON format
-        scale_info = parse_json(request.body.read)
-        # logger.debug 'Scale out: ' + scale_info.to_json
-        halt 400, 'NS Manager callback URL not found' unless scale_info.key?('vnfd')
-
-        vnfr = scale_info['vnfr']
-        event = 'scaling_in'
 
         begin
             vnfr = Vnfr.find(params[:vnfr_id])
@@ -137,15 +124,31 @@ class Scaling < VnfProvisioning
             halt 404
         end
 
+        # Validate JSON format
+        scale_info = parse_json(request.body.read)
+        # logger.debug 'Scale out: ' + scale_info.to_json
+        halt 400, 'VNFD not found' unless scale_info.key?('vnfd')
+
+        event = 'scaling_in'
+
         if vnfr['scale_resources'].size == 0
             halt 200, "Nothing to scale in."
         end
+
+        resource = vnfr['scale_resources'][vnfr['scale_resources'].size - 1]
+        logger.debug resource
+        logger.debug "Using scaling-in saved events..."
+        scaling_in_events = {}
+        resource['lifecycle_events_values']['scaling_in'].each do |param, value|
+            scaling_in_events[param] = value
+        end
+        logger.debug vnfr['lifecycle_events_values'][event]
 
         # Build mAPI request
         mapi_request = {
             event: event,
             vnf_controller: vnfr['vnf_addresses']['controller'],
-            parameters: vnfr['lifecycle_events_values'][event]
+            parameters: scaling_in_events
         }
         logger.debug 'mAPI request: ' + mapi_request.to_json
 
@@ -184,6 +187,7 @@ class Scaling < VnfProvisioning
     # @overload post '/vnf-instances/scaling/:id/scale_out'
     # Post a Scale out request
     # @param [JSON]
+    # DEPRECATED
     post '/:vnfr_id/auto_scale_out' do
         # Return if content-type is invalid
         halt 415 unless request.content_type == 'application/json'
@@ -336,6 +340,7 @@ class Scaling < VnfProvisioning
     # @overload post '/vnf-instances/scaling/:id/scale_in'
     # Post a Scale in request
     # @param [JSON]
+    # DE
     post '/:vnfr_id/auto_scale_in' do
         # TODO
 

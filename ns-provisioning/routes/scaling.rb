@@ -24,6 +24,8 @@ class Scaling < NsProvisioning
   # @param [JSON]
   post "/:id/scale_out" do
 
+    halt 415 unless request.content_type == 'application/json'
+
     begin
       instance = Nsr.find(params["id"])
     rescue Mongoid::Errors::DocumentNotFound => e
@@ -78,6 +80,8 @@ class Scaling < NsProvisioning
   # Post a Scale in request
   # @param [JSON]
   post "/:id/scale_in" do
+
+    halt 415 unless request.content_type == 'application/json'
 
     begin
       instance = Nsr.find(params["id"])

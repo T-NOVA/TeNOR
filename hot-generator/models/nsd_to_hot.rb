@@ -36,8 +36,6 @@ class NsdToHot
   # @return [HOT] returns an HOT object
   def build(nsd, public_net_id, dns_server, flavour, nsr_id)
     router_name = create_router(public_net_id, nsr_id)
-    
-    #virtual_links = nsd['vld']['virtual_links']
     virtual_links = nsd['vld']['virtual_links'].select{|vlink| vlink['sla_ref_id'] == flavour}
     raise CustomException::NoFlavorError, "SLA Reference #{flavour} not found" if virtual_links.nil?
 

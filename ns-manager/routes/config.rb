@@ -85,7 +85,7 @@ class ServiceConfiguration < TnovaManager
 		registerService(request.body.read)
 
     Thread.new do
-			logger.debug "Publishing" + name + "to other services services..."
+			logger.debug "Publishing `" + name + "` to other services services..."
       ServiceConfigurationHelper.publishServices()
     end
 

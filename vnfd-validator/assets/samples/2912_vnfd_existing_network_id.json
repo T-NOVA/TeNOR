@@ -1,5 +1,5 @@
 {
-  "name": "scaling_testname",
+  "name": "testName",
   "vnfd": {
     "vdu": [
       {
@@ -17,21 +17,21 @@
           "storage": {
             "size_unit": "GB",
             "persistence": false,
-            "size": 3
+            "size": 40
           },
           "network_interface_bandwidth": "",
           "platform_pcie_parameters": {
             "SR-IOV": true,
             "device_pass_through": true
           },
-          "vcpus": 1,
+          "vcpus": 2,
           "vswitch_capabilities": {
             "version": "2.0",
             "type": "ovs",
             "overlay_tunnel": "GRE"
           },
           "data_processing_acceleration_library": "",
-          "memory": 1,
+          "memory": 4,
           "memory_parameters": {
             "large_pages_required": false,
             "numa_allocation_policy": ""
@@ -57,21 +57,16 @@
           }
         ],
         "monitoring_parameters": [
-          {
-            "metric": "cpuidle",
-            "unit": "%",
-            "desc": "CPU Idle"
-          }
         ],
         "scale_in_out": {
           "minimum": 1,
-          "maximum": 2
+          "maximum": 1
         },
         "vm_image_md5": "bcfeb21476221db5ec2269369e27fed5",
-        "vm_image_format": "qcow2"
+        "vm_image_format": "openstack_id"
       }
     ],
-    "name": "testVNF_scaling",
+    "name": "testVNF",
     "provider_id": 1,
     "trade": false,
     "descriptor_version": "1",
@@ -122,17 +117,12 @@
         "events": {
           "start": {
             "command": "/home/vagrant/scripts/start",
-            "template_file": "{\"controller\":\"get_attr[vdu0,CPfs0h,PublicIp]\", \"vdu0Ips\":\"get_attr[CPng8r,fixed_ips,0,ip_address]\"}",
+            "template_file": "{\"controller\":\"get_attr[vdu0,CPfs0h,PublicIp]\"}",
             "template_file_format": "JSON"
           },
           "stop": {
             "command": "/home/vagrant/scripts/stop",
             "template_file": "{}",
-            "template_file_format": "JSON"
-          },
-          "scaling_out": {
-            "command": "/vTU/bin/vTU/scaling_out",
-            "template_file": "{\"controller\":\"get_attr[vdu0,CPfs0h,PublicIp]\", \"vdu0\":\"get_attr[vdu0,vdus]\", \"vdu0Ips\":\"get_attr[CPng8r,fixed_ips,0,ip_address]\"}",
             "template_file_format": "JSON"
           }
         },
@@ -163,6 +153,9 @@
           "CPfs0h"
         ],
         "access": true,
+        "existing_network": "-------------------- INSERT THE NETWORK ID --------------------",
+        "dhcp": false,
+        "net_segment": "-------------------- INSERT THE SUBNET --------------------",
         "alias": "management",
         "dhcp": true,
         "root_requirement": "Unlimited",
@@ -180,15 +173,18 @@
           "CPng8r"
         ],
         "access": true,
-        "alias": "data",
+        "existing_network": "-------------------- INSERT THE NETWORK ID --------------------",
+        "dhcp": false,
+        "net_segment": "-------------------- INSERT THE SUBNET --------------------",
+        "alias": "management",
         "dhcp": true,
         "root_requirement": "Unlimited",
         "qos": "",
         "id": "vl1"
-      }
+      },
     ],
     "type": "vPXAAS",
-    "description": "Test VNF example",
-    "id": 1110
+    "description": "Test VNF example with Existing ID",
+    "id": 2912
   }
 }
