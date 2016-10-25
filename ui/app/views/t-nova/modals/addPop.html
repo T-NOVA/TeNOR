@@ -1,4 +1,4 @@
-<div class="modal" tabindex="-1" role="dialog">
+<div class="modal" tabindex="-1" role="dialog" ng-controller="PoPModalController">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header" ng-show="title">
@@ -23,7 +23,8 @@
                     </div>
                     <div class="box-body">
                         <div class="form-group">
-                            <label for="tenantName" class="col-sm-4 control-label">Tenant name</label>
+                            <label for="tenantName" class="col-sm-4 control-label" ng-if="keystone_version == 'v2.0'">Tenant name</label>
+                            <label for="tenantName" class="col-sm-4 control-label" ng-if="keystone_version == 'v3'">Domain</label>
                             <div class="col-sm-8">
                                 <input ng-model="dc_default.tenantName" type="text" class="form-control" id="tenantName" value="" />
                             </div>
@@ -60,32 +61,52 @@
                     <div class="box-body">
                         <div class="form-group">
                             <label for="keystone_api" class="col-sm-4 control-label">Keystone API</label>
-                            <div class="col-sm-8">
+                            <div class="col-sm-6">
                                 <input ng-model="dc_default.keystone_api" type="text" class="form-control" id="openstack_ip" value="{{openstack_ip}}" />
+                            </div>
+                            <div class="col-sm-2">
+                                <button type="button" class="btn btn-default" ng-model="keystone_version" data-html="1" bs-options="version.id as version.id for version in keystone_versions" bs-select placeholder="select" ng-change="updateOpenstackIP()">
+                                  Action <span class="caret"></span>
+                              </button>
                             </div>
                         </div>
                     </div>
                     <div class="box-body">
                         <div class="form-group">
                             <label for="tenantName" class="col-sm-4 control-label">Heat API</label>
-                            <div class="col-sm-8">
+                            <div class="col-sm-6">
                                 <input ng-model="dc_default.heat_api" type="text" class="form-control" id="openstack_ip" value="" />
+                            </div>
+                            <div class="col-sm-2">
+                                <button type="button" class="btn btn-default" ng-model="heat_version" data-html="1" bs-options="version.id as version.id for version in heat_versions" bs-select placeholder="select" ng-change="updateOpenstackIP()">
+                                  Action <span class="caret"></span>
+                              </button>
                             </div>
                         </div>
                     </div>
                     <div class="box-body">
                         <div class="form-group">
                             <label for="tenantName" class="col-sm-4 control-label">Compute API</label>
-                            <div class="col-sm-8">
+                            <div class="col-sm-6">
                                 <input ng-model="dc_default.compute_api" type="text" class="form-control" id="openstack_ip" value="" />
+                            </div>
+                            <div class="col-sm-2">
+                                <button type="button" class="btn btn-default" ng-model="compute_version" data-html="1" bs-options="version.id as version.id for version in compute_versions" bs-select placeholder="select" ng-change="updateOpenstackIP()">
+                                  Action <span class="caret"></span>
+                              </button>
                             </div>
                         </div>
                     </div>
                     <div class="box-body">
                         <div class="form-group">
                             <label for="tenantName" class="col-sm-4 control-label">Neutron API</label>
-                            <div class="col-sm-8">
+                            <div class="col-sm-6">
                                 <input ng-model="dc_default.neutron_api" type="text" class="form-control" id="openstack_ip" value="" />
+                            </div>
+                            <div class="col-sm-2">
+                                <button type="button" class="btn btn-default" ng-model="neutron_version" data-html="1" bs-options="version.id as version.id for version in neutron_versions" bs-select placeholder="select" ng-change="updateOpenstackIP()">
+                                  Action <span class="caret"></span>
+                              </button>
                             </div>
                         </div>
                     </div>
@@ -93,7 +114,7 @@
                         <div class="form-group">
                             <label for="tenantName" class="col-sm-4 control-label">DNS</label>
                             <div class="col-sm-8">
-                                <input ng-model="dc_default.dns" type="text" class="form-control" id="openstack_ip" value="8.8.8.8" />
+                                <input ng-model="dc_default.dns" type="text" class="form-control" id="dns" value="8.8.8.8" />
                             </div>
                         </div>
                     </div>

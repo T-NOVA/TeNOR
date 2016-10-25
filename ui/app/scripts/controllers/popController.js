@@ -5,6 +5,18 @@ angular.module('tNovaApp')
 
         $scope.defaultPoP = {};
         $scope.registeredDcList = [];
+        $scope.keystone_versions = [{"id": "v2.0"}, {"id": "v3"}];
+        $scope.heat_versions = [{"id": "v1"}];
+        $scope.compute_versions = [{"id": "v2.1"}];
+        $scope.neutron_versions = [{"id": "v2.0"}];
+
+        $scope.keystone_version = "v2.0"
+        $scope.heat_version = "v1"
+        $scope.compute_version = "v2.1"
+        $scope.neutron_version = "v2.0"
+
+        $scope.openstack_ip = "";
+
         $scope.refreshPoPList = function () {
             tenorService.get('gatekeeper/dc').then(function (d) {
             //AuthService.get($window.localStorage.token, "admin/dc/").then(function (d) {
@@ -56,7 +68,7 @@ angular.module('tNovaApp')
                 password: "adminpass",
                 isAdmin: false,
                 openstack_ip: $scope.openstack_ip,
-                keystone_api: $scope.openstack_ip + ":35357/v2.0",
+                keystone_api: $scope.openstack_ip + ":35357/" + $scope.keystone_version,
                 heat_api: $scope.openstack_ip + ":8004/v1",
                 compute_api: $scope.openstack_ip + ":8774/v2.1",
                 neutron_api: $scope.openstack_ip + ":9696/v2.0",
@@ -70,27 +82,6 @@ angular.module('tNovaApp')
             });
         };
 
-        $scope.updateOpenstackIP = function (openstack_ip) {
-            var keystone_version = $scope.dc_default.keystone_api.split(":")[1]
-            var heat_version = $scope.dc_default.heat_api.split(":")[1]
-            var compute_version = $scope.dc_default.compute_api.split(":")[1]
-            var neutron_version = $scope.dc_default.neutron_api.split(":")[1]
-            $scope.dc_default = {
-                msg: $scope.dc_default.msg,
-                id: $scope.dc_default.id,
-                adminName: $scope.dc_default.adminName,
-                tenantName: $scope.dc_default.tenantName,
-                adminPass: $scope.dc_default.adminPass,
-                isAdmin: $scope.dc_default.isAdmin,
-                openstack_ip: openstack_ip,
-                keystone_api: openstack_ip + ":" + keystone_version,
-                heat_api: openstack_ip + ":" + heat_version,
-                compute_api: openstack_ip + ":" + compute_version,
-                neutron_api: openstack_ip + ":" + neutron_version,
-                dns: $scope.dc_default.dns
-            }
-        }
-
         $scope.registerDc = function (obj) {
             var pop = {
                 "msg": obj.msg,
@@ -101,7 +92,6 @@ angular.module('tNovaApp')
             };
             console.log(pop);
             tenorService.post('gatekeeper/dc', pop).then(function (d) {
-            //AuthService.post($window.localStorage.token, "admin/dc/", pop).then(function (d) {
                 console.log(d);
                 $scope.defaultPoP = {};
                 $alert({
@@ -165,4 +155,31 @@ angular.module('tNovaApp')
             this.$hide();
         };
 
+    }).controller('PoPModalController', function ($scope, $window, $interval, $modal, $alert, tenorService, AuthService, infrRepoService) {
+        console.log("POP MODALLLL-----")
+        $scope.updateOpenstackIP = function () {
+            console.log("Update Openstack IP:")
+            console.log($scope.keystone_version)
+            var openstack_ip = $scope.openstack_ip;
+
+            //var keystone_version = $scope.dc_default.keystone_api.split(":")[1]
+            var keystone_port = $scope.dc_default.keystone_api.split(":")[1].split("/")[0]
+            var heat_port = $scope.dc_default.heat_api.split(":")[1].split("/")[0]
+            var compute_port = $scope.dc_default.compute_api.split(":")[1].split("/")[0]
+            var neutron_port = $scope.dc_default.neutron_api.split(":")[1].split("/")[0]
+            $scope.dc_default = {
+                msg: $scope.dc_default.msg,
+                id: $scope.dc_default.id,
+                adminName: $scope.dc_default.adminName,
+                tenantName: $scope.dc_default.tenantName,
+                adminPass: $scope.dc_default.adminPass,
+                isAdmin: $scope.dc_default.isAdmin,
+                openstack_ip: openstack_ip,
+                keystone_api: openstack_ip + ":" + keystone_port + "/" + $scope.keystone_version,
+                heat_api: openstack_ip + ":" + heat_port + "/" + $scope.heat_version,
+                compute_api: openstack_ip + ":" + compute_port + "/" + $scope.compute_version,
+                neutron_api: openstack_ip + ":" + neutron_port + "/" + $scope.neutron_version,
+                dns: $scope.dc_default.dns
+            }
+        };
     });
