@@ -32,8 +32,8 @@ show_menus() {
 	echo "1. Install TeNOR"
 	echo "2. Reconfigure configuration files"
 	echo "3. Register microservices"
-	echo "4. Add new PoP"
-	echo "5. Remove PoP"
+	echo "4. Add new PoP (Deprecated - Please, use the User Interface at http://localhost:9000)"
+	echo "5. Remove PoP (Deprecated - Please, use the User Interface at http://localhost:9000)"
 	echo "6. Inserting sample VNF and NS"
 	echo "7. Exit"
 }
@@ -373,9 +373,9 @@ conn_openstack() {
 
 removePop() {
     echo "Removing PoP..."
-    gatekeeper_host=10.10.1.63:8000
-    GATEKEEPER_PASS=Eq7K8h9gpg
-    GATEKEEPER_USER_ID=1
+    tenor_host=localhost:4000
+
+    curl -XGET http://$tenor_host/gatekeeper/dc  | ruby -r rubygems -r json -e "puts JSON[STDIN.read];"
 
     tokenId=$(curl -XPOST http://$gatekeeper_host/token/ -H "X-Auth-Password:$GATEKEEPER_PASS" -H "X-Auth-Uid:$GATEKEEPER_USER_ID" | python -c 'import json,sys;obj=json.load(sys.stdin);print obj["token"]["id"]')
     options=$(curl -XGET http://$gatekeeper_host/admin/dc/ -H 'X-Auth-Token: '$tokenId'' | python -c 'import json,sys;obj=json.load(sys.stdin);print obj["dclist"]')
@@ -383,15 +383,14 @@ removePop() {
     echo "Type the PoP Id, followed by [ENTER]:"
     read pop_id
 
-    popInfo=$(curl -XGET http://$gatekeeper_host/admin/dc/$pop_id -H 'X-Auth-Token: '$tokenId'' | python -c 'import json,sys;obj=json.load(sys.stdin);print obj["info"]')
-    echo "PoP to remove: "
+    curl -XGET http://$tenor_host/gatekeeper/dc/$pop_id  | ruby -r rubygems -r json -e "puts JSON[STDIN.read];"
 
     echo "Are you sure you want to remove this PoP (y/n)?, followed by [ENTER]:"
     read remove
 
     if [ "$remove" = "y" ]; then
       echo "Removing PoP..."
-      curl -XDELETE http://$gatekeeper_host/admin/dc/$pop_id -H 'X-Auth-Token: '$tokenId''
+      curl -XDELETE http://$tenor_host/gatekeeper/dc/$pop_id
     fi
 
     pause
