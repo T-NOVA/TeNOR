@@ -48,10 +48,8 @@ class VnfCatalogue < Sinatra::Application
         rescue Errno::ECONNREFUSED
             halt 500, 'VNFD Validator unreachable'
         rescue RestClient::ExceptionWithResponse => e
-            puts 'Excepion with response'
-            puts e
-            logger.error e
-            logger.error e.response.body
+            logger.error e.response
+            halt e.response.code, e.response.body
         rescue => e
             logger.error e.response
             halt e.response.code, e.response.body

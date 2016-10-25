@@ -298,7 +298,7 @@ configureFiles(){
         fi
         if [ -f config/database.yml ]; then
             sed -i -e 's/127.0.0.1:27017/'$cassandra_address'/' config/database.yml
-            rake db:migration
+            rake db:migrate
         fi
 
         cd ../
