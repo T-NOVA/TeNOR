@@ -93,9 +93,11 @@ module InstantiationHelper
                 if keystone_version == 'v2.0'
                     pop_auth = generate_v2_credentials(popInfo, popUrls, tenant_id, user_id, token)
                     pop_auth['urls'] = popUrls
+                    pop_auth['pop_id'] = pop_id
                 elsif keystone_version == 'v3'
                     pop_auth = generate_v3_credentials(popInfo, popUrls, tenant_id, user_id, token)
                     pop_auth['urls'] = popUrls
+                    pop_auth['pop_id'] = pop_id
                 end
             end
         end
