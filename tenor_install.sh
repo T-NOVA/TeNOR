@@ -242,7 +242,7 @@ configureIps(){
 
       # for capped collection
       capped
-      capped_size 1024m
+      capped_size 128m
 
       # authentication
       # user mongouser
