@@ -4,6 +4,7 @@
 - Fixed unauhtorized behaviour in the UI. Solve #123
 - UI: When a PoP is added, it's possible to select though the available API versions.
 - Fix mongoid array problems.
+- Changed log file size to 64mb.
 
 ## 0.6.1
 - DNS as array. You can specify multiple DNS when a PoP is added.
