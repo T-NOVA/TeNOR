@@ -5,7 +5,6 @@ TeNOR is the NFV Orchestrator platform developed by the [T-NOVA](http://www.t-no
 ## Prerequisites
 - Ruby >= 2.2.5 (installation provided in dependencies/install_dependencies.sh)
 - Bundler (installation provided in dependencies/install_dependencies.sh)
-- Gatekeeper (https://github.com/piyush82/auth-utils). (installation provided in dependencies/install_dependencies.sh)
 - MongoDB (installation provided in dependencies/install_dependencies.sh)
 - Openstack Juno version or higher
 
@@ -22,17 +21,17 @@ TeNOR is the NFV Orchestrator platform developed by the [T-NOVA](http://www.t-no
 #Getting started
 
 ## Steps
-1. Install the prerequisites (Ruby, Gatekeeper and MongoDB). The installation of these requirements is provided a script inside the `dependencies` folder. Use the `install_dependencies.sh` script if you want to install it automatically.
+1. Install the prerequisites (Ruby and MongoDB). The installation of these requirements is provided a script inside the `dependencies` folder. Use the `install_dependencies.sh` script if you want to install it automatically.
 2. Install TeNOR (internal dependencies and configurations). Installation script provided in the root folder `tenor_install.sh`.
 3. Start TeNOR.
 4. Register the internal modules (automatic) and external modules (Mapping, mAPI, WICM, VIMMonitoring, Netfloc...).
-5. Register a Network Function Virtualisation Infrastructure Point of Presence (NFVI-PoP) inserting the Openstack credentials into Gatekeeper.
+5. Register a Network Function Virtualisation Infrastructure Point of Presence (NFVI-PoP) inserting the Openstack credentials into the authentication module.
 6. Test deploying a sample NSD/VNFD to the inserted NFVI-PoP.
 
 ## Installation
-We provide an installation script for Ubuntu 14.04 that helps with the installation of Ruby, Gatekeeper and MongoDB.
+We provide an installation script for Ubuntu 14.04 that helps with the installation of Ruby and MongoDB.
 
-In order to install Ruby, the MongoDB and Gatekeeper execute the following script:
+In order to install Ruby and MongoDB execute the following script:
 ```
 ./dependencies/install_dependencies.sh
 ```
@@ -46,7 +45,7 @@ Once Ruby is installed (you can be sure of that using `ruby -v` command in the t
 
 A menu will appear and you can choose a number in the menu [1-7].
 
-For TeNOR installation, insert the number 1 and press the Enter Key. The installation will start automatically installing the Ruby Gem dependencies. After few minutes, the script will ask you a set of questions regarding the location of the MongoDB, Gatekeeper. In the case of insert an emty values, the script will use the default values (localhost).
+For TeNOR installation, insert the number 1 and press the Enter Key. The installation will start automatically installing the Ruby Gem dependencies. After few minutes, the script will ask you a set of questions regarding the location of the MongoDB. In the case of insert an emty values, the script will use the default values (localhost).
 
 **Make sure that you have installed a Ruby version >= 2.2.5 and the `bundle` command is installed.**
 
@@ -54,11 +53,11 @@ Once the installation finishes, TeNOR needs to be [started](#execution)
 
 ## Vagrant (alternative installation)
 
-A Vagrantfile is provided with TeNOR, Gatekeeper and Mongodb installed.
+A Vagrantfile is provided with TeNOR and  Mongodb installed.
 
 ## Docker (alternative installation)
 
-A Dockerfile is provided that generates a container with TeNOR, Gatekeeper and Mongodb installed. Once is running, all the components are installed and running.
+A Dockerfile is provided that generates a container with TeNOR and Mongodb installed. Once is running, all the components are installed and running.
 
 1. Build it with:
 
@@ -68,7 +67,7 @@ A Dockerfile is provided that generates a container with TeNOR, Gatekeeper and M
 2. Run the container with:
 
     ````
-    docker run -itd -p 4000:4000 -p 8000:8000 -p 9000:9000 -v /opt/mongo:/var/lib/mongodb -v /opt/gatekeeper:/root/gatekeeper tnova/tenor bash
+    docker run -itd -p 4000:4000 -p 8000:8000 -p 9000:9000 -v /opt/mongo:/var/lib/mongodb tnova/tenor bash
     ````
 3. Then, you can test TeNOR ([Test if TeNOR is installed and running](#test-if-tenor-is-installed-and-running)), and you can access to the command line with:
 
@@ -110,7 +109,7 @@ Basic keys for using Byobu:
  - F3 and F4 for navigate through the windows
  - F6 exit from Byobu
 
-## Registering modules in TeNOR and Gatekeeper
+## Registering modules in TeNOR
 TeNOR has a microservice architecture and requires a registration of each microservices to the system. The NS Manager (API gateway) is the responsible to manage this registration. The internal TeNOR modules are managed automatically, but external modules like mAPI, WICM, Infrastructure repository and Netfloc needs to be registered.
 
 The registration of modules can be done with in three ways:
@@ -122,11 +121,11 @@ The registration of modules can be done with in three ways:
  - Using the following script:
  `./loadModules.sh`
 
-The content of the loadModules.sh is a set of CuRL request to the NS Manager inserting the IP and PORT of each microservice. When the NS Manager recevies the requests, automatically register each module into Gatekeeper in order to generate a microservice-token.
+The content of the loadModules.sh is a set of CuRL request to the NS Manager inserting the IP and PORT of each microservice. When the NS Manager recevies the requests, automatically register each module in order to generate a microservice-token.
 
-## Loading NFVI-PoP information in Gatekeeper
+## Loading NFVI-PoP information in TeNOR
 
-The PoP information is saved in Gatekeeper. First of all, TeNOR recevies the registration requests and validates the authentication. If it works, TeNOR saves the PoP in Gatekeeper. The PoP can be inserted in two manners:
+The PoP information is saved in the Authentication module. First of all, TeNOR recevies the registration requests and validates the authentication. If it works, TeNOR saves the PoP. The PoP can be inserted in two manners:
 
  - Using the TeNOR User Interface:
  `Configuration -> PoPs`
@@ -139,10 +138,10 @@ TeNOR has a User Interface that provides a global view of the all the orchestrat
 
 This user interface is located in the `ui` folder and contains their own README file with the installation guide.
 
-The UI uses Gatekeeper for authentication, so by default you need to use the default created user in Gatekeeper: t-nova-admin. Then, for the login:
+The UI uses Gatekeeper for authentication, so by default you need to use the default created user in Gatekeeper: admin. Then, for the login:
 
-- Username: t-nova-admin
-- Password: Eq7K8h9gpg
+- Username: admin
+- Password: adminpass
 
 #Initial steps
 

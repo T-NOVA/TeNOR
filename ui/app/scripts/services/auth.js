@@ -1,7 +1,53 @@
 'use strict';
 
 angular.module('tNovaApp')
-    .factory('AuthService', function ($http, $window, $q, BACKEND, AUTHENTICATION) {
+    .factory('AuthService', function ($http, $window, $q, TENOR) {
+
+        var login = function (obj) {
+            var url = 'rest/api/auth/login';
+            var deferred = $q.defer();
+
+            $http.post(url, obj, {
+                headers: {
+                    "X-host": TENOR,
+                    "Content-Type": "application/json"
+                }
+            }).then(
+                function (response) {
+                    console.log(response);
+                    //$window.localStorage.userId = userId;
+                    deferred.resolve(response.data);
+                },
+                function (response) {
+                    console.log(response);
+                    deferred.reject(response.data);
+                }
+            );
+            return deferred.promise;
+        };
+
+        var profile = function(user_id, token){
+            var url = 'rest/gk/api/admin/user/' + user_id;
+            var deferred = $q.defer();
+
+            $http.get(url, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Auth-Token': token,
+                    'X-host': TENOR
+                }
+            }).then(
+                function (response) {
+                    console.log(response);
+                    deferred.resolve(response.data);
+                },
+                function (response) {
+                    console.log(response);
+                    deferred.reject(response.data);
+                }
+            );
+            return deferred.promise;
+        };
 
         var loginGK = function (user_id, password) {
             var url = 'rest/gk/api/token/';
@@ -12,7 +58,7 @@ angular.module('tNovaApp')
                     'Content-Type': 'application/json',
                     'X-Auth-Password': password,
                     'X-Auth-Uid': user_id,
-                    "X-host": AUTHENTICATION
+                    "X-host": BACKEND
                 }
             }).then(
                 function (response) {
@@ -36,7 +82,7 @@ angular.module('tNovaApp')
                 headers: {
                     'Content-Type': 'application/json',
                     'X-Auth-Token': token,
-                    'X-host': AUTHENTICATION
+                    'X-host': BACKEND
                 }
             }).then(
                 function (response) {
@@ -51,12 +97,13 @@ angular.module('tNovaApp')
             return deferred.promise;
         };
 
-        var logout = function (token_id) {
+        var logout = function (token) {
             var deferred = $q.defer();
-            var url = 'rest/gk/api/token/' + token_id;
-            $http.delete(url, {
+            var url = 'rest/api/auth/logout';
+            $http.post(url, {}, {
                 headers: {
-                    'X-host': AUTHENTICATION
+                    'X-host': TENOR,
+                    'X-Auth-Token': token
                 }
             }).then(
                 function (response) {
@@ -79,7 +126,7 @@ angular.module('tNovaApp')
             $http.get(url, {
                 headers: {
                     'X-Auth-Token': token,
-                    'X-host': AUTHENTICATION
+                    'X-host': BACKEND
                 }
             }).then(
                 function (response) {
@@ -100,7 +147,7 @@ angular.module('tNovaApp')
             $http.post(url, object, {
                 headers: {
                     'X-Auth-Token': token,
-                    'X-host': AUTHENTICATION
+                    'X-host': BACKEND
                 }
             }).then(
                 function (response) {
@@ -122,7 +169,7 @@ angular.module('tNovaApp')
             var promise = $http.delete(url, {
                 headers: {
                     'X-Auth-Token': token,
-                    'X-host': AUTHENTICATION
+                    'X-host': BACKEND
                 }
             }).then(
                 function (response) {
@@ -136,11 +183,11 @@ angular.module('tNovaApp')
             logout: function (token_id) {
                 return logout(token_id);
             },
-            loginGK: function (user_id, password) {
-                return loginGK(user_id, password);
+            login: function (obj) {
+                return login(obj);
             },
-            profileGK: function (user_id, token) {
-                return profileGK(user_id, token);
+            profile: function (user_id, token) {
+                return profile(user_id, token);
             },
             get: function (token, path) {
                 return get(token, path);

@@ -6,7 +6,7 @@ require ::File.join(root, 'main')
 run VNFManager.new
 
 map('/vnfs') { run Catalogue }
-map('/configs') { run ServiceConfiguration }
+map('/modules') { run ServiceConfiguration }
 map('/vnf-monitoring') { run Monitoring }
 map('/vnf-provisioning') { run Provisioning }
 map('/vnf-instances/scaling') { run Scaling }

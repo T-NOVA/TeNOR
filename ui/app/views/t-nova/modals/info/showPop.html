@@ -10,13 +10,13 @@
                     <div class="col-md-6 col-xs-6">
                         <div class="form-group">
                             <label for="node_os">id:</label>
-                            <input ng-if="popInfo.info[0].dcname" type="text" readonly class="form-control" id="node_os" value="{{popInfo.info[0].dcname}}">
+                            <input ng-if="popInfo._id" type="text" readonly class="form-control" id="node_os" value="{{popInfo.info[0].dcname}}">
                         </div>
                     </div>
                     <div class="col-md-6 col-xs-6">
                         <div class="form-group">
                             <label for="node_os_version">User name:</label>
-                            <input ng-if="popInfo.info[0].adminuser" type="text" readonly class="form-control" id="node_os_version" value="{{popInfo.info[0].adminuser}}">
+                            <input ng-if="popInfo.user" type="text" readonly class="form-control" id="node_os_version" value="{{popInfo.info[0].adminuser}}">
                         </div>
                     </div>
                 </div>

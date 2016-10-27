@@ -26,8 +26,8 @@ Run `rake start` and the server will listen on port 9000 by default.
 
 Visit the page http://localhost:9000 in your browser.
 
-Default user: t-nova-admin
-Default password: Eq7K8h9gpg
+Default user: admin
+Default password: adminpass
 
 ##Development
 

@@ -12,7 +12,4 @@ logger_host: 127.0.0.1
 logger_port: 5228
 port_security: false
 
-gk:
-service_key:
-
 dependencies: []

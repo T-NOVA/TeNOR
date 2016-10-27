@@ -1,17 +1,34 @@
 require 'yard'
+require 'mongoid'
+require 'bcrypt'
+require_relative './models/init'
 
 desc 'Start the service'
 task :start do
-	conf = File.expand_path('config/puma.rb', File.dirname(__FILE__))
-	exec("puma -C #{conf}")
+    conf = File.expand_path('config/puma.rb', File.dirname(__FILE__))
+    exec("puma -C #{conf}")
 end
 
+conf = YAML.load(File.open('config/config.yml'))
+Mongoid.load!('config/mongoid.yml', conf['environment'])
+
 namespace :db do
-  task :load_config do
-    require './main'
-  end
+    task :load_config do
+        require './main'
+    end
+    task :seed do
+        puts 'Creating the admin user....'
+        begin
+            User.find_by(name: 'admin').destroy unless User.find_by(name: 'admin').nil?
+        rescue  Mongoid::Errors::DocumentNotFound => e
+            salt = BCrypt::Engine.generate_salt
+            user1 = User.create(name: 'admin', email: 'mail@mail.com', password: 'adminpass', password_confirmation: 'adminpass', password_salt: salt, password_hash: BCrypt::Engine.hash_secret('adminpass', salt), active: 1)
+            user1.save!
+        end
+        puts 'Admin user has been created.'
+    end
 end
 
 YARD::Rake::YardocTask.new do |t|
-  t.files = ['main.rb', 'helpers/*.rb', 'routes/*.rb']
+    t.files = ['main.rb', 'helpers/*.rb', 'routes/*.rb']
 end

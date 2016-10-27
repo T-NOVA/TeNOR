@@ -18,6 +18,114 @@
 # @see ServiceConfiguration
 class ServiceConfiguration < VNFManager
 
+  # /modules/services
+    get '/services' do
+        begin
+            return 200, Service.all.to_json
+        rescue => e
+            logger.error e
+            logger.error 'Error Establishing a Database Connection'
+            return 500, 'Error Establishing a Database Connection'
+        end
+    end
+
+    get '/services/:id' do |id|
+        begin
+            service = Service.find(id)
+        rescue Mongoid::Errors::DocumentNotFound => e
+            logger.error 'DC not found'
+            return 404
+        end
+        return service.to_json
+    end
+
+    get '/services/name/:name' do |name|
+        begin
+            service = Service.find_by(:name => name)
+        rescue Mongoid::Errors::DocumentNotFound => e
+            logger.error 'DC not found'
+            return 404
+        end
+        return service['token']
+    end
+
+    post '/services' do
+        return 415 unless request.content_type == 'application/json'
+        serv_reg, errors = parse_json(request.body.read)
+
+        @token = JWT.encode({ service_name: serv_reg['name'] }, serv_reg['secret'], 'HS256')
+        serv = {
+            name: serv_reg['name'],
+            host: serv_reg['host'],
+            port: serv_reg['port'],
+            token: @token,
+            depends_on: serv_reg['depends_on']
+        }
+        logger.debug serv
+        begin
+            s = Service.find_by(name: serv_reg['name'])
+            s.update_attributes!(host: serv_reg['host'], port: serv_reg['port'], token: @token, depends_on: serv_reg['depends_on'])
+        rescue Mongoid::Errors::DocumentNotFound => e
+            Service.create!(serv)
+        rescue => e
+            logger.error 'Error saving service.'
+            halt 404
+        end
+        depends_on = []
+        serv_reg['depends_on'].each do |serv|
+            begin
+                logger.info "Checking if dependant Services of #{serv} is Up and Running...."
+                s = Service.where(name: serv).first
+                next if s.nil?
+                dependant_status = is_port_open?(s['host'], s['port'])
+                if dependant_status == false
+                    logger.info "Service found but is down."
+                    s.destroy
+                else
+                    depends_on << { name: s['name'], host: s['host'], port: s['port'], token: s['token'] }
+                end
+            rescue Mongoid::Errors::DocumentNotFound => e
+                logger.error 'User not found.'
+                # halt 404
+            end
+        end
+
+        logger.error 'Find service that has this module as dependency:'
+        # Service
+        dependencies = Service.any_of(depends_on: serv[:name]).entries
+        logger.error dependencies
+        if dependencies.any?
+            dependencies.each do |dependency|
+                begin
+                    RestClient.post dependency['host'] + ':' + dependency['port'] + '/gk_dependencies', serv.to_json, :content_type => :json, 'X-Auth-Token' => dependency['token']
+                rescue => e
+                    # logger.error e
+                    puts e
+                    # halt 500, {'Content-Type' => 'text/plain'}, "Error sending dependencies to " +service['name']
+                end
+            end
+        end
+        halt 201, { depends_on: depends_on }.to_json
+    end
+
+    put '/services' do
+    end
+
+    delete '/services/:name' do |name|
+        begin
+           Service.find_by(:name => name).destroy
+       rescue Mongoid::Errors::DocumentNotFound => e
+           halt 404
+       end
+        halt 200
+    end
+
+
+
+
+
+
+=begin
 	# @method put_configs_config_id
 	# @overload put '/configs/:config_id'
 	# 	Update a configuration value
@@ -112,5 +220,5 @@ class ServiceConfiguration < VNFManager
 
 		return 200
 	end
-
+=end
 end

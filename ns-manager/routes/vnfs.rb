@@ -17,154 +17,125 @@
 #
 # @see VNFCatalogue
 class VNFCatalogue < TnovaManager
+    # @method get_vnfs
+    # @overload get "/vnfs"
+    # Get the VNFs list
+    get '/' do
+        service_host, errors = ServiceConfigurationHelper.get_module('vnf_manager')
+        halt 500, errors if errors
 
-  # @method get_vnfs
-  # @overload get "/vnfs"
-  # Get the VNFs list
-  get '/' do
-    begin
-      @service = ServiceModel.find_by(name: "vnf_manager")
-    rescue Mongoid::Errors::DocumentNotFound => e
-      halt 500, {'Content-Type' => "text/plain"}, "Microservice unrechable."
+        begin
+            response = RestClient.get service_host + request.fullpath, 'X-Auth-Token' => @client_token, :content_type => :json
+        rescue Errno::ECONNREFUSED
+            halt 500, 'VNF Manager unreachable'
+        rescue => e
+            logger.error e.response
+            halt e.response.code, e.response.body
+        end
+        return response.code, response.body
     end
 
-    begin
-      response = RestClient.get @service.host + ":" + @service.port.to_s + request.fullpath, 'X-Auth-Token' => @client_token, :content_type => :json
-    rescue Errno::ECONNREFUSED
-      halt 500, 'VNF Manager unreachable'
-    rescue => e
-      logger.error e.response
-      halt e.response.code, e.response.body
+    # @method get_vnfs_id
+    # @overload get "/vnfs/:vnf_id"
+    # Get specific VNF
+    # @param [string] vnf_id The VNFD id
+    get '/:vnf_id' do
+        service_host, errors = ServiceConfigurationHelper.get_module('vnf_manager')
+        halt 500, errors if errors
+
+        begin
+            response = RestClient.get service_host + request.fullpath, 'X-Auth-Token' => @client_token, :content_type => :json
+        rescue Errno::ECONNREFUSED
+            halt 500, 'VNF Manager unreachable'
+        rescue => e
+            logger.error e.response
+            halt e.response.code, e.response.body
+        end
+
+        return response.code, response.body
     end
 
-    return response.code, response.body
+    # @method post_vnfs
+    # @overload post "/vnfs"
+    # Post a new VNF
+    post '/' do
+        # Return if content-type is invalid
+        return 415 unless request.content_type == 'application/json'
 
-  end
+        service_host, errors = ServiceConfigurationHelper.get_module('vnf_manager')
+        halt 500, errors if errors
 
-  # @method get_vnfs_id
-  # @overload get "/vnfs/:vnf_id"
-  # Get specific VNF
-  # @param [string] vnf_id The VNFD id
-  get '/:vnf_id' do
-    begin
-      @service = ServiceModel.find_by(name: "vnf_manager")
-    rescue Mongoid::Errors::DocumentNotFound => e
-      halt 500, {'Content-Type' => "text/plain"}, "Microservice unrechable."
+        begin
+            response = RestClient.post service_host + request.fullpath, request.body.read, 'X-Auth-Token' => @client_token, :content_type => :json
+        rescue Errno::ECONNREFUSED
+            halt 500, 'VNF Manager unreachable'
+        rescue => e
+            logger.error e.response
+            halt e.response.code, e.response.body
+        end
+
+        # updateStatistics('vnfs_created_requests')
+        return response.code, response.body
     end
 
-    begin
-      response = RestClient.get @service.host + ":" + @service.port.to_s + request.fullpath, 'X-Auth-Token' => @client_token, :content_type => :json
-    rescue Errno::ECONNREFUSED
-      halt 500, 'VNF Manager unreachable'
-    rescue => e
-      logger.error e.response
-      halt e.response.code, e.response.body
+    # @method put_vnfs
+    # @overload put "/vnfs/:vnf_id"
+    # Update a VNF
+    # @param [string] vnf_id The VNFD id
+    put '/:vnf_id' do
+        # Return if content-type is invalid
+        return 415 unless request.content_type == 'application/json'
+
+        service_host, errors = ServiceConfigurationHelper.get_module('vnf_manager')
+        halt 500, errors if errors
+
+        begin
+            response = RestClient.put service_host + request.fullpath, request.body.read, 'X-Auth-Token' => @client_token, :content_type => :json
+        rescue Errno::ECONNREFUSED
+            halt 500, 'VNF Manager unreachable'
+        rescue => e
+            logger.error e.response
+            halt e.response.code, e.response.body
+        end
+
+        return response.code, response.body
     end
 
-    return response.code, response.body
+    # @method delete_vnfs
+    # @overload delete "/vnfs/:vnf_id"
+    # Delete a VNFs
+    # @param [string] vnf_id The VNFD id
+    delete '/:vnf_id' do
+        # check if some NSD is using it
+        service_host, errors = ServiceConfigurationHelper.get_module('ns_catalogue')
+        halt 500, errors if errors
 
-  end
+        begin
+            response = RestClient.get service_host + '/network-services/vnf/' + params[:vnf_id].to_s, 'X-Auth-Token' => @client_token, :content_type => :json
+            nss, errors = parse_json(response)
+            unless nss.empty?
+                halt 400, nss.size.to_s + ' Network Services are using this VNF.'
+            end
+        rescue Errno::ECONNREFUSED
+            halt 500, 'NS Catalogue unreachable'
+        rescue => e
+            logger.error e.response
+            # halt e.response.code, e.response.body
+            logger.error 'Any network service is using this VNF.'
+        end
 
-  # @method post_vnfs
-  # @overload post "/vnfs"
-  # Post a new VNF
-  post '/' do
+        service_host, errors = ServiceConfigurationHelper.get_module('vnf_manager')
+        halt 500, errors if errors
 
-    # Return if content-type is invalid
-    return 415 unless request.content_type == 'application/json'
+        begin
+            response = RestClient.delete service_host + request.fullpath, 'X-Auth-Token' => @client_token, :content_type => :json
+        rescue Errno::ECONNREFUSED
+            halt 500, 'NS Catalogue unreachable'
+        rescue => e
+            logger.error e.response
+            halt e.response.code, e.response.body
+        end
 
-    begin
-      @service = ServiceModel.find_by(name: "vnf_manager")
-    rescue Mongoid::Errors::DocumentNotFound => e
-      halt 500, {'Content-Type' => "text/plain"}, "Microservice unrechable."
+        return response.code, response.body
     end
-
-    begin
-      response = RestClient.post @service.host + ":" + @service.port.to_s + request.fullpath, request.body.read, 'X-Auth-Token' => @client_token, :content_type => :json
-    rescue Errno::ECONNREFUSED
-      halt 500, 'VNF Manager unreachable'
-    rescue => e
-      logger.error e.response
-      halt e.response.code, e.response.body
-    end
-
-    #updateStatistics('vnfs_created_requests')
-    return response.code, response.body
-
-  end
-
-  # @method put_vnfs
-  # @overload put "/vnfs/:vnf_id"
-  # Update a VNF
-  # @param [string] vnf_id The VNFD id
-  put '/:vnf_id' do
-
-    # Return if content-type is invalid
-    return 415 unless request.content_type == 'application/json'
-
-    begin
-      @service = ServiceModel.find_by(name: "vnf_manager")
-    rescue Mongoid::Errors::DocumentNotFound => e
-      halt 500, {'Content-Type' => "text/plain"}, "Microservice unrechable."
-    end
-
-    begin
-      response = RestClient.put @service.host + ":" + @service.port.to_s + request.fullpath, request.body.read, 'X-Auth-Token' => @client_token, :content_type => :json
-    rescue Errno::ECONNREFUSED
-      halt 500, 'VNF Manager unreachable'
-    rescue => e
-      logger.error e.response
-      halt e.response.code, e.response.body
-    end
-
-    return response.code, response.body
-
-  end
-
-  # @method delete_vnfs
-  # @overload delete "/vnfs/:vnf_id"
-  # Delete a VNFs
-  # @param [string] vnf_id The VNFD id
-  delete '/:vnf_id' do
-
-    #check if some NSD is using it
-    begin
-      @service = ServiceModel.find_by(name: "ns_catalogue")
-    rescue Mongoid::Errors::DocumentNotFound => e
-      halt 500, {'Content-Type' => "text/plain"}, "NS Catalogue Microservice unrechable."
-    end
-
-    begin
-      response = RestClient.get @service.host + ":" + @service.port.to_s + '/network-services/vnf/' + params[:vnf_id].to_s, 'X-Auth-Token' => @client_token, :content_type => :json
-      nss, errors = parse_json(response)
-      if nss.size > 0
-        halt 400, nss.size.to_s + ' Network Services are using this VNF.'
-      end
-    rescue Errno::ECONNREFUSED
-      halt 500, 'NS Catalogue unreachable'
-    rescue => e
-      logger.error e.response
-      #halt e.response.code, e.response.body
-      logger.error "Any network service is using this VNF."
-    end
-
-    begin
-      @service = ServiceModel.find_by(name: "vnf_manager")
-    rescue Mongoid::Errors::DocumentNotFound => e
-      halt 500, {'Content-Type' => "text/plain"}, "VNF Manager Microservice unrechable."
-    end
-
-    begin
-      response = RestClient.delete @service.host + ":" + @service.port.to_s + request.fullpath, 'X-Auth-Token' => @client_token, :content_type => :json
-    rescue Errno::ECONNREFUSED
-      halt 500, 'NS Catalogue unreachable'
-    rescue => e
-      logger.error e.response
-      halt e.response.code, e.response.body
-    end
-
-    return response.code, response.body
-
-  end
-
 end
