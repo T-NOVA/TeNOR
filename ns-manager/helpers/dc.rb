@@ -46,6 +46,17 @@ module GatekeeperHelper
     return dc.to_json
   end
 
+  def getDcsTokens()
+    dcs_tokens = []
+    dcs = Dc.all
+    dcs.each do |dc|
+      puts dc.inspect
+      dcs_tokens << {:id => dc.id, :token => "token"}
+    end
+    puts dcs_tokens
+    halt 200, dcs_tokens.to_json
+  end
+
   # Get list of PoPs
   #
   # @param [Symbol] format the format type, `:text` or `:html`

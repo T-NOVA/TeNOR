@@ -35,13 +35,21 @@ class DcController < TnovaManager
     # @overload get '/pops/dc/:id'
     #  Returns a DC
     get '/dc/:id' do |id|
+        puts Dc.all.to_json
         begin
-            dc = Dc.find(id)
+            dc = Dc.find(id.to_i)
         rescue Mongoid::Errors::DocumentNotFound => e
             logger.error 'DC not found'
             return 404
         end
         return dc.to_json
+    end
+
+    # @method get_pops_dc
+    # @overload get '/pops/dc/:id'
+    #  Returns a DCs
+    get '/dcs' do
+        return getDcsTokens()
     end
 
     # @method get_pops_dc_name
@@ -103,7 +111,7 @@ class DcController < TnovaManager
     #  Delete a DC
     delete '/dc/:id' do |id|
         begin
-            Dc.find(id).destroy
+            Dc.find(id.to_i).destroy
         rescue Mongoid::Errors::DocumentNotFound => e
             halt 404
         end

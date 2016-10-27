@@ -1,5 +1,6 @@
 require 'yard'
 require 'mongoid'
+require 'autoinc'
 require 'bcrypt'
 require_relative './models/init'
 
