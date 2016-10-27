@@ -242,7 +242,7 @@ configureIps(){
 
       # for capped collection
       capped
-      capped_size 128m
+      capped_size 64m
 
       # authentication
       # user mongouser
@@ -261,6 +261,7 @@ configureFiles(){
     configureIps
 
     rm **/config/config.yml
+#    rm **/config/mongoid.yml
 
     for folder in $(find . -type d  \( -name "ns*" -o -name "vnf*" -o -name "hot-generator" \) ); do
         printf "$folder\n"
