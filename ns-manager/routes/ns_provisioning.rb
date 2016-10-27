@@ -222,6 +222,20 @@ class NsProvisioner < TnovaManager
     rescue Mongoid::Errors::DocumentNotFound => e
       halt 500, {'Content-Type' => "text/plain"}, "NS Provisioning not registred."
     end
+    begin
+      ns_monitoring = ServiceModel.find_by(name: "ns_monitoring")
+      logger.info "Remove monitoring data for NS..."
+      begin
+        response = RestClient.post ns_monitoring.host + ":" + ns_monitoring.port.to_s + '/monitoring-data/unsubscribe/' + params['nsr_id'], 'X-Auth-Token' => @client_token, :content_type => :json
+      rescue Errno::ECONNREFUSED
+        #halt 500, 'NS Monitoring unreachable'
+      rescue => e
+        logger.error e.response
+        #halt e.response.code, e.response.body
+      end
+    rescue Mongoid::Errors::DocumentNotFound => e
+      #halt 500, {'Content-Type' => "text/plain"}, "NS Monitoring not registred."
+    end
 
     begin
       response = RestClient.get @service.host + ":" + @service.port.to_s + '/ns-instances/' + params['nsr_id'], 'X-Auth-Token' => @client_token, :content_type => :json

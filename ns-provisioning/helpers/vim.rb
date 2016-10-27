@@ -17,6 +17,25 @@
 #
 # @see NSProvisioner
 module VimHelper
+
+#deprecated
+    def openstackUserAuthentication(keystoneUrl, tenantName, user, password)
+        auth = { auth: { tenantName: tenantName, passwordCredentials: { username: user, password: password } } }
+
+        begin
+            response = RestClient.post keystoneUrl + '/tokens', auth.to_json, content_type: :json
+        rescue => e
+            logger.error e
+            logger.error e.response.body
+        end
+
+        authentication, errors = parse_json(response)
+        return 400, errors if errors
+
+        authentication
+    end
+
+    #deprecated....
     def openstackAdminAuthentication(keystoneUrl, tenantName, user, password)
         auth = { auth: { tenantName: tenantName, passwordCredentials: { username: user, password: password } } }
 
@@ -33,6 +52,7 @@ module VimHelper
         authentication['access']['token']['id']
     end
 
+#deprecated
     def openstackAuthentication(keystoneUrl, tenantId, user, password)
         auth = { auth: { tenantId: tenantId, passwordCredentials: { username: user, password: password } } }
 
@@ -50,44 +70,6 @@ module VimHelper
         authentication['access']['token']['id']
     end
 
-    def createTenant(keystoneUrl, projectName, token)
-        project = { tenant: { description: 'Tenant created by TeNOR', enabled: true, name: projectName } }
-
-        begin
-            return getTenantId(keystoneUrl, tenantName, token)
-        rescue => e
-            begin
-                response = RestClient.post keystoneUrl + '/tenants', project.to_json, :content_type => :json, :'X-Auth-Token' => token
-            rescue => e
-                logger.error e
-                logger.error e.response.body
-            end
-
-            project, errors = parse_json(response)
-            return 400, errors if errors
-
-            return project['tenant']['id']
-        end
-    end
-
-    def createUser(keystoneUrl, projectId, userName, password, token)
-        user = { user: { email: userName + '@tenor-tnova.eu', enabled: true, name: userName, password: password, tenantId: projectId } }
-        user_id = getUserId(keystoneUrl, userName, token)
-        if user_id.nil?
-            begin
-                response = RestClient.post keystoneUrl + '/users', user.to_json, :content_type => :json, :'X-Auth-Token' => token
-            rescue => e
-                logger.error e
-                logger.error e.response.body
-            end
-            user, errors = parse_json(response)
-            return 400, errors if errors
-
-            return user['user']['id']
-        else
-            return user_id
-        end
-    end
 
     def deleteTenant(keystoneUrl, tenant_id, token)
         begin
@@ -110,6 +92,47 @@ module VimHelper
         nil
     end
 
+=begin
+#deprecated
+def createTenant(keystoneUrl, projectName, token)
+    project = { tenant: { description: 'Tenant created by TeNOR', enabled: true, name: projectName } }
+
+    begin
+        return getTenantId(keystoneUrl, tenantName, token)
+    rescue => e
+        begin
+            response = RestClient.post keystoneUrl + '/tenants', project.to_json, :content_type => :json, :'X-Auth-Token' => token
+        rescue => e
+            logger.error e
+            logger.error e.response.body
+        end
+
+        project, errors = parse_json(response)
+        return 400, errors if errors
+
+        return project['tenant']['id']
+    end
+end
+
+#deprecated
+def createUser(keystoneUrl, projectId, userName, password, token)
+    user = { user: { email: userName + '@tenor-tnova.eu', enabled: true, name: userName, password: password, tenantId: projectId } }
+    user_id = getUserId(keystoneUrl, userName, token)
+    if user_id.nil?
+        begin
+            response = RestClient.post keystoneUrl + '/users', user.to_json, :content_type => :json, :'X-Auth-Token' => token
+        rescue => e
+            logger.error e
+            logger.error e.response.body
+        end
+        user, errors = parse_json(response)
+        return 400, errors if errors
+
+        return user['user']['id']
+    else
+        return user_id
+    end
+end
     def getTenantId(keystoneUrl, tenantName, token)
         begin
             response = RestClient.get keystoneUrl + '/tenants', :content_type => :json, :'X-Auth-Token' => token
@@ -123,6 +146,7 @@ module VimHelper
         return tenant['id'] unless tenant.nil?
     end
 
+
     def getUserId(keystoneUrl, username, token)
         begin
             response = RestClient.get keystoneUrl + '/users', :content_type => :json, :'X-Auth-Token' => token
@@ -135,7 +159,7 @@ module VimHelper
         user = users['users'].find { |user| user['username'] == username }
         return user['id'] unless user.nil?
     end
-
+=end
     def getAdminRole(keystoneUrl, token)
         begin
             response = RestClient.get keystoneUrl + '/OS-KSADM/roles', :content_type => :json, :'X-Auth-Token' => token

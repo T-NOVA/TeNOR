@@ -42,6 +42,7 @@ class VnfProvisioning < Sinatra::Application
 	helpers ProvisioningHelper
 	helpers MapiHelper
 	helpers HotHelper
+    helpers ComputeHelper
 
     configure do
         # Configure logging

@@ -1,3 +1,10 @@
+## 0.7.0
+- Non admin users can use TeNOR. Using already created flavors inside Openstack.
+- Keystone v3 available.
+- Fixed unauhtorized behaviour in the UI. Solve #123
+- UI: When a PoP is added, it's possible to select though the available API versions.
+- Fix mongoid array problems.
+
 ## 0.6.1
 - DNS as array. You can specify multiple DNS when a PoP is added.
 - Updated Monitoring. Implemented and included SLA management and Expression Evaluator in NS Monitoring.

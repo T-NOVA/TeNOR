@@ -51,3 +51,8 @@ require_relative 'scale_to_hot'
 #netfloc
 require_relative 'netfloc_to_hot'
 require_relative 'netfloc/service_chain'
+
+#keystone
+require_relative 'user_to_hot'
+require_relative 'keystone/project'
+require_relative 'keystone/user'

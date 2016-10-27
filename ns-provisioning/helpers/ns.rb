@@ -84,14 +84,31 @@ module NsProvisioner
             return 400, errors.to_json if errors
             popUrls = getPopUrls(popInfo['info'][0]['extrainfo'])
 
-            begin
-                tenant_token = openstackAuthentication(popUrls[:keystone], auth_info['tenant_id'], auth_info['username'], auth_info['password'])
-                token = openstackAdminAuthentication(popUrls[:keystone], popUrls[:tenant], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
-            rescue => e
-                logger.error 'Unauthorized. Remove instance.'
+            keystone_version = URI(popUrls[:keystone]).path.split('/').last
+            if keystone_version == 'v2.0'
+                admin_authentication, errors = authentication_v2(popUrls[:keystone], popUrls[:tenant], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
+                logger.error errors if errors
+                user_authentication, errors = authentication_v2(popUrls[:keystone], auth_info['tenant_name'], auth_info['username'], auth_info['password'])
+                logger.error errors if errors
+                @instance.update_attribute('status', 'ERROR_REMOVING') if errors
+                @instance.push(audit_log: errors) if errors
+                return 400, errors.to_json if errors
+                token = admin_authentication['access']['token']['id']
+                tenant_token = user_authentication['access']['token']['id']
+            elsif keystone_version == 'v3'
+                admin_authentication, errors = authentication_v3(popUrls[:keystone], popUrls[:tenant], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
+                logger.error errors if errors
+                user_authentication, errors = authentication_v3(popUrls[:keystone], auth_info['tenant_name'], auth_info['username'], auth_info['password'])
+                logger.error errors if errors
+                @instance.update_attribute('status', 'ERROR_REMOVING') if errors
+                @instance.push(audit_log: errors) if errors
+                return 400, errors.to_json if errors
+                token = admin_authentication['token']['id']
+                tenant_token = user_authentication['token']['id']
             end
 
-            stack_url = resource['network_stack']['stack']['links'][0]['href']
+            #stack_url = resource['network_stack']['stack']['links'][0]['href']
+            stack_url = resource['network_stack']['stack_url']
             logger.debug 'Removing reserved stack...'
             response, errors = delete_stack_with_wait(stack_url, tenant_token)
             logger.error errors if errors
@@ -100,34 +117,46 @@ module NsProvisioner
         end
 
         logger.info 'Removing users and tenants...'
-        @instance['vnfrs'].each do |vnf|
-            logger.error 'Delete users for VNFR: ' + vnf['vnfr_id'].to_s + ' from PoP: ' + vnf['pop_id'].to_s
+        @instance['authentication'].each do |pop_info|
+            logger.error 'Delete users of PoP : ' + pop_info['pop_id'].to_s
 
-            popInfo, errors = getPopInfo(vnf['pop_id'])
+            popInfo, errors = getPopInfo(pop_info['pop_id'])
             logger.error errors if errors
             return 400, errors.to_json if errors
             popUrls = getPopUrls(popInfo['info'][0]['extrainfo'])
 
-            auth_info = @instance['authentication'].find { |auth| auth['pop_id'] == vnf['pop_id'] }
-            puts popInfo
-
-            begin
-                token = openstackAdminAuthentication(popUrls[:keystone], popUrls[:tenant], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
-            rescue => e
-                logger.error 'Unauthorized. Remove instance.'
+            auth_info = @instance['authentication'].find { |auth| auth['pop_id'] == pop_info['pop_id'] }
+            keystone_version = URI(popUrls[:keystone]).path.split('/').last
+            if keystone_version == 'v2.0'
+                user_authentication, errors = authentication_v2(popUrls[:keystone], popUrls[:tenant], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
+                logger.error errors if errors
+                @instance.update_attribute('status', 'ERROR_REMOVING') if errors
+                @instance.push(audit_log: errors) if errors
+                return 400, errors.to_json if errors
+                token = user_authentication['access']['token']['id']
+            elsif keystone_version == 'v3'
+                user_authentication, errors = authentication_v3(popUrls[:keystone], popUrls[:tenant], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
+                logger.error errors if errors
+                @instance.update_attribute('status', 'ERROR_REMOVING') if errors
+                @instance.push(audit_log: errors) if errors
+                return 400, errors.to_json if errors
+                token = user_authentication['token']['id']
             end
 
-            unless vnf['security_group_id'].nil?
+            unless pop_info['security_group_id'].nil?
                 #      deleteSecurityGroup(popUrls[:compute], vnf_info['tenant_id'], vnf_info['security_group_id'], tenant_token)
             end
 
-            unless settings.default_tenant
-                logger.info "Removing user '" + auth_info['user_id'].to_s + "'..."
-                #deleteUser(popUrls[:keystone], auth_info['user_id'], token)
-
-                logger.info "Removing tenant '" + auth_info['tenant_id'].to_s + "'..."
-                # deleteTenant(popUrls[:keystone], auth_info['tenant_id'], token)
+            unless settings.default_tenant && !popUrls[:is_admin]
+                logger.info "Removing user stack...."
+                stack_url = auth_info['stack_url']
+                logger.debug 'Removing user reserved stack...'
+                response, errors = delete_stack_with_wait(auth_info['stack_url'], token)
+                logger.error errors if errors
+                return 400, errors if errors
+                logger.info "User and tenant removed correctly."
             end
+            logger.info "REMOVED: User " + auth_info['user_id'].to_s + " and tenant '" + auth_info['tenant_id'].to_s
         end
 
         message = {
@@ -295,6 +324,9 @@ module NsProvisioner
             pop_auth = @instance['authentication'][0]
             tenant_token = pop_auth['token']
             popUrls = pop_auth['urls']
+            puts popUrls
+            puts pop_auth
+            puts tenant_token
 
             publicNetworkId, errors = publicNetworkId(popUrls[:neutron], tenant_token)
             return handleError(@instance, errors) if errors
@@ -316,6 +348,22 @@ module NsProvisioner
             return handleError(@instance, errors) if errors
 
             stack_id = stack['stack']['id']
+
+            #save stack_url in reserved resurces
+            puts "Saving reserved stack...."
+            #network_stack = stack
+            @resource_reservation = @instance['resource_reservation']
+            resource_reservation = []
+            resource_reservation << {
+                ports: [],
+                network_stack: {:id => stack_id, :stack_url => stack['stack']['links'][0]['href']},
+                public_network_id: publicNetworkId,
+                dns_server: popUrls[:dns],
+                pop_id: pop_auth['pop_id'],
+                routers: [],
+                networks: []
+            }
+            @instance.push(resource_reservation: resource_reservation)
 
             logger.info 'Checking network stack creation...'
             stack_info, errors = create_stack_wait(popUrls[:orch], pop_auth['tenant_id'], stack_name, tenant_token, 'NS Network')
@@ -342,18 +390,15 @@ module NsProvisioner
             @instance.push(lifecycle_event_history: 'NETWORK CREATED')
             @instance.update_attribute('vlr', networks)
 
-            puts @instance['resource_reservation']
-            resource_reservation = []
-            resource_reservation << {
-                ports: [],
-                network_stack: stack,
-                routers: routers,
-                networks: networks,
-                public_network_id: publicNetworkId,
-                dns_server: popUrls[:dns],
-                pop_id: pop_auth['pop_id']
-            }
-            @instance.update_attribute('resource_reservation', resource_reservation)
+            #get array
+            object = @resource_reservation.find {|s| s[:network_stack][:id] == stack['stack']['id'] }
+            #remove array
+            @instance.pull(resource_reservation: object)
+            #add array
+            resource_reservation = resource_reservation.find {|s| s[:network_stack][:id] == stack['stack']['id'] }
+            resource_reservation[:routers] = routers
+            resource_reservation[:networks] = networks
+            @instance.push(resource_reservation: resource_reservation)
         end
 
         @instance.update_attribute('status', 'INSTANTIATING VNFs')

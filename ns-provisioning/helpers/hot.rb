@@ -255,4 +255,27 @@ module HotHelper
         end
         response
     end
+
+    def generateUserHotTemplate(hot_generator_message)
+        begin
+            response = RestClient.post settings.hot_generator + "/userhot", hot_generator_message.to_json, content_type: :json, accept: :json
+        rescue Errno::ECONNREFUSED
+            error = { 'info' => 'HOT Generator unrechable.' }
+            return 500, error
+        rescue RestClient::ExceptionWithResponse => e
+            logger.error e
+            logger.error e.response.body
+            return e.response.code, e.response.body
+        rescue => e
+            logger.error e
+            logger.error 'E IS NIL' if e.nil?
+            logger.error 'RESPONSE IS NIL?' if e.response.nil?
+            # logger.error e.response
+            return 500, e
+        end
+        hot, errors = parse_json(response)
+        return 400, errors if errors
+
+        hot
+    end
 end

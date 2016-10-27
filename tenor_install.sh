@@ -32,8 +32,8 @@ show_menus() {
 	echo "1. Install TeNOR"
 	echo "2. Reconfigure configuration files"
 	echo "3. Register microservices"
-	echo "4. Add new PoP"
-	echo "5. Remove PoP"
+	echo "4. Add new PoP (Deprecated - Please, use the User Interface at http://localhost:9000)"
+	echo "5. Remove PoP (Deprecated - Please, use the User Interface at http://localhost:9000)"
 	echo "6. Inserting sample VNF and NS"
 	echo "7. Exit"
 }
@@ -242,7 +242,7 @@ configureIps(){
 
       # for capped collection
       capped
-      capped_size 1024m
+      capped_size 64m
 
       # authentication
       # user mongouser
@@ -261,6 +261,7 @@ configureFiles(){
     configureIps
 
     rm **/config/config.yml
+#    rm **/config/mongoid.yml
 
     for folder in $(find . -type d  \( -name "ns*" -o -name "vnf*" -o -name "hot-generator" \) ); do
         printf "$folder\n"
@@ -337,24 +338,28 @@ addNewPop(){
     read openstack_ip
     if [ -z "$openstack_ip" ]; then openstack_ip=$OPENSTACK_IP; fi
 
-    echo "Type the Openstack admin name, followed by [ENTER]:"
+    echo "Type the Openstack name, followed by [ENTER]:"
     read keystoneUser
     if [ -z "$keystoneUser" ]; then keystoneUser=$KEYSTONEUSER; fi
 
-    echo "Type the Openstack admin password, followed by [ENTER]:"
+    echo "Type the Openstack password, followed by [ENTER]:"
     read -s keystonePass
     if [ -z "$keystonePass" ]; then keystonePass=$KEYSTONEPASS; fi
 
-    echo "Type the Openstack admin tenant name, followed by [ENTER]:"
+    echo "Type the Openstack tenant name, followed by [ENTER]:"
     read admin_tenant_name
     if [ -z "$admin_tenant_name" ]; then admin_tenant_name=$ADMIN_TENANT_NAME; fi
+
+    echo "Type true or false if the Openstack user is admin, followed by [ENTER]:"
+    read admin_tenant_name
+    if [ -z "$admin_user_type" ]; then admin_user_type=$ADMIN_TENANT_NAME; fi
 
     echo "Type the Openstack DNS IP, followed by [ENTER]:"
     read openstack_dns
     if [ -z "$openstack_dns" ]; then openstack_dns=$OPENSTACK_DNS; fi
 
     response=$(curl -XPOST http://$tenor_host/gatekeeper/dc -H "Content-Type: application/json" \
-    -d '{"msg": "PoP Testbed", "dcname":"'$openstack_name'", "adminid":"'$keystoneUser'","password":"'$keystonePass'", "extrainfo":"pop-ip='$openstack_ip' tenant-name='$admin_tenant_name' keystone-endpoint=http://'$openstack_ip':35357/v2.0 orch-endpoint=http://'$openstack_ip':8004/v1 compute-endpoint=http://'$openstack_ip':8774/v2.1 neutron-endpoint=http://'$openstack_ip':9696/v2.0 dns='$openstack_dns'"}')
+    -d '{"msg": "PoP Testbed", "dcname":"'$openstack_name'", "isAdmin": "'$admin_user_type'" "adminid":"'$keystoneUser'","password":"'$keystonePass'", "extrainfo":"pop-ip='$openstack_ip' tenant-name='$admin_tenant_name' keystone-endpoint=http://'$openstack_ip':35357/v2.0 orch-endpoint=http://'$openstack_ip':8004/v1 compute-endpoint=http://'$openstack_ip':8774/v2.1 neutron-endpoint=http://'$openstack_ip':9696/v2.0 dns='$openstack_dns'"}')
 
     echo -e "\n\n"
     echo $response
@@ -369,9 +374,9 @@ conn_openstack() {
 
 removePop() {
     echo "Removing PoP..."
-    gatekeeper_host=10.10.1.63:8000
-    GATEKEEPER_PASS=Eq7K8h9gpg
-    GATEKEEPER_USER_ID=1
+    tenor_host=localhost:4000
+
+    curl -XGET http://$tenor_host/gatekeeper/dc  | ruby -r rubygems -r json -e "puts JSON[STDIN.read];"
 
     tokenId=$(curl -XPOST http://$gatekeeper_host/token/ -H "X-Auth-Password:$GATEKEEPER_PASS" -H "X-Auth-Uid:$GATEKEEPER_USER_ID" | python -c 'import json,sys;obj=json.load(sys.stdin);print obj["token"]["id"]')
     options=$(curl -XGET http://$gatekeeper_host/admin/dc/ -H 'X-Auth-Token: '$tokenId'' | python -c 'import json,sys;obj=json.load(sys.stdin);print obj["dclist"]')
@@ -379,15 +384,14 @@ removePop() {
     echo "Type the PoP Id, followed by [ENTER]:"
     read pop_id
 
-    popInfo=$(curl -XGET http://$gatekeeper_host/admin/dc/$pop_id -H 'X-Auth-Token: '$tokenId'' | python -c 'import json,sys;obj=json.load(sys.stdin);print obj["info"]')
-    echo "PoP to remove: "
+    curl -XGET http://$tenor_host/gatekeeper/dc/$pop_id  | ruby -r rubygems -r json -e "puts JSON[STDIN.read];"
 
     echo "Are you sure you want to remove this PoP (y/n)?, followed by [ENTER]:"
     read remove
 
     if [ "$remove" = "y" ]; then
       echo "Removing PoP..."
-      curl -XDELETE http://$gatekeeper_host/admin/dc/$pop_id -H 'X-Auth-Token: '$tokenId''
+      curl -XDELETE http://$tenor_host/gatekeeper/dc/$pop_id
     fi
 
     pause

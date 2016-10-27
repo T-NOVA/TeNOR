@@ -54,6 +54,9 @@ class NsProvisioning < Sinatra::Application
     helpers UtilsHelper
     helpers HotHelper
     helpers InstantiationHelper
+    helpers AuthenticationHelper
+    helpers Authenticationv2Helper
+    helpers Authenticationv3Helper
 
     Mongoid.load!('config/mongoid.yml')
 end

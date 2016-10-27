@@ -38,27 +38,27 @@ class GatekeeperController < TnovaManager
         pop_info, errors = parse_json(request.body.read)
         extrainfo = getPopUrls(pop_info['extrainfo'])
 
-        # check authentication, if fails, the PoP is not inserted
-        auth = { auth: { tenantName: extrainfo[:tenantname], passwordCredentials: { username: pop_info['adminid'], password: pop_info['password'] } } }
-        begin
-            response = RestClient.post extrainfo[:keystone] + '/tokens', auth.to_json, content_type: :json
-        rescue Errno::ECONNREFUSED => e
-            return 500, 'Connection refused'
-        rescue RestClient::ExceptionWithResponse => e
-            logger.error e
-            logger.error e.response.body
-            return e.response.code, e.response.body
-        rescue => e
-            logger.error e
-            logger.error e.response.body
-            return 400, errors if errors
-        end
+        #analyze Keystone version
+        version = URI(extrainfo[:keystone]).path.split('/').last
 
-        authentication, errors = parse_json(response)
+        #v2.0 authentication
+        if version == 'v2.0'
+            response, errors = authentication_v2(pop_info, extrainfo)
+            return 400, errors if errors
+        elsif version == 'v3'
+            response, errors = authentication_v3(pop_info, extrainfo)
+            return 400, errors if errors
+        else
+            halt 400, "No keystone version specified."
+        end
+        # authentication ok, save it to gatekeeper
+        response, errors = registerPop(pop_info)
+        logger.error if errors
         return 400, errors if errors
 
-        # authentication ok, save it to gatekeeper
-        registerPop(pop_info)
+        pop_info, errors = parse_json(response)
+        return pop_info['info'][0]['id']
+
         return getPopList
     end
 

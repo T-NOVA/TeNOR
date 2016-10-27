@@ -51,72 +51,56 @@ module InstantiationHelper
 
         token = ''
         if @instance['project'].nil?
-            begin
-                token, errors = openstackAdminAuthentication(popUrls[:keystone], popUrls[:tenant], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
+            keystone_version = URI(popUrls[:keystone]).path.split('/').last
+
+            if keystone_version == 'v2.0'
+                user_authentication, errors = authentication_v2(popUrls[:keystone], popUrls[:tenant], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
                 logger.error errors if errors
                 @instance.update_attribute('status', 'ERROR_CREATING') if errors
                 @instance.push(audit_log: errors) if errors
                 return 400, errors.to_json if errors
-
-                if settings.default_tenant
-                    pop_auth['username'] = settings.default_user_name
-                    pop_auth['tenant_name'] = settings.default_tenant_name
-                    pop_auth['tenant_id'] = getTenantId(popUrls[:keystone], pop_auth['tenant_name'], token)
-                    pop_auth['user_id'] = getUserId(popUrls[:keystone], pop_auth['username'], token)
-                    pop_auth['password'] = 'secretsecret'
-                    if pop_auth['tenant_id'].nil?
-                        pop_auth['tenant_id'] = createTenant(popUrls[:keystone], pop_auth['tenant_name'], token)
-                    end
-                    if pop_auth['user_id'].nil?
-                        pop_auth['user_id'] = createUser(popUrls[:keystone], pop_auth['tenant_id'], pop_auth['username'], pop_auth['password'], token)
-                    else
-                        if !settings.default_user_password.nil?
-                            pop_auth['password'] = settings.default_user_password
-                        end
-                    end
+                tenant_id = user_authentication['access']['token']['tenant']['id']
+                user_id = user_authentication['access']['user']['id']
+                token = user_authentication['access']['token']['id']
+            elsif keystone_version == 'v3'
+                user_authentication, errors = authentication_v3(popUrls[:keystone], popUrls[:tenant], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
+                logger.error errors if errors
+                @instance.update_attribute('status', 'ERROR_CREATING') if errors
+                @instance.push(audit_log: errors) if errors
+                return 400, errors.to_json if errors
+                if !user_authentication['token']['project'].nil?
+                    tenant_id = user_authentication['token']['project']['id']
+                    user_id = user_authentication['token']['user']['id']
+                    token = user_authentication['token']['id']
                 else
-                    pop_auth['tenant_name'] = 'tenor_instance_' + @instance['id'].to_s
-                    pop_auth['tenant_id'] = createTenant(popUrls[:keystone], pop_auth['tenant_name'], token)
-                    pop_auth['username'] = 'user_' + @instance['id'].to_s
-                    pop_auth['password'] = 'secretsecret'
-                    pop_auth['user_id'] = createUser(popUrls[:keystone], pop_auth['tenant_id'], pop_auth['username'], pop_auth['password'], token)
-                end
-
-                if pop_auth['tenant_id'].nil? || pop_auth['user_id'].nil?
-                    error = 'Tenant or user not created.'
-                    logger.error error
+                    errors = "No project found with the authentication."
+                    @instance.update_attribute('status', 'ERROR_CREATING') if errors
                     @instance.push(audit_log: errors) if errors
-                    @instance.update_attribute('status', 'ERROR_CREATING')
-                    return 400, error.to_json
+                    return 400, errors.to_json if errors
                 end
+            end
 
-                logger.info 'Created user with admin role.'
-                putRoleAdmin(popUrls[:keystone], pop_auth['tenant_id'], pop_auth['user_id'], token)
-
-                logger.info 'Authentication using new user credentials.'
-                pop_auth['token'] = openstackAuthentication(popUrls[:keystone], pop_auth['tenant_id'], pop_auth['username'], pop_auth['password'])
-                if pop_auth['token'].nil?
-                    error = 'Authentication failed.'
-                    logger.error error
-                    @instance.push(audit_log: errors) if errors
-                    @instance.update_attribute('status', 'ERROR_CREATING')
-                    return 400, error.to_json
+            if !popUrls[:is_admin]
+                  pop_auth['username'] = popInfo['info'][0]['adminuser']
+                  pop_auth['tenant_name'] = popUrls[:tenant]
+                  pop_auth['password'] = popInfo['info'][0]['password']
+                  pop_auth['tenant_id'] = tenant_id
+                  pop_auth['user_id'] = user_id
+                  pop_auth['token'] = token
+            else
+                if keystone_version == 'v2.0'
+                    pop_auth, errors = generate_v2_credentials(popInfo, popUrls, tenant_id, user_id, token)
+                    return 400, errors if errors
+                    pop_auth['urls'] = popUrls
+                    pop_auth['pop_id'] = pop_id
+                elsif keystone_version == 'v3'
+                    pop_auth, errors = generate_v3_credentials(popInfo, popUrls, tenant_id, user_id, token)
+                    return 400, errors if errors
+                    pop_auth['urls'] = popUrls
+                    pop_auth['pop_id'] = pop_id
                 end
-
-                logger.info 'Configuring Security Groups'
-                pop_auth['security_group_id'] = configureSecurityGroups(popUrls[:compute], pop_auth['tenant_id'], pop_auth['token'])
-
-                logger.info 'Tenant id: ' + pop_auth['tenant_id']
-                logger.info 'Username: ' + pop_auth['username']
-            rescue => e
-                logger.error e
-                error = { 'info' => 'Error creating the Openstack credentials.' }
-                logger.error error
-                recoverState(@instance, error)
-                return 400, error
             end
         end
-
         pop_auth
     end
 
@@ -154,12 +138,14 @@ module InstantiationHelper
             auth: {
                 url: {
                     keystone: popUrls[:keystone],
-                    orch: popUrls[:orch]
+                    orch: popUrls[:orch],
+                    compute: popUrls[:compute]
                 },
                 tenant: pop_auth['tenant_name'],
                 username: pop_auth['username'],
                 token: pop_auth['token'],
-                password: pop_auth['password']
+                password: pop_auth['password'],
+                is_admin: pop_auth['is_admin'],
             },
             reserved_resources: @instance['resource_reservation'].find { |resources| resources[:pop_id] == pop_id },
             security_group_id: pop_auth['security_group_id'],

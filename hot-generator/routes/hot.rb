@@ -56,9 +56,12 @@ class HotGenerator < Sinatra::Application
     public_network_id = provision_info['public_network_id']
     halt 400, 'Public Network ID not found' if public_network_id.nil?
 
+		flavours = provision_info['flavours']
+    #halt 400, 'Public Network ID not found' if flavours.nil?
+
 		# Build a HOT template
 		logger.debug 'T-NOVA flavour: ' + params[:flavour]
-		hot = CommonMethods.generate_hot_template(vnf['vnfd'], params[:flavour], networks_id, routers_id, security_group_id, vnfr_id, dns_server, public_network_id)
+		hot = CommonMethods.generate_hot_template(vnf['vnfd'], params[:flavour], networks_id, routers_id, security_group_id, vnfr_id, dns_server, public_network_id, flavours)
 
 		halt 200, hot.to_json
 	end
@@ -178,6 +181,27 @@ class HotGenerator < Sinatra::Application
 
 		# Build a HOT template
 		hot = CommonMethods.generate_netfloc_hot_template(ports, odl_username, odl_password, netfloc_ip_port)
+
+		halt 200, hot.to_json
+	end
+
+	# @method post_userhot
+	# @overload post '/userhot'
+	# Build a HOT to create the Users and Projects
+	post '/userhot' do
+		# Return if content-type is invalid
+		halt 415 unless request.content_type == 'application/json'
+
+		# Validate JSON format
+		credentials_info = JSON.parse(request.body.read)
+		return 400, errors.to_json if errors
+
+		halt 400, 'Username not found' if credentials_info['username'].nil?
+		halt 400, 'Password not found' if credentials_info['password'].nil?
+		halt 400, 'Project name not found' if credentials_info['project_name'].nil?
+
+		# Build a HOT template
+		hot = CommonMethods.generate_user_hot_template(credentials_info)
 
 		halt 200, hot.to_json
 	end

@@ -1,5 +1,5 @@
 #
-# TeNOR - NS Manager
+# TeNOR - HOT Generator
 #
 # Copyright 2014-2016 i2CAT Foundation, Portugal Telecom Inovação
 #
@@ -15,9 +15,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require_relative 'config'
-require_relative 'authentication'
-require_relative 'statistics'
-require_relative 'dc'
-require_relative 'utils'
-require_relative 'vim'
+class Project < Resource
+
+  # Initializes a Project object
+  #
+  # @param [String] resource_name the Project resource name
+  # @param [String] name the name of the project
+  # @param [String] domain the domian
+  def initialize(resource_name, name, domain = nil)
+    type = 'OS::Keystone::Project'
+    domain.nil?  ? properties = {'name' => name, 'enabled' => true} : properties = {'name' => name, 'domain' => domain, 'enabled' => true}
+    super(resource_name, type, properties)
+  end
+end

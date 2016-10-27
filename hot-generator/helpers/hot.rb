@@ -27,11 +27,11 @@ module CommonMethods
 	# @param [String] vnfr_id the ID of the VNFr
 	# @param [String] dns the DNS
 	# @return [Hash] the generated hot template
-	def self.generate_hot_template(vnfd, flavour_key, networks_id, routers_id, security_group_id, vnfr_id, dns, public_network_id)
+	def self.generate_hot_template(vnfd, flavour_key, networks_id, routers_id, security_group_id, vnfr_id, dns, public_network_id, flavours)
 		hot = VnfdToHot.new(vnfd['name'].delete(" "), vnfd['description'], public_network_id)
 
 		begin
-			hot.build(vnfd, flavour_key, networks_id, routers_id, security_group_id, vnfr_id, dns)
+			hot.build(vnfd, flavour_key, networks_id, routers_id, security_group_id, vnfr_id, dns, flavours)
 		rescue CustomException::NoExtensionError => e
 			logger.error e.message
 			halt 400, e.message
@@ -115,6 +115,16 @@ module CommonMethods
 		hot = NetflocToHot.new('Netfloc', 'Resources for Netfloc integration')
 
 		hot.build(ports, odl_username, odl_password, netfloc_ip_port)
+	end
+
+	# Generate a User HOT template
+	#
+	# @param [Hash] credentials_info information about the user and project
+	# @return [Hash] the generated user hot template
+	def self.generate_user_hot_template(credentials_info)
+		hot = UserToHot.new('User', 'Resources for User and tenant')
+
+		hot.build(credentials_info)
 	end
 
 	def self.is_num?(str)

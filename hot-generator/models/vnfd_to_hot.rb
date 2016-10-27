@@ -37,7 +37,7 @@ class VnfdToHot
   # @param [Array] networks_id the IDs of the networks created by NS Manager
   # @param [String] security_group_id the ID of the T-NOVA security group
   # @return [HOT] returns an HOT object
-  def build(vnfd, tnova_flavour, networks_id, routers_id, security_group_id, vnfr_id, dns)
+  def build(vnfd, tnova_flavour, networks_id, routers_id, security_group_id, vnfr_id, dns, flavours)
     # Parse needed outputs
     parse_outputs(vnfd['vnf_lifecycle_events'].find { |lifecycle| lifecycle['flavor_id_ref'] == tnova_flavour }['events'])
 
@@ -77,7 +77,12 @@ class VnfdToHot
       else
         image_name = {get_resource: create_image(vdu)}
       end
-      flavor_name = create_flavor(vdu)
+      if flavours.detect { |fl| fl['id'] == vdu_ref }
+        puts flavours.find { |fl| fl['id'] == vdu_ref }
+        flavor_name = flavours.find { |fl| fl['id'] == vdu_ref }['flavour_id']
+      else
+        flavor_name = {get_resource: create_flavor(vdu)}
+      end
 
       #ports = create_ports(vdu['id'], vdu['connection_points'], vnfd['vlinks'], networks_id, security_group_id)
       nets = []
@@ -99,7 +104,7 @@ class VnfdToHot
         url = HotGenerator.manager + "/files/" + name + ".yaml"
         properties = {
             :image => image_name,
-            :flavor => {get_resource: flavor_name}
+            :flavor => flavor_name
         }
 
         networks_id.each do |net|
@@ -122,6 +127,8 @@ class VnfdToHot
         create_server(vdu, image_name, flavor_name, ports, key, false)
       end
     end
+
+    #puts @hot.to_yaml
 
     @hot
   end
@@ -400,7 +407,7 @@ class VnfdToHot
     if scale
       server = Server.new(
           vdu['id'],
-          {get_resource: flavour_name},
+          flavour_name,
           image,
           ports,
           add_wait_condition(vdu),
@@ -408,7 +415,7 @@ class VnfdToHot
     else
       @hot.resources_list << Server.new(
           vdu['id'],
-          {get_resource: flavour_name},
+          flavour_name,
           image,
           ports,
           add_wait_condition(vdu),
