@@ -45,15 +45,15 @@ class NsProvisioner < TnovaManager
     end
 
     logger.info "INSTANTIATION INFO: " + instantiation_info.to_s
-
+    pop_list = []
     if instantiation_info['pop_id'].nil?
-      popList = JSON.parse(getDcs())
-      if popList.empty?
+      pop_list = JSON.parse(getDcs())
+      if pop_list.empty?
         halt 400, "No PoPs registereds."
       end
     else
       pop_list = []
-      pop_info = JSON.parse(getDc(instantiation_info['pop_id']))
+      pop_list << JSON.parse(getDc(instantiation_info['pop_id']))
     end
 
     provisioning = {
@@ -62,9 +62,9 @@ class NsProvisioner < TnovaManager
         :nap_id =>  instantiation_info['nap_id'],
         :callback_url => instantiation_info['callbackUrl'],
         :flavour => instantiation_info['flavour'],
-        :pop_list => popList,
-        :pop_id => instantiation_info['pop_id'],
-        :pop_info => pop_info,
+        :pop_list => pop_list,
+        #:pop_id => instantiation_info['pop_id'],
+        #:pop_info => pop_info,
         :mapping_id => instantiation_info['mapping_id']
       }
     begin
@@ -180,9 +180,9 @@ class NsProvisioner < TnovaManager
       logger.error e.response
       halt e.response.code, e.response.body
     end
-    @ns_instance, error = parse_json(response)
+    ns_instance, error = parse_json(response)
 
-    info = { :instance => @ns_instance }
+    info = { :instance => ns_instance }
     begin
       response = RestClient.put service_host + request.fullpath, info.to_json, 'X-Auth-Token' => @client_token, :content_type => :json
     rescue Errno::ECONNREFUSED
@@ -212,10 +212,10 @@ class NsProvisioner < TnovaManager
       logger.error e.response
       halt e.response.code, e.response.body
     end
-    @ns_instance, error = parse_json(response)
+    ns_instance, error = parse_json(response)
 
     logger.info "Sending terminate request to NS Provisioning"
-    info = { :instance => @ns_instance }
+    info = { :instance => ns_instance }
     begin
       response = RestClient.put service_host + request.fullpath.to_s + '/terminate', info.to_json, 'X-Auth-Token' => @client_token, :content_type => :json
     rescue Errno::ECONNREFUSED
@@ -240,7 +240,7 @@ class NsProvisioner < TnovaManager
 
     callback_response, errors = parse_json(request.body.read)
 
-    bservice_host, errors = ServiceConfigurationHelper.get_module('ns_provisioner')
+    service_host, errors = ServiceConfigurationHelper.get_module('ns_provisioner')
     halt 500, errors if errors
 
     begin
@@ -251,13 +251,13 @@ class NsProvisioner < TnovaManager
       logger.error e.response
       halt e.response.code, e.response.body
     end
-    @ns_instance, error = parse_json(response)
+    ns_instance, error = parse_json(response)
 
     catalogue_service_host, errors = ServiceConfigurationHelper.get_module('ns_catalogue')
     halt 500, errors if errors
 
     begin
-      response = RestClient.get catalogue_service_host + '/network-services/' + @ns_instance['nsd_id'], 'X-Auth-Token' => @client_token, :content_type => :json
+      response = RestClient.get catalogue_service_host + '/network-services/' + ns_instance['nsd_id'], 'X-Auth-Token' => @client_token, :content_type => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Provisioning unreachable'
     rescue => e
@@ -270,7 +270,7 @@ class NsProvisioner < TnovaManager
     end
     nsd, error = parse_json(response)
 
-    info = { :callback_response => callback_response, :instance => @ns_instance, :nsd => nsd}
+    info = { :callback_response => callback_response, :instance => ns_instance, :nsd => nsd}
     begin
       response = RestClient.post service_host + request.fullpath, info.to_json, 'X-Auth-Token' => @client_token, :content_type => :json
     rescue Errno::ECONNREFUSED
