@@ -127,18 +127,18 @@ angular.module('tNovaApp')
             this.$hide();
         };
 
-        $scope.getPopInfo = function (popId) {
-            tenorService.get('pops/dc/' + popId).then(function (data) {
-                console.log(data);
-                $scope.popInfo = data;
-                $scope.jsonObj = JSON.stringify(data, undefined, 4);
+        $scope.getPopInfo = function (pop_info) {
+            //tenorService.get('pops/dc/' + popId).then(function (pop_info) {
+                console.log(pop_info);
+                $scope.popInfo = pop_info;
+                $scope.jsonObj = JSON.stringify(pop_info, undefined, 4);
                 $modal({
-                    title: "Pop - " + popId,
+                    title: "Pop - " + pop_info['id'] + " - " + pop_info['name'],
                     template: "views/t-nova/modals/info/showPop.html",
                     show: true,
                     scope: $scope,
                 });
-            });
+            //});
         };
 
         $scope.removePopDialog = function (id) {
@@ -152,7 +152,7 @@ angular.module('tNovaApp')
         };
 
         $scope.deleteItem = function (popId) {
-            tenorService.delete('gatekeeper/dc/' + popId).then(function (data) {
+            tenorService.delete('pops/dc/' + popId).then(function (data) {
                 console.log(data);
                 $scope.refreshPoPList();
             });
