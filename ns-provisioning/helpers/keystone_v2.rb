@@ -64,8 +64,9 @@ module Authenticationv2Helper
             putRoleAdmin(popUrls[:keystone], pop_auth['tenant_id'], pop_auth['user_id'], token)
 
             logger.info 'Authentication using new user credentials.'
-            pop_auth['token'] = authentication_v2_ids(popUrls[:keystone], pop_auth['tenant_id'], pop_auth['user_id'], pop_auth['password'])
-            if pop_auth['token'].nil?
+            pop_auth['token'], errors = authentication_v2_ids(popUrls[:keystone], pop_auth['tenant_id'], pop_auth['user_id'], pop_auth['password'])
+            if errors || pop_auth['token'].nil?
+                logger.error errors if errors
                 error = 'Authentication failed.'
                 logger.error error
                 @instance.push(audit_log: errors) if errors

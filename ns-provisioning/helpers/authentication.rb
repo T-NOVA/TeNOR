@@ -57,37 +57,4 @@ module AuthenticationHelper
     return stack_url, tenant_id, user_id
   end
 
-  def authentication_v3_old(keystoneUrl, tenantName, user, password)
-        auth = {
-          auth: {
-            identity: {
-              methods: ['password'],
-              password: {
-                user:{
-                  name: user,
-                  domain: { "name": domainName },
-                  password: password
-                }
-              }
-            }
-          }
-        }
-        begin
-            response = RestClient.post keystoneUrl + '/auth/tokens', auth.to_json, content_type: :json
-        rescue Errno::ECONNREFUSED => e
-            return 500, 'Connection refused'
-        rescue RestClient::ExceptionWithResponse => e
-            logger.error e
-            logger.error e.response.body
-            return e.response.code, e.response.body
-        rescue => e
-            logger.error e
-            logger.error e.response.body
-            return 400, errors if errors
-        end
-        auth, errors = parse_json(response)
-        logger.error errors if errors
-        auth['token']['id'] = response.headers[:x_subject_token]
-        return auth
-      end
 end
