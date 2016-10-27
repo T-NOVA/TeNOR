@@ -27,34 +27,28 @@ module InstantiationHelper
     # @param [JSON] callback_url Callback url in case of error happens
     # @return [Hash, nil] authentication
     # @return [Hash, String] if the parsed message is an invalid JSON
-    def create_authentication(instance, nsd_id, vnf, pop_id, callback_url)
+    def create_authentication(instance, nsd_id, pop_info, callback_url)
         @instance = instance
 
         logger.info 'Authentication not created for this PoP. Starting creation of credentials.'
 
         pop_auth = {}
-        pop_auth['pop_id'] = pop_id
-        popInfo, errors = getPopInfo(pop_id)
-        logger.error errors if errors
-        generateMarketplaceResponse(callback_url, generateError(nsd_id, 'FAILED', 'Internal error: error getting pop information.')) if errors
-        return 400, errors.to_json if errors
-
-        extra_info = popInfo['info'][0]['extrainfo']
+        puts pop_info['id']
+        pop_auth['pop_id'] = pop_info['id'].to_s
+        extra_info = pop_info['extra_info']
         popUrls = getPopUrls(extra_info)
         pop_auth['urls'] = popUrls
 
         # create credentials for pop_id
-        if popUrls[:keystone].nil? || popUrls[:orch].nil? || popUrls[:tenant].nil?
-            generateMarketplaceResponse(callback_url, generateError(nsd_id, 'FAILED', 'Internal error: Keystone and/or openstack urls missing.'))
-            return
+        if popUrls[:keystone].nil? || popUrls[:orch].nil? #|| popUrls[:tenant].nil?
+            return handleError(@instance, 'Internal error: Keystone and/or openstack urls missing.')
         end
 
         token = ''
         if @instance['project'].nil?
             keystone_version = URI(popUrls[:keystone]).path.split('/').last
-
             if keystone_version == 'v2.0'
-                user_authentication, errors = authentication_v2(popUrls[:keystone], popUrls[:tenant], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
+                user_authentication, errors = authentication_v2(popUrls[:keystone], pop_info['tenant_name'], pop_info['user'], pop_info['password'])
                 logger.error errors if errors
                 @instance.update_attribute('status', 'ERROR_CREATING') if errors
                 @instance.push(audit_log: errors) if errors
@@ -63,7 +57,7 @@ module InstantiationHelper
                 user_id = user_authentication['access']['user']['id']
                 token = user_authentication['access']['token']['id']
             elsif keystone_version == 'v3'
-                user_authentication, errors = authentication_v3(popUrls[:keystone], popUrls[:tenant], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
+                user_authentication, errors = authentication_v3(popUrls[:keystone], pop_info['tenant_name'], pop_info['user'], pop_info['password'])
                 logger.error errors if errors
                 @instance.update_attribute('status', 'ERROR_CREATING') if errors
                 @instance.push(audit_log: errors) if errors
@@ -81,9 +75,9 @@ module InstantiationHelper
             end
 
             if !popUrls[:is_admin]
-                  pop_auth['username'] = popInfo['info'][0]['adminuser']
-                  pop_auth['tenant_name'] = popUrls[:tenant]
-                  pop_auth['password'] = popInfo['info'][0]['password']
+                  pop_auth['username'] = pop_info['user']
+                  pop_auth['tenant_name'] = pop_info['tenant_name']
+                  pop_auth['password'] = pop_info['password']
                   pop_auth['tenant_id'] = tenant_id
                   pop_auth['user_id'] = user_id
                   pop_auth['token'] = token
@@ -146,6 +140,7 @@ module InstantiationHelper
                 token: pop_auth['token'],
                 password: pop_auth['password'],
                 is_admin: pop_auth['is_admin'],
+                token: pop_auth['token']
             },
             reserved_resources: @instance['resource_reservation'].find { |resources| resources[:pop_id] == pop_id },
             security_group_id: pop_auth['security_group_id'],
