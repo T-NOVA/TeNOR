@@ -53,9 +53,12 @@ class GatekeeperController < TnovaManager
         end
         # authentication ok, save it to gatekeeper
         response, errors = registerPop(pop_info)
-        puts response
-        puts errors
+        logger.error if errors
         return 400, errors if errors
+
+        pop_info, errors = parse_json(response)
+        return pop_info['info'][0]['id']
+
         return getPopList
     end
 
