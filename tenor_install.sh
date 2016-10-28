@@ -117,12 +117,6 @@ installTenor(){
 
         if [[ "$folder" =~ ^ns-* ]] || [[ "$folder" =~ ^vnf-* ]] || [[ "$folder" =~ ^hot-* ]] || [[ "$folder" = "ui/" ]]; then
             cd $folder
-
-            if [ "$folder" = "ns-manager/" ]; then
-                cd default/monitoring
-                bundle install --quiet
-                cd ../../
-            fi
             bundle install --quiet
             cd ../
             count=$((count+1))
@@ -374,14 +368,14 @@ removePop() {
     echo "Type the PoP Id, followed by [ENTER]:"
     read pop_id
 
-    curl -XGET http://$tenor_host/gatekeeper/dc/$pop_id  | ruby -r rubygems -r json -e "puts JSON[STDIN.read];"
+    curl -XGET http://$tenor_host/pops/dc/$pop_id  | ruby -r rubygems -r json -e "puts JSON[STDIN.read];"
 
     echo "Are you sure you want to remove this PoP (y/n)?, followed by [ENTER]:"
     read remove
 
     if [ "$remove" = "y" ]; then
       echo "Removing PoP..."
-      curl -XDELETE http://$tenor_host/gatekeeper/dc/$pop_id
+      curl -XDELETE http://$tenor_host/pops/dc/$pop_id
     fi
 
     pause
