@@ -138,14 +138,13 @@ module InstantiationHelper
             auth: {
                 url: {
                     keystone: popUrls[:keystone],
-                    orch: popUrls[:orch],
+                    orch: popUrls[:orch],# to remove
+                    heat: popUrls[:orch],
                     compute: popUrls[:compute]
                 },
-                tenant: pop_auth['tenant_name'],
-                username: pop_auth['username'],
+                tenant_id: pop_auth['tenant_id'],
                 token: pop_auth['token'],
-                password: pop_auth['password'],
-                is_admin: pop_auth['is_admin'],
+                is_admin: popUrls[:is_admin]
             },
             reserved_resources: @instance['resource_reservation'].find { |resources| resources[:pop_id] == pop_id },
             security_group_id: pop_auth['security_group_id'],

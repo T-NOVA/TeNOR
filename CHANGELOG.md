@@ -1,9 +1,13 @@
+## 0.7.1
+- VNF Manager uses the token and tenant_id. Is not using user/pass. This fixes the bug with Keystone v3.
+
 ## 0.7.0
 - Non admin users can use TeNOR. Using already created flavors inside Openstack.
 - Keystone v3 available.
 - Fixed unauhtorized behaviour in the UI. Solve #123
 - UI: When a PoP is added, it's possible to select though the available API versions.
 - Fix mongoid array problems.
+- Changed log file size to 64mb.
 
 ## 0.6.1
 - DNS as array. You can specify multiple DNS when a PoP is added.

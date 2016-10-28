@@ -26,7 +26,7 @@ module ComputeHelper
             logger.error 'Already removed from the VIM.'
             return 404
         rescue => e
-          logge.error e
+          logger.error e
             #logger.error e.response
             return
             # halt e.response.code, e.response.body

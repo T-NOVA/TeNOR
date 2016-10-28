@@ -57,6 +57,7 @@ module ProvisioningHelper
         ]
     end
 
+    # DEPCREATED
     # Request an auth token from the VIM
     #
     # @param [Hash] auth_info the keystone url, the tenant name, the username and the password
@@ -102,10 +103,8 @@ module ProvisioningHelper
     # @param [String] vnf_name The name of the VNF
     # @param [Hash] hot the generated Heat template
     def provision_vnf(vim_info, vnf_name, hot)
-        # Request an auth token
-        token_info = request_auth_token(vim_info)
-        tenant_id = token_info['access']['token']['tenant']['id']
-        auth_token = token_info['access']['token']['id']
+        auth_token = vim_info['token']
+        tenant_id =  vim_info['tenant_id']
 
         # Requests VIM to provision the VNF
         begin
@@ -132,10 +131,7 @@ module ProvisioningHelper
             sleep_time = 10 # set wait time in seconds
 
             begin
-                # Request an auth token
-                token_info = request_auth_token(vim_info)
-                auth_token = token_info['access']['token']['id']
-
+                auth_token = vim_info['token']
                 begin
                     response = parse_json(RestClient.get(stack_url, 'X-Auth-Token' => auth_token, :accept => :json))
                 rescue Errno::ECONNREFUSED
@@ -175,9 +171,7 @@ module ProvisioningHelper
             halt 404
         end
 
-        # Request an auth token
-        token_info = request_auth_token(stack_info[:vim_info])
-        auth_token = token_info['access']['token']['id']
+        auth_token = vim_info['token']
 
         lifecycle_events_values = {}
         vnf_addresses = {}
@@ -332,38 +326,7 @@ module ProvisioningHelper
             halt e.response.code, e.response.body
         end
     end
-=begin
-    def deleteStack(stack_url, auth_token)
-        response = RestClient.delete stack_url, 'X-Auth-Token' => auth_token, :accept => :json
-    rescue Errno::ECONNREFUSED
-    # halt 500, 'VIM unreachable'
-    rescue RestClient::ResourceNotFound
-        logger.error 'Already removed from the VIM.'
-        return 404
-    rescue => e
-        logger.error e.response
-        return
-        # halt e.response.code, e.response.body
-    end
 
-    def getStackResources(stack_url, auth_token)
-        begin
-            response = RestClient.get stack_url + '/resources', 'X-Auth-Token' => auth_token
-        rescue Errno::ECONNREFUSED
-            error = { 'info' => 'VIM unrechable.' }
-            return
-        rescue => e
-            logger.error e
-            logger.error e.response
-            error = { 'info' => 'Error creating the network stack.' }
-            return
-        end
-        resources, errors = parse_json(response)
-        return 400, errors if errors
-
-        resources['resources']
-    end
-=end
     def recoverMonitoredInstances
         # get list of VNF instances and filter for INIT instances
 
@@ -372,48 +335,4 @@ module ProvisioningHelper
         # create thread
         # create_thread_to_monitor_stack(vnfr_id, stack_url, vim_info, ns_manager_callback)
     end
-=begin
-    def delete_stack_with_wait(stack_url, auth_token)
-        status = 'DELETING'
-        count = 0
-        code = deleteStack(stack_url, auth_token)
-        if code == 404
-            status = 'DELETE_COMPLETE'
-            return 200
-        end
-        while status != 'DELETE_COMPLETE' && status != 'DELETE_FAILED'
-            sleep(5)
-            begin
-                response = RestClient.get stack_url, 'X-Auth-Token' => auth_token, :content_type => :json, :accept => :json
-                stack_info, error = parse_json(response)
-                status = stack_info['stack']['stack_status']
-            rescue Errno::ECONNREFUSED
-                error = { 'info' => 'VIM unrechable.' }
-                return
-            rescue RestClient::ResourceNotFound
-                logger.info 'Stack already removed.'
-                status = 'DELETE_COMPLETE'
-            rescue => e
-                puts 'If no exists means that is deleted correctly'
-                status = 'DELETE_COMPLETE'
-                logger.error e
-                logger.error e.response
-            end
-
-            logger.debug 'Try: ' + count.to_s + ', status: ' + status.to_s
-            if status == 'DELETE_FAILED'
-                deleteStack(stack_url, auth_token)
-                status = 'DELETING'
-            end
-            break if status == 'DELETE_COMPLETE'
-            count += 1
-
-            if count > 20
-                logger.error 'Stack can not be removed'
-                return 400, 'Stack can not be removed'
-            end
-        end
-        response
-    end
-=end
 end
