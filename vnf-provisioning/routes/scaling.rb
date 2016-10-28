@@ -162,19 +162,11 @@ class Scaling < VnfProvisioning
         vim_info = scale_info['auth']
         vim_info['keystone'] = vim_info['url']['keystone']
         vim_info['heat'] = vim_info['url']['heat']
-        vim_info = {
-            'keystone' => scale_info['auth']['url']['keystone'],
-            'tenant' => scale_info['auth']['tenant'],
-            'username' => scale_info['auth']['username'],
-            'password' => scale_info['auth']['password']
-        }
-        token_info = request_auth_token(vim_info)
-        auth_token = token_info['access']['token']['id']
 
         resource = vnfr['scale_resources'][vnfr['scale_resources'].size - 1]
         stack_url = resource['stack_url']
         logger.info 'Sending request to Openstack for Scale IN'
-        response, errors = delete_stack_with_wait(stack_url, auth_token)
+        response, errors = delete_stack_with_wait(stack_url, vim_info['token'])
         vnfr.pull(scale_resources: resource)
         logger.info "Scale in correct"
 
@@ -222,9 +214,11 @@ class Scaling < VnfProvisioning
             vim_info = scale_info['auth']
             vim_info['keystone'] = vim_info['url']['keystone']
             vim_info['heat'] = vim_info['url']['heat']
-            token_info = request_auth_token(vim_info)
-            tenant_id = token_info['access']['token']['tenant']['id']
-            auth_token = token_info['access']['token']['id']
+            #token_info = request_auth_token(vim_info)
+            #tenant_id = token_info['access']['token']['tenant']['id']
+            #auth_token = token_info['access']['token']['id']
+            auth_token = vim_info['token']
+            tenant_id =  vim_info['tenant_id']
 
             logger.info 'Getting AutoScaling resource'
             #       begin
@@ -260,7 +254,7 @@ class Scaling < VnfProvisioning
 
             # get base stack in order to read the OutPuts, the outputs are updated in real time? sleep is required?
             begin
-                response, errors = parse_json(RestClient.get(vnfr['stack_url'], 'X-Auth-Token' => auth_token, :accept => :json))
+                response, errors = parse_json(RestClient.get(vnfr['stack_url'], 'X-Auth-Token' => vim_info['token'], :accept => :json))
             rescue Errno::ECONNREFUSED
                 halt 500, 'VIM unreachable'
             rescue => e
