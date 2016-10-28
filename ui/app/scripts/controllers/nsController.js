@@ -124,14 +124,9 @@ angular.module('tNovaApp')
         };
 
         $scope.getPoPs = function () {
+            $scope.registeredDcList = [];
             tenorService.get("pops/dc").then(function (d) {
-                $scope.registeredDcList = [];
-                _.map(d.dclist, function (row, index) {
-                    $scope.registeredDcList.push({
-                        id: d.dcid[index],
-                        name: row
-                    })
-                });
+                $scope.registeredDcList = d;
             });
         }
 
