@@ -6,7 +6,7 @@
                 <h3>Registered Openstacks  <small></small></h3>
 
                 <div class="panel-body">
-                    List of registered Openstacks in Gatekeeper.
+                    List of registered Openstacks in TeNOR.
                     <br/>
                     <table st-table="displayedCollection" st-safe-src="registeredDcList" class="table table-striped">
                         <thead>
@@ -22,10 +22,10 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr ng-repeat="row in displayedCollection track by $index">
+                            <tr ng-repeat="row in displayedCollection">
                                 <td><a>{{row.id}}</a></td>
-                                <td><a ng-click="getPopInfo(row.id)">{{row.name}}</a></td>
-                                <td><a ng-click="removePopDialog(row.id)">Remove</a></td>
+                                <td><a ng-click="getPopInfo(row)">{{row.name}}</a></td>
+                                <td><button ng-click="removePopDialog(row.id)" class="btn btn-danger btn-xs">Delete</button></td>
                             </tr>
                         </tbody>
                         <tfoot>

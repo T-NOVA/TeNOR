@@ -227,7 +227,8 @@ angular.module('tNovaApp', ['ui.router', 'ngSanitize', 'tNovaApp.config', 'tNova
                         'request': function (config) {
                             var isRestCall = config.url.indexOf('rest') === 0;
                             var isRestCall = config.url.indexOf('login') !== -1;
-                            var isRestCall = config.url.indexOf('rest/gk/api/token/') !== -1;
+                            var isRestCall = config.url.indexOf('rest/api/auth/token/') !== -1;
+                            console.log($window.localStorage.token);
                             if (!isRestCall && angular.isDefined($window.localStorage.token)) {
                                 //  if (angular.isDefined($window.localStorage.token)) {
                                 var authToken = $window.localStorage.token;
@@ -236,6 +237,10 @@ angular.module('tNovaApp', ['ui.router', 'ngSanitize', 'tNovaApp.config', 'tNova
                                 } else {
                                     config.url = config.url + '?token=' + authToken;
                                 }
+                                if (Math.floor(Date.now() / 1000) > $window.localStorage.expiration)
+                                    $rootScope.logout();
+                            } else {
+                              $location.path('/login');
                             }
                             return config || $q.when(config);
                         }
@@ -261,13 +266,14 @@ angular.module('tNovaApp', ['ui.router', 'ngSanitize', 'tNovaApp.config', 'tNova
                         }
                     };
                 });
-
-
     }
   ]
     ).run(function ($window, $rootScope, $location, $state, AuthService) {
-        if ($window.localStorage.userId) $rootScope.username = $window.localStorage.username;
-        if ($window.localStorage.user) $rootScope.user = JSON.parse($window.localStorage.user);
+      console.log($rootScope.username)
+      console.log($window.localStorage.username);
+        if ($window.localStorage.username) $rootScope.username = $window.localStorage.username;
+        console.log($rootScope.username)
+        //if ($window.localStorage.user) $rootScope.user = JSON.parse($window.localStorage.user);
         $rootScope.$state = $state;
 
         $rootScope.logout = function () {

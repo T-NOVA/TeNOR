@@ -18,6 +18,31 @@
 # @see ServiceConfigurationHelper
 module ServiceConfigurationHelper
 
+  def is_port_open?(ip, port)
+	  begin
+		Timeout::timeout(1) do
+      begin
+          s = TCPSocket.new(ip, port)
+		      s.close
+          return true
+		  rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH
+		    return false
+      end
+	  end
+	  rescue Timeout::Error
+	  end
+	  return false
+  end
+
+  def self.get_module(name)
+    begin
+      service = Service.find_by(name: name)
+    rescue Mongoid::Errors::DocumentNotFound => e
+      return 500, name + " not registred."
+    end
+    return service.host + ":" + service.port.to_s
+  end
+
   def registerService(json)
     @json = JSON.parse(json)
     @json[:type] = "internal"

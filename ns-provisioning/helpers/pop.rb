@@ -17,6 +17,7 @@
 #
 # @see NsProvisioner
 module PopHelper
+
     # Returns the information of PoPs
     #
     # @param [String] message the pop id
@@ -24,7 +25,7 @@ module PopHelper
     # @return [Hash, String] if the parsed message is an invalid JSON
     def getPopInfo(pop_id)
         begin
-            response = RestClient.get "#{settings.manager}/gatekeeper/dc/#{pop_id}", content_type: :json
+            response = RestClient.get "#{settings.manager}/pops/dc/#{pop_id}", content_type: :json
         rescue RestClient::ResourceNotFound
             logger.error 'PoP not found.'
             return 400, 'PoP not found.'
@@ -61,11 +62,11 @@ module PopHelper
                 popUrls[:compute] = item.split('=')[1]
             elsif key == 'orch-endpoint'
                 popUrls[:orch] = item.split('=')[1]
-            elsif key == 'tenant-name'
+            elsif key == 'tenant-name'#deprecated
                 popUrls[:tenant] = item.split('=')[1]
             elsif key == 'dns'
                 popUrls[:dns] << item.split('=')[1] unless item.split('=')[1].nil?
-            elsif key == 'isAdmin'
+            elsif key == 'isAdmin'#deprecated
                 popUrls[:is_admin] = false
                 popUrls[:is_admin] = true if item.split('=')[1].to_s == 'true'
             end

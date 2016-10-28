@@ -79,14 +79,14 @@ module NsProvisioner
             break if resource['pop_id'].nil?
 
             auth_info = @instance['authentication'].find { |auth| auth['pop_id'] == resource['pop_id'] }
-            popInfo, errors = getPopInfo(resource['pop_id'])
+            pop_info, errors = getPopInfo(resource['pop_id'])
             logger.error errors if errors
             return 400, errors.to_json if errors
-            popUrls = getPopUrls(popInfo['info'][0]['extrainfo'])
+            popUrls = getPopUrls(pop_info['extrainfo'])
 
             keystone_version = URI(popUrls[:keystone]).path.split('/').last
             if keystone_version == 'v2.0'
-                admin_authentication, errors = authentication_v2(popUrls[:keystone], popUrls[:tenant], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
+                admin_authentication, errors = authentication_v2(popUrls[:keystone], pop_auth['tenant_name'], pop_auth['username'], pop_auth['password'])
                 logger.error errors if errors
                 user_authentication, errors = authentication_v2(popUrls[:keystone], auth_info['tenant_name'], auth_info['username'], auth_info['password'])
                 logger.error errors if errors
@@ -96,7 +96,7 @@ module NsProvisioner
                 token = admin_authentication['access']['token']['id']
                 tenant_token = user_authentication['access']['token']['id']
             elsif keystone_version == 'v3'
-                admin_authentication, errors = authentication_v3(popUrls[:keystone], popUrls[:tenant], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
+                admin_authentication, errors = authentication_v3(popUrls[:keystone], pop_auth['tenant_name'], pop_auth['username'], pop_auth['password'])
                 logger.error errors if errors
                 user_authentication, errors = authentication_v3(popUrls[:keystone], auth_info['tenant_name'], auth_info['username'], auth_info['password'])
                 logger.error errors if errors
@@ -120,22 +120,22 @@ module NsProvisioner
         @instance['authentication'].each do |pop_info|
             logger.error 'Delete users of PoP : ' + pop_info['pop_id'].to_s
 
-            popInfo, errors = getPopInfo(pop_info['pop_id'])
+            pop_auth, errors = getPopInfo(pop_info['pop_id'])
             logger.error errors if errors
             return 400, errors.to_json if errors
-            popUrls = getPopUrls(popInfo['info'][0]['extrainfo'])
+            popUrls = getPopUrls(pop_auth['extrainfo'])
 
             auth_info = @instance['authentication'].find { |auth| auth['pop_id'] == pop_info['pop_id'] }
             keystone_version = URI(popUrls[:keystone]).path.split('/').last
             if keystone_version == 'v2.0'
-                user_authentication, errors = authentication_v2(popUrls[:keystone], popUrls[:tenant], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
+                user_authentication, errors = authentication_v2(popUrls[:keystone], pop_auth['tenant_name'], pop_auth['username'], pop_auth['password'])
                 logger.error errors if errors
                 @instance.update_attribute('status', 'ERROR_REMOVING') if errors
                 @instance.push(audit_log: errors) if errors
                 return 400, errors.to_json if errors
                 token = user_authentication['access']['token']['id']
             elsif keystone_version == 'v3'
-                user_authentication, errors = authentication_v3(popUrls[:keystone], popUrls[:tenant], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
+                user_authentication, errors = authentication_v3(popUrls[:keystone], pop_auth['tenant_name'], pop_auth['username'], pop_auth['password'])
                 logger.error errors if errors
                 @instance.update_attribute('status', 'ERROR_REMOVING') if errors
                 @instance.push(audit_log: errors) if errors
@@ -185,7 +185,7 @@ module NsProvisioner
         callback_url = @instance['notification']
         flavour = @instance['service_deployment_flavour']
         pop_list = instantiation_info['pop_list']
-        pop_id = instantiation_info['pop_id']
+        #pop_id = instantiation_info['pop_id']
         mapping_id = instantiation_info['mapping_id']
         nap_id = instantiation_info['nap_id']
         customer_id = instantiation_info['customer_id']
@@ -204,10 +204,7 @@ module NsProvisioner
                         end
 
         logger.info 'List of available PoPs: ' + pop_list.to_s
-
-        if pop_id.nil? && mapping_id.nil?
-            logger.info 'Request from Marketplace.'
-            pop_id = pop_list[0]['id'] if pop_list.size == 1
+        if pop_list.size == 1 || mapping_id.nil?
             pop_id = pop_list[0]['id']
         elsif !mapping_id.nil?
             # call specified mapping with the id
@@ -253,12 +250,13 @@ module NsProvisioner
 
             logger.info 'Start authentication process of ' + vnf.to_s
             pop_id = vnf['maps_to_PoP'].gsub('/pop/', '')
+            pop_info = pop_list.find { |p| p['id'] == pop_id.to_i }
 
             # check if this the authentication info is already created for this pop_id, if created, break the each
             logger.info 'Check if authentication is created for this PoP'
             authentication = @instance['authentication'].find { |auth| auth['pop_id'] == pop_id }
             next unless authentication.nil?
-            pop_auth, errors = create_authentication(@instance, nsd['id'], vnf, pop_id, callback_url)
+            pop_auth, errors = create_authentication(@instance, nsd['id'], pop_info, callback_url)
             return handleError(@instance, errors) if errors
             @instance['authentication'] << pop_auth
         end
@@ -325,6 +323,11 @@ module NsProvisioner
         if @instance['authentication'].size == 1
             logger.debug 'Only 1 PoP is defined'
             # generate networks for this PoP
+
+            if @instance['authentication'].nil?
+                return handleError(@instance, "Authentication not valid.")
+            end
+
             pop_auth = @instance['authentication'][0]
             tenant_token = pop_auth['token']
             popUrls = pop_auth['urls']
@@ -352,7 +355,7 @@ module NsProvisioner
 
             #save stack_url in reserved resurces
             logger.info "Saving reserved stack...."
-            #network_stack = stack
+
             @resource_reservation = @instance['resource_reservation']
             resource_reservation = []
             resource_reservation << {

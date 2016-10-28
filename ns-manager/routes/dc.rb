@@ -15,66 +15,107 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# @see GatekeeperController
-class GatekeeperController < TnovaManager
-    # @method get_gatekeeper_dc
-    # @overload get '/gatekeeper/dc/:id'
-    #	Returns a DCs
-    get '/dc/:popId' do |pop_id|
-        return getPopInfo(pop_id)
-    end
+# @see DcController
+class DcController < TnovaManager
 
-    # @method get_gatekeeper_dcs
-    # @overload get '/gatekeeper/dc'
-    #	Returns a list of DCs
+    # @method get_pops_dc
+    # @overload get '/pops/dc/:id'
+    #  Returns a DCs
     get '/dc' do
-        return getPopList
-    end
-
-    # @method post_gatekeeper_dcs
-    # @overload post '/gatekeeper/dc'
-    #	Returns if the DC is correct inserted
-    post '/dc' do
-        pop_info, errors = parse_json(request.body.read)
-        extrainfo = getPopUrls(pop_info['extrainfo'])
-
-        #analyze Keystone version
-        version = URI(extrainfo[:keystone]).path.split('/').last
-
-        #v2.0 authentication
-        if version == 'v2.0'
-            response, errors = authentication_v2(pop_info, extrainfo)
-            return 400, errors if errors
-        elsif version == 'v3'
-            response, errors = authentication_v3(pop_info, extrainfo)
-            return 400, errors if errors
-        else
-            halt 400, "No keystone version specified."
-        end
-        # authentication ok, save it to gatekeeper
-        response, errors = registerPop(pop_info)
-        logger.error if errors
-        return 400, errors if errors
-
-        pop_info, errors = parse_json(response)
-        return pop_info['info'][0]['id']
-
-        return getPopList
-    end
-
-    # @method delete_gatekeeper_dc_id
-    # @overload get '/gatekeeper/dc/:id'
-    #	Delete a DC
-    delete '/dc/:popId' do |pop_id|
-        AuthenticationHelper.loginGK
         begin
-            response = RestClient.delete "#{settings.gatekeeper}/admin/dc/#{pop_id}", 'X-Auth-Token' => settings.gk_token, :content_type => :json
+            return 200, Dc.all.to_json
         rescue => e
             logger.error e
-            if defined?(e.response).nil?
-                error = { info: 'The PoP list in Gatekeeper is empty' }
-                halt 503, 'The PoP list in Gatekeeper is empty '
-            end
+            logger.error 'Error Establishing a Database Connection'
+            return 500, 'Error Establishing a Database Connection'
         end
     end
+
+    # @method get_pops_dc_id
+    # @overload get '/pops/dc/:id'
+    #  Returns a DC
+    get '/dc/:id' do |id|
+        puts Dc.all.to_json
+        begin
+            dc = Dc.find(id.to_i)
+        rescue Mongoid::Errors::DocumentNotFound => e
+            logger.error 'DC not found'
+            return 404
+        end
+        return dc.to_json
+    end
+
+    # @method get_pops_dc
+    # @overload get '/pops/dc/:id'
+    #  Returns a DCs
+    get '/dcs' do
+        return getDcsTokens()
+    end
+
+    # @method get_pops_dc_name
+    # @overload get '/pops/dc/name/:name'
+    #  Returns a DC given a name
+    get '/dc/name/:name' do |name|
+        begin
+            dc = Dc.find_by(name: name)
+        rescue Mongoid::Errors::DocumentNotFound => e
+            logger.error 'DC not found'
+            return 404
+        end
+        return dc.to_json
+    end
+
+    # @method post_pops_dc
+    # @overload post '/pops/dc'
+    #  Returns if the DC is correct inserted
+    post '/dc' do
+        return 415 unless request.content_type == 'application/json'
+        pop_info, errors = parse_json(request.body.read)
+        serv = {
+            name: pop_info['name'],
+            host: pop_info['host'],
+            user: pop_info['user'],
+            password: pop_info['password'],
+            tenant_name: pop_info['tenant_name'],
+            admin_role: pop_info['is_admin'],
+            description: pop_info['description'],
+            extra_info: pop_info['extra_info']
+        }
+        logger.debug serv
+        begin
+            dc = Dc.find_by(name: pop_info['name'])
+            halt 409, 'DC Duplicated. Use PUT for update.'
+        # i es.update_attributes!(:host => pop_info['host'], :port => pop_info['port'], :token => @token, :depends_on => serv_reg['depends_on'])
+        rescue Mongoid::Errors::DocumentNotFound => e
+            begin
+                puts serv
+                dc = Dc.create!(serv)
+            rescue => e
+                puts 'ERROR.................'
+                puts e
+            end
+        rescue => e
+            puts e
+            logger.error 'Error saving dc.'
+            halt 400
+        end
+
+        halt 201, { id: dc._id }.to_json
+    end
+
+    put '/services' do
+    end
+
+    # @method delete_pops_dc_id
+    # @overload delete '/pops/dc/:id'
+    #  Delete a DC
+    delete '/dc/:id' do |id|
+        begin
+            Dc.find(id.to_i).destroy
+        rescue Mongoid::Errors::DocumentNotFound => e
+            halt 404
+        end
+        halt 200
+    end
+
 end

@@ -22,21 +22,39 @@ module GatekeeperHelper
   #
   # @param [Symbol] format the format type, `:text` or `:html`
   # @return [String] the object converted into the expected format.
-  def getPopList()
-
+  def getDcs()
     begin
-      response = RestClient.get "#{settings.gatekeeper}/admin/dc/", 'X-Auth-Token' => settings.gk_token, :content_type => :json
+        return 200, Dc.all.to_json
     rescue => e
-      logger.error e
-      if (defined?(e.response)).nil?
-        error = {:info => "The PoP list in Gatekeeper is empty"}
-        halt 503, "The PoP list in Gatekeeper is empty "
-      end
+        logger.error e
+        logger.error 'Error Establishing a Database Connection'
+        return 500, 'Error Establishing a Database Connection'
     end
-    popList, errors = parse_json(response)
-    return 400, errors if errors
+  end
 
-    return popList['dcid'].zip(popList['dclist']).map{|k, v| {id: k, name: v}}.to_json
+  # Get a PoP
+  #
+  # @param [Symbol] format the format type, `:text` or `:html`
+  # @return [String] the object converted into the expected format.
+  def getDc(id)
+    begin
+        dc = Dc.find(id)
+    rescue Mongoid::Errors::DocumentNotFound => e
+        logger.error 'DC not found'
+        return 404
+    end
+    return dc.to_json
+  end
+
+  def getDcsTokens()
+    dcs_tokens = []
+    dcs = Dc.all
+    dcs.each do |dc|
+      puts dc.inspect
+      dcs_tokens << {:id => dc.id, :token => "token"}
+    end
+    puts dcs_tokens
+    halt 200, dcs_tokens.to_json
   end
 
   # Get list of PoPs
@@ -93,9 +111,6 @@ module GatekeeperHelper
       response = RestClient.post "#{settings.gatekeeper}/admin/dc/", pop_info.to_json, 'X-Auth-Token' => settings.gk_token, :content_type => :json
     rescue RestClient::ResourceNotFound
       halt 404, "PoP not found."
-    rescue RestClient::ExceptionWithResponse => e
-      puts e
-      halt 404, "PoP not registered."
     rescue => e
       logger.error e
       if (defined?(e.response)).nil?

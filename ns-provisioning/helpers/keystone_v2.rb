@@ -19,6 +19,7 @@
 module Authenticationv2Helper
     def generate_v2_credentials(popInfo, popUrls, tenant_id, user_id, token)
         pop_auth = {}
+        puts "Generatinb v2 credentials...."
         begin
             if settings.default_tenant
                 pop_auth['username'] = settings.default_user_name
@@ -87,6 +88,22 @@ module Authenticationv2Helper
             return 400, error
         end
         pop_auth
+    end
+
+    def authentication_v2_with_token(keystoneUrl, tenant_name, token)
+        auth = { auth: { tenantName: tenant_name, token: { id: token } } }
+
+        begin
+            response = RestClient.post keystoneUrl + '/tokens', auth.to_json, content_type: :json
+        rescue => e
+            logger.error e
+            logger.error e.response.body
+        end
+
+        authentication, errors = parse_json(response)
+        return 400, errors if errors
+
+        authentication
     end
 
     def authentication_v2(keystoneUrl, tenant_name, user, password)

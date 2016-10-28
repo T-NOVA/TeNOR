@@ -9,14 +9,14 @@
                 <div class="row">
                     <div class="col-md-6 col-xs-6">
                         <div class="form-group">
-                            <label for="node_os">id:</label>
-                            <input ng-if="popInfo.info[0].dcname" type="text" readonly class="form-control" id="node_os" value="{{popInfo.info[0].dcname}}">
+                            <label for="node_os">Name:</label>
+                            <input ng-if="popInfo.name" type="text" readonly class="form-control" id="node_os" value="{{popInfo.name}}">
                         </div>
                     </div>
                     <div class="col-md-6 col-xs-6">
                         <div class="form-group">
                             <label for="node_os_version">User name:</label>
-                            <input ng-if="popInfo.info[0].adminuser" type="text" readonly class="form-control" id="node_os_version" value="{{popInfo.info[0].adminuser}}">
+                            <input ng-if="popInfo.user" type="text" readonly class="form-control" id="node_os_version" value="{{popInfo.user}}">
                         </div>
                     </div>
                 </div>
@@ -24,15 +24,7 @@
                     <div class="col-md-12 col-xs-12">
                         <div class="form-group">
                             <label for="node_platform">Extra info:</label>
-                            <input type="text" readonly class="form-control" id="node_platform" value="{{popInfo.info[0].extrainfo}}">
-                        </div>
-                    </div>
-                </div>
-                <div class="row" ng-show="current_node != null">
-                    <div class="col-md-12 col-xs-12">
-                        <div class="form-group">
-                            <label for="node_state">URN:</label>
-                            <input type="text" readonly class="form-control" id="node_state" value="{{popInfo.info[0].adminuser}}">
+                            <input type="text" readonly class="form-control" id="node_platform" value="{{popInfo.extra_info}}">
                         </div>
                     </div>
                 </div>
