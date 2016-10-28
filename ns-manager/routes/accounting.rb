@@ -24,14 +24,11 @@ class AccountingController < TnovaManager
   # @param [string]
   put '/servicestatus/:ns_instance_id/:status' do
 
-    begin
-      @service = ServiceModel.find_by(name: "ns_provisioner")
-    rescue Mongoid::Errors::DocumentNotFound => e
-      halt 500, {'Content-Type' => "text/plain"}, "Microservice unrechable."
-    end
+    provisioner, errors = ServiceConfigurationHelper.get_module('ns_provisioner')
+    halt 500, errors if errors
 
     begin
-      response = RestClient.put @service.host + ":" + @service.port.to_s + request.fullpath, request.body.read, 'X-Auth-Token' => @client_token, :content_type => :json
+      response = RestClient.put provisioner.host + request.fullpath, request.body.read, 'X-Auth-Token' => provisioner.token, :content_type => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Provisioning unreachable'
     rescue => e
