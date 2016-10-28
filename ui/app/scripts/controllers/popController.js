@@ -19,11 +19,8 @@ angular.module('tNovaApp')
 
         $scope.refreshPoPList = function () {
             tenorService.get('pops/dc').then(function (d) {
-            //AuthService.get($window.localStorage.token, "admin/dc/").then(function (d) {
                 console.log(d);
                 $scope.registeredDcList = d;
-
-
                 /*_.map(d.dclist, function (row, index) {
                     $scope.registeredDcList.push({
                         id: d.dcid[index],
@@ -87,7 +84,7 @@ angular.module('tNovaApp')
             var pop = {
                 "name": obj.id,
                 "user": obj.adminName,
-                "host": openstack_ip,
+                "host": obj.openstack_ip,
                 "password": obj.adminPass,
                 "tenant_name": obj.tenantName,
                 "is_admin": obj.isAdmin,

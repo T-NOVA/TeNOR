@@ -284,11 +284,7 @@ configureFiles(){
         fi
         if [ "$folder" = "./ns-manager" ]; then
           echo "Generating admin user."
-            cd default/monitoring
-            if [ ! -f config/config.yml ]; then
-                cp config/config.yml.sample config/config.yml
-            fi
-            cd ../../
+          rake db:seed
         fi
 
         cd ../

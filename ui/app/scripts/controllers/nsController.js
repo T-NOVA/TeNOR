@@ -124,7 +124,7 @@ angular.module('tNovaApp')
         };
 
         $scope.getPoPs = function () {
-            AuthService.get($window.localStorage.token, "admin/dc/").then(function (d) {
+            tenorService.get("pops/dc").then(function (d) {
                 $scope.registeredDcList = [];
                 _.map(d.dclist, function (row, index) {
                     $scope.registeredDcList.push({
