@@ -5,7 +5,7 @@
 
 ## Utilization:
 ## ./install_dependencies.sh  ->  Ask if wants to install each module.
-## ./install_dependencies.sh  y n n y  ->  Install some modules without ask. y => Yes, n => No
+## ./install_dependencies.sh  y n y  ->  Install some modules without ask. y => Yes, n => No
 ## $1 -> MongoDB
 ## $2 -> Ruby
 ## $3 -> RabbitMq
@@ -103,6 +103,8 @@ if [ $MONGO_IS_INSTALLED -eq 0 ]; then
 else
     if [ "$1" = "y" ]; then
         install=$1
+    elif [ "$1" = "n"  ]; then
+      echo "Skipping installation..."
     else
         echo "Do you want to install mongodb? (y/n)"
         read install
@@ -125,6 +127,8 @@ if [ $RUBY_IS_INSTALLED -eq 0 ]; then
         echo -e -n "\033[1;31mRuby is not installed."
         if [ "$2" = "y" ]; then
             install=$2
+        elif [ "$2" = "n"  ]; then
+          echo "Skipping installation..."
         else
             echo -e "\nDo you want to install ruby? (y/n)"
             read install
@@ -140,6 +144,8 @@ else
     echo -e -n "\033[1;31mRuby is not installed."
     if [ "$2" = "y" ]; then
         install=$2
+    elif [ "$2" = "n"  ]; then
+      echo "Skipping installation..."
     else
         echo -e "\nDo you want to install ruby? (y/n)"
         read install
@@ -158,6 +164,8 @@ if [ $RABBITMQ_IS_INSTALLED -eq 0 ]; then
 else
     if [ "$3" = "y" ]; then
         install=$3
+    elif [ "$3" = "n"  ]; then
+      echo "Skipping installation..."
     else
         echo "Do you want to install rabbitmq for monitoring? (y/n)"
         read install

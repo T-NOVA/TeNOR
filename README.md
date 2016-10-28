@@ -21,15 +21,15 @@ TeNOR is the NFV Orchestrator platform developed by the [T-NOVA](http://www.t-no
 #Getting started
 
 ## Steps
-1. Install the prerequisites (Ruby and MongoDB). The installation of these requirements is provided a script inside the `dependencies` folder. Use the `install_dependencies.sh` script if you want to install it automatically.
+1. Install the prerequisites (Ruby and MongoDB). You can install it using the script located inside the `dependencies` folder. Use the `install_dependencies.sh` script for automatic installation.
 2. Install TeNOR (internal dependencies and configurations). Installation script provided in the root folder `tenor_install.sh`.
 3. Start TeNOR.
-4. Register the internal modules (automatic) and external modules (Mapping, mAPI, WICM, VIMMonitoring, Netfloc...).
+4. Register external modules if installed (Mapping, mAPI, WICM, VIMMonitoring, Netfloc...).
 5. Register a Network Function Virtualisation Infrastructure Point of Presence (NFVI-PoP) inserting the Openstack credentials into the authentication module.
 6. Test deploying a sample NSD/VNFD to the inserted NFVI-PoP.
 
 ## Installation
-We provide an installation script for Ubuntu 14.04 that helps with the installation of Ruby and MongoDB.
+We provide an installation script for Ubuntu 14.04 that helps with the installation of Ruby, MongoDB and RabbitMq.
 
 In order to install Ruby and MongoDB execute the following script:
 ```
@@ -45,7 +45,7 @@ Once Ruby is installed (you can be sure of that using `ruby -v` command in the t
 
 A menu will appear and you can choose a number in the menu [1-7].
 
-For TeNOR installation, insert the number 1 and press the Enter Key. The installation will start automatically installing the Ruby Gem dependencies. After few minutes, the script will ask you a set of questions regarding the location of the MongoDB. In the case of insert an emty values, the script will use the default values (localhost).
+For TeNOR installation, insert the number 1 and press the Enter Key. The installation will start automatically installing the Ruby Gem dependencies. After few minutes, the script will ask you a set of questions regarding the location of the MongoDB and Cassandra (if installed). In the case of insert an emty values, the script will use the default values (localhost).
 
 **Make sure that you have installed a Ruby version >= 2.2.5 and the `bundle` command is installed.**
 
@@ -67,7 +67,7 @@ A Dockerfile is provided that generates a container with TeNOR and Mongodb insta
 2. Run the container with:
 
     ````
-    docker run -itd -p 4000:4000 -p 8000:8000 -p 9000:9000 -v /opt/mongo:/var/lib/mongodb tnova/tenor bash
+    docker run -itd -p 4000:4000 -p 9000:9000 -v /opt/mongo:/var/lib/mongodb tnova/tenor bash
     ````
 3. Then, you can test TeNOR ([Test if TeNOR is installed and running](#test-if-tenor-is-installed-and-running)), and you can access to the command line with:
 
@@ -138,7 +138,7 @@ TeNOR has a User Interface that provides a global view of the all the orchestrat
 
 This user interface is located in the `ui` folder and contains their own README file with the installation guide.
 
-The UI uses Gatekeeper for authentication, so by default you need to use the default created user in Gatekeeper: admin. Then, for the login:
+The UI has a default user for authentication, the credentials are (can be changed in the UI):
 
 - Username: admin
 - Password: adminpass

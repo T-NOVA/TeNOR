@@ -78,7 +78,6 @@ class VnfdToHot
         image_name = {get_resource: create_image(vdu)}
       end
       if flavours.detect { |fl| fl['id'] == vdu_ref }
-        puts flavours.find { |fl| fl['id'] == vdu_ref }
         flavor_name = flavours.find { |fl| fl['id'] == vdu_ref }['flavour_id']
       else
         flavor_name = {get_resource: create_flavor(vdu)}
