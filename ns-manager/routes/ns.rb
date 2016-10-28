@@ -21,11 +21,11 @@ class NsCatalogue < TnovaManager
     # @overload get "/network-services"
     # Get the Network Service list
     get '/' do
-        service_host, errors = ServiceConfigurationHelper.get_module('ns_catalogue')
+        catalogue, errors = ServiceConfigurationHelper.get_module('ns_catalogue')
         halt 500, errors if errors
 
         begin
-            response = RestClient.get service_host + request.fullpath, 'X-Auth-Token' => @client_token, :content_type => :json
+            response = RestClient.get catalogue.host + request.fullpath, 'X-Auth-Token' => catalogue.token, :content_type => :json
         rescue Errno::ECONNREFUSED
             halt 500, 'NS Catalogue unreachable'
         rescue => e
@@ -41,11 +41,11 @@ class NsCatalogue < TnovaManager
     # Get a Network Service
     # @param [string] id Network service id
     get '/:id' do
-        service_host, errors = ServiceConfigurationHelper.get_module('ns_catalogue')
+        catalogue, errors = ServiceConfigurationHelper.get_module('ns_catalogue')
         halt 500, errors if errors
 
         begin
-            response = RestClient.get service_host + request.fullpath, 'X-Auth-Token' => @client_token, :content_type => :json
+            response = RestClient.get catalogue.host + request.fullpath, 'X-Auth-Token' => catalogue.token, :content_type => :json
         rescue Errno::ECONNREFUSED
             halt 500, 'NS Catalogue unreachable'
         rescue => e
@@ -70,17 +70,17 @@ class NsCatalogue < TnovaManager
         # Validate NS
         return 400, 'ERROR: NSD not found' unless ns.key?('nsd')
 
-        service_host, errors = ServiceConfigurationHelper.get_module('ns_catalogue')
+        catalogue, errors = ServiceConfigurationHelper.get_module('ns_catalogue')
         halt 500, errors if errors
 
-        vnf_manager_host, errors = ServiceConfigurationHelper.get_module('vnf_manager')
+        vnf_manager, errors = ServiceConfigurationHelper.get_module('vnf_manager')
         halt 500, errors if errors
 
         # check if the VNFDs defined in the NSD are defined
         ns['nsd']['vnfds'].each do |vnf|
             begin
                 logger.error 'Check VNFD ' + vnf
-                response = RestClient.get vnf_manager_host + '/vnfs/' + vnf, 'X-Auth-Token' => @client_token, :content_type => :json
+                response = RestClient.get vnf_manager.host + '/vnfs/' + vnf, 'X-Auth-Token' => vnf_manager.token, :content_type => :json
             rescue Errno::ECONNREFUSED
                 halt 500, 'VNF Manager unreachable'
             rescue => e
@@ -91,7 +91,7 @@ class NsCatalogue < TnovaManager
         end
 
         begin
-            response = RestClient.post service_host + request.fullpath, ns.to_json, 'X-Auth-Token' => @client_token, :content_type => :json
+            response = RestClient.post catalogue.host + request.fullpath, ns.to_json, 'X-Auth-Token' => catalogue.token, :content_type => :json
         rescue Errno::ECONNREFUSED
             halt 500, 'NS Catalogue unreachable'
         rescue => e
@@ -112,11 +112,11 @@ class NsCatalogue < TnovaManager
         # Return if content-type is invalid
         return 415 unless request.content_type == 'application/json'
 
-        service_host, errors = ServiceConfigurationHelper.get_module('ns_catalogue')
+        catalogue, errors = ServiceConfigurationHelper.get_module('ns_catalogue')
         halt 500, errors if errors
 
         begin
-            response = RestClient.put service_host + request.fullpath, request.body.read, 'X-Auth-Token' => @client_token, :content_type => :json
+            response = RestClient.put catalogue.host + request.fullpath, request.body.read, 'X-Auth-Token' => catalogue.token, :content_type => :json
         rescue Errno::ECONNREFUSED
             halt 500, 'NS Catalogue unreachable'
         rescue => e
@@ -132,11 +132,11 @@ class NsCatalogue < TnovaManager
     # Delete a new Network Service
     # @param [string] id Network service id
     delete '/:external_ns_id' do
-        service_host, errors = ServiceConfigurationHelper.get_module('ns_catalogue')
+        catalogue, errors = ServiceConfigurationHelper.get_module('ns_catalogue')
         halt 500, errors if errors
 
         begin
-            response = RestClient.delete service_host + request.fullpath, 'X-Auth-Token' => @client_token, :content_type => :json
+            response = RestClient.delete catalogue.host + request.fullpath, 'X-Auth-Token' => catalogue.token, :content_type => :json
         rescue Errno::ECONNREFUSED
             halt 500, 'NS Catalogue unreachable'
         rescue => e

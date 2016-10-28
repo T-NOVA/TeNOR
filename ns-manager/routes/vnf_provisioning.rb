@@ -22,11 +22,11 @@ class VnfProvisioner< TnovaManager
   # @overload get "/vnf-provisioning/vnf-instances"
   # Get the VNF instance list
   get '/vnf-instances' do
-    service_host, errors = ServiceConfigurationHelper.get_module('vnf_manager')
+    manager, errors = ServiceConfigurationHelper.get_module('vnf_manager')
     halt 500, errors if errors
 
     begin
-      response = RestClient.get service_host + request.fullpath, 'X-Auth-Token' => @client_token, :content_type => :json
+      response = RestClient.get manager.host + request.fullpath, 'X-Auth-Token' => manager.token, :content_type => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'VNF Manager unreachable'
     rescue => e
@@ -43,11 +43,11 @@ class VnfProvisioner< TnovaManager
   # Get a specific vnf-instance
   # @param [string] vnfr_id The VNFR id
   get '/vnf-instances/:vnfr_id' do
-    service_host, errors = ServiceConfigurationHelper.get_module('vnf_manager')
+    manager, errors = ServiceConfigurationHelper.get_module('vnf_manager')
     halt 500, errors if errors
 
     begin
-      response = RestClient.get service_host + request.fullpath, 'X-Auth-Token' => @client_token, :content_type => :json
+      response = RestClient.get manager.host + request.fullpath, 'X-Auth-Token' => manager.token, :content_type => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'VNF Manager unreachable'
     rescue => e

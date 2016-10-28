@@ -53,6 +53,12 @@ class NsMonitoring < TnovaManager
       #halt e.response.code, e.response.body
     end
     #return response.code, response.body
+    logger.debug response
+    if response.nil?
+      return 200
+    end
+
+
     return 200, response.body
   end
 

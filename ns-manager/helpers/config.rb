@@ -40,7 +40,8 @@ module ServiceConfigurationHelper
     rescue Mongoid::Errors::DocumentNotFound => e
       return 500, name + " not registred."
     end
-    return service.host + ":" + service.port.to_s
+    service.host = service.host + ":" + service.port.to_s
+    service
   end
 
   def registerService(json)

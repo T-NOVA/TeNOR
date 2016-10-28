@@ -15,5 +15,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require_relative 'vnfs'
-require_relative 'modules'
+# @see ServiceConfigurationHelper
+module ServiceConfigurationHelper
+  def self.get_module(name)
+    begin
+      service = Service.find_by(name: name)
+    rescue Mongoid::Errors::DocumentNotFound => e
+      return 500, name + " not registred."
+    end
+    service.host = service.host + ":" + service.port.to_s
+    service
+  end
+end

@@ -21,11 +21,11 @@ class VNFCatalogue < TnovaManager
     # @overload get "/vnfs"
     # Get the VNFs list
     get '/' do
-        service_host, errors = ServiceConfigurationHelper.get_module('vnf_manager')
+        catalogue, errors = ServiceConfigurationHelper.get_module('vnf_manager')
         halt 500, errors if errors
 
         begin
-            response = RestClient.get service_host + request.fullpath, 'X-Auth-Token' => @client_token, :content_type => :json
+            response = RestClient.get catalogue.host + request.fullpath, 'X-Auth-Token' => catalogue.token, :content_type => :json
         rescue Errno::ECONNREFUSED
             halt 500, 'VNF Manager unreachable'
         rescue => e
@@ -40,11 +40,11 @@ class VNFCatalogue < TnovaManager
     # Get specific VNF
     # @param [string] vnf_id The VNFD id
     get '/:vnf_id' do
-        service_host, errors = ServiceConfigurationHelper.get_module('vnf_manager')
+        catalogue, errors = ServiceConfigurationHelper.get_module('vnf_manager')
         halt 500, errors if errors
 
         begin
-            response = RestClient.get service_host + request.fullpath, 'X-Auth-Token' => @client_token, :content_type => :json
+            response = RestClient.get catalogue.host + request.fullpath, 'X-Auth-Token' => catalogue.token, :content_type => :json
         rescue Errno::ECONNREFUSED
             halt 500, 'VNF Manager unreachable'
         rescue => e
@@ -62,11 +62,11 @@ class VNFCatalogue < TnovaManager
         # Return if content-type is invalid
         return 415 unless request.content_type == 'application/json'
 
-        service_host, errors = ServiceConfigurationHelper.get_module('vnf_manager')
+        catalogue, errors = ServiceConfigurationHelper.get_module('vnf_manager')
         halt 500, errors if errors
 
         begin
-            response = RestClient.post service_host + request.fullpath, request.body.read, 'X-Auth-Token' => @client_token, :content_type => :json
+            response = RestClient.post catalogue.host + request.fullpath, request.body.read, 'X-Auth-Token' => catalogue.token, :content_type => :json
         rescue Errno::ECONNREFUSED
             halt 500, 'VNF Manager unreachable'
         rescue => e
@@ -86,11 +86,11 @@ class VNFCatalogue < TnovaManager
         # Return if content-type is invalid
         return 415 unless request.content_type == 'application/json'
 
-        service_host, errors = ServiceConfigurationHelper.get_module('vnf_manager')
+        catalogue, errors = ServiceConfigurationHelper.get_module('vnf_manager')
         halt 500, errors if errors
 
         begin
-            response = RestClient.put service_host + request.fullpath, request.body.read, 'X-Auth-Token' => @client_token, :content_type => :json
+            response = RestClient.put catalogue.host + request.fullpath, request.body.read, 'X-Auth-Token' => catalogue.token, :content_type => :json
         rescue Errno::ECONNREFUSED
             halt 500, 'VNF Manager unreachable'
         rescue => e
@@ -105,13 +105,16 @@ class VNFCatalogue < TnovaManager
     # @overload delete "/vnfs/:vnf_id"
     # Delete a VNFs
     # @param [string] vnf_id The VNFD id
-    delete '/:vnf_id' do
+    delete '/:vnf_id' do |vnf_id|
         # check if some NSD is using it
-        service_host, errors = ServiceConfigurationHelper.get_module('ns_catalogue')
+        ns_catalogue, errors = ServiceConfigurationHelper.get_module('ns_catalogue')
+        halt 500, errors if errors
+
+        catalogue.host, errors = ServiceConfigurationHelper.get_module('vnf_manager')
         halt 500, errors if errors
 
         begin
-            response = RestClient.get service_host + '/network-services/vnf/' + params[:vnf_id].to_s, 'X-Auth-Token' => @client_token, :content_type => :json
+            response = RestClient.get ns_catalogue.host + '/network-services/vnf/' + vnf_id.to_s, 'X-Auth-Token' => ns_catalogue.token, :content_type => :json
             nss, errors = parse_json(response)
             unless nss.empty?
                 halt 400, nss.size.to_s + ' Network Services are using this VNF.'
@@ -124,11 +127,8 @@ class VNFCatalogue < TnovaManager
             logger.error 'Any network service is using this VNF.'
         end
 
-        service_host, errors = ServiceConfigurationHelper.get_module('vnf_manager')
-        halt 500, errors if errors
-
         begin
-            response = RestClient.delete service_host + request.fullpath, 'X-Auth-Token' => @client_token, :content_type => :json
+            response = RestClient.delete catalogue.host + request.fullpath, 'X-Auth-Token' => catalogue.token, :content_type => :json
         rescue Errno::ECONNREFUSED
             halt 500, 'NS Catalogue unreachable'
         rescue => e

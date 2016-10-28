@@ -73,12 +73,12 @@ class ServiceConfiguration < TnovaManager
         depends_on = []
         serv_reg['depends_on'].each do |serv|
             begin
-                logger.info "Checking if dependant Services of #{serv} is Up and Running...."
+                logger.debug "Checking if dependant Services of #{serv} is Up and Running...."
                 s = Service.where(name: serv).first
                 next if s.nil?
                 dependant_status = is_port_open?(s['host'], s['port'])
                 if dependant_status == false
-                    logger.info "Service found but is down."
+                    logger.debug "Service found but is down."
                     s.destroy
                 else
                     depends_on << { name: s['name'], host: s['host'], port: s['port'], token: s['token'] }
@@ -89,7 +89,7 @@ class ServiceConfiguration < TnovaManager
             end
         end
 
-        logger.error 'Find service that has this module as dependency:'
+        logger.debug 'Find service that has this module as dependency:'
         # Service
         dependencies = Service.any_of(depends_on: serv[:name]).entries
         logger.debug dependencies

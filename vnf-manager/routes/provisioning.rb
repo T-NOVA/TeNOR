@@ -24,9 +24,13 @@ class Provisioning < VNFManager
         #   @param [Integer] ns_id the network service ID
         # Get all the VNFRs of a specific NS
         get '/network-service/:ns_id' do
+
+                provisioner, errors = ServiceConfigurationHelper.get_module('vnf_provisioner')
+                halt 500, errors if errors
+
                 # Forward the request to the VNF Provisioning
                 begin
-                        response = RestClient.get settings.vnf_provisioning + '/vnf-provisioning/network-service/' + params[:ns_id], 'X-Auth-Token' => @client_token, :accept => :json
+                        response = RestClient.get provisioner.host + '/vnf-provisioning/network-service/' + params[:ns_id], 'X-Auth-Token' => provisioner.token, :accept => :json
                 rescue Errno::ECONNREFUSED
                         halt 500, 'VNF Provisioning unreachable'
                 rescue => e
@@ -42,9 +46,14 @@ class Provisioning < VNFManager
         #       Return all VNF Instances
         # Return all VNF Instances
         get '/vnf-instances' do
+
+                catalogue, errors = ServiceConfigurationHelper.get_module('vnf_provisioner')
+                halt 500, errors if errors
+
+
                 # Send request to VNF Provisioning
                 begin
-                        response = RestClient.get settings.vnf_provisioning + '/vnf-provisioning/vnf-instances', 'X-Auth-Token' => @client_token
+                        response = RestClient.get provisioner.host + '/vnf-provisioning/vnf-instances', 'X-Auth-Token' => provisioner.token
                 rescue Errno::ECONNREFUSED
                         halt 500, 'VNF Provisioning unreachable'
                 rescue => e
@@ -60,9 +69,14 @@ class Provisioning < VNFManager
         #       Return all VNF Instances
         # Return all VNF Instances
         get '/vnf-instances/:vnfr_id' do
+
+                catalogue, errors = ServiceConfigurationHelper.get_module('vnf_provisioner')
+                halt 500, errors if errors
+
+
                 # Send request to VNF Provisioning
                 begin
-                        response = RestClient.get settings.vnf_provisioning + '/vnf-provisioning/vnf-instances/' + params['vnfr_id'], 'X-Auth-Token' => @client_token
+                        response = RestClient.get provisioner.host + '/vnf-provisioning/vnf-instances/' + params['vnfr_id'], 'X-Auth-Token' => provisioner.token
                 rescue Errno::ECONNREFUSED
                         halt 500, 'VNF Provisioning unreachable'
                 rescue => e
@@ -79,6 +93,13 @@ class Provisioning < VNFManager
         #       @param [JSON] information about VIM and the VNFD ID
         # Request the instantiation of a VNF
         post '/vnf-instances' do
+
+                catalogue, errors = ServiceConfigurationHelper.get_module('vnf_catalogue')
+                halt 500, errors if errors
+
+                provisioner, errors = ServiceConfigurationHelper.get_module('vnf_provisioner')
+                halt 500, errors if errors
+
                 # Return if content-type is invalid
                 halt 415 unless request.content_type == 'application/json'
 
@@ -87,7 +108,7 @@ class Provisioning < VNFManager
 
                 # Get VNF by id
                 begin
-                        instantiation_info['vnf'] = parse_json(RestClient.get settings.vnf_catalogue + '/vnfs/' + instantiation_info['vnf_id'].to_s, 'X-Auth-Token' => @client_token, :accept => :json)
+                        instantiation_info['vnf'] = parse_json(RestClient.get catalogue.host + '/vnfs/' + instantiation_info['vnf_id'].to_s, 'X-Auth-Token' => catalogue.token, :accept => :json)
                 rescue Errno::ECONNREFUSED
                         halt 500, 'VNF Catalogue unreachable'
                 rescue => e
@@ -97,7 +118,7 @@ class Provisioning < VNFManager
 
                 # Send provisioning info to VNF Provisioning
                 begin
-                        response = RestClient.post settings.vnf_provisioning + '/vnf-provisioning/vnf-instances', instantiation_info.to_json, 'X-Auth-Token' => @client_token, :content_type => :json
+                        response = RestClient.post provisioner.host + '/vnf-provisioning/vnf-instances', instantiation_info.to_json, 'X-Auth-Token' => provisioner.token, :content_type => :json
                 rescue Errno::ECONNREFUSED
                         halt 500, 'VNF Provisioning unreachable'
                 rescue => e
@@ -115,11 +136,18 @@ class Provisioning < VNFManager
         #       @param [JSON] information about VIM
         # Request to de-allocate the resources of a VNF
         post '/vnf-instances/:vnfr_id/destroy' do |vnfr_id|
+
+                provisioner, errors = ServiceConfigurationHelper.get_module('vnf_provisioner')
+                halt 500, errors if errors
+
+                monitoring, errors = ServiceConfigurationHelper.get_module('vnf_monitoring')
+                halt 500, errors if errors
+
                 # Return if content-type is invalid
                 halt 415 unless request.content_type == 'application/json'
 
                 begin
-                        response = RestClient.delete settings.vnf_monitoring + "/vnf-monitoring/subcription/#{vnfr_id}", 'X-Auth-Token' => @client_token, :content_type => :json, :accept => :json
+                        response = RestClient.delete monitoring.host + "/vnf-monitoring/subcription/#{vnfr_id}", 'X-Auth-Token' => monitoring.token, :content_type => :json, :accept => :json
                 rescue Errno::ECONNREFUSED
                         #halt 500, 'VNF Monitoring unreachable'
                 rescue => e
@@ -129,7 +157,7 @@ class Provisioning < VNFManager
 
                 # Forward the request to the VNF Provisioning
                 begin
-                        response = RestClient.post settings.vnf_provisioning + "/vnf-provisioning/vnf-instances/#{vnfr_id}/destroy", request.body, 'X-Auth-Token' => @client_token, :content_type => :json
+                        response = RestClient.post provisioner.host + "/vnf-provisioning/vnf-instances/#{vnfr_id}/destroy", request.body, 'X-Auth-Token' => provisioner.token, :content_type => :json
                 rescue Errno::ECONNREFUSED
                         halt 500, 'VNF Provisioning unreachable'
                 rescue => e
@@ -148,6 +176,10 @@ class Provisioning < VNFManager
         #       @param [JSON] information about VIM
         # Request to execute a lifecycle event
         put '/vnf-instances/:vnfr_id/config' do
+
+                provisioner, errors = ServiceConfigurationHelper.get_module('vnf_provisioner')
+                halt 500, errors if errors
+
                 # Return if content-type is invalid
                 halt 415 unless request.content_type == 'application/json'
 
@@ -156,7 +188,7 @@ class Provisioning < VNFManager
 
                 # Forward the request to the VNF Provisioning
                 begin
-                        response = RestClient.put settings.vnf_provisioning + '/vnf-provisioning/vnf-instances/' + params[:vnfr_id] + '/config', config_info.to_json, 'X-Auth-Token' => @client_token, :content_type => :json
+                        response = RestClient.put provisioner.host + '/vnf-provisioning/vnf-instances/' + params[:vnfr_id] + '/config', config_info.to_json, 'X-Auth-Token' => provisioner.token, :content_type => :json
                 rescue Errno::ECONNREFUSED
                         halt 500, 'VNF Provisioning unreachable'
                 rescue => e

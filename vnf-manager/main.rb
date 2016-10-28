@@ -47,4 +47,5 @@ class VNFManager < Sinatra::Application
     end
 
     helpers ManagerHelper
+    helpers ServiceConfigurationHelper
 end
