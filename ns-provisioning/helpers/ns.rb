@@ -151,10 +151,15 @@ module NsProvisioner
                 logger.info "Removing user stack...."
                 stack_url = auth_info['stack_url']
                 logger.debug 'Removing user reserved stack...'
-                response, errors = delete_stack_with_wait(auth_info['stack_url'], token)
-                logger.error errors if errors
-                return 400, errors if errors
-                logger.info "User and tenant removed correctly."
+                if !auth_info['stack_url'].nil?
+                    response, errors = delete_stack_with_wait(auth_info['stack_url'], token)
+                    logger.error errors if errors
+                    return 400, errors if errors
+                    logger.info "User and tenant removed correctly."
+                else
+                    logger.info "No user and tenant to remove."
+                end
+
             end
             logger.info "REMOVED: User " + auth_info['user_id'].to_s + " and tenant '" + auth_info['tenant_id'].to_s
         end
@@ -318,9 +323,11 @@ module NsProvisioner
         if @instance['authentication'].size == 1
             logger.debug 'Only 1 PoP is defined'
             # generate networks for this PoP
+
             if @instance['authentication'].nil?
                 return handleError(@instance, "Authentication not valid.")
             end
+
             pop_auth = @instance['authentication'][0]
             tenant_token = pop_auth['token']
             popUrls = pop_auth['urls']
@@ -347,6 +354,8 @@ module NsProvisioner
             stack_id = stack['stack']['id']
 
             #save stack_url in reserved resurces
+            logger.info "Saving reserved stack...."
+
             @resource_reservation = @instance['resource_reservation']
             resource_reservation = []
             resource_reservation << {

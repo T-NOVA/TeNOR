@@ -154,7 +154,11 @@ class Provisioner < NsProvisioning
                     callback_url = settings.manager + '/ns-instances/' + @instance['id']
 
                     next if vnf['vnfr_id'].nil?
-                    auth = { auth: { tenant: pop_auth['tenant_name'], username: pop_auth['username'], password: pop_auth['password'], url: { keystone: popUrls[:keystone] } }, callback_url: callback_url }
+                    # get token
+                    credentials, errors = authenticate(popUrls[:keystone], pop_auth['tenant_name'], pop_auth['username'], pop_auth['password'])
+                    logger.error errors if errors
+                    return if errors
+                    auth = { auth: { tenant_id: credentials[:tenant_id], user_id: credentials[:user_id], token: credentials[:token], url: { keystone: popUrls[:keystone] } }, callback_url: callback_url }
                     begin
                         response = RestClient.post settings.vnf_manager + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/destroy', auth.to_json, content_type: :json
                     rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH

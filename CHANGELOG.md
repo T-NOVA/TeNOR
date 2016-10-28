@@ -1,3 +1,6 @@
+## 0.7.1
+- VNF Manager uses the token and tenant_id. Is not using user/pass. This fixes the bug with Keystone v3.
+
 ## 0.7.0
 - Non admin users can use TeNOR. Using already created flavors inside Openstack.
 - Keystone v3 available.

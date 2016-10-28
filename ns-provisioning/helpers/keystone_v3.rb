@@ -65,11 +65,7 @@ module Authenticationv3Helper
             putRoleAdmin(popUrls[:keystone], pop_auth['tenant_id'], pop_auth['user_id'], token)
 
             logger.info 'Authentication using new user credentials.'
-            puts pop_auth['tenant_id']
-            puts pop_auth['username']
-            puts pop_auth['password']
             pop_auth['token'] = authentication_v3_ids(popUrls[:keystone], pop_auth['tenant_id'], pop_auth['username'], pop_auth['password'])
-            puts pop_auth['token']
             if pop_auth['token'].nil?
                 error = 'Authentication failed.'
                 logger.error error

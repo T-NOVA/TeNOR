@@ -106,14 +106,11 @@ class Provisioning < VnfProvisioning
         # Convert VNF to HOT (call HOT Generator)
         halt 400, 'No T-NOVA flavour defined.' unless instantiation_info.key?('flavour')
 
-        vim_info = {
-            'keystone' => instantiation_info['auth']['url']['keystone'],
-            'tenant' => instantiation_info['auth']['tenant'],
-            'username' => instantiation_info['auth']['username'],
-            'password' => instantiation_info['auth']['password'],
-            'heat' => instantiation_info['auth']['url']['orch'],
-            'compute' => instantiation_info['auth']['url']['compute']
-        }
+        vim_info = instantiation_info['auth']
+        vim_info['keystone'] = vim_info['url']['keystone']
+        vim_info['heat'] = vim_info['url']['heat']
+        vim_info['compute'] = vim_info['url']['compute']
+        puts vim_info
 
         logger.debug 'Send VNFD to Hot Generator'
         hot_generator_message = {
@@ -123,15 +120,13 @@ class Provisioning < VnfProvisioning
             networks_id: instantiation_info['reserved_resources']['networks'],
             routers_id: instantiation_info['reserved_resources']['routers'],
             public_network_id: instantiation_info['reserved_resources']['public_network_id'],
-            dns_server: instantiation_info['reserved_resources']['dns_server']
+            dns_server: instantiation_info['reserved_resources']['dns_server'],
+            flavours: []
         }
-        if !instantiation_info['auth']['is_admin']
-            token_info = request_auth_token(vim_info)
-            auth_token = token_info['access']['token']['id']
-            tenant_id = token_info['access']['token']['tenant']['id']
+        if !vim_info['is_admin']
             flavors = []
             vnf['vnfd']['vdu'].each do |vdu|
-                flavour_id = get_vdu_flavour(vdu, vim_info['compute'], tenant_id, auth_token)
+                flavour_id = get_vdu_flavour(vdu, vim_info['compute'], vim_info['tenant_id'], vim_info['token'])
                 if flavour_id.nil?
                     halt 400, "No flavours available for the vdu " + vdu['id'].to_s
                 end
@@ -154,14 +149,10 @@ class Provisioning < VnfProvisioning
         response = provision_vnf(vim_info, vnf['vnfd']['name'].delete(' ') + '_' + vnfr.id, hot)
         logger.debug 'Provision response: ' + response.to_json
 
-        ############ to remove??
         vdu = []
-        vdu0 = {}
-        vdu0['vnfc_instance'] = response['stack']['links'][0]['href']
-        vdu0['id'] = response['stack']['id']
-        vdu0['type'] = 0
-        vdu << vdu0
-        ############
+        vnf['vnfd']['vdu'].each do |v|
+            vdu << { id: v['id'], alias: v['alias'] }
+        end
 
         # Update the VNFR
         vnfr.push(lifecycle_event_history: 'CREATE_IN_PROGRESS')
@@ -228,14 +219,8 @@ class Provisioning < VnfProvisioning
         end
 
         # Request an auth token from the VIM
-        vim_info = {
-            'keystone' => destroy_info['auth']['url']['keystone'],
-            'tenant' => destroy_info['auth']['tenant'],
-            'username' => destroy_info['auth']['username'],
-            'password' => destroy_info['auth']['password']
-        }
-        token_info = request_auth_token(vim_info)
-        auth_token = token_info['access']['token']['id']
+        vim_info = destroy_info['auth']
+        vim_info['keystone'] = vim_info['url']['keystone']
         callback_url = destroy_info['callback_url']
 
         # if the stack contains nested templates, remove nesed before
@@ -251,14 +236,14 @@ class Provisioning < VnfProvisioning
 =end
         vnfr['scale_resources'].each do |resource|
             stack_url = resource['stack_url']
-            logger.info 'Sending request to Openstack for Scale IN'
-            response, errors = delete_stack_with_wait(stack_url, auth_token)
+            logger.info 'Sending request to Openstack for Remove scaled resources'
+            response, errors = delete_stack_with_wait(stack_url, vim_info['token'])
             vnfr.pull(scale_resources: resource)
-            logger.info "Scale in correct"
+            logger.info "Removed scaled resources."
         end
 
         # Requests the VIM to delete the stack
-        response, errors = delete_stack_with_wait(vnfr.stack_url, auth_token)
+        response, errors = delete_stack_with_wait(vnfr.stack_url, vim_info['token'])
         logger.error errors if errors
         if response == 400
             halt 400, errors if errors
@@ -334,10 +319,7 @@ class Provisioning < VnfProvisioning
         # Parse body message
         stack_info = parse_json(request.body.read)
         logger.debug 'Stack info: ' + stack_info.to_json
-
-        # Request an auth token
-        token_info = request_auth_token(stack_info['vim_info'])
-        auth_token = token_info['access']['token']['id']
+        auth_token = stack_info['vim_info']['token']
 
         begin
             vnfr = Vnfr.find(params[:vnfr_id])

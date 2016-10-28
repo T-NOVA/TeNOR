@@ -194,7 +194,6 @@ class HotGenerator < Sinatra::Application
 
 		# Validate JSON format
 		credentials_info = JSON.parse(request.body.read)
-		return 400, errors.to_json if errors
 
 		halt 400, 'Username not found' if credentials_info['username'].nil?
 		halt 400, 'Password not found' if credentials_info['password'].nil?

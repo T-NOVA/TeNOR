@@ -18,6 +18,31 @@
 # @see NSProvisioner
 module AuthenticationHelper
 
+  def authenticate(keystone_url, tenant_name, username, password)
+    keystone_version = URI(keystone_url).path.split('/').last
+    if keystone_version == 'v2.0'
+      user_authentication, errors = authentication_v2(keystone_url, tenant_name, username, password)
+      logger.error errors if errors
+      return 400, errors.to_json if errors
+      tenant_id = user_authentication['access']['token']['tenant']['id']
+      user_id = user_authentication['access']['user']['id']
+      token = user_authentication['access']['token']['id']
+    elsif keystone_version == 'v3'
+        user_authentication, errors = authentication_v3(keystone_url, tenant_name, username, password)
+        logger.error errors if errors
+        return 400, errors.to_json if errors
+        if !user_authentication['token']['project'].nil?
+            tenant_id = user_authentication['token']['project']['id']
+            user_id = user_authentication['token']['user']['id']
+            token = user_authentication['token']['id']
+        else
+            errors = "No project found with the authentication."
+            return 400, errors.to_json if errors
+        end
+    end
+    {:tenant_id => tenant_id, :user_id => user_id, :token => token}
+  end
+
   def create_user_and_project(heat_api, instance_id, project_name, username, password, tenant_id, token)
     generated_credentials = {}
     generated_credentials['password'] = password
