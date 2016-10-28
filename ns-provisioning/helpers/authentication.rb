@@ -28,19 +28,31 @@ module AuthenticationHelper
       user_id = user_authentication['access']['user']['id']
       token = user_authentication['access']['token']['id']
     elsif keystone_version == 'v3'
-        user_authentication, errors = authentication_v3(keystone_url, tenant_name, username, password)
-        logger.error errors if errors
+      user_authentication, errors = authentication_v3(keystone_url, tenant_name, username, password)
+      logger.error errors if errors
+      return 400, errors.to_json if errors
+      if !user_authentication['token']['project'].nil?
+        tenant_id = user_authentication['token']['project']['id']
+        user_id = user_authentication['token']['user']['id']
+        token = user_authentication['token']['id']
+      else
+        errors = "No project found with the authentication."
         return 400, errors.to_json if errors
-        if !user_authentication['token']['project'].nil?
-            tenant_id = user_authentication['token']['project']['id']
-            user_id = user_authentication['token']['user']['id']
-            token = user_authentication['token']['id']
-        else
-            errors = "No project found with the authentication."
-            return 400, errors.to_json if errors
-        end
+      end
     end
     {:tenant_id => tenant_id, :user_id => user_id, :token => token}
+  end
+
+  def generate_credentials(instance, keystone_url, popUrls, tenant_id, user_id, token)
+    keystone_version = URI(keystone_url).path.split('/').last
+    if keystone_version == 'v2.0'
+      credentials, errors = generate_v2_credentials(instance, popUrls, tenant_id, user_id, token)
+      return 400, errors if errors
+    elsif keystone_version == 'v3'
+      credentials, errors = generate_v3_credentials(instance, popUrls, tenant_id, user_id, token)
+      return 400, errors if errors
+    end
+    credentials
   end
 
   def create_user_and_project(heat_api, instance_id, project_name, username, password, tenant_id, token)

@@ -77,7 +77,7 @@ class DcController < TnovaManager
             user: pop_info['user'],
             password: pop_info['password'],
             tenant_name: pop_info['tenant_name'],
-            admin_role: pop_info['is_admin'],
+            is_admin: pop_info['is_admin'],
             description: pop_info['description'],
             extra_info: pop_info['extra_info']
         }

@@ -16,6 +16,7 @@ module Mongoid
     def serializable_hash(options = nil)
       h = super(options)
       h['id'] = h.delete('_id') if(h.has_key?('_id'))
+      #h['password'] = "******" if(h.has_key?('password'))
       h
     end
   end
@@ -31,7 +32,7 @@ class Dc
     field :user, type: String
     field :password, type: String
     field :tenant_name, type: String
-    field :admin_role, type: Boolean
+    field :is_admin, type: Boolean
     field :extra_info, type: String
     field :description, type: String
 

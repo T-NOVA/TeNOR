@@ -110,7 +110,6 @@ class Provisioning < VnfProvisioning
         vim_info['keystone'] = vim_info['url']['keystone']
         vim_info['heat'] = vim_info['url']['heat']
         vim_info['compute'] = vim_info['url']['compute']
-        puts vim_info
 
         logger.debug 'Send VNFD to Hot Generator'
         hot_generator_message = {

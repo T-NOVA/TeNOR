@@ -17,9 +17,9 @@
 #
 # @see NSProvisioner
 module Authenticationv2Helper
-    def generate_v2_credentials(popInfo, popUrls, tenant_id, user_id, token)
+    def generate_v2_credentials(instance, popUrls, tenant_id, user_id, token)
+        @instance = instance
         pop_auth = {}
-        puts "Generatinb v2 credentials...."
         begin
             if settings.default_tenant
                 pop_auth['username'] = settings.default_user_name
@@ -114,6 +114,7 @@ module Authenticationv2Helper
         rescue => e
             logger.error e
             logger.error e.response.body
+            return 400, e
         end
 
         authentication, errors = parse_json(response)

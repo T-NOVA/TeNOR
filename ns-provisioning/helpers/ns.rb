@@ -76,38 +76,31 @@ module NsProvisioner
         # reserved_resources for the instance
         logger.info 'Removing reserved resources...'
         @instance['resource_reservation'].each do |resource|
+            logger.info resource
             break if resource['pop_id'].nil?
 
             auth_info = @instance['authentication'].find { |auth| auth['pop_id'] == resource['pop_id'] }
             pop_info, errors = getPopInfo(resource['pop_id'])
             logger.error errors if errors
             return 400, errors.to_json if errors
-            popUrls = getPopUrls(pop_info['extrainfo'])
+            popUrls = getPopUrls(pop_info['extra_info'])
+            keystone_url = popUrls[:keystone]
 
-            keystone_version = URI(popUrls[:keystone]).path.split('/').last
-            if keystone_version == 'v2.0'
-                admin_authentication, errors = authentication_v2(popUrls[:keystone], pop_auth['tenant_name'], pop_auth['username'], pop_auth['password'])
-                logger.error errors if errors
-                user_authentication, errors = authentication_v2(popUrls[:keystone], auth_info['tenant_name'], auth_info['username'], auth_info['password'])
-                logger.error errors if errors
-                @instance.update_attribute('status', 'ERROR_REMOVING') if errors
-                @instance.push(audit_log: errors) if errors
-                return 400, errors.to_json if errors
-                token = admin_authentication['access']['token']['id']
-                tenant_token = user_authentication['access']['token']['id']
-            elsif keystone_version == 'v3'
-                admin_authentication, errors = authentication_v3(popUrls[:keystone], pop_auth['tenant_name'], pop_auth['username'], pop_auth['password'])
-                logger.error errors if errors
-                user_authentication, errors = authentication_v3(popUrls[:keystone], auth_info['tenant_name'], auth_info['username'], auth_info['password'])
-                logger.error errors if errors
-                @instance.update_attribute('status', 'ERROR_REMOVING') if errors
-                @instance.push(audit_log: errors) if errors
-                return 400, errors.to_json if errors
-                token = admin_authentication['token']['id']
-                tenant_token = user_authentication['token']['id']
-            end
+            admin_credentials, errors = authenticate(keystone_url, pop_info['tenant_name'], pop_info['user'], pop_info['password'])
+            logger.error errors if errors
+            @instance.update_attribute('status', 'ERROR_REMOVING') if errors
+            @instance.push(audit_log: errors) if errors
+            return 400, errors.to_json if errors
 
-            #stack_url = resource['network_stack']['stack']['links'][0]['href']
+            credentials, errors = authenticate(keystone_url, auth_info['tenant_name'], auth_info['username'], auth_info['password'])
+            logger.error errors if errors
+            @instance.update_attribute('status', 'ERROR_CREATING') if errors
+            @instance.push(audit_log: errors) if errors
+            return 400, errors.to_json if errors
+
+            token = admin_credentials[:token]
+            tenant_token = credentials[:token]
+
             stack_url = resource['network_stack']['stack_url']
             logger.debug 'Removing reserved stack...'
             response, errors = delete_stack_with_wait(stack_url, tenant_token)
@@ -123,25 +116,15 @@ module NsProvisioner
             pop_auth, errors = getPopInfo(pop_info['pop_id'])
             logger.error errors if errors
             return 400, errors.to_json if errors
-            popUrls = getPopUrls(pop_auth['extrainfo'])
+            popUrls = getPopUrls(pop_auth['extra_info'])
 
             auth_info = @instance['authentication'].find { |auth| auth['pop_id'] == pop_info['pop_id'] }
-            keystone_version = URI(popUrls[:keystone]).path.split('/').last
-            if keystone_version == 'v2.0'
-                user_authentication, errors = authentication_v2(popUrls[:keystone], pop_auth['tenant_name'], pop_auth['username'], pop_auth['password'])
-                logger.error errors if errors
-                @instance.update_attribute('status', 'ERROR_REMOVING') if errors
-                @instance.push(audit_log: errors) if errors
-                return 400, errors.to_json if errors
-                token = user_authentication['access']['token']['id']
-            elsif keystone_version == 'v3'
-                user_authentication, errors = authentication_v3(popUrls[:keystone], pop_auth['tenant_name'], pop_auth['username'], pop_auth['password'])
-                logger.error errors if errors
-                @instance.update_attribute('status', 'ERROR_REMOVING') if errors
-                @instance.push(audit_log: errors) if errors
-                return 400, errors.to_json if errors
-                token = user_authentication['token']['id']
-            end
+            credentials, errors = authenticate(popUrls[:keystone], auth_info['tenant_name'], auth_info['username'], auth_info['password'])
+            logger.error errors if errors
+            @instance.update_attribute('status', 'ERROR_CREATING') if errors
+            @instance.push(audit_log: errors) if errors
+            return 400, errors.to_json if errors
+            token = credentials[:token]
 
             unless pop_info['security_group_id'].nil?
                 #      deleteSecurityGroup(popUrls[:compute], vnf_info['tenant_id'], vnf_info['security_group_id'], tenant_token)

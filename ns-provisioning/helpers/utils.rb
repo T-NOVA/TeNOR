@@ -35,4 +35,18 @@ module UtilsHelper
 
     return parsed_message, nil
   end
+
+  def update_mongoid_array(object, old_array, new_array)
+    #get array
+    object = @resource_reservation.find {|s| s[:network_stack][:id] == stack['stack']['id'] }
+    #remove array
+          #@instance.resource_reservation.delete(object)
+          #@instance.pop(resource_reservation: resource_reservation)
+          @instance.pull(resource_reservation: object)
+    #add array
+    resource_reservation = resource_reservation.find {|s| s[:network_stack][:id] == stack['stack']['id'] }
+    resource_reservation[:routers] = routers
+    @instance.push(resource_reservation: resource_reservation)
+    return object
+  end
 end
