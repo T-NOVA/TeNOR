@@ -2,7 +2,7 @@
 
 TeNOR is the NFV Orchestrator platform developed by the [T-NOVA](http://www.t-nova.eu) project, responsible for managing the entire NFV lifecycle service.
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-yellowgreen.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Build Status](https://travis-ci.org/jbatalle/TeNOR.svg?branch=master)](https://travis-ci.org/jbatalle/TeNOR) [![License](https://img.shields.io/badge/License-Apache%202.0-yellowgreen.svg)](https://opensource.org/licenses/Apache-2.0)
 
 ## Prerequisites
 - Ruby >= 2.2.5 (installation provided in dependencies/install_dependencies.sh)
