@@ -23,14 +23,14 @@ class Provisioning < VNFManager
         #   Get all the VNFRs of a specific NS
         #   @param [Integer] ns_id the network service ID
         # Get all the VNFRs of a specific NS
-        get '/network-service/:ns_id' do
+        get '/network-service/:ns_id' do |ns_id|
 
                 provisioner, errors = ServiceConfigurationHelper.get_module('vnf_provisioner')
                 halt 500, errors if errors
 
                 # Forward the request to the VNF Provisioning
                 begin
-                        response = RestClient.get provisioner.host + '/vnf-provisioning/network-service/' + params[:ns_id], 'X-Auth-Token' => provisioner.token, :accept => :json
+                        response = RestClient.get provisioner.host + '/vnf-provisioning/network-service/' + ns_id, 'X-Auth-Token' => provisioner.token, :accept => :json
                 rescue Errno::ECONNREFUSED
                         halt 500, 'VNF Provisioning unreachable'
                 rescue => e
@@ -47,9 +47,8 @@ class Provisioning < VNFManager
         # Return all VNF Instances
         get '/vnf-instances' do
 
-                catalogue, errors = ServiceConfigurationHelper.get_module('vnf_provisioner')
+                provisioner, errors = ServiceConfigurationHelper.get_module('vnf_provisioner')
                 halt 500, errors if errors
-
 
                 # Send request to VNF Provisioning
                 begin
@@ -68,15 +67,14 @@ class Provisioning < VNFManager
         # @overload get '/vnf-provisioning/vnf-instances'
         #       Return all VNF Instances
         # Return all VNF Instances
-        get '/vnf-instances/:vnfr_id' do
+        get '/vnf-instances/:vnfr_id' do |vnfr_id|
 
-                catalogue, errors = ServiceConfigurationHelper.get_module('vnf_provisioner')
+                provisioner, errors = ServiceConfigurationHelper.get_module('vnf_provisioner')
                 halt 500, errors if errors
-
 
                 # Send request to VNF Provisioning
                 begin
-                        response = RestClient.get provisioner.host + '/vnf-provisioning/vnf-instances/' + params['vnfr_id'], 'X-Auth-Token' => provisioner.token
+                        response = RestClient.get provisioner.host + '/vnf-provisioning/vnf-instances/' + vnfr_id, 'X-Auth-Token' => provisioner.token
                 rescue Errno::ECONNREFUSED
                         halt 500, 'VNF Provisioning unreachable'
                 rescue => e
@@ -141,7 +139,7 @@ class Provisioning < VNFManager
                 halt 500, errors if errors
 
                 monitoring, errors = ServiceConfigurationHelper.get_module('vnf_monitoring')
-                halt 500, errors if errors
+                #halt 500, errors if errors
 
                 # Return if content-type is invalid
                 halt 415 unless request.content_type == 'application/json'
@@ -151,7 +149,8 @@ class Provisioning < VNFManager
                 rescue Errno::ECONNREFUSED
                         #halt 500, 'VNF Monitoring unreachable'
                 rescue => e
-                        logger.error e.response
+                        logger.error e
+                        #logger.error e.response
                         #halt e.response.code, e.response.body
                 end
 
@@ -175,7 +174,7 @@ class Provisioning < VNFManager
         #       @param [String] vnfr_id the VNFR ID
         #       @param [JSON] information about VIM
         # Request to execute a lifecycle event
-        put '/vnf-instances/:vnfr_id/config' do
+        put '/vnf-instances/:vnfr_id/config' do |vnfr_id|
 
                 provisioner, errors = ServiceConfigurationHelper.get_module('vnf_provisioner')
                 halt 500, errors if errors
@@ -188,7 +187,7 @@ class Provisioning < VNFManager
 
                 # Forward the request to the VNF Provisioning
                 begin
-                        response = RestClient.put provisioner.host + '/vnf-provisioning/vnf-instances/' + params[:vnfr_id] + '/config', config_info.to_json, 'X-Auth-Token' => provisioner.token, :content_type => :json
+                        response = RestClient.put provisioner.host + '/vnf-provisioning/vnf-instances/' + vnfr_id + '/config', config_info.to_json, 'X-Auth-Token' => provisioner.token, :content_type => :json
                 rescue Errno::ECONNREFUSED
                         halt 500, 'VNF Provisioning unreachable'
                 rescue => e

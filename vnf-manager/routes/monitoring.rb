@@ -178,7 +178,7 @@ class Monitoring < VNFManager
   #	@param [Integer] instance_id
   delete '/:vnfr_id/monitoring-data' do |vnfr_id|
 
-    catalogue, errors = ServiceConfigurationHelper.get_module('vnf_catalogue')
+    monitoring, errors = ServiceConfigurationHelper.get_module('vnf_monitoring')
     halt 500, errors if errors
 
     begin

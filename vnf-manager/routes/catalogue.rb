@@ -138,6 +138,10 @@ class Catalogue < VNFManager
   #       @param [Integer] external_vnf_id VNF external ID
   # Delete a VNF
   delete '/:external_vnf_id' do |external_vnf_id|
+
+    catalogue, errors = ServiceConfigurationHelper.get_module('vnf_catalogue')
+    halt 500, errors if errors
+    
     # Forward request to VNF Catalogue
     begin
       response = RestClient.delete catalogue.host + '/vnfs/' + external_vnf_id, 'X-Auth-Token' => catalogue.token
