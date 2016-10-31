@@ -95,7 +95,7 @@ RSpec.describe TnovaManager do
 		end
 
 		context 'when the DC is found' do
-      let(:response_found) { get '/dc/' + dc._id }
+      let(:response_found) { get '/dc/' + dc._id.to_s }
 
 			it 'response body should not be empty' do
 				expect(JSON response_found.body).to_not be_empty
@@ -160,7 +160,7 @@ RSpec.describe TnovaManager do
 		end
 
 		context 'when the DC is found' do
-			let(:response_found) { delete '/dc/' + dc._id }
+			let(:response_found) { delete '/dc/' + dc._id.to_s }
 
 			it 'responds with an empty body' do
 				expect(response_found.body).to be_empty

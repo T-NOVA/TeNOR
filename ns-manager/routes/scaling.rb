@@ -165,7 +165,7 @@ class NsScaling< TnovaManager
 
     #reading the auto_scale_policy and match with the auto_scale_info['parameter_id']
     #send the scale_in/out accordingly
-    logger.info "Breach of parameter: " + auto_scale_info['parameter_id']
+    logger.info "Breach of parameter: " + auto_scale_info['parameter_id'].to_s
 
   end
 
