@@ -15,42 +15,42 @@ install:
 #  - TEST_DIR=.
 script:
 #  - gem uninstall json -v 2.0.2
-  - cd ns-manager && BUNDLE_GEMFILE=/home/travis/build/jbatalle/TeNOR/ns-manager/Gemfile && bundle update --quiet
+  - cd ns-manager && BUNDLE_GEMFILE=$TRAVIS_BUILD_DIR/ns-manager/Gemfile && bundle update --quiet
   - rspec
   - rake start &
-  - cd /home/travis/build/jbatalle/TeNOR
-  - cd ns-catalogue && BUNDLE_GEMFILE=/home/travis/build/jbatalle/TeNOR/ns-catalogue/Gemfile && bundle update --quiet
+  - cd $TRAVIS_BUILD_DIR
+  - cd ns-catalogue && BUNDLE_GEMFILE=$TRAVIS_BUILD_DIR/ns-catalogue/Gemfile && bundle update --quiet
   - rspec
   - rake start &
-  - cd /home/travis/build/jbatalle/TeNOR
-  - cd nsd-validator && BUNDLE_GEMFILE=/home/travis/build/jbatalle/TeNOR/nsd-validator/Gemfile && bundle update --quiet
+  - cd $TRAVIS_BUILD_DIR
+  - cd nsd-validator && BUNDLE_GEMFILE=$TRAVIS_BUILD_DIR/nsd-validator/Gemfile && bundle update --quiet
   - rspec
   - rake start &
-  - cd /home/travis/build/jbatalle/TeNOR
-  - cd ns-provisioning && BUNDLE_GEMFILE=/home/travis/build/jbatalle/TeNOR/ns-provisioning/Gemfile && bundle update --quiet
+  - cd $TRAVIS_BUILD_DIR
+  - cd ns-provisioning && BUNDLE_GEMFILE=$TRAVIS_BUILD_DIR/ns-provisioning/Gemfile && bundle update --quiet
   #- rspec
   - rake start &
-  - cd /home/travis/build/jbatalle/TeNOR
-  - cd vnf-manager && BUNDLE_GEMFILE=/home/travis/build/jbatalle/TeNOR/vnf-manager/Gemfile && bundle update --quiet
+  - cd $TRAVIS_BUILD_DIR
+  - cd vnf-manager && BUNDLE_GEMFILE=$TRAVIS_BUILD_DIR/vnf-manager/Gemfile && bundle update --quiet
   #- rspec
   - rake start &
-  - cd /home/travis/build/jbatalle/TeNOR
-  - cd vnf-catalogue && BUNDLE_GEMFILE=/home/travis/build/jbatalle/TeNOR/vnf-catalogue/Gemfile && bundle update --quiet
+  - cd $TRAVIS_BUILD_DIR
+  - cd vnf-catalogue && BUNDLE_GEMFILE=$TRAVIS_BUILD_DIR/vnf-catalogue/Gemfile && bundle update --quiet
   - rspec
   - rake start &
-  - cd /home/travis/build/jbatalle/TeNOR
-  - cd vnfd-validator && BUNDLE_GEMFILE=/home/travis/build/jbatalle/TeNOR/vnfd-validator/Gemfile && bundle update --quiet
+  - cd $TRAVIS_BUILD_DIR
+  - cd vnfd-validator && BUNDLE_GEMFILE=$TRAVIS_BUILD_DIR/vnfd-validator/Gemfile && bundle update --quiet
   - rspec
   - rake start &
-  - cd /home/travis/build/jbatalle/TeNOR
-  - cd vnf-provisioning && BUNDLE_GEMFILE=/home/travis/build/jbatalle/TeNOR/vnf-provisioning/Gemfile && bundle update --quiet
+  - cd $TRAVIS_BUILD_DIR
+  - cd vnf-provisioning && BUNDLE_GEMFILE=$TRAVIS_BUILD_DIR/vnf-provisioning/Gemfile && bundle update --quiet
   #- rspec
   - rake start &
-  - cd /home/travis/build/jbatalle/TeNOR
-  - cd hot-generator && BUNDLE_GEMFILE=/home/travis/build/jbatalle/TeNOR/hot-generator/Gemfile && bundle update --quiet
+  - cd $TRAVIS_BUILD_DIR
+  - cd hot-generator && BUNDLE_GEMFILE=$TRAVIS_BUILD_DIR/hot-generator/Gemfile && bundle update --quiet
   - rspec
   - rake start &
-  - cd /home/travis/build/jbatalle/TeNOR
+  - cd $TRAVIS_BUILD_DIR
   - sleep 10
   - sleep 20
   - curl localhost:4000/
