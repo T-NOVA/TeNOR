@@ -2,6 +2,8 @@
 
 TeNOR is the NFV Orchestrator platform developed by the [T-NOVA](http://www.t-nova.eu) project, responsible for managing the entire NFV lifecycle service.
 
+[![License](https://img.shields.io/badge/License-Apache%202.0-yellowgreen.svg)](https://opensource.org/licenses/Apache-2.0)
+
 ## Prerequisites
 - Ruby >= 2.2.5 (installation provided in dependencies/install_dependencies.sh)
 - Bundler (installation provided in dependencies/install_dependencies.sh)
@@ -215,7 +217,7 @@ In each VNFD can have 5 types of lifecycle event: start, stop, restart, scaling_
  - Get PublicIp of port in a VDU: get_attr[vdu0,CP5v7d,PublicIp]
  - Get PrivateIp of port in a VDU: get_attr[CPr3k7,fixed_ips,0,ip_address]
  - Get the last VDU for scaling-out: get_attr[vdu1,vdus]
- - Get the last PrivateIps for scaling-out: gig-adaet_attr[CPsx4l,fixed_ips,0,ip_address]
+ - Get the last PrivateIps for scaling-out: get_attr[CPsx4l,fixed_ips,0,ip_address]
  - Get the last PublicIps for scaling-out: get_attr[vdu0,CPudhr,PublicIp]
  - Timeout before remove instance due scale-in event:
 
