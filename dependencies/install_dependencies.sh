@@ -115,6 +115,7 @@ else
     fi
 fi
 
+install="n"
 echo -e -n "\033[1;36mChecking if ruby is installed"
 . ~/.rvm/scripts/rvm > /dev/null 2>&1
 ruby --version > /dev/null 2>&1
@@ -156,6 +157,7 @@ else
     fi
 fi
 
+install="n"
 echo -e -n "\033[1;36mChecking if rabbitmq is installed"
 rabbitmq-server --version > /dev/null 2>&1
 RABBITMQ_IS_INSTALLED=$?
