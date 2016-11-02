@@ -62,13 +62,8 @@ module PopHelper
                 popUrls[:compute] = item.split('=')[1]
             elsif key == 'orch-endpoint'
                 popUrls[:orch] = item.split('=')[1]
-            elsif key == 'tenant-name'#deprecated
-                popUrls[:tenant] = item.split('=')[1]
             elsif key == 'dns'
                 popUrls[:dns] << item.split('=')[1] unless item.split('=')[1].nil?
-            elsif key == 'isAdmin'#deprecated
-                popUrls[:is_admin] = false
-                popUrls[:is_admin] = true if item.split('=')[1].to_s == 'true'
             end
         end
         popUrls

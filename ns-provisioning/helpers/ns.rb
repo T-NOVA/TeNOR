@@ -133,7 +133,6 @@ module NsProvisioner
             unless settings.default_tenant && !popUrls[:is_admin]
                 logger.info "Removing user stack...."
                 stack_url = auth_info['stack_url']
-                logger.debug 'Removing user reserved stack...'
                 if !auth_info['stack_url'].nil?
                     response, errors = delete_stack_with_wait(auth_info['stack_url'], token)
                     logger.error errors if errors
@@ -186,7 +185,11 @@ module NsProvisioner
                             settings.infr_repository
                         end
 
-        logger.info 'List of available PoPs: ' + pop_list.to_s
+        pop_list_ids = []
+        pop_list.map do |hash|
+            pop_list_ids << { id: hash["id"] }
+        end
+        logger.info 'List of available PoPs: ' + pop_list_ids.to_s
         if pop_list.size == 1 || mapping_id.nil?
             pop_id = pop_list[0]['id']
         elsif !mapping_id.nil?
