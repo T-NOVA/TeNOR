@@ -110,7 +110,7 @@ class VNFCatalogue < TnovaManager
         ns_catalogue, errors = ServiceConfigurationHelper.get_module('ns_catalogue')
         halt 500, errors if errors
 
-        vnf_catalogue.host, errors = ServiceConfigurationHelper.get_module('vnf_manager')
+        vnf_catalogue, errors = ServiceConfigurationHelper.get_module('vnf_manager')
         halt 500, errors if errors
 
         begin
@@ -128,7 +128,7 @@ class VNFCatalogue < TnovaManager
         end
 
         begin
-            response = RestClient.delete ns_catalogue.host + request.fullpath, 'X-Auth-Token' => ns_catalogue.token, :content_type => :json
+            response = RestClient.delete vnf_catalogue.host + request.fullpath, 'X-Auth-Token' => vnf_catalogue.token, :content_type => :json
         rescue Errno::ECONNREFUSED
             halt 500, 'NS Catalogue unreachable'
         rescue => e

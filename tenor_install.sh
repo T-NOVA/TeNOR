@@ -100,7 +100,7 @@ installTenor(){
     fi
   done
 
-  fluent-gem install fluent-plugin-mongo >> /dev/null
+  fluent-gem install fluent-plugin-mongo > /dev/null 2>&1
 
   configureFiles $1
 
@@ -273,7 +273,7 @@ configureFiles(){
       sed -i -e 's/127.0.0.1:27017/'$cassandra_address'/' config/database.yml
     fi
     if [ "$folder" = "./ns-monitoring" ]; then
-      rake db:migrate
+      rake db:migrate > /dev/null 2>&1
     fi
     if [ "$folder" = "./ns-manager" ]; then
       echo "Generating admin user."
