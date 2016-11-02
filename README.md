@@ -209,7 +209,7 @@ The provided examples are:
 You can test it using the same commands shown before but chaning the file.
 
 ### End-to-end tests
-We provide a script that executes an End-to-End test. You only need the PoP credentials before to execute the script. So, please modify the file ` env_end_to_end.sh ` with the correct values and execute the script: ` ./env_end_to_end.sh `
+We provide a script that executes an End-to-End test. You only need the PoP credentials before to execute the script. So, please modify the file ` env_end_to_end.sh ` with the correct values and execute the script: ` . ./env_end_to_end.sh `
 
 Then, you can execute the script with the following command:
 ` ruby end_to_end.rb `

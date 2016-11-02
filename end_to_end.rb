@@ -6,6 +6,17 @@ if ARGV[0].nil?
 	@tenor = "localhost:4000"
 end
 
+@OPENSTACK_HOST = ENV['OPENSTACK_HOST']
+@OPENSTACK_USER = ENV['OPENSTACK_USER']
+@OPENSTACK_PASS = ENV['OPENSTACK_PASS']
+@OPENSTACK_TENANT_NAME = ENV['OPENSTACK_TENANT_NAME']
+@OPENSTACK_DNS = ENV['OPENSTACK_DNS']
+
+if @OPENSTACK_HOST.nil?
+  puts "Execute the environment script! (. ./end_to_end_env.sh)"
+  exit
+end
+
 #host = "IP...."
 #user = "admin"
 #password = "pass"
@@ -21,11 +32,11 @@ end
 
 def end_to_end_script()
 
-	host = $OPENSTACK_HOST
-	user = $OPENSTACK_USER
-	password = $OPENSTACK_PASS
-	tenant_name = $OPENSTACK_TENANT_NAME
-	dns = $OPENSTACK_DNS
+	host = @OPENSTACK_HOST
+	user = @OPENSTACK_USER
+	password = @OPENSTACK_PASS
+	tenant_name = @OPENSTACK_TENANT_NAME
+	dns = @OPENSTACK_DNS
 
   puts "Removing PoPs if exists...."
   pops_names = ["admin_v2", "admin_v3", "non_admin_v2", "non_admin_v3"]
@@ -347,10 +358,6 @@ def recover_state(error)
 	return 4000
 end
 
-if $OPENSTACK_HOST.nil?
-  puts "Execute the environment script! (end_to_end_env.sh)"
-  exit
-end
 puts "Creating end to end tests..."
 response, errors = end_to_end_script()
 puts "End to end test not completed." if errors
