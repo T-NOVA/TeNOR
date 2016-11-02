@@ -16,3 +16,4 @@
 # limitations under the License.
 #
 require_relative 'vnfs'
+require_relative 'modules'

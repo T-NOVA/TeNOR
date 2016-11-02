@@ -29,7 +29,7 @@ Bundler.require :default, ENV['RACK_ENV'].to_sym
 class VNFManager < Sinatra::Application
     require_relative 'routes/init'
     require_relative 'helpers/init'
-    require_relative 'models/serviceModel'
+    require_relative 'models/init'
 
     register Sinatra::ConfigFile
     # Load configurations
@@ -47,4 +47,5 @@ class VNFManager < Sinatra::Application
     end
 
     helpers ManagerHelper
+    helpers ServiceConfigurationHelper
 end

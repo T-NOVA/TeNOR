@@ -21,12 +21,17 @@ class App::Proxy < Sinatra::Base
   end
 
   post '/rest/api/*' do
-
+    puts "POST........."
+puts request.env["HTTP_X_AUTH_TOKEN"]
     host = request.env["HTTP_X_HOST"]
     body = request.body.read
 
+    puts params[:splat][0]
+    puts host
+    puts body
+
     begin
-      response = RestClient.post host + "/" + params[:splat][0], body, :content_type => :json
+      response = RestClient.post host + "/" + params[:splat][0], body, :content_type => :json, :'X-Auth-Token' => request.env["HTTP_X_AUTH_TOKEN"]
     rescue Errno::ECONNREFUSED
       halt 500, "Errno::ECONNREFUSED"
     rescue RestClient::Unauthorized => e

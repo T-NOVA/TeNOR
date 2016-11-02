@@ -3,6 +3,7 @@
   "vnfd": {
     "vdu": [
       {
+        "bootstrap_script": "#!/usr/bin/env bash\necho 'echo this is a initial script'",
         "resource_requirements": {
           "network_interface_bandwidth_unit": "",
           "hypervisor_parameters": {

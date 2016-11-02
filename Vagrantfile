@@ -18,7 +18,7 @@ Vagrant.configure(2) do |config|
 
     $script = <<-SCRIPT
     sudo apt-get update
-    sudo apt-get install -y gcc git
+    sudo apt-get install -y git
     sudo apt-get remove --purge ruby-rvm ruby
     sudo rm -rf /usr/share/ruby-rvm /etc/rmvrc /etc/profile.d/rvm.sh
     rm -rf ~/.rvm* ~/.gem/ ~/.bundle*
@@ -38,17 +38,10 @@ Vagrant.configure(2) do |config|
     cd ~
     git clone https://github.com/TeNOR/TeNOR.git
     cd TeNOR/
-    ./dependencies/install_dependencies.sh y y n n
+    ./dependencies/install_dependencies.sh y y n
 
     #. ~/.rvm/scripts/rvm
-    ./tenor_install.sh 1
-    echo -e '#!/bin/bash \ncd /home/vagrant \ngo/bin/auth-utils &' > ~/gatekeeperd
-    sudo mv ~/gatekeeperd /etc/init.d/gatekeeperd
-    sudo chmod +x /etc/init.d/gatekeeperd
-    sudo chown root:root /etc/init.d/gatekeeperd
-    sudo update-rc.d gatekeeperd defaults
-    sudo update-rc.d gatekeeperd enable
-    #sudo service gatekeeperd start
+    ./tenor_install.sh 1 localhost
   SCRIPT
 
     config.vm.provision 'shell', inline: $script, privileged: false

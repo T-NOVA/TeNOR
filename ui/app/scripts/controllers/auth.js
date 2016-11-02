@@ -3,11 +3,37 @@
 angular.module('tNovaApp')
     .controller('AuthCtrl', function ($rootScope, $scope, $location, AuthService, $window, $alert) {
 
-        $scope.loginGKProcess = function (username, password) {
+        $scope.loginProcess = function (username, password) {
             console.log(username);
             //var user_id = 1;
             var user_id;
-            AuthService.loginGK(username, password).then(function (data) {
+            var obj = {
+                username: username,
+                password: password
+            }
+            AuthService.login(obj).then(function(data){
+                console.log(data);
+                console.log(username);
+                $window.localStorage.username = username
+                $window.localStorage.token = data.token;
+                $window.localStorage.expiration = data.expiration;
+                $location.path('/dashboard');
+            },function (error) {
+                $rootScope.loginError = 'Error with the Authentication module.';
+                $scope.loginError = 'Login failed';
+                $alert({
+                    title: "Error: ",
+                    content: error,
+                    placement: 'top',
+                    type: 'danger',
+                    keyboard: true,
+                    show: true,
+                    container: '#alerts-container',
+                    duration: 5
+                });
+                //$rootScope.loginError = error;
+            });
+            /*AuthService.loginGK(username, password).then(function (data) {
                     console.log(data);
                     if (data === '') return;
                     $window.localStorage.token = data.token.id;
@@ -48,7 +74,7 @@ angular.module('tNovaApp')
                     });
                     //$rootScope.loginError = error;
                 }
-            );
+            );*/
         };
 
         $scope.login = function () {
@@ -56,7 +82,7 @@ angular.module('tNovaApp')
             var password = $scope.password;
             $rootScope.username = username;
             if (username && password) {
-                $scope.loginGKProcess(username, password);
+                $scope.loginProcess(username, password);
             } else {
                 $scope.loginError = 'Username and password required';
             }

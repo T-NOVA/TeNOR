@@ -23,32 +23,20 @@ class NsProvisioner < TnovaManager
   # Post a ns-instance
   post '/' do
 
-    AuthenticationHelper.loginGK()
-    popList = JSON.parse(getPopList())
-    if popList.empty?
-      halt 400, "No PoPs registereds."
-    end
+    provisioner, errors = ServiceConfigurationHelper.get_module('ns_provisioner')
+    halt 500, errors if errors
 
-    begin
-      @service = ServiceModel.find_by(name: "ns_provisioner")
-    rescue Mongoid::Errors::DocumentNotFound => e
-      halt 500, {'Content-Type' => "text/plain"}, "NS Provisioning not registred."
-    end
+    catalogue, errors = ServiceConfigurationHelper.get_module('ns_catalogue')
+    halt 500, errors if errors
 
     return 415 unless request.content_type == 'application/json'
 
     # Validate JSON format
     instantiation_info = JSON.parse(request.body.read)
 
-    begin
-      @service_ns_catalogue = ServiceModel.find_by(name: "ns_catalogue")
-    rescue Mongoid::Errors::DocumentNotFound => e
-      halt 500, {'Content-Type' => "text/plain"}, "NS Provisioning not registred."
-    end
-
     # Get NSD by id
     begin
-      nsd = RestClient.get @service_ns_catalogue.host + ":" + @service_ns_catalogue.port.to_s + '/network-services/' + instantiation_info['ns_id'].to_s, 'X-Auth-Token' => @client_token
+      nsd = RestClient.get catalogue.host + '/network-services/' + instantiation_info['ns_id'].to_s, 'X-Auth-Token' => catalogue.token
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Catalogue unreachable'
     rescue => e
@@ -57,6 +45,16 @@ class NsProvisioner < TnovaManager
     end
 
     logger.info "INSTANTIATION INFO: " + instantiation_info.to_s
+    pop_list = []
+    if instantiation_info['pop_id'].nil?
+      pop_list = JSON.parse(getDcs())
+      if pop_list.empty?
+        halt 400, "No PoPs registereds."
+      end
+    else
+      pop_list = []
+      pop_list << JSON.parse(getDc(instantiation_info['pop_id']))
+    end
 
     provisioning = {
         :nsd => JSON.parse(nsd),
@@ -64,12 +62,13 @@ class NsProvisioner < TnovaManager
         :nap_id =>  instantiation_info['nap_id'],
         :callback_url => instantiation_info['callbackUrl'],
         :flavour => instantiation_info['flavour'],
-        :pop_list => popList,
-        :pop_id => instantiation_info['pop_id'],
-        :mapping_id => instantiation_info['mapping_id']}
-
+        :pop_list => pop_list,
+        #:pop_id => instantiation_info['pop_id'],
+        #:pop_info => pop_info,
+        :mapping_id => instantiation_info['mapping_id']
+      }
     begin
-      response = RestClient.post @service.host + ":" + @service.port.to_s + request.fullpath, provisioning.to_json, 'X-Auth-Token' => @client_token, :content_type => :json
+      response = RestClient.post provisioner.host + request.fullpath, provisioning.to_json, 'X-Auth-Token' => provisioner.token, :content_type => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Provisioning unreachable'
     rescue => e
@@ -86,14 +85,11 @@ class NsProvisioner < TnovaManager
   # Get a ns-instance
   # @param [string] nsr_id Instance id
   get "/:nsr_id" do
-    begin
-      @service = ServiceModel.find_by(name: "ns_provisioner")
-    rescue Mongoid::Errors::DocumentNotFound => e
-      halt 500, {'Content-Type' => "text/plain"}, "NS Provisioning not registred."
-    end
+    provisioner, errors = ServiceConfigurationHelper.get_module('ns_provisioner')
+    halt 500, errors if errors
 
     begin
-      response = RestClient.get @service.host + ":" + @service.port.to_s + request.fullpath, 'X-Auth-Token' => @client_token, :content_type => :json
+      response = RestClient.get provisioner.host + request.fullpath, 'X-Auth-Token' => provisioner.token, :content_type => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Provisioning unreachable'
     rescue => e
@@ -109,14 +105,11 @@ class NsProvisioner < TnovaManager
   # Update a ns-instance
   # @param [string] nsr_id Instance id
   put '/:nsr_id' do
-    begin
-      @service = ServiceModel.find_by(name: "ns_provisioner")
-    rescue Mongoid::Errors::DocumentNotFound => e
-      halt 500, {'Content-Type' => "text/plain"}, "NS Provisioning not registred."
-    end
+    provisioner, errors = ServiceConfigurationHelper.get_module('ns_provisioner')
+    halt 500, errors if errors
 
     begin
-      response = RestClient.put @service.host + ":" + @service.port.to_s + request.fullpath, request.body.read, 'X-Auth-Token' => @client_token, :content_type => :json
+      response = RestClient.put provisioner.host + request.fullpath, request.body.read, 'X-Auth-Token' => provisioner.token, :content_type => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Provisioning unreachable'
     rescue => e
@@ -135,14 +128,11 @@ class NsProvisioner < TnovaManager
   # Get a ns-instance status
   # @param [string] nsr_id Instance id
   get '/:nsr_id/status' do
-    begin
-      @service = ServiceModel.find_by(name: "ns_provisioner")
-    rescue Mongoid::Errors::DocumentNotFound => e
-      halt 500, {'Content-Type' => "text/plain"}, "NS Provisioning not registred."
-    end
+    provisioner, errors = ServiceConfigurationHelper.get_module('ns_provisioner')
+    halt 500, errors if errors
 
     begin
-      response = RestClient.get @service.host + ":" + @service.port.to_s + request.fullpath, 'X-Auth-Token' => @client_token, :content_type => :json
+      response = RestClient.get provisioner.host + request.fullpath, 'X-Auth-Token' => provisioner.token, :content_type => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Provisioning unreachable'
     rescue => e
@@ -157,14 +147,11 @@ class NsProvisioner < TnovaManager
   # @overload get "/ns-instances"
   # Get all ns-instances
   get '/' do
-    begin
-      @service = ServiceModel.find_by(name: "ns_provisioner")
-    rescue Mongoid::Errors::DocumentNotFound => e
-      halt 500, {'Content-Type' => "text/plain"}, "NS Provisioning not registred."
-    end
+    provisioner, errors = ServiceConfigurationHelper.get_module('ns_provisioner')
+    halt 500, errors if errors
 
     begin
-      response = RestClient.get @service.host + ":" + @service.port.to_s + request.fullpath, 'X-Auth-Token' => @client_token, :content_type => :json
+      response = RestClient.get provisioner.host + request.fullpath, 'X-Auth-Token' => provisioner.token, :content_type => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Provisioning unreachable'
     rescue => e
@@ -182,25 +169,22 @@ class NsProvisioner < TnovaManager
   # @param [string] status Status
   put '/:nsr_id/:status' do
     logger.info "Change status request of " + params[:nsr_id].to_s + " to " + params[:status].to_s
-    begin
-      @service = ServiceModel.find_by(name: "ns_provisioner")
-    rescue Mongoid::Errors::DocumentNotFound => e
-      halt 500, {'Content-Type' => "text/plain"}, "NS Provisioning not registred."
-    end
+    provisioner, errors = ServiceConfigurationHelper.get_module('ns_provisioner')
+    halt 500, errors if errors
 
     begin
-      response = RestClient.get @service.host + ":" + @service.port.to_s + '/ns-instances/' + params['nsr_id'], 'X-Auth-Token' => @client_token, :content_type => :json
+      response = RestClient.get provisioner.host + '/ns-instances/' + params['nsr_id'], 'X-Auth-Token' => provisioner.token, :content_type => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Provisioning unreachable'
     rescue => e
       logger.error e.response
       halt e.response.code, e.response.body
     end
-    @ns_instance, error = parse_json(response)
+    ns_instance, error = parse_json(response)
 
-    info = { :instance => @ns_instance }
+    info = { :instance => ns_instance }
     begin
-      response = RestClient.put @service.host + ":" + @service.port.to_s + request.fullpath, info.to_json, 'X-Auth-Token' => @client_token, :content_type => :json
+      response = RestClient.put provisioner.host + request.fullpath, info.to_json, 'X-Auth-Token' => provisioner.token, :content_type => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Provisioning unreachable'
     rescue => e
@@ -217,40 +201,23 @@ class NsProvisioner < TnovaManager
   # @param [string] nsr_id Instance id
   delete '/:nsr_id' do
     logger.info "Delete executed.... " + params[:nsr_id].to_s
-    begin
-      @service = ServiceModel.find_by(name: "ns_provisioner")
-    rescue Mongoid::Errors::DocumentNotFound => e
-      halt 500, {'Content-Type' => "text/plain"}, "NS Provisioning not registred."
-    end
-    begin
-      ns_monitoring = ServiceModel.find_by(name: "ns_monitoring")
-      logger.info "Remove monitoring data for NS..."
-      begin
-        response = RestClient.post ns_monitoring.host + ":" + ns_monitoring.port.to_s + '/monitoring-data/unsubscribe/' + params['nsr_id'], 'X-Auth-Token' => @client_token, :content_type => :json
-      rescue Errno::ECONNREFUSED
-        #halt 500, 'NS Monitoring unreachable'
-      rescue => e
-        logger.error e.response
-        #halt e.response.code, e.response.body
-      end
-    rescue Mongoid::Errors::DocumentNotFound => e
-      #halt 500, {'Content-Type' => "text/plain"}, "NS Monitoring not registred."
-    end
+    provisioner, errors = ServiceConfigurationHelper.get_module('ns_provisioner')
+    halt 500, errors if errors
 
     begin
-      response = RestClient.get @service.host + ":" + @service.port.to_s + '/ns-instances/' + params['nsr_id'], 'X-Auth-Token' => @client_token, :content_type => :json
+      response = RestClient.get provisioner.host + '/ns-instances/' + params['nsr_id'], 'X-Auth-Token' => provisioner.token, :content_type => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Provisioning unreachable'
     rescue => e
       logger.error e.response
       halt e.response.code, e.response.body
     end
-    @ns_instance, error = parse_json(response)
+    ns_instance, error = parse_json(response)
 
     logger.info "Sending terminate request to NS Provisioning"
-    info = { :instance => @ns_instance }
+    info = { :instance => ns_instance }
     begin
-      response = RestClient.put @service.host + ":" + @service.port.to_s + request.fullpath.to_s + '/terminate', info.to_json, 'X-Auth-Token' => @client_token, :content_type => :json
+      response = RestClient.put provisioner.host + request.fullpath.to_s + '/terminate', info.to_json, 'X-Auth-Token' => provisioner.token, :content_type => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Provisioning unreachable'
     rescue => e
@@ -273,30 +240,24 @@ class NsProvisioner < TnovaManager
 
     callback_response, errors = parse_json(request.body.read)
 
-    begin
-      @service = ServiceModel.find_by(name: "ns_provisioner")
-    rescue Mongoid::Errors::DocumentNotFound => e
-      halt 500, {'Content-Type' => "text/plain"}, "NS Provisioning not registred."
-    end
+    provisioner, errors = ServiceConfigurationHelper.get_module('ns_provisioner')
+    halt 500, errors if errors
 
     begin
-      response = RestClient.get @service.host + ":" + @service.port.to_s + '/ns-instances/' + params['nsr_id'], 'X-Auth-Token' => @client_token, :content_type => :json
+      response = RestClient.get provisioner.host + '/ns-instances/' + params['nsr_id'], 'X-Auth-Token' => provisioner.token, :content_type => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Provisioning unreachable'
     rescue => e
       logger.error e.response
       halt e.response.code, e.response.body
     end
-    @ns_instance, error = parse_json(response)
+    ns_instance, error = parse_json(response)
+
+    catalogue, errors = ServiceConfigurationHelper.get_module('ns_catalogue')
+    halt 500, errors if errors
 
     begin
-      @ns_catalogue_service = ServiceModel.find_by(name: "ns_catalogue")
-    rescue Mongoid::Errors::DocumentNotFound => e
-      halt 500, {'Content-Type' => "text/plain"}, "NS Provisioning not registred."
-    end
-
-    begin
-      response = RestClient.get @ns_catalogue_service.host + ":" + @ns_catalogue_service.port.to_s + '/network-services/' + @ns_instance['nsd_id'], 'X-Auth-Token' => @client_token, :content_type => :json
+      response = RestClient.get catalogue.host + '/network-services/' + ns_instance['nsd_id'], 'X-Auth-Token' => catalogue.token, :content_type => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Provisioning unreachable'
     rescue => e
@@ -309,9 +270,9 @@ class NsProvisioner < TnovaManager
     end
     nsd, error = parse_json(response)
 
-    info = { :callback_response => callback_response, :instance => @ns_instance, :nsd => nsd}
+    info = { :callback_response => callback_response, :instance => ns_instance, :nsd => nsd}
     begin
-      response = RestClient.post @service.host + ":" + @service.port.to_s + request.fullpath, info.to_json, 'X-Auth-Token' => @client_token, :content_type => :json
+      response = RestClient.post provisioner.host + request.fullpath, info.to_json, 'X-Auth-Token' => provisioner.token, :content_type => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Provisioning unreachable'
     rescue => e

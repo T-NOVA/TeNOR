@@ -18,6 +18,7 @@
 # @see NSProvisioner
 module VimHelper
 
+	#deprecated
     def deleteTenant(keystoneUrl, tenant_id, token)
         begin
             response = RestClient.delete keystoneUrl + '/tenants/' + tenant_id, :content_type => :json, :'X-Auth-Token' => token
@@ -27,7 +28,7 @@ module VimHelper
         end
         nil
     end
-
+#deprecated
     def deleteUser(keystoneUrl, user_id, token)
         begin
             response = RestClient.delete keystoneUrl + '/users/' + user_id, :content_type => :json, :'X-Auth-Token' => token

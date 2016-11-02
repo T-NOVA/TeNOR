@@ -1,5 +1,9 @@
-require_relative 'serviceModel'
+require_relative 'serviceModel'#deprecated
 require_relative 'statisticModel'
 require_relative 'perfomanceStatisticModel'
 require_relative 'mongoid_prefixable'
 require_relative 'tenor'
+require_relative 'service'
+require_relative 'dc'
+require_relative 'user_token'
+require_relative 'user'

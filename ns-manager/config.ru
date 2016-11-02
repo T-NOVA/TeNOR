@@ -3,8 +3,8 @@ require ::File.join(root, 'main')
 
 run TnovaManager.new
 
-map('/configs') { run ServiceConfiguration }
-map('/gatekeeper') { run GatekeeperController }
+map('/modules') { run ServiceConfiguration }
+map('/pops') { run DcController }
 map('/logs') { run LoggerController }
 map('/network-services') { run NsCatalogue }
 map('/ns-instances') { run NsProvisioner }
@@ -14,3 +14,4 @@ map('/vnfs') { run VNFCatalogue }
 map('/accounting') { run AccountingController }
 map('/instances') { run NsMonitoring }
 map('/statistics') { run Statistics }
+map('/auth') { run TeNORAuthentication }

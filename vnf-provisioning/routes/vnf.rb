@@ -76,7 +76,7 @@ class Provisioning < VnfProvisioning
         begin
             vnfr = Vnfr.create!(
                 deployment_flavour: instantiation_info['flavour'],
-                nsr_instance: Array(instantiation_info['ns_id']),
+                nsr_instance: instantiation_info['nsr_id'],
                 vnfd_reference: vnf['vnfd']['id'],
                 vim_id: instantiation_info['vim_id'],
                 vlr_instances: nil,
@@ -110,7 +110,6 @@ class Provisioning < VnfProvisioning
         vim_info['keystone'] = vim_info['url']['keystone']
         vim_info['heat'] = vim_info['url']['heat']
         vim_info['compute'] = vim_info['url']['compute']
-        puts vim_info
 
         logger.debug 'Send VNFD to Hot Generator'
         hot_generator_message = {

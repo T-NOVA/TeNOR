@@ -18,7 +18,8 @@
 # @see NSProvisioner
 module Authenticationv3Helper
 
-    def generate_v3_credentials(popInfo, popUrls, tenant_id, user_id, token)
+    def generate_v3_credentials(instance, popUrls, tenant_id, user_id, token)
+        @instance = instance
 		pop_auth = {}
         begin
             if settings.default_tenant

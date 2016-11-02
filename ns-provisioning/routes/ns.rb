@@ -61,10 +61,6 @@ class Provisioner < NsProvisioning
             halt 400, 'Failed creating instance. Flavour is null'
         end
 
-        unless instantiation_info['pop_id'].nil?
-            logger.error 'PoP selected: ' + instantiation_info['pop_id'].to_s
-        end
-
         instance = {
             nsd_id: nsd['id'],
             descriptor_reference: nsd['id'],

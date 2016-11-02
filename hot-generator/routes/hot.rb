@@ -57,6 +57,7 @@ class HotGenerator < Sinatra::Application
     halt 400, 'Public Network ID not found' if public_network_id.nil?
 
 		flavours = provision_info['flavours']
+		# TODO if flavour is not an array, return 400
     #halt 400, 'Public Network ID not found' if flavours.nil?
 
 		# Build a HOT template

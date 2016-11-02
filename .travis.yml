@@ -1,0 +1,65 @@
+language: ruby
+rvm:
+  - 2.3.1
+#cache: bundler
+services: mongodb
+install:
+#  - ./dependencies/install_dependencies.sh n y n n
+  - ./tenor_install.sh 2 localhost
+#  - cd ns-manager && bundle install --gemfile=Gemfile && cd ../
+
+#env:
+#  - TEST_DIR=ns-manager
+#  - TEST_DIR=ns-catalogue
+#  - TEST_DIR=vnf-catalogue
+#  - TEST_DIR=.
+script:
+#  - gem uninstall json -v 2.0.2
+  - cd ns-manager && BUNDLE_GEMFILE=$TRAVIS_BUILD_DIR/ns-manager/Gemfile && bundle update --quiet
+  - rspec
+  - rake start &
+  - cd $TRAVIS_BUILD_DIR
+  - cd ns-catalogue && BUNDLE_GEMFILE=$TRAVIS_BUILD_DIR/ns-catalogue/Gemfile && bundle update --quiet
+  - rspec
+  - rake start &
+  - cd $TRAVIS_BUILD_DIR
+  - cd nsd-validator && BUNDLE_GEMFILE=$TRAVIS_BUILD_DIR/nsd-validator/Gemfile && bundle update --quiet
+  - rspec
+  - rake start &
+  - cd $TRAVIS_BUILD_DIR
+  - cd ns-provisioning && BUNDLE_GEMFILE=$TRAVIS_BUILD_DIR/ns-provisioning/Gemfile && bundle update --quiet
+  #- rspec
+  - rake start &
+  - cd $TRAVIS_BUILD_DIR
+  - cd vnf-manager && BUNDLE_GEMFILE=$TRAVIS_BUILD_DIR/vnf-manager/Gemfile && bundle update --quiet
+  #- rspec
+  - rake start &
+  - cd $TRAVIS_BUILD_DIR
+  - cd vnf-catalogue && BUNDLE_GEMFILE=$TRAVIS_BUILD_DIR/vnf-catalogue/Gemfile && bundle update --quiet
+  - rspec
+  - rake start &
+  - cd $TRAVIS_BUILD_DIR
+  - cd vnfd-validator && BUNDLE_GEMFILE=$TRAVIS_BUILD_DIR/vnfd-validator/Gemfile && bundle update --quiet
+  - rspec
+  - rake start &
+  - cd $TRAVIS_BUILD_DIR
+  - cd vnf-provisioning && BUNDLE_GEMFILE=$TRAVIS_BUILD_DIR/vnf-provisioning/Gemfile && bundle update --quiet
+  #- rspec
+  - rake start &
+  - cd $TRAVIS_BUILD_DIR
+  - cd hot-generator && BUNDLE_GEMFILE=$TRAVIS_BUILD_DIR/hot-generator/Gemfile && bundle update --quiet
+  - rspec
+  - rake start &
+  - cd $TRAVIS_BUILD_DIR
+  - sleep 10
+  - sleep 20
+  - curl localhost:4000/
+  - curl localhost:4000/network-services
+  - curl localhost:4569/vnfs
+  - ./tenor_install.sh 6
+  - curl localhost:4000/network-services
+  - curl localhost:4000/vnfs
+  - curl localhost:4000/ns-instances
+  - cd $TRAVIS_BUILD_DIR
+  - ruby end_to_end.rb
+#execute end-to-end test

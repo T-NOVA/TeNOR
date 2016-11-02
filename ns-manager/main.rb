@@ -21,6 +21,8 @@ ENV['RACK_ENV'] ||= 'development'
 require 'sinatra'
 require 'sinatra/config_file'
 require 'yaml'
+require "bcrypt"
+require 'jwt'
 
 # Require the bundler gem and then call Bundler.require to load in all gems listed in Gemfile.
 require 'bundler'
@@ -46,6 +48,7 @@ class TnovaManager < Sinatra::Application
     before do
         env['rack.logger'] = settings.logger
 
+=begin
         if settings.environment == 'development'
             @client_token = 'test-token-client-id'
             return
@@ -62,6 +65,7 @@ class TnovaManager < Sinatra::Application
             # logger.error e.response
             halt e.response.code, e.response.body
         end
+=end
     end
 
     helpers ApplicationHelper
@@ -71,8 +75,8 @@ class TnovaManager < Sinatra::Application
     helpers StatisticsHelper
     helpers VimHelper
 
-    AuthenticationHelper.loginGK
-    ServiceConfigurationHelper.publishServices
+    #AuthenticationHelper.loginGK
+    #ServiceConfigurationHelper.publishServices
 
     get '/' do
         return 200, JSON.pretty_generate(interfaces_list)

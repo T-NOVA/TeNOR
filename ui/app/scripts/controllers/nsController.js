@@ -124,14 +124,9 @@ angular.module('tNovaApp')
         };
 
         $scope.getPoPs = function () {
-            AuthService.get($window.localStorage.token, "admin/dc/").then(function (d) {
-                $scope.registeredDcList = [];
-                _.map(d.dclist, function (row, index) {
-                    $scope.registeredDcList.push({
-                        id: d.dcid[index],
-                        name: row
-                    })
-                });
+            $scope.registeredDcList = [];
+            tenorService.get("pops/dc").then(function (d) {
+                $scope.registeredDcList = d;
             });
         }
 
@@ -202,7 +197,7 @@ angular.module('tNovaApp')
         }, 120000);
 
         $scope.stop = function (id) { //change status in the repo
-            tenorService.put("ns-instances/" + id + '/stopped', '').then(function (data) {});
+            tenorService.put("ns-instances/" + id + '/stop', '').then(function (data) {});
         };
 
         $scope.start = function (id) { //change status in the repo

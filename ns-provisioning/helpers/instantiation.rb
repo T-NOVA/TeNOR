@@ -22,83 +22,63 @@ module InstantiationHelper
     #
     # @param [JSON] instance NSR instance
     # @param [JSON] nsd_id NSD id
-    # @param [JSON] vnf VNF information to deploy
-    # @param [JSON] pop_id PoP id
+    # @param [JSON] pop_info Information about the PoP
     # @param [JSON] callback_url Callback url in case of error happens
     # @return [Hash, nil] authentication
     # @return [Hash, String] if the parsed message is an invalid JSON
-    def create_authentication(instance, nsd_id, vnf, pop_id, callback_url)
+    def create_authentication(instance, nsd_id, pop_info, callback_url)
         @instance = instance
 
         logger.info 'Authentication not created for this PoP. Starting creation of credentials.'
 
         pop_auth = {}
-        pop_auth['pop_id'] = pop_id
-        popInfo, errors = getPopInfo(pop_id)
-        logger.error errors if errors
-        generateMarketplaceResponse(callback_url, generateError(nsd_id, 'FAILED', 'Internal error: error getting pop information.')) if errors
-        return 400, errors.to_json if errors
-
-        extra_info = popInfo['info'][0]['extrainfo']
+        pop_auth['pop_id'] = pop_info['id'].to_s
+        extra_info = pop_info['extra_info']
         popUrls = getPopUrls(extra_info)
         pop_auth['urls'] = popUrls
 
         # create credentials for pop_id
-        if popUrls[:keystone].nil? || popUrls[:orch].nil? || popUrls[:tenant].nil?
-            generateMarketplaceResponse(callback_url, generateError(nsd_id, 'FAILED', 'Internal error: Keystone and/or openstack urls missing.'))
-            return
+        if popUrls[:keystone].nil? || popUrls[:orch].nil? #|| popUrls[:tenant].nil?
+            return handleError(@instance, 'Internal error: Keystone and/or openstack urls missing.')
         end
 
         token = ''
+        keystone_url = popUrls[:keystone]
         if @instance['project'].nil?
-            keystone_version = URI(popUrls[:keystone]).path.split('/').last
+            credentials, errors = authenticate(keystone_url, pop_info['tenant_name'], pop_info['user'], pop_info['password'])
+            logger.error errors if errors
+            @instance.update_attribute('status', 'ERROR_CREATING') if errors
+            @instance.push(audit_log: errors) if errors
+            return 400, errors.to_json if errors
 
-            if keystone_version == 'v2.0'
-                user_authentication, errors = authentication_v2(popUrls[:keystone], popUrls[:tenant], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
-                logger.error errors if errors
-                @instance.update_attribute('status', 'ERROR_CREATING') if errors
-                @instance.push(audit_log: errors) if errors
-                return 400, errors.to_json if errors
-                tenant_id = user_authentication['access']['token']['tenant']['id']
-                user_id = user_authentication['access']['user']['id']
-                token = user_authentication['access']['token']['id']
-            elsif keystone_version == 'v3'
-                user_authentication, errors = authentication_v3(popUrls[:keystone], popUrls[:tenant], popInfo['info'][0]['adminuser'], popInfo['info'][0]['password'])
-                logger.error errors if errors
-                @instance.update_attribute('status', 'ERROR_CREATING') if errors
-                @instance.push(audit_log: errors) if errors
-                return 400, errors.to_json if errors
-                if !user_authentication['token']['project'].nil?
-                    tenant_id = user_authentication['token']['project']['id']
-                    user_id = user_authentication['token']['user']['id']
-                    token = user_authentication['token']['id']
-                else
-                    errors = "No project found with the authentication."
-                    @instance.update_attribute('status', 'ERROR_CREATING') if errors
-                    @instance.push(audit_log: errors) if errors
-                    return 400, errors.to_json if errors
-                end
-            end
+            tenant_id = credentials[:tenant_id]
+            user_id = credentials[:user_id]
+            token = credentials[:token]
 
-            if !popUrls[:is_admin]
-                  pop_auth['username'] = popInfo['info'][0]['adminuser']
-                  pop_auth['tenant_name'] = popUrls[:tenant]
-                  pop_auth['password'] = popInfo['info'][0]['password']
+            if !pop_info['is_admin']
+                  pop_auth['username'] = pop_info['user']
+                  pop_auth['tenant_name'] = pop_info['tenant_name']
+                  pop_auth['password'] = pop_info['password']
                   pop_auth['tenant_id'] = tenant_id
                   pop_auth['user_id'] = user_id
                   pop_auth['token'] = token
             else
+                #generate credentials
+                credentials, errors = generate_credentials(@instance, keystone_url, popUrls, tenant_id, user_id, token)
+                return 400, errors if errors
+                pop_auth = pop_auth.merge(credentials)
+=begin
+                keystone_version = URI(keystone_url).path.split('/').last
                 if keystone_version == 'v2.0'
-                    pop_auth, errors = generate_v2_credentials(popInfo, popUrls, tenant_id, user_id, token)
+                    credentials, errors = generate_v2_credentials(@instance, popUrls, tenant_id, user_id, token)
                     return 400, errors if errors
-                    pop_auth['urls'] = popUrls
-                    pop_auth['pop_id'] = pop_id
+                    pop_auth = pop_auth.merge(credentials)
                 elsif keystone_version == 'v3'
-                    pop_auth, errors = generate_v3_credentials(popInfo, popUrls, tenant_id, user_id, token)
+                    pop_auth, errors = generate_v3_credentials(@instance, popUrls, tenant_id, user_id, token)
                     return 400, errors if errors
-                    pop_auth['urls'] = popUrls
-                    pop_auth['pop_id'] = pop_id
+                    pop_auth = pop_auth.merge(credentials)
                 end
+=end
             end
         end
         pop_auth
@@ -131,6 +111,7 @@ module InstantiationHelper
         logger.debug 'VNF Flavour: ' + vnf_flavour
 
         vnf_provisioning_info = {
+            nsr_id: @instance['id'],
             ns_id: nsd_id,
             vnf_id: vnf_id,
             flavour: vnf_flavour,
@@ -144,7 +125,7 @@ module InstantiationHelper
                 },
                 tenant_id: pop_auth['tenant_id'],
                 token: pop_auth['token'],
-                is_admin: popUrls[:is_admin]
+				is_admin: pop_auth['is_admin']
             },
             reserved_resources: @instance['resource_reservation'].find { |resources| resources[:pop_id] == pop_id },
             security_group_id: pop_auth['security_group_id'],

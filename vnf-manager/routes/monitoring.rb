@@ -24,6 +24,16 @@ class Monitoring < VNFManager
   #   @param [Integer] vnfi_id the VNF Instance ID
   # Send monitoring info to VNF Monitoring
   post '/:vnfr_id/monitoring-parameters' do |vnfr_id|
+
+    provisioner, errors = ServiceConfigurationHelper.get_module('provisioner')
+    halt 500, errors if errors
+
+    catalogue, errors = ServiceConfigurationHelper.get_module('vnf_catalogue')
+    halt 500, errors if errors
+
+    monitoring, errors = ServiceConfigurationHelper.get_module('vnf_monitoring')
+    halt 500, errors if errors
+
     # Return if content-type is invalid
     halt 415 unless request.content_type == 'application/json'
 
@@ -32,7 +42,7 @@ class Monitoring < VNFManager
     #vnfr_id = monitoring_info['vnfr_id']
 
     begin
-      response = RestClient.get settings.vnf_provisioning + "/vnf-provisioning/vnf-instances/" + vnfr_id, :content_type => :json, :accept => :json
+      response = RestClient.get provisioner.host + "/vnf-provisioning/vnf-instances/" + vnfr_id, 'X-Auth-Token' => provisioner.token, :content_type => :json, :accept => :json
     rescue
       halt 400, "VIM Monitoring Module not available"
     end
@@ -40,7 +50,7 @@ class Monitoring < VNFManager
     return 400, errors.to_json if errors
 
     begin
-      response = RestClient.get settings.vnf_catalogue + "/vnfs/" + vnfr['vnfd_reference'], :content_type => :json, :accept => :json
+      response = RestClient.get catalogue.host + "/vnfs/" + vnfr['vnfd_reference'], 'X-Auth-Token' => catalogue.token, :content_type => :json, :accept => :json
     rescue
       halt 400, "VNF Catalogue not available"
     end
@@ -53,7 +63,7 @@ class Monitoring < VNFManager
 
     # Forward the request to the VNF Monitoring
     begin
-      response = RestClient.post "#{settings.vnf_monitoring}/vnf-monitoring/#{vnfr_id}/monitoring-parameters", monitoring_info.to_json, 'X-Auth-Token' => @client_token, :content_type => :json, :accept => :json
+      response = RestClient.post monitoring.host + "/vnf-monitoring/#{vnfr_id}/monitoring-parameters", monitoring_info.to_json, 'X-Auth-Token' => monitoring.token, :content_type => :json, :accept => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'VNF Monitoring unreachable'
     rescue => e
@@ -69,6 +79,13 @@ class Monitoring < VNFManager
   # Recevie monitoring data
   # @param [Integer] vnfr_id the VNF Instance ID
   post '/:vnfr_id/readings' do |vnfr_id|
+
+    provisioner, errors = ServiceConfigurationHelper.get_module('provisioner')
+    halt 500, errors if errors
+
+    monitoring, errors = ServiceConfigurationHelper.get_module('vnf_monitoring')
+    halt 500, errors if errors
+
     # Return if content-type is invalid
     halt 415 unless request.content_type == 'application/json'
 
@@ -76,14 +93,14 @@ class Monitoring < VNFManager
     monitoring_info = parse_json(request.body.read)
 
     begin
-      response = RestClient.get settings.vnf_provisioning + "/vnf-provisioning/vnf-instances/" + vnfr_id, :content_type => :json, :accept => :json
+      response = RestClient.get provisioner.host + "/vnf-provisioning/vnf-instances/" + vnfr_id, 'X-Auth-Token' => provisioner.token, :content_type => :json, :accept => :json
     rescue RestClient::NotFound => e
       puts e
       puts e.response
       logger.debug "This VNF instance no exists. Getting list of subcriptions in order to get the Subcription ID."
 
       begin
-        response = RestClient.delete settings.vnf_monitoring + "/vnf-monitoring/subcription/" + vnfr_id, :content_type => :json, :accept => :json
+        response = RestClient.delete monitoring.host + "/vnf-monitoring/subcription/" + vnfr_id, 'X-Auth-Token' => monitoring.token, :content_type => :json, :accept => :json
       rescue => e
         logger.error e
         logger.error "Error removing subcription"
@@ -101,7 +118,7 @@ class Monitoring < VNFManager
 
     # Forward the request to the VNF Monitoring
     begin
-      response = RestClient.post "#{settings.vnf_monitoring}/vnf-monitoring/#{vnfr_id}/readings", monitoring_info.to_json, 'X-Auth-Token' => @client_token, :content_type => :json, :accept => :json
+      response = RestClient.post monitoring.host +"/vnf-monitoring/#{vnfr_id}/readings", monitoring_info.to_json, 'X-Auth-Token' => monitoring.token, :content_type => :json, :accept => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'VNF Monitoring unreachable'
     rescue => e
@@ -117,9 +134,13 @@ class Monitoring < VNFManager
   #	Get monitoring data
   #	@param [Integer] instance_id
   get '/:vnfi_id/monitoring-data/' do
+
+    monitoring, errors = ServiceConfigurationHelper.get_module('vnf_monitoring')
+    halt 500, errors if errors
+
     # Forward the request to the VNF Monitoring
     begin
-      response = RestClient.get "#{settings.vnf_monitoring}" + request.fullpath, 'X-Auth-Token' => @client_token, :content_type => :json, :accept => :json
+      response = RestClient.get monitoring.host + request.fullpath, 'X-Auth-Token' => monitoring.token, :content_type => :json, :accept => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'VNF Monitoring unreachable'
     rescue => e
@@ -135,8 +156,12 @@ class Monitoring < VNFManager
   #	Get monitoring data, last 100 values
   #	@param [Integer] instance_id
   get '/:vnfi_id/monitoring-data/last100/' do
+
+    monitoring, errors = ServiceConfigurationHelper.get_module('vnf_monitoring')
+    halt 500, errors if errors
+
     begin
-      response = RestClient.get "#{settings.vnf_monitoring}" + request.fullpath, 'X-Auth-Token' => @client_token, :content_type => :json, :accept => :json
+      response = RestClient.get monitoring.host + request.fullpath, 'X-Auth-Token' => monitoring.token, :content_type => :json, :accept => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'VNF Monitoring unreachable'
     rescue => e
@@ -152,6 +177,10 @@ class Monitoring < VNFManager
   #	Delete subcription and monitoring info
   #	@param [Integer] instance_id
   delete '/:vnfr_id/monitoring-data' do |vnfr_id|
+
+    monitoring, errors = ServiceConfigurationHelper.get_module('vnf_monitoring')
+    halt 500, errors if errors
+
     begin
       response = RestClient.delete "#{settings.vnf_monitoring}/vnf-monitoring/subcription/#{vnfr_id}", 'X-Auth-Token' => @client_token, :content_type => :json, :accept => :json
     rescue Errno::ECONNREFUSED

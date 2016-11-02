@@ -24,11 +24,17 @@ class Scaling < VNFManager
   # @param [Integer] vnfr_id the vnfr ID
   post '/:vnfr_id/scale_out' do
 
+    provisioner, errors = ServiceConfigurationHelper.get_module('vnf_provisioner')
+    halt 500, errors if errors
+
+    catalogue, errors = ServiceConfigurationHelper.get_module('vnf_catalogue')
+    halt 500, errors if errors
+
     scaling_info = parse_json(request.body.read)
 
     # Get VNF Instance by VNFR id
     begin
-      vnfr = parse_json(RestClient.get settings.vnf_provisioning + '/vnf-provisioning/vnf-instances/' + params['vnfr_id'].to_s, 'X-Auth-Token' => @client_token, :accept => :json)
+      vnfr = parse_json(RestClient.get provisioner.host + '/vnf-provisioning/vnf-instances/' + params['vnfr_id'].to_s, 'X-Auth-Token' => provisioner.token, :accept => :json)
     rescue Errno::ECONNREFUSED
       halt 500, 'VNF Catalogue unreachable'
     rescue => e
@@ -38,7 +44,7 @@ class Scaling < VNFManager
 
     # Get VNF by id
     begin
-      vnfd = parse_json(RestClient.get settings.vnf_catalogue + '/vnfs/' + vnfr['vnfd_reference'].to_s, 'X-Auth-Token' => @client_token, :accept => :json)
+      vnfd = parse_json(RestClient.get catalogue.host + '/vnfs/' + vnfr['vnfd_reference'].to_s, 'X-Auth-Token' => catalogue.token, :accept => :json)
     rescue Errno::ECONNREFUSED
       halt 500, 'VNF Catalogue unreachable'
     rescue => e
@@ -50,7 +56,7 @@ class Scaling < VNFManager
 
     # Forward the request to the VNF Provisioning
     begin
-      response = RestClient.post settings.vnf_provisioning + request.fullpath, scale_info.to_json, 'X-Auth-Token' => @client_token, :accept => :json, :content_type => :json
+      response = RestClient.post provisioner.host + request.fullpath, scale_info.to_json, 'X-Auth-Token' => provisioner.token, :accept => :json, :content_type => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'VNF Provisioning unreachable'
     rescue => e
@@ -67,11 +73,17 @@ class Scaling < VNFManager
   # @param [Integer] vnfr_id the vnfr ID
   post '/:vnfr_id/scale_in' do
 
+    provisioner, errors = ServiceConfigurationHelper.get_module('vnf_provisioner')
+    halt 500, errors if errors
+
+    catalogue, errors = ServiceConfigurationHelper.get_module('vnf_catalogue')
+    halt 500, errors if errors
+
     scaling_info = parse_json(request.body.read)
 
     # Get VNF Instance by VNFR id
     begin
-      vnfr = parse_json(RestClient.get settings.vnf_provisioning + '/vnf-provisioning/vnf-instances/' + params['vnfr_id'].to_s, 'X-Auth-Token' => @client_token, :accept => :json)
+      vnfr = parse_json(RestClient.get provisioner.host + '/vnf-provisioning/vnf-instances/' + params['vnfr_id'].to_s, 'X-Auth-Token' => provisioner.token, :accept => :json)
     rescue Errno::ECONNREFUSED
       halt 500, 'VNF Catalogue unreachable'
     rescue => e
@@ -81,7 +93,7 @@ class Scaling < VNFManager
 
     # Get VNF by id
     begin
-      vnfd = parse_json(RestClient.get settings.vnf_catalogue + '/vnfs/' + vnfr['vnfd_reference'].to_s, 'X-Auth-Token' => @client_token, :accept => :json)
+      vnfd = parse_json(RestClient.get catalogue.host + '/vnfs/' + vnfr['vnfd_reference'].to_s, 'X-Auth-Token' => catalogue.token, :accept => :json)
     rescue Errno::ECONNREFUSED
       halt 500, 'VNF Catalogue unreachable'
     rescue => e
@@ -93,7 +105,7 @@ class Scaling < VNFManager
 
     # Forward the request to the VNF Provisioning
     begin
-      response = RestClient.post settings.vnf_provisioning + request.fullpath, scale_info.to_json, 'X-Auth-Token' => @client_token, :accept => :json, :content_type => :json
+      response = RestClient.post provisioner.host + request.fullpath, scale_info.to_json, 'X-Auth-Token' => provisioner.token, :accept => :json, :content_type => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'VNF Provisioning unreachable'
     rescue => e

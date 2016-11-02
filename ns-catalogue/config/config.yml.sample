@@ -12,9 +12,6 @@ threaded: true
 logger_host: 127.0.0.1
 logger_port: 24224
 
-gk:
-service_key:
-
 nsd_validator: localhost:4015
 
 dependencies: [nsd_validator]

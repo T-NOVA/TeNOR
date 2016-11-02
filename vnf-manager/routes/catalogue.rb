@@ -27,12 +27,15 @@ class Catalogue < VNFManager
     # Return if content-type is invalid
     halt 415 unless request.content_type == 'application/json'
 
+    catalogue, errors = ServiceConfigurationHelper.get_module('vnf_catalogue')
+    halt 500, errors if errors
+
     # Validate JSON format
     vnf = parse_json(request.body.read)
 
     # Forward request to VNF Catalogue
     begin
-      response = RestClient.post settings.vnf_catalogue + '/vnfs', vnf.to_json, 'X-Auth-Token' => @client_token, :content_type => :json
+      response = RestClient.post catalogue.host + '/vnfs', vnf.to_json, 'X-Auth-Token' => catalogue.token, :content_type => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'VNF Catalogue unreachable'
     rescue RestClient::ExceptionWithResponse => e
@@ -57,12 +60,15 @@ class Catalogue < VNFManager
     # Return if content-type is invalid
     halt 415 unless request.content_type == 'application/json'
 
+    catalogue, errors = ServiceConfigurationHelper.get_module('vnf_catalogue')
+    halt 500, errors if errors
+
     # Validate JSON format
     vnf = parse_json(request.body.read)
 
     # Forward request to VNF Catalogue
     begin
-      response = RestClient.put settings.vnf_catalogue + '/vnfs/' + external_vnf_id, vnf.to_json, 'X-Auth-Token' => @client_token, :content_type => :json
+      response = RestClient.put catalogue.host + '/vnfs/' + external_vnf_id, vnf.to_json, 'X-Auth-Token' => catalogue.token, :content_type => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'VNF Catalogue unreachable'
     rescue => e
@@ -78,9 +84,13 @@ class Catalogue < VNFManager
   # Returns a list of VNFs
   # List all VNFs
   get '/' do
+
+    catalogue, errors = ServiceConfigurationHelper.get_module('vnf_catalogue')
+    halt 500, errors if errors
+
     # Forward request to VNF Catalogue
     begin
-      response = RestClient.get settings.vnf_catalogue + '/vnfs', 'X-Auth-Token' => @client_token
+      response = RestClient.get catalogue.host + '/vnfs', 'X-Auth-Token' => catalogue.token
     rescue Errno::ECONNREFUSED
       halt 500, 'VNF Catalogue unreachable'
     rescue => e
@@ -105,9 +115,13 @@ class Catalogue < VNFManager
   #       @param [Integer] external_vnf_id VNF external ID
   # Show a VNF
   get '/:external_vnf_id' do |external_vnf_id|
+
+    catalogue, errors = ServiceConfigurationHelper.get_module('vnf_catalogue')
+    halt 500, errors if errors
+
     # Forward request to VNF Catalogue
     begin
-      response = RestClient.get settings.vnf_catalogue + '/vnfs/' + external_vnf_id, 'X-Auth-Token' => @client_token
+      response = RestClient.get catalogue.host + '/vnfs/' + external_vnf_id, 'X-Auth-Token' => catalogue.token
     rescue Errno::ECONNREFUSED
       halt 500, 'VNF Catalogue unreachable'
     rescue => e
@@ -124,9 +138,13 @@ class Catalogue < VNFManager
   #       @param [Integer] external_vnf_id VNF external ID
   # Delete a VNF
   delete '/:external_vnf_id' do |external_vnf_id|
+
+    catalogue, errors = ServiceConfigurationHelper.get_module('vnf_catalogue')
+    halt 500, errors if errors
+    
     # Forward request to VNF Catalogue
     begin
-      response = RestClient.delete settings.vnf_catalogue + '/vnfs/' + external_vnf_id, 'X-Auth-Token' => @client_token
+      response = RestClient.delete catalogue.host + '/vnfs/' + external_vnf_id, 'X-Auth-Token' => catalogue.token
     rescue Errno::ECONNREFUSED
       halt 500, 'VNF Catalogue unreachable'
     rescue => e

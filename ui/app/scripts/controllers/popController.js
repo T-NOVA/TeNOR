@@ -18,11 +18,9 @@ angular.module('tNovaApp')
         $scope.openstack_ip = "";
 
         $scope.refreshPoPList = function () {
-            tenorService.get('gatekeeper/dc').then(function (d) {
-            //AuthService.get($window.localStorage.token, "admin/dc/").then(function (d) {
+            tenorService.get('pops/dc').then(function (d) {
                 console.log(d);
                 $scope.registeredDcList = d;
-
                 /*_.map(d.dclist, function (row, index) {
                     $scope.registeredDcList.push({
                         id: d.dcid[index],
@@ -84,14 +82,17 @@ angular.module('tNovaApp')
 
         $scope.registerDc = function (obj) {
             var pop = {
-                "msg": obj.msg,
-                "dcname": obj.id,
-                "adminid": obj.adminName,
+                "name": obj.id,
+                "user": obj.adminName,
+                "host": obj.openstack_ip,
                 "password": obj.adminPass,
-                "extrainfo": "pop-ip=" + obj.openstack_ip + " tenant-name=" + obj.tenantName + " isAdmin=" + obj.isAdmin + " keystone-endpoint=http://" + obj.keystone_api + " orch-endpoint=http://" + obj.heat_api + " compute-endpoint=http://" + obj.compute_api + " neutron-endpoint=http://" + obj.neutron_api + " dns=" + obj.dns
+                "tenant_name": obj.tenantName,
+                "is_admin": obj.isAdmin,
+                "description": obj.msg,
+                "extra_info": "keystone-endpoint=http://" + obj.keystone_api + " orch-endpoint=http://" + obj.heat_api + " compute-endpoint=http://" + obj.compute_api + " neutron-endpoint=http://" + obj.neutron_api + " dns=" + obj.dns
             };
             console.log(pop);
-            tenorService.post('gatekeeper/dc', pop).then(function (d) {
+            tenorService.post('pops/dc', pop).then(function (d) {
                 console.log(d);
                 $scope.defaultPoP = {};
                 $alert({
@@ -123,18 +124,18 @@ angular.module('tNovaApp')
             this.$hide();
         };
 
-        $scope.getPopInfo = function (popId) {
-            tenorService.get('gatekeeper/dc/' + popId).then(function (data) {
-                console.log(data);
-                $scope.popInfo = data;
-                $scope.jsonObj = JSON.stringify(data, undefined, 4);
+        $scope.getPopInfo = function (pop_info) {
+            //tenorService.get('pops/dc/' + popId).then(function (pop_info) {
+                console.log(pop_info);
+                $scope.popInfo = pop_info;
+                $scope.jsonObj = JSON.stringify(pop_info, undefined, 4);
                 $modal({
-                    title: "Pop - " + popId,
+                    title: "Pop - " + pop_info['id'] + " - " + pop_info['name'],
                     template: "views/t-nova/modals/info/showPop.html",
                     show: true,
                     scope: $scope,
                 });
-            });
+            //});
         };
 
         $scope.removePopDialog = function (id) {
@@ -148,7 +149,7 @@ angular.module('tNovaApp')
         };
 
         $scope.deleteItem = function (popId) {
-            tenorService.delete('gatekeeper/dc/' + popId).then(function (data) {
+            tenorService.delete('pops/dc/' + popId).then(function (data) {
                 console.log(data);
                 $scope.refreshPoPList();
             });
@@ -156,10 +157,7 @@ angular.module('tNovaApp')
         };
 
     }).controller('PoPModalController', function ($scope, $window, $interval, $modal, $alert, tenorService, AuthService, infrRepoService) {
-        console.log("POP MODALLLL-----")
         $scope.updateOpenstackIP = function () {
-            console.log("Update Openstack IP:")
-            console.log($scope.keystone_version)
             var openstack_ip = $scope.openstack_ip;
 
             //var keystone_version = $scope.dc_default.keystone_api.split(":")[1]
