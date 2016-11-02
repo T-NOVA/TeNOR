@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 # @see ApplicationHelper
-module GatekeeperHelper
+module DcHelper
 
   # Get list of PoPs
   #

@@ -71,7 +71,7 @@ class TnovaManager < Sinatra::Application
     helpers ApplicationHelper
     helpers ServiceConfigurationHelper
     helpers AuthenticationHelper
-    helpers GatekeeperHelper
+    helpers DcHelper
     helpers StatisticsHelper
     helpers VimHelper
 

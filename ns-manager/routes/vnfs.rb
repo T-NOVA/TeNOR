@@ -124,7 +124,7 @@ class VNFCatalogue < TnovaManager
         rescue => e
             logger.error e.response
             # halt e.response.code, e.response.body
-            logger.error 'Any network service is using this VNF.'
+            logger.error 'No network services using this VNF.'
         end
 
         begin

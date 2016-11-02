@@ -35,7 +35,6 @@ class DcController < TnovaManager
     # @overload get '/pops/dc/:id'
     #  Returns a DC
     get '/dc/:id' do |id|
-        puts Dc.all.to_json
         begin
             dc = Dc.find(id.to_i)
         rescue Mongoid::Errors::DocumentNotFound => e

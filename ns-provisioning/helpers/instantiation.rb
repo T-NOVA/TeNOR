@@ -67,18 +67,6 @@ module InstantiationHelper
                 credentials, errors = generate_credentials(@instance, keystone_url, popUrls, tenant_id, user_id, token)
                 return 400, errors if errors
                 pop_auth = pop_auth.merge(credentials)
-=begin
-                keystone_version = URI(keystone_url).path.split('/').last
-                if keystone_version == 'v2.0'
-                    credentials, errors = generate_v2_credentials(@instance, popUrls, tenant_id, user_id, token)
-                    return 400, errors if errors
-                    pop_auth = pop_auth.merge(credentials)
-                elsif keystone_version == 'v3'
-                    pop_auth, errors = generate_v3_credentials(@instance, popUrls, tenant_id, user_id, token)
-                    return 400, errors if errors
-                    pop_auth = pop_auth.merge(credentials)
-                end
-=end
             end
         end
         pop_auth
