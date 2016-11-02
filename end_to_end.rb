@@ -244,10 +244,12 @@ end
 def create_descriptors()
   puts "Creating descriptors"
 	vnfd = File.read('vnfd-validator/assets/samples/vnfd_example.json')
+  puts
 	begin
 		response = JSON.parse(RestClient.post "#{@tenor}/vnfs", vnfd, :content_type => :json)
   rescue RestClient::ExceptionWithResponse => e
     puts e
+    puts "Using the created VNFD"
     response = {'vnfd' => {}}
     response['vnfd']['id'] =  JSON.parse(vnfd)['vnfd']['id']
 	rescue => e
@@ -263,6 +265,11 @@ def create_descriptors()
 	nsd = File.read('nsd-validator/assets/samples/nsd_example.json')
 	begin
 		response = JSON.parse(RestClient.post "#{@tenor}/network-services", nsd, :content_type => :json)
+  rescue RestClient::ExceptionWithResponse => e
+    puts e
+    puts "Using the created NSD"
+    response = {'nsd' => {}}
+    response['nsd']['id'] =  JSON.parse(nsd)['nsd']['id']
 	rescue => e
 		puts "Error...."
 		puts e
