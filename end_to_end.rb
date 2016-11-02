@@ -358,7 +358,7 @@ def recover_state(error)
 	end
 
   @e2e[:instances].each do |instances|
-		delete_instance(instances)
+		delete_instance(instances[:id])
 	end
 
 	exit
