@@ -60,4 +60,6 @@ script:
   - curl localhost:4000/network-services
   - curl localhost:4000/vnfs
   - curl localhost:4000/ns-instances
+  - cd $TRAVIS_BUILD_DIR
+  - ruby end_to_end.rb
 #execute end-to-end test

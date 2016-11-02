@@ -1,0 +1,7 @@
+#!/bin/bash
+
+OPENSTACK_HOST="88.88.88.88"
+OPENSTACK_USER="username"
+OPENSTACK_PASS="password"
+OPENSTACK_TENANT_NAME="tenant_user"
+OPENSTACK_DNS="8.8.8.8"
