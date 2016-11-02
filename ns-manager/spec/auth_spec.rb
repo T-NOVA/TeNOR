@@ -132,6 +132,78 @@ RSpec.describe TnovaManager do
 		end
 	end
 
+	#update user password
+	describe 'PUT /auth' do
+		let(:user) { create :user }
+
+		context 'given a missing header credentials' do
+			let(:response) { put '/invalid_id/update_password', {name: 'teste'}.to_json, rack_env={'CONTENT_TYPE' => 'application/x-www-form-urlencoded'} }
+
+			it 'responds with a 415' do
+				puts user.id
+				expect(response.status).to eq 415
+			end
+
+			it 'responds with an empty body' do
+				expect(response.body).to be_empty
+			end
+		end
+
+		context 'given an invalid user id' do
+			let(:response) { put '/invalid_id/update_password', {name: 'teste'}.to_json, rack_env={'CONTENT_TYPE' => 'application/json'} }
+
+			it 'responds with a 404' do
+				expect(response.status).to eq 401
+			end
+
+			it 'responds with an empty body' do
+				expect(response.body).to be_empty
+			end
+		end
+
+		context 'given a valid user id but invalid passwords' do
+			let(:response) { put '/' + user.id.to_s + '/update_password', {old_password: "secret2", password: "secret2", re_password: "secret2"}.to_json, rack_env={'CONTENT_TYPE' => 'application/json'} }
+
+			it 'responds with a 404' do
+				puts user.id
+				expect(response.status).to eq 404
+      end
+
+			it 'response body should contain a String' do
+				puts user.id
+				expect(response.body).to be_a String
+			end
+		end
+
+		context 'given a valid user id but invalid passwords' do
+			let(:response) { put '/' + user.id.to_s + '/update_password', {old_password: "secret", password: "secret2", re_password: "secret3"}.to_json, rack_env={'CONTENT_TYPE' => 'application/json'} }
+
+			it 'responds with a 404' do
+				puts user.id
+				expect(response.status).to eq 404
+      end
+
+			it 'response body should contain a String' do
+				expect(response.body).to be_a String
+			end
+		end
+
+		context 'given a valid user id and valid passwords' do
+			let(:response) { put '/' + user.id.to_s + '/update_password', {old_password: "secret", password: "secret2", re_password: "secret2"}.to_json, rack_env={'CONTENT_TYPE' => 'application/json'} }
+
+			it 'responds with a 200' do
+
+					puts user.name
+					puts user.password
+				expect(response.status).to eq 200
+      end
+
+			it 'response body should be empty' do
+				expect(response.body).to be_empty
+			end
+		end
+	end
+
 =begin
 	describe 'POST /auth' do
 		context 'given an invalid content type' do
@@ -198,6 +270,4 @@ RSpec.describe TnovaManager do
 		end
 	end
 =end
-	describe 'PUT /auth/:id' do
-	end
 end

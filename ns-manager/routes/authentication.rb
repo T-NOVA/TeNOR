@@ -108,17 +108,35 @@ class TeNORAuthentication < TnovaManager
     post '/:uid/reset_password' do
         user = User.where(email: params[:email]).first
         user.password_reset_hash = BCrypt::Engine.generate_salt
-        recoverPassMail(user.email, password_reset_hash)
+        #recoverPassMail(user.email, password_reset_hash)
     end
 
-    put '/:uid/update_password' do
-        user = User.where(email: params[:email], password_reset_hash: params[:verification_code]).first
-        user.password = params[:password]
-        user.password_salt = BCrypt::Engine.generate_salt
-        user.password_hash = BCrypt::Engine.hash_secret(params[:password], user.password_salt)
-        if user.password == password_confirmation
-            user.password_reset_hash = ''
-            user.save!
+    put '/:uid/update_password' do |uid|
+
+        return 415 unless request.content_type == 'application/json'
+        credentials, errors = parse_json(request.body.read)
+        logger.error errors if errors
+        halt 400 if errors
+
+        begin
+            user = User.find_by(id: uid)
+        rescue Mongoid::Errors::DocumentNotFound => e
+            logger.error 'User not found.'
+            halt 401
+        end
+
+        if user.password_hash == BCrypt::Engine.hash_secret(credentials['old_password'], user.password_salt)
+            logger.debug "Old password is correct."
+            if credentials['password'] == credentials['re_password']
+                user.password = credentials['password']
+                user.password_salt = BCrypt::Engine.generate_salt
+                user.password_hash = BCrypt::Engine.hash_secret(credentials['password'], user.password_salt)
+                user.save!
+            else
+                halt 404, "New passwords don't match."
+            end
+        else
+            halt 404, "Old password doesn't match."
         end
         status 200
     end

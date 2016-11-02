@@ -16,7 +16,8 @@ angular.module('tNovaApp')
                 console.log(username);
                 $window.localStorage.username = username
                 $window.localStorage.token = data.token;
-                $window.localStorage.expiration = data.expiration;
+                $window.localStorage.expiration = data.expires_at;
+                $window.localStorage.uid = data.uid;
                 $location.path('/dashboard');
             },function (error) {
                 $rootScope.loginError = 'Error with the Authentication module.';

@@ -9,24 +9,24 @@
                 <fieldset>
                     <div class="form-group">
                         <label>Username</label>
-                        <input class="form-control" placeholder="{{user.username}}" type="text" disabled>
+                        <input class="form-control" placeholder="{{user.name}}" type="text" disabled>
                     </div>
                     <div class="form-group">
                         <label>Old password</label>
-                        <input class="form-control" placeholder="Password" type="password" value="">
+                        <input class="form-control" ng-model="user.old_password" placeholder="Password" type="password" value="">
                     </div>
                     <div class="form-group">
                         <label>New password</label>
-                        <input class="form-control" placeholder="Password" type="password" value="">
+                        <input class="form-control" ng-model="user.password" placeholder="Password" type="password" value="">
                     </div>
                     <div class="form-group">
                         <label>Repeat new password</label>
-                        <input class="form-control" placeholder="Password" type="password" value="">
+                        <input class="form-control" ng-model="user.re_password"placeholder="Password" type="password" value="">
                     </div>
                 </fieldset>
-                <div>
-                    <div class="btn btn-primary" disabled>
-                        <i class="fa fa-save"></i> Submit
+                <div class="box-body">
+                    <div class="form-group">
+                        <button ng-click="update_user(user)" type="button" class="btn btn-primary">Update</button>
                     </div>
                 </div>
             </form>
@@ -40,24 +40,24 @@
                 <fieldset>
                     <div class="form-group">
                         <label>Username</label>
-                        <input ng-model="user.username" class="form-control" placeholder="" type="text">
+                        <input ng-model="new_user.username" class="form-control" placeholder="" type="text">
                     </div>
                     <div class="form-group">
                         <label>New password</label>
-                        <input ng-model="user.password" class="form-control" placeholder="Password" type="password" value="">
+                        <input ng-model="new_user.password" class="form-control" placeholder="Password" type="password" value="">
                     </div>
                     <div class="form-group">
                         <label>Repeat new password</label>
-                        <input ng-model="user.password2" class="form-control" placeholder="Password" type="password" value="">
+                        <input ng-model="new_user.password2" class="form-control" placeholder="Password" type="password" value="">
                     </div>
                     <div class="form-group">
                         <label>Admin permissions</label>
-                        <input ng-model="user.isadmin" type="checkbox" name="vehicle" value="y"> Admin user
+                        <input ng-model="new_user.isadmin" type="checkbox" name="vehicle" value="y"> Admin user
                     </div>
                 </fieldset>
                 <div class="box-body">
                     <div class="form-group">
-                        <button ng-click="registerUser(user)" type="button" class="btn btn-primary">Add</button>
+                        <button ng-click="registerUser(new_user)" type="button" class="btn btn-primary">Add</button>
                     </div>
                 </div>
             </form>
