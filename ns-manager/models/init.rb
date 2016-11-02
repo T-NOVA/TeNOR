@@ -1,4 +1,4 @@
-require_relative 'serviceModel'#deprecated
+#require_relative 'serviceModel'#deprecated
 require_relative 'statisticModel'
 require_relative 'perfomanceStatisticModel'
 require_relative 'mongoid_prefixable'
