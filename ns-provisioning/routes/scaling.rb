@@ -17,118 +17,103 @@
 #
 # @see NsProvisioner
 class Scaling < NsProvisioning
+    # @method post_ns_instances_scale_out
+    # @overload post '/ns-instances/scaling/:id/scale_out'
+    # Post a Scale out request
+    # @param [JSON]
+    post '/:id/scale_out' do |id|
+        halt 415 unless request.content_type == 'application/json'
 
-  # @method post_ns_instances_scale_out
-  # @overload post '/ns-instances/scaling/:id/scale_out'
-  # Post a Scale out request
-  # @param [JSON]
-  post "/:id/scale_out" do
+        begin
+            instance = Nsr.find(id)
+        rescue Mongoid::Errors::DocumentNotFound => e
+            halt(404)
+        end
 
-    halt 415 unless request.content_type == 'application/json'
+        instance['vnfrs'].each do |vnf|
+            logger.info 'Scale out VNF ' + vnf['vnfr_id'].to_s
 
-    begin
-      instance = Nsr.find(params["id"])
-    rescue Mongoid::Errors::DocumentNotFound => e
-      halt(404)
+            puts 'Pop_id: ' + vnf['pop_id'].to_s
+            raise 'VNF not defined' if vnf['pop_id'].nil?
+
+            pop_info = getPopInfo(vnf['pop_id'])
+            if pop_info == 400
+                logger.error 'Pop id no exists.'
+                return
+            end
+
+            pop_auth = instance['authentication'].find { |pop| pop['pop_id'] == vnf['pop_id'] }
+            pop_urls = pop_auth['urls']
+
+            scale = {
+                auth => {
+                    tenant => pop_auth['tenant_name'],
+                    username => pop_auth['username'],
+                    password => pop_auth['password'],
+                    url => {
+                        keystone => pop_urls[:keystone],
+                        heat => pop_urls[:orch]
+                    }
+                }
+            }
+            begin
+                response = RestClient.post settings.vnf_manager + '/vnf-instances/scaling/' + vnf['vnfr_id'] + '/scale_out', scale.to_json, content_type => :json
+            rescue => e
+                logger.error e
+            end
+
+            logger.debug response
+        end
+        halt 200, 'Scale out done.'
     end
 
-    instance['vnfrs'].each do |vnf|
-      puts vnf
-      logger.info "Scale out VNF " + vnf['vnfr_id'].to_s
+    # @method post_ns_instances_scale_in
+    # @overload post '/ns-instances/scaling/:id/scale_in'
+    # Post a Scale in request
+    # @param [JSON]
+    post '/:id/scale_in' do |id|
+        halt 415 unless request.content_type == 'application/json'
 
-      puts "Pop_id: " + vnf['pop_id'].to_s
-      if vnf['pop_id'].nil?
-        raise "VNF not defined"
-      end
+        begin
+            instance = Nsr.find(id)
+        rescue Mongoid::Errors::DocumentNotFound => e
+            halt(404)
+        end
 
-      popInfo = getPopInfo(vnf['pop_id'])
-      if popInfo == 400
-        logger.error "Pop id no exists."
-        return
-        raise "Pop id no exists."
-      end
+        instance['vnfrs'].each do |vnf|
+            logger.info 'Scale in VNF ' + vnf['vnfr_id'].to_s
 
-      pop_auth = instance['authentication'].find { |pop| pop['pop_id'] == vnf['pop_id'] }
-      popUrls = pop_auth['urls']
+            puts 'Pop_id: ' + vnf['pop_id'].to_s
+            raise 'VNF not defined' if vnf['pop_id'].nil?
 
-      scale = {
-          :auth => {
-              :tenant => pop_auth['tenant_name'],
-              :username => pop_auth['username'],
-              :password => pop_auth['password'],
-              :url => {
-                  :keystone => popUrls[:keystone],
-                  :heat => popUrls[:orch],
-              }
-          }
-      }
-      begin
-        response = RestClient.post settings.vnf_manager + '/vnf-instances/scaling/' + vnf['vnfr_id'] + '/scale_out', scale.to_json, :content_type => :json
-      rescue => e
-        logger.error e
-      end
+            pop_info = getPopInfo(vnf['pop_id'])
+            if pop_info == 400
+                logger.error 'Pop id no exists.'
+                return
+            end
 
-      logger.debug response
+            pop_auth = instance['authentication'].find { |pop| pop['pop_id'] == vnf['pop_id'] }
+            pop_urls = pop_auth['urls']
 
+            scale = {
+                auth => {
+                    tenant => pop_auth['tenant_name'],
+                    username => pop_auth['username'],
+                    password => pop_auth['password'],
+                    url => {
+                        keystone => pop_urls[:keystone],
+                        heat => pop_urls[:orch]
+                    }
+                }
+            }
+            begin
+                response = RestClient.post settings.vnf_manager + '/vnf-instances/scaling/' + vnf['vnfr_id'] + '/scale_in', scale.to_json, content_type => :json
+            rescue => e
+                logger.error e
+            end
+
+            logger.debug response
+        end
+        halt 200, 'Scale in done.'
     end
-    halt 200, "Scale out done."
-
-  end
-
-  # @method post_ns_instances_scale_in
-  # @overload post '/ns-instances/scaling/:id/scale_in'
-  # Post a Scale in request
-  # @param [JSON]
-  post "/:id/scale_in" do
-
-    halt 415 unless request.content_type == 'application/json'
-
-    begin
-      instance = Nsr.find(params["id"])
-    rescue Mongoid::Errors::DocumentNotFound => e
-      halt(404)
-    end
-
-    instance['vnfrs'].each do |vnf|
-      puts vnf
-      logger.info "Scale in VNF " + vnf['vnfr_id'].to_s
-
-      puts "Pop_id: " + vnf['pop_id'].to_s
-      if vnf['pop_id'].nil?
-        raise "VNF not defined"
-      end
-
-      popInfo = getPopInfo(vnf['pop_id'])
-      if popInfo == 400
-        logger.error "Pop id no exists."
-        return
-        raise "Pop id no exists."
-      end
-
-      pop_auth = instance['authentication'].find { |pop| pop['pop_id'] == vnf['pop_id'] }
-      popUrls = pop_auth['urls']
-
-      scale = {
-          :auth => {
-              :tenant => pop_auth['tenant_name'],
-              :username => pop_auth['username'],
-              :password => pop_auth['password'],
-              :url => {
-                  :keystone => popUrls[:keystone],
-                  :heat => popUrls[:orch],
-              }
-          }
-      }
-      begin
-        response = RestClient.post settings.vnf_manager + '/vnf-instances/scaling/' + vnf['vnfr_id'] + '/scale_in', scale.to_json, :content_type => :json
-      rescue => e
-        logger.error e
-      end
-
-      logger.debug response
-
-    end
-    halt 200, "Scale in done."
-  end
-
 end

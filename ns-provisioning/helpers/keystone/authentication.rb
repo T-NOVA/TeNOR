@@ -17,81 +17,79 @@
 #
 # @see NSProvisioner
 module AuthenticationHelper
-
-  def authenticate(keystone_url, tenant_name, username, password)
-    keystone_version = URI(keystone_url).path.split('/').last
-    if keystone_version == 'v2.0'
-      user_authentication, errors = authentication_v2(keystone_url, tenant_name, username, password)
-      logger.error errors if errors
-      return 400, errors.to_json if errors
-      tenant_id = user_authentication['access']['token']['tenant']['id']
-      user_id = user_authentication['access']['user']['id']
-      token = user_authentication['access']['token']['id']
-    elsif keystone_version == 'v3'
-      user_authentication, errors = authentication_v3(keystone_url, tenant_name, username, password)
-      logger.error errors if errors
-      return 400, errors.to_json if errors
-      if !user_authentication['token']['project'].nil?
-        tenant_id = user_authentication['token']['project']['id']
-        user_id = user_authentication['token']['user']['id']
-        token = user_authentication['token']['id']
-      else
-        errors = "No project found with the authentication."
-        return 400, errors.to_json if errors
-      end
+    def authenticate(keystone_url, tenant_name, username, password)
+        keystone_version = URI(keystone_url).path.split('/').last
+        if keystone_version == 'v2.0'
+            user_authentication, errors = authentication_v2(keystone_url, tenant_name, username, password)
+            logger.error errors if errors
+            return 400, errors.to_json if errors
+            tenant_id = user_authentication['access']['token']['tenant']['id']
+            user_id = user_authentication['access']['user']['id']
+            token = user_authentication['access']['token']['id']
+        elsif keystone_version == 'v3'
+            user_authentication, errors = authentication_v3(keystone_url, tenant_name, username, password)
+            logger.error errors if errors
+            return 400, errors.to_json if errors
+            if !user_authentication['token']['project'].nil?
+                tenant_id = user_authentication['token']['project']['id']
+                user_id = user_authentication['token']['user']['id']
+                token = user_authentication['token']['id']
+            else
+                errors = 'No project found with the authentication.'
+                return 400, errors.to_json if errors
+            end
+        end
+        { tenant_id: tenant_id, user_id: user_id, token: token }
     end
-    {:tenant_id => tenant_id, :user_id => user_id, :token => token}
-  end
 
-  def generate_credentials(instance, keystone_url, popUrls, tenant_id, user_id, token)
-    keystone_version = URI(keystone_url).path.split('/').last
-    if keystone_version == 'v2.0'
-      credentials, errors = generate_v2_credentials(instance, popUrls, tenant_id, user_id, token)
-      return 400, errors if errors
-    elsif keystone_version == 'v3'
-      credentials, errors = generate_v3_credentials(instance, popUrls, tenant_id, user_id, token)
-      return 400, errors if errors
+    def generate_credentials(instance, keystone_url, popUrls, tenant_id, user_id, token)
+        keystone_version = URI(keystone_url).path.split('/').last
+        if keystone_version == 'v2.0'
+            credentials, errors = generate_v2_credentials(instance, popUrls, tenant_id, user_id, token)
+            return 400, errors if errors
+        elsif keystone_version == 'v3'
+            credentials, errors = generate_v3_credentials(instance, popUrls, tenant_id, user_id, token)
+            return 400, errors if errors
+        end
+        credentials
     end
-    credentials
-  end
 
-  def create_user_and_project(heat_api, instance_id, project_name, username, password, tenant_id, token)
-    generated_credentials = {}
-    generated_credentials['password'] = password
-    generated_credentials['tenant_name'] = project_name
-    generated_credentials['username'] = username
+    def create_user_and_project(heat_api, _instance_id, project_name, username, password, tenant_id, token)
+        generated_credentials = {}
+        generated_credentials['password'] = password
+        generated_credentials['tenant_name'] = project_name
+        generated_credentials['username'] = username
 
-    hot_generator_message = {
-      project_name: generated_credentials['tenant_name'],
-      username: generated_credentials['username'],
-      password: generated_credentials['password'],
-      domain: nil
-    }
+        hot_generator_message = {
+            project_name: generated_credentials['tenant_name'],
+            username: generated_credentials['username'],
+            password: generated_credentials['password'],
+            domain: nil
+        }
 
-    logger.info 'Generating user HOT template...'
-    hot, errors = generateUserHotTemplate(hot_generator_message)
-    return handleError(@instance, errors) if errors
+        logger.info 'Generating user HOT template...'
+        hot, errors = generateUserHotTemplate(hot_generator_message)
+        return handleError(@instance, errors) if errors
 
-    logger.info 'Send user template to HEAT Orchestration'
-    stack_name = 'user_' + @instance['id'].to_s
-    template = { stack_name: stack_name, template: hot }
-    stack, errors = sendStack(heat_api, tenant_id, template, token)
-    return handleError(@instance, errors) if errors
-    stack_id = stack['stack']['id']
-    stack_url = stack['stack']['links'][0]['href']
+        logger.info 'Send user template to HEAT Orchestration'
+        stack_name = 'user_' + @instance['id'].to_s
+        template = { stack_name: stack_name, template: hot }
+        stack, errors = sendStack(heat_api, tenant_id, template, token)
+        return handleError(@instance, errors) if errors
+        stack_id = stack['stack']['id']
+        stack_url = stack['stack']['links'][0]['href']
 
-    logger.info 'Checking user stack creation...'
-    stack_info, errors = create_stack_wait(heat_api, tenant_id, stack_name, token, 'NS User')
-    return handleError(@instance, errors) if errors
+        logger.info 'Checking user stack creation...'
+        stack_info, errors = create_stack_wait(heat_api, tenant_id, stack_name, token, 'NS User')
+        return handleError(@instance, errors) if errors
 
-    logger.info 'User stack CREATE_COMPLETE. Reading user information from stack...'
-    sleep(3)
-    stack_info, errors = getStackInfo(heat_api, tenant_id, stack_name, token)
-    return handleError(@instance, errors) if errors
-    tenant_id = stack_info['stack']['outputs'].find{ |res| res['output_key'] == 'project_id' }['output_value']
-    user_id = stack_info['stack']['outputs'].find{ |res| res['output_key'] == 'user_id' }['output_value']
+        logger.info 'User stack CREATE_COMPLETE. Reading user information from stack...'
+        sleep(3)
+        stack_info, errors = getStackInfo(heat_api, tenant_id, stack_name, token)
+        return handleError(@instance, errors) if errors
+        tenant_id = stack_info['stack']['outputs'].find { |res| res['output_key'] == 'project_id' }['output_value']
+        user_id = stack_info['stack']['outputs'].find { |res| res['output_key'] == 'user_id' }['output_value']
 
-    return stack_url, tenant_id, user_id
-  end
-
+        [stack_url, tenant_id, user_id]
+    end
 end

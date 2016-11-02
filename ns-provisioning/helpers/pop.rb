@@ -17,7 +17,6 @@
 #
 # @see NsProvisioner
 module PopHelper
-
     # Returns the information of PoPs
     #
     # @param [String] message the pop id

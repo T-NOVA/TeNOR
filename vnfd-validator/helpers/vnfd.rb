@@ -17,7 +17,6 @@
 #
 # @see VnfdValidatorHelper
 module VnfdValidatorHelper
-
   # Checks if a JSON message is valid
   #
   # @param [JSON] message some JSON message
@@ -98,19 +97,19 @@ module VnfdValidatorHelper
 
   def validate_lifecycle_events(vnfd)
     vnfd['vnf_lifecycle_events'].each do |event|
-      event['events'].each do |type, object|
-        if (object['template_file'].nil?)
-          logger.error "Template file in Lifecycle events is not defined."
-          halt 400, "Template file in Lifecycle events is not defined."
+      event['events'].each do |_type, object|
+        if object['template_file'].nil?
+          logger.error 'Template file in Lifecycle events is not defined.'
+          halt 400, 'Template file in Lifecycle events is not defined.'
         else
           begin
             JSON.parse(object['template_file'])
           rescue JSON::ParserError => e
             logger.error e
-            halt 400, "Lifecycle events template incorrect. JSON parser error. Error: " + e.to_s
+            halt 400, 'Lifecycle events template incorrect. JSON parser error. Error: ' + e.to_s
           rescue => e
             logger.error e
-            halt 400, "Lifecycle events template incorrect. Error: " + e.to_s
+            halt 400, 'Lifecycle events template incorrect. Error: ' + e.to_s
           end
         end
       end
@@ -118,5 +117,4 @@ module VnfdValidatorHelper
 
     vnfd
   end
-
 end

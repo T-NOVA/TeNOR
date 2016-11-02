@@ -17,7 +17,6 @@
 #
 # @see NSProvisioner
 module Authenticationv2Helper
-    
     def generate_v2_credentials(instance, popUrls, tenant_id, user_id, token)
         @instance = instance
         pop_auth = {}

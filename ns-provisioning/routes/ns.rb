@@ -17,15 +17,14 @@
 #
 # @see NsProvisioning
 class Provisioner < NsProvisioning
-
     # @method get_ns_instances
     # @overload get "/ns-instances"
     # Gets all ns-instances
     get '/' do
         instances = if params[:status]
-                           Nsr.where(status: params[:status])
-                       else
-                           Nsr.all
+                        Nsr.where(status: params[:status])
+                    else
+                        Nsr.all
                        end
 
         return instances.to_json
@@ -146,7 +145,7 @@ class Provisioner < NsProvisioning
 
                     if popInfo == 400
                         logger.error 'Pop id no exists.'
-                         return
+                        return
                     end
 
                     pop_auth = @nsInstance['authentication'].find { |pop| pop['pop_id'] == vnf['pop_id'] }

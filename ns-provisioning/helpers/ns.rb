@@ -131,19 +131,19 @@ module NsProvisioner
             end
 
             unless settings.default_tenant && !popUrls[:is_admin]
-                logger.info "Removing user stack...."
+                logger.info 'Removing user stack....'
                 stack_url = auth_info['stack_url']
                 if !auth_info['stack_url'].nil?
                     response, errors = delete_stack_with_wait(auth_info['stack_url'], token)
                     logger.error errors if errors
                     return 400, errors if errors
-                    logger.info "User and tenant removed correctly."
+                    logger.info 'User and tenant removed correctly.'
                 else
-                    logger.info "No user and tenant to remove."
+                    logger.info 'No user and tenant to remove.'
                 end
 
             end
-            logger.info "REMOVED: User " + auth_info['user_id'].to_s + " and tenant '" + auth_info['tenant_id'].to_s
+            logger.info 'REMOVED: User ' + auth_info['user_id'].to_s + " and tenant '" + auth_info['tenant_id'].to_s
         end
 
         message = {
@@ -167,7 +167,7 @@ module NsProvisioner
         callback_url = @instance['notification']
         flavour = @instance['service_deployment_flavour']
         pop_list = instantiation_info['pop_list']
-        #pop_id = instantiation_info['pop_id']
+        # pop_id = instantiation_info['pop_id']
         mapping_id = instantiation_info['mapping_id']
         nap_id = instantiation_info['nap_id']
         customer_id = instantiation_info['customer_id']
@@ -187,7 +187,7 @@ module NsProvisioner
 
         pop_list_ids = []
         pop_list.map do |hash|
-            pop_list_ids << { id: hash["id"] }
+            pop_list_ids << { id: hash['id'] }
         end
         logger.info 'List of available PoPs: ' + pop_list_ids.to_s
         if pop_list.size == 1 || mapping_id.nil?
@@ -233,7 +233,6 @@ module NsProvisioner
 
         # if mapping of all VNFs are in the same PoP. Create Authentication and network 1 time
         mapping['vnf_mapping'].each do |vnf|
-
             logger.info 'Start authentication process of ' + vnf.to_s
             pop_id = vnf['maps_to_PoP'].gsub('/pop/', '')
             pop_info = pop_list.find { |p| p['id'] == pop_id.to_i }
@@ -311,7 +310,7 @@ module NsProvisioner
             # generate networks for this PoP
 
             if @instance['authentication'].nil?
-                return handleError(@instance, "Authentication not valid.")
+                return handleError(@instance, 'Authentication not valid.')
             end
 
             pop_auth = @instance['authentication'][0]
@@ -339,14 +338,14 @@ module NsProvisioner
 
             stack_id = stack['stack']['id']
 
-            #save stack_url in reserved resurces
-            logger.info "Saving reserved stack...."
+            # save stack_url in reserved resurces
+            logger.info 'Saving reserved stack....'
 
             @resource_reservation = @instance['resource_reservation']
             resource_reservation = []
             resource_reservation << {
                 ports: [],
-                network_stack: {:id => stack_id, :stack_url => stack['stack']['links'][0]['href']},
+                network_stack: { id: stack_id, stack_url: stack['stack']['links'][0]['href'] },
                 public_network_id: publicNetworkId,
                 dns_server: popUrls[:dns],
                 pop_id: pop_auth['pop_id'],
@@ -380,12 +379,12 @@ module NsProvisioner
             @instance.push(lifecycle_event_history: 'NETWORK CREATED')
             @instance.update_attribute('vlr', networks)
 
-            #get array
-            object = @resource_reservation.find {|s| s[:network_stack][:id] == stack['stack']['id'] }
-            #remove array
+            # get array
+            object = @resource_reservation.find { |s| s[:network_stack][:id] == stack['stack']['id'] }
+            # remove array
             @instance.pull(resource_reservation: object)
-            #add array
-            resource_reservation = resource_reservation.find {|s| s[:network_stack][:id] == stack['stack']['id'] }
+            # add array
+            resource_reservation = resource_reservation.find { |s| s[:network_stack][:id] == stack['stack']['id'] }
             resource_reservation[:routers] = routers
             resource_reservation[:networks] = networks
             @instance.push(resource_reservation: resource_reservation)

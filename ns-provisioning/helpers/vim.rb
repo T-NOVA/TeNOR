@@ -17,7 +17,6 @@
 #
 # @see NSProvisioner
 module VimHelper
-
     def getAdminRole(keystoneUrl, token)
         begin
             response = RestClient.get keystoneUrl + '/OS-KSADM/roles', :content_type => :json, :'X-Auth-Token' => token
@@ -55,9 +54,7 @@ module VimHelper
         if network.nil?
             network = networks['networks'].find { |role| role['router:external'] }
         end
-        if network.nil?
-            return 400, "No external network defined in Openstack."
-        end
+        return 400, 'No external network defined in Openstack.' if network.nil?
         network['id']
     end
 

@@ -1,0 +1,4 @@
+exclude_paths:
+- "**/doc"
+- "ui/app/bower_components"
+- "**/.yardoc"
