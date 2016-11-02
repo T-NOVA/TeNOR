@@ -9,20 +9,25 @@ angular.module('tNovaApp')
             name: "UniMi"
         }];
         $scope.descriptor = {};
-        var page = 0;
-
-        $scope.getServiceList = function () {
-            tenorService.get('network-services?limit=1000').then(function (data) {
-                $scope.dataCollection = _.sortBy(data, function (o) {
-                    var dt = new Date(o.created_at);
-                    return -dt;
-                });
+        var page_num = 20;
+        var page = 1;
+        $scope.dataCollection = [];
+        $scope.getServiceList = function (page) {
+            tenorService.get('network-services?offset=' + page + '&limit=' + page_num).then(function (data) {
+                if (data.length > 0) {
+                    $scope.dataCollection = _.sortBy($scope.dataCollection.concat(data), function (o) {
+                        var dt = new Date(o.created_at);
+                        return -dt;
+                    });
+                    page++;
+                    $scope.getServiceList(page);
+                }
             });
         };
 
-        $scope.getServiceList();
+        $scope.getServiceList(page);
         var promise = $interval(function () {
-            $scope.getServiceList();
+            $scope.getServiceList(page);
         }, defaultTimer);
 
         $scope.deleteDialog = function (id) {

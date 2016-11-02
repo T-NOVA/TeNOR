@@ -4,7 +4,7 @@ angular.module('tNovaApp')
     .controller('modulesController', function ($scope, $filter, tenorService, $interval, $modal) {
 
         $scope.updateModulesList = function () {
-            tenorService.get("configs/services").then(function (data) {
+            tenorService.get("modules/services").then(function (data) {
                 if (data === undefined) return;
                 $scope.modulesCollection = data;
             });
@@ -25,7 +25,7 @@ angular.module('tNovaApp')
             });
         };
         $scope.deleteItem = function (id) {
-            tenorService.delete("configs/services?name=" + id).then(function (data) {});
+            tenorService.delete("modules/services?name=" + id).then(function (data) {});
             this.$hide();
         };
 
@@ -38,7 +38,7 @@ angular.module('tNovaApp')
         $scope.registerService = function (service) {
             console.log("register service");
             console.log(service);
-            tenorService.post("configs/registerService", JSON.stringify(service)).then(function (data) {});
+            tenorService.post("modules/services", JSON.stringify(service)).then(function (data) {});
         };
 
         $scope.options = {
