@@ -114,7 +114,7 @@ class VNFCatalogue < TnovaManager
         halt 500, errors if errors
 
         begin
-            response = RestClient.get vnf_catalogue.host + '/network-services/vnf/' + vnf_id.to_s, 'X-Auth-Token' => vnf_catalogue.token, :content_type => :json
+            response = RestClient.get ns_catalogue.host + '/network-services/vnf/' + vnf_id.to_s, 'X-Auth-Token' => ns_catalogue.token, :content_type => :json
             nss, errors = parse_json(response)
             unless nss.empty?
                 halt 400, nss.size.to_s + ' Network Services are using this VNF.'
