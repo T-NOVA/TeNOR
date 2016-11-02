@@ -33,7 +33,7 @@ class Vnfr
 	include Mongoid::Timestamps
 
 	field :deployment_flavour, type: String
-	field :nsr_instance, type: Array
+	field :nsr_instance, type: String
 	field :vnfd_reference, type: String
 	field :vim_id, type: String
 	field :vlr_instances, type: Array

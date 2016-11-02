@@ -76,7 +76,7 @@ class Provisioning < VnfProvisioning
         begin
             vnfr = Vnfr.create!(
                 deployment_flavour: instantiation_info['flavour'],
-                nsr_instance: Array(instantiation_info['ns_id']),
+                nsr_instance: nsr_id,
                 vnfd_reference: vnf['vnfd']['id'],
                 vim_id: instantiation_info['vim_id'],
                 vlr_instances: nil,

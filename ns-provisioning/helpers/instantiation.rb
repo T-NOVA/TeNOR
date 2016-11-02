@@ -111,6 +111,7 @@ module InstantiationHelper
         logger.debug 'VNF Flavour: ' + vnf_flavour
 
         vnf_provisioning_info = {
+            nsr_id: @instance['id'],
             ns_id: nsd_id,
             vnf_id: vnf_id,
             flavour: vnf_flavour,
