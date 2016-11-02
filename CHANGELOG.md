@@ -1,5 +1,14 @@
+## 0.8.0
+- Changed authentication method. No external entity is required for authentication.
+- Authentication between modules enabled when environment is production using JWT.
+- Refactors in Provisioning.
+- Included Travis-CI.
+- Fixes in UI.
+- VNFR has a correct reference to NSR.
+- Included End-to-end script for tests.
+
 ## 0.7.1
-- VNF Manager uses the token and tenant_id. Is not using user/pass. This fixes the bug with Keystone v3.
+- Exchanging tokens instead of user/pass between NSProvisioner and VNFManager. This fixes the bug with Keystone v3.
 
 ## 0.7.0
 - Non admin users can use TeNOR. Using already created flavors inside Openstack.

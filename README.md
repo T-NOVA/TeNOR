@@ -2,7 +2,7 @@
 
 TeNOR is the NFV Orchestrator platform developed by the [T-NOVA](http://www.t-nova.eu) project, responsible for managing the entire NFV lifecycle service.
 
-[![Build Status](https://travis-ci.org/jbatalle/TeNOR.svg?branch=master)](https://travis-ci.org/jbatalle/TeNOR) [![License](https://img.shields.io/badge/License-Apache%202.0-yellowgreen.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Build Status](https://travis-ci.org/T-NOVA/TeNOR.svg?branch=master)](https://travis-ci.org/T-NOVA/TeNOR) [![License](https://img.shields.io/badge/License-Apache%202.0-yellowgreen.svg)](https://opensource.org/licenses/Apache-2.0)
 
 ## Prerequisites
 - Ruby >= 2.2.5 (installation provided in dependencies/install_dependencies.sh)
@@ -207,6 +207,14 @@ The provided examples are:
 - vnfd-validator/assets/samples/2913_vnfd_scaling.json -> You can see how scale out/in works with this example.
 
 You can test it using the same commands shown before but chaning the file.
+
+### End-to-end tests
+We provide a script that executes an End-to-End test. You only need the PoP credentials before to execute the script. So, please modify the file ` env_end_to_end.sh ` with the correct values and execute the script: ` ./env_end_to_end.sh `
+
+Then, you can execute the script with the following command:
+` ruby end_to_end.rb `
+
+The following items will be created: a set of PoPs with different configurations, a sample NSD/VNFD and the instantiation for each PoP. After the execution, the created components will be removed automatically.
 
 ## Logs
 TeNOR uses Fluentd in order to store the logs in a MongoDB. The UI inlcudes a view that allows to browser through the logs based on the date, severity and module.
