@@ -75,9 +75,6 @@ class TnovaManager < Sinatra::Application
     helpers StatisticsHelper
     helpers VimHelper
 
-    #AuthenticationHelper.loginGK
-    #ServiceConfigurationHelper.publishServices
-
     get '/' do
         return 200, JSON.pretty_generate(interfaces_list)
     end
