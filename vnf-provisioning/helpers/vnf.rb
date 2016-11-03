@@ -125,7 +125,7 @@ module ProvisioningHelper
     #
     # @param [String] url the HEAT URL for the stack
     # @param [String] auth_token the auth token to authenticate with the VIM
-    def create_thread_to_monitor_stack(vnfr_id, stack_url, vim_info, ns_manager_callback, scale_resources=nil)
+    def create_thread_to_monitor_stack(vnfr_id, stack_url, vim_info, ns_manager_callback, scale_resources = nil)
         # Check when stack change state
         thread = Thread.new do
             sleep_time = 10 # set wait time in seconds
@@ -184,74 +184,74 @@ module ProvisioningHelper
                 vms_id[output['output_key'].match(/^(.*)#id$/i)[1]] = output['output_value']
                 vnfr.lifecycle_info['events'].each do |event, event_info|
                     next if event_info.nil?
-                    JSON.parse(event_info['template_file']).each do |id, parameter|
+                    JSON.parse(event_info['template_file']).each do |_id, parameter|
                         parameter_match = parameter.delete(' ').match(/^get_attr\[(.*)\]$/i).to_a
                         string = parameter_match[1].split(',').map(&:strip)
                         key_string = string.join('#')
                         key_string2 = output['output_key'].partition('#')
-                        logger.info key_string + " - " + output['output_key'].to_s
-                        if string[1] == 'vdus' && string[0] ==  key_string2[0]# PrivateIp
+                        logger.info key_string + ' - ' + output['output_key'].to_s
+                        if string[1] == 'vdus' && string[0] ==  key_string2[0] # PrivateIp
                             lifecycle_events_values[event] = {} unless lifecycle_events_values.key?(event)
                             lifecycle_events_values[event][key_string] = output['output_value']
                         end
                     end
                 end
             else
-              # other parameters
-              vnfr.lifecycle_info['events'].each do |event, event_info|
-                  next if event_info.nil?
-                  JSON.parse(event_info['template_file']).each do |id, parameter|
-                      parameter_match = parameter.delete(' ').match(/^get_attr\[(.*)\]$/i).to_a
-                      string = parameter_match[1].split(',').map(&:strip)
-                      key_string = string.join('#')
-                      if string[1] == 'PublicIp' # DEPRECATED: to be removed when all VNF developers uses the new form
-                          vnf_addresses[output['output_key']] = output['output_value']
-                          lifecycle_events_values[event] = {} unless lifecycle_events_values.key?(event)
-                          lifecycle_events_values[event][key_string] = output['output_value']
-                      elsif string[2] == 'PublicIp'
-                          if key_string == output['output_key']
-                              if id == 'controller'
-                                  vnf_addresses['controller'] = output['output_value']
-                              end
-                              vnf_addresses[output['output_key']] = output['output_value']
-                              lifecycle_events_values[event] = {} unless lifecycle_events_values.key?(event)
-                              lifecycle_events_values[event][key_string] = output['output_value']
-                          end
-                      elsif string[1] == 'fixed_ips' # PrivateIp
-                          key_string2 = output['output_key'].partition('#')[2]
-                          if key_string2 == key_string
-                              vnf_addresses[output['output_key']] = output['output_value']
-                              lifecycle_events_values[event] = {} unless lifecycle_events_values.key?(event)
-                              if output['output_value'].is_a?(Array)
-                                  lifecycle_events_values[event][key_string] = output['output_value'][0]
-                              else
-                                  lifecycle_events_values[event][key_string] = output['output_value']
-                              end
-                          end
-                     elsif output['output_key'] =~ /^#{parameter_match[1]}##{parameter_match[2]}$/i
-                          vnf_addresses[(parameter_match[1]).to_s] = output['output_value'] if parameter_match[2] == 'ip' && !vnf_addresses.key?((parameter_match[1]).to_s) # Only to populate VNF
-                          lifecycle_events_values[event] = {} unless lifecycle_events_values.key?(event)
-                          lifecycle_events_values[event]["#{parameter_match[1]}##{parameter_match[2]}"] = output['output_value']
-                      elsif output['output_key'] == id # 'controller'
-                          lifecycle_events_values[event] = {} unless lifecycle_events_values.key?(event)
-                          lifecycle_events_values[event][key_string] = output['output_value']
-                      end
-                  end
-              end
+                # other parameters
+                vnfr.lifecycle_info['events'].each do |event, event_info|
+                    next if event_info.nil?
+                    JSON.parse(event_info['template_file']).each do |id, parameter|
+                        parameter_match = parameter.delete(' ').match(/^get_attr\[(.*)\]$/i).to_a
+                        string = parameter_match[1].split(',').map(&:strip)
+                        key_string = string.join('#')
+                        if string[1] == 'PublicIp' # DEPRECATED: to be removed when all VNF developers uses the new form
+                            vnf_addresses[output['output_key']] = output['output_value']
+                            lifecycle_events_values[event] = {} unless lifecycle_events_values.key?(event)
+                            lifecycle_events_values[event][key_string] = output['output_value']
+                        elsif string[2] == 'PublicIp'
+                            if key_string == output['output_key']
+                                if id == 'controller'
+                                    vnf_addresses['controller'] = output['output_value']
+                                end
+                                vnf_addresses[output['output_key']] = output['output_value']
+                                lifecycle_events_values[event] = {} unless lifecycle_events_values.key?(event)
+                                lifecycle_events_values[event][key_string] = output['output_value']
+                            end
+                        elsif string[1] == 'fixed_ips' # PrivateIp
+                            key_string2 = output['output_key'].partition('#')[2]
+                            if key_string2 == key_string
+                                vnf_addresses[output['output_key']] = output['output_value']
+                                lifecycle_events_values[event] = {} unless lifecycle_events_values.key?(event)
+                                if output['output_value'].is_a?(Array)
+                                    lifecycle_events_values[event][key_string] = output['output_value'][0]
+                                else
+                                    lifecycle_events_values[event][key_string] = output['output_value']
+                                end
+                            end
+                        elsif output['output_key'] =~ /^#{parameter_match[1]}##{parameter_match[2]}$/i
+                            vnf_addresses[(parameter_match[1]).to_s] = output['output_value'] if parameter_match[2] == 'ip' && !vnf_addresses.key?((parameter_match[1]).to_s) # Only to populate VNF
+                            lifecycle_events_values[event] = {} unless lifecycle_events_values.key?(event)
+                            lifecycle_events_values[event]["#{parameter_match[1]}##{parameter_match[2]}"] = output['output_value']
+                        elsif output['output_key'] == id # 'controller'
+                            lifecycle_events_values[event] = {} unless lifecycle_events_values.key?(event)
+                            lifecycle_events_values[event][key_string] = output['output_value']
+                        end
+                    end
+                end
             end
         end
 
         logger.debug 'VMs ID: ' + vms_id.to_json
         logger.debug 'VNF Addresses: ' + vnf_addresses.to_json
         logger.debug 'Lifecycle events values: ' + lifecycle_events_values.to_json
-        event = "scaling_out"
+        event = 'scaling_out'
 
         # Update the VNFR
         vnfr.push(lifecycle_event_history: stack_info['stack']['stack_status'])
 
-        resource = vnfr['scale_resources'].find { |res| res['name'] == scale_resources[:name]}
+        resource = vnfr['scale_resources'].find { |res| res['name'] == scale_resources[:name] }
         resource = vnfr['scale_resources'][vnfr['scale_resources'].size - 1]
-        scaled_resource = vnfr['scale_resources'].find { |res| res['name'] == scale_resources[:name]}
+        scaled_resource = vnfr['scale_resources'].find { |res| res['name'] == scale_resources[:name] }
         vnfr.pull(scale_resources: resource)
 
         scaled_resource['vnf_addresses'] = vnf_addresses
@@ -290,8 +290,7 @@ module ProvisioningHelper
         vnfi_id = []
         vnfr.vms_id.each { |_key, value| vnfi_id << value }
         message = { vnfd_id: vnfr.vnfd_reference, vnfi_id: vnfi_id, vnfr_id: vnfr.id, vnf_addresses: vnf_addresses, stack_resources: vnfr }
-        #nsmanager_callback(stack_info['ns_manager_callback'], message)
-
+        # nsmanager_callback(stack_info['ns_manager_callback'], message)
     end
 
     # Verify if the VDU images are accessible to download

@@ -18,17 +18,15 @@
 # @see HotHelper
 module HotHelper
     def deleteStack(stack_url, auth_token)
-        begin
-            response = RestClient.delete stack_url, 'X-Auth-Token' => auth_token, :accept => :json
-        rescue Errno::ECONNREFUSED
-        # halt 500, 'VIM unreachable'
-        rescue RestClient::ResourceNotFound
-            logger.error 'Already removed from the VIM.'
-            return 404
-        rescue => e
-            logger.error e.response
-            return
-        end
+        response = RestClient.delete stack_url, 'X-Auth-Token' => auth_token, :accept => :json
+    rescue Errno::ECONNREFUSED
+    # halt 500, 'VIM unreachable'
+    rescue RestClient::ResourceNotFound
+        logger.error 'Already removed from the VIM.'
+        return 404
+    rescue => e
+        logger.error e.response
+        return
     end
 
     def getStackResources(stack_url, auth_token)
