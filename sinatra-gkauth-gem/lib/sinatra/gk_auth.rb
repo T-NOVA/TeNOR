@@ -11,7 +11,11 @@ module Sinatra
             def initialize
                 sleep(2)
                 puts 'Initializing gem GK...'
-                service_info = { name: settings.servicename, host: settings.address, port: settings.port, depends_on: settings.dependencies, secret: settings.servicename }
+                begin
+                    service_info = { name: settings.servicename, host: settings.address, port: settings.port, depends_on: settings.dependencies, secret: settings.servicename, type: settings.type}
+                rescue
+                    service_info = { name: settings.servicename, host: settings.address, port: settings.port, depends_on: settings.dependencies, secret: settings.servicename, type: "" }
+                end
                 publish_service(service_info) if settings.environment != 'development'
 
                 if settings.environment == 'development'
@@ -35,7 +39,6 @@ module Sinatra
                     $time = 5 if $time > $max_retries
                     publish_service(service_info)
                 end
-                puts response
                 return if response.nil?
                 services, errors = parse_json(response)
                 return 400, errors.to_json if errors

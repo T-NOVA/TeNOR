@@ -3,16 +3,32 @@
 angular.module('tNovaApp')
     .controller('modulesController', function ($scope, $filter, tenorService, $interval, $modal) {
 
+        $scope.types_internal_modules = ["", "manager"];
+        $scope.types_external_modules = ["mapping", "infr_repo"];
+        $scope.types_modules = $scope.types_internal_modules.concat($scope.types_external_modules)
+        $scope.externalModulesCollection = [];
+
         $scope.updateModulesList = function () {
             tenorService.get("modules/services").then(function (data) {
                 if (data === undefined) return;
                 $scope.modulesCollection = data;
             });
-        }
+        };
+
+        $scope.updateExternalModulesList = function () {
+            $scope.types_external_modules.forEach(function(type){
+                tenorService.get("modules/services/type/" + type).then(function (data) {
+                    if (data === undefined) return;
+                    $scope.externalModulesCollection = $scope.externalModulesCollection.concat(data);
+                });
+            })
+        };
 
         $scope.updateModulesList();
+        $scope.updateExternalModulesList();
         var promise = $interval(function () {
-            $scope.updateModulesList
+            $scope.updateModulesList();
+            //$scope.updateExternalModulesList();
         }, defaultTimer);
 
         $scope.deleteDialog = function (id) {
@@ -38,7 +54,11 @@ angular.module('tNovaApp')
         $scope.registerService = function (service) {
             console.log("register service");
             console.log(service);
-            tenorService.post("modules/services", JSON.stringify(service)).then(function (data) {});
+            service.secret = service.name
+            service.depends_on = [];
+            tenorService.post("modules/services", JSON.stringify(service)).then(function (data) {
+                console.log(data);
+            });
         };
 
         $scope.options = {
@@ -78,7 +98,7 @@ angular.module('tNovaApp')
                 if (!data) return;
                 $scope.log = $scope.log.concat(data);
                 angular.forEach(data, function (element) {
-                    console.log(element);
+                    //console.log(element);
                     $scope.data.items.add({
                         id: element.id,
                         content: element.module + " - " + element.msg,
@@ -91,7 +111,7 @@ angular.module('tNovaApp')
 
         $scope.log = [];
         angular.forEach($scope.modules, function (module) {
-            $scope.timelineLog(module);
+            //$scope.timelineLog(module);
         });
 
         $scope.selectSeverity = function (severity) {

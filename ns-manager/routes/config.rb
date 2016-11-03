@@ -35,7 +35,7 @@ class ServiceConfiguration < TnovaManager
             logger.error 'DC not found'
             return 404
         end
-        return service.to_json
+        service.to_json
     end
 
     get '/services/name/:name' do |name|
@@ -45,7 +45,17 @@ class ServiceConfiguration < TnovaManager
             logger.error 'DC not found'
             return 404
         end
-        return service['token']
+        service['token']
+    end
+
+    get '/services/type/:type' do |type|
+        begin
+            services = Service.where(:type => type)
+        rescue Mongoid::Errors::DocumentNotFound => e
+            logger.error 'DC not found'
+            return 404
+        end
+        services.to_json
     end
 
     post '/services' do
@@ -57,13 +67,15 @@ class ServiceConfiguration < TnovaManager
             name: serv_reg['name'],
             host: serv_reg['host'],
             port: serv_reg['port'],
+            path: serv_reg['path'],
             token: @token,
-            depends_on: serv_reg['depends_on']
+            depends_on: serv_reg['depends_on'],
+            type: serv_reg['type']
         }
         logger.debug serv
         begin
             s = Service.find_by(name: serv_reg['name'])
-            s.update_attributes!(host: serv_reg['host'], port: serv_reg['port'], token: @token, depends_on: serv_reg['depends_on'])
+            s.update_attributes!(host: serv_reg['host'], port: serv_reg['port'], token: @token, depends_on: serv_reg['depends_on'], type: serv_reg['type'])
         rescue Mongoid::Errors::DocumentNotFound => e
             Service.create!(serv)
         rescue => e
@@ -81,7 +93,7 @@ class ServiceConfiguration < TnovaManager
                     logger.debug "Service found but is down."
                     s.destroy
                 else
-                    depends_on << { name: s['name'], host: s['host'], port: s['port'], token: s['token'] }
+                    depends_on << { name: s['name'], host: s['host'], port: s['port'], token: s['token'], depends_on: s['depends_on'] }
                 end
             rescue Mongoid::Errors::DocumentNotFound => e
                 logger.error 'User not found.'
@@ -97,6 +109,22 @@ class ServiceConfiguration < TnovaManager
             dependencies.each do |dependency|
                 begin
                     RestClient.post dependency['host'] + ':' + dependency['port'] + '/gk_dependencies', serv.to_json, :content_type => :json, 'X-Auth-Token' => dependency['token']
+                rescue => e
+                    # logger.error e
+                    puts e
+                    # halt 500, {'Content-Type' => 'text/plain'}, "Error sending dependencies to " +service['name']
+                end
+            end
+        end
+
+puts "Manager..."
+puts serv[:type]
+        if serv[:type] == 'manager'
+            puts "Send to VNF MANAger..."
+            depends_on.each do |dep|
+                puts dep
+                begin
+                    RestClient.post serv[:host] + ':' + serv[:port].to_s + '/modules/services', dep.to_json, :content_type => :json, 'X-Auth-Token' => serv['token']
                 rescue => e
                     # logger.error e
                     puts e

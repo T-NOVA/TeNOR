@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('tNovaApp')
-    .controller('infrastructureRepositoryController', function ($rootScope, $scope, $http, $q, localStorageService, $interval, $modal, $timeout, infrRepoService, $loading) {
+    .controller('infrastructureRepositoryController', function ($rootScope, $scope, $http, $q, localStorageService, $interval, $modal, $timeout, infrRepoService, $loading, tenorService) {
 
         var url = '';
         $scope.showPop = false;
@@ -13,6 +13,14 @@ angular.module('tNovaApp')
         $scope.virtualResources = false;
 
         $scope.showTopology = false;
+
+        tenorService.get("modules/services/type/infr_repo").then(function (data) {
+            if (data === undefined) return;
+            console.log(data);
+            $scope.infr_repo_url = data[0].host + ":" + data[0].port;
+            console.log($scope.infr_repo_url);
+            $scope.getPops();
+        });
 
         $scope.ui_handler = function (uid, type) {
             var selected;
@@ -125,12 +133,12 @@ angular.module('tNovaApp')
                     if (elType === 'floatingip') continue;
                     if (elType === 'pu') continue;
                     url = 'pop/' + $scope.infrModel[popId]['occi.epa.popuuid'] + '/' + elType + '/';
-                    infrRepoService.get(url).then(function (_data) {
+                    infrRepoService.get($scope.infr_repo_url, url).get(url).then(function (_data) {
                         if (_data.length === 0)
                             $scope.dataCollection = [];
                         var j = 0;
                         angular.forEach(_data, function (res) {
-                            infrRepoService.get(res.identifier.slice(1)).then(function (resource) {
+                            infrRepoService.get($scope.infr_repo_url, res.identifier.slice(1)).then(function (resource) {
                                 //console.log(resource)
                                 $scope.dataCollection.push(resource.attributes);
                                 data.nodes.push({
@@ -185,12 +193,12 @@ angular.module('tNovaApp')
                     if (elType === 'floatingip') continue;
 
                     url = 'pop/' + $scope.infrModel[popId]['occi.epa.popuuid'] + '/' + elType + '/';
-                    infrRepoService.get(url).then(function (_data) {
+                    infrRepoService.get($scope.infr_repo_url, url).then(function (_data) {
                         if (_data.length === 0) $loading.finish('table');
                         $scope.dataCollection = [];
                         var j = 0;
                         angular.forEach(_data, function (res) {
-                            infrRepoService.get(res.identifier.slice(1)).then(function (resource) {
+                            infrRepoService.get($scope.infr_repo_url, res.identifier.slice(1)).then(function (resource) {
                                 data.nodes.push({
                                     id: resource['identifier'],
                                     label: resource.attributes['occi.epa.name'],
@@ -252,7 +260,7 @@ angular.module('tNovaApp')
         $scope.types = [];
         $scope.getTypes = function () {
             url = '-/';
-            infrRepoService.get(url).then(function (_data) {
+            infrRepoService.get($scope.infr_repo_url, url).then(function (_data) {
                 _data.forEach(function (_data) {
                     $scope.types.push({
                         id: _data.term,
@@ -277,13 +285,13 @@ angular.module('tNovaApp')
             $scope.showPop = false;
 
             url = 'pop/';
-            infrRepoService.get(url).then(function (_data) {
+            infrRepoService.get($scope.infr_repo_url, url).then(function (_data) {
                 $scope.pops = _data;
                 if (_data.length === 0) $loading.finish('pops');
                 $scope.infrModel = [];
                 angular.forEach(_data, function (pop, index, array) {
                     url = pop.identifier.slice(1);
-                    infrRepoService.get(url).then(function (_data) {
+                    infrRepoService.get($scope.infr_repo_url, url).then(function (_data) {
                         $scope.infrModel.push(_data.attributes);
                         $scope.infrModel[$scope.infrModel.length - 1].resources = {};
 
@@ -301,8 +309,6 @@ angular.module('tNovaApp')
             });
         };
 
-        $scope.getPops();
-
         $scope.getResourcesByType = function (popId, type) {
             $loading.start('table');
             var type = $scope.types.filter(function (d) {
@@ -314,11 +320,11 @@ angular.module('tNovaApp')
             $scope.showTables = true;
             $scope.showTopology = false;
             url = 'pop/' + $scope.infrModel[popId]['occi.epa.popuuid'] + type.location;
-            infrRepoService.get(url).then(function (_data) {
+            infrRepoService.get($scope.infr_repo_url, url).then(function (_data) {
                 if (_data.length === 0) $loading.finish('table');
                 $scope.dataCollection = [];
                 angular.forEach(_data, function (res) {
-                    infrRepoService.get(res.identifier.slice(1)).then(function (resource) {
+                    infrRepoService.get($scope.infr_repo_url, res.identifier.slice(1)).then(function (resource) {
                         if ($scope.infrModel[popId][resource.attributes['occi.epa.index_type']] === undefined) {
                             $scope.infrModel[popId][resource.attributes['occi.epa.index_type']] = [];
                         }
@@ -358,7 +364,7 @@ angular.module('tNovaApp')
             //$scope.getResourcesByPoP(popId);
             return;
             url = 'pop/' + $scope.infrModel[popId]['occi.epa.popuuid'].slice(1);
-            infrRepoService.get(url).then(function (_data) {
+            infrRepoService.get($scope.infr_repo_url, url).then(function (_data) {
                 console.log(_data);
                 $scope.pop = _data.attributes;
             });
@@ -370,9 +376,9 @@ angular.module('tNovaApp')
             angular.forEach($scope.types, function (type) {
                 if (type.id.indexOf("link") > -1) return;
                 url = 'pop/' + $scope.infrModel[popId]['occi.epa.popuuid'] + type.location;
-                infrRepoService.get(url).then(function (_data) {
+                infrRepoService.get($scope.infr_repo_url, url).then(function (_data) {
                     angular.forEach(_data, function (res, index, _ary) {
-                        infrRepoService.get(res.identifier.slice(1)).then(function (resource) {
+                        infrRepoService.get($scope.infr_repo_url, res.identifier.slice(1)).then(function (resource) {
                             if ($scope.infrModel[popId].resources[resource.attributes['occi.epa.index_type']] === undefined) {
                                 $scope.infrModel[popId].resources[resource.attributes['occi.epa.index_type']] = [];
                             }
