@@ -24,7 +24,7 @@ module DcHelper
   # @return [String] the object converted into the expected format.
   def getDcs()
     begin
-        return 200, Dc.all.to_json
+        return Dc.all.to_json
     rescue => e
         logger.error e
         logger.error 'Error Establishing a Database Connection'
