@@ -4,10 +4,10 @@ angular.module('tNovaApp')
     .controller('nsController', function ($scope, $stateParams, $filter, tenorService, $interval, $modal, $location, AuthService, $window, $alert) {
 
         $scope.registeredDcList = [];
-        $scope.serviceMapping = [{
-            id: 0,
-            name: "UniMi"
-        }];
+        tenorService.get("modules/services/type/mapping").then(function (data) {
+            if (data === undefined) return;
+            $scope.serviceMapping = data;
+        });
         $scope.descriptor = {};
         var page_num = 20;
         var page = 1;
