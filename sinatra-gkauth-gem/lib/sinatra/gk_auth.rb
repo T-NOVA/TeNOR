@@ -6,6 +6,7 @@ require 'jwt'
 module Sinatra
     module Gk_Auth
         module Helpers
+            puts 'Loaded 1....'
             $time = 5
             $max_retries = 150 # in seconds
             def initialize
@@ -32,7 +33,7 @@ module Sinatra
                 begin
                     response = RestClient.post settings.manager + '/modules/services', service_info.to_json, accept: :json, content_type: :json
                 rescue => e
-                    puts 'Error registring or receiving dependencies to the Manager, waiting: ' + $time.to_s + ' seconds for next rety...'
+                    puts 'Error registring or receiving dependencies to the Manager, waiting: ' + $time.to_s + ' seconds for next retry...'
                     puts e
                     sleep($time) # wait $time seconds
                     $time = $time * 2
@@ -98,40 +99,20 @@ module Sinatra
             app.helpers Gk_Auth::Helpers
 
             app.before do
-                # env['rack.logger'] = app.settings.logger
-                return if request.path_info == '/gk_credentials'
-
                 return if settings.environment == 'development'
                 authorized?
-            end
-
-            # to be removed...
-            app.post '/gk_credentials' do
-                # credentials = {gk_url: url, service_key: key}
-                return 415 unless request.content_type == 'application/json'
-                credentials, errors = parse_json(request.body.read)
-                return 400, errors.to_json if errors
-
-                app.set :gk, credentials['gk_url']
-                app.set :service_key, credentials['service_key']
-
-                updateValues('gk', credentials['gk_url'])
-                updateValues('service_key', credentials['service_key'])
-
-                return 200
             end
 
             app.post '/gk_dependencies' do
                 return 415 unless request.content_type == 'application/json'
 
-                services, errors = parse_json(request.body.read)
+                ms, errors = parse_json(request.body.read)
                 return 400, errors.to_json if errors
 
                 return 200 if settings.dependencies.nil?
-                service = services
-                unless settings.dependencies.detect { |sv| sv == service['name'] }.nil?
-                    app.set service['name'], service['host'].to_s + ':' + service['port'].to_s
-                    app.set service['name'] + '_token', service['token'].to_s
+                unless settings.dependencies.detect { |sv| sv == ms['name'] }.nil?
+                    app.set ms['name'], ms['host'].to_s + ':' + ms['port'].to_s
+                    app.set ms['name'] + '_token', ms['token'].to_s
                 end
 
                 return 200

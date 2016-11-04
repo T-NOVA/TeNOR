@@ -17,8 +17,9 @@
 #
 # @see ServiceConfiguration
 class ServiceConfiguration < VNFManager
-
-  # /modules/services
+	# @method get_modules_services
+    # @overload get '/modules/services'
+    # Retrieve the microservices list
     get '/services' do
         begin
             return 200, Service.all.to_json
@@ -29,6 +30,9 @@ class ServiceConfiguration < VNFManager
         end
     end
 
+    # @method get_modules_services_id
+    # @overload get '/modules/services:id'
+    # Retrieve a microservice given an id
     get '/services/:id' do |id|
         begin
             service = Service.find(id)
@@ -39,32 +43,44 @@ class ServiceConfiguration < VNFManager
         return service.to_json
     end
 
+    # @method get_modules_services_name
+    # @overload get '/modules/services/:name'
+    # Retrieve the token of a microservice given a name
     get '/services/name/:name' do |name|
         begin
-            service = Service.find_by(:name => name)
+            service = Service.find_by(name: name)
         rescue Mongoid::Errors::DocumentNotFound => e
             logger.error 'DC not found'
             return 404
         end
-        return service['token']
+        service['token']
     end
 
+    # @method post_modules_services
+    # @overload get '/modules/services'
+    # Register a microservice
     post '/services' do
         return 415 unless request.content_type == 'application/json'
         serv_reg, errors = parse_json(request.body.read)
 
-        @token = JWT.encode({ service_name: serv_reg['name'] }, serv_reg['secret'], 'HS256')
+        if serv_reg['token'].nil?
+            @token = JWT.encode({ service_name: serv_reg['name'] }, serv_reg['secret'], 'HS256')
+        else
+            @token = serv_reg['token']
+        end
         serv = {
             name: serv_reg['name'],
             host: serv_reg['host'],
             port: serv_reg['port'],
+            path: serv_reg['path'],
             token: @token,
-            depends_on: serv_reg['depends_on']
+            depends_on: serv_reg['depends_on'],
+            type: serv_reg['type']
         }
         logger.debug serv
         begin
             s = Service.find_by(name: serv_reg['name'])
-            s.update_attributes!(host: serv_reg['host'], port: serv_reg['port'], token: @token, depends_on: serv_reg['depends_on'])
+            s.update_attributes!(host: serv_reg['host'], port: serv_reg['port'], token: @token, depends_on: serv_reg['depends_on'], type: serv_reg['type'])
         rescue Mongoid::Errors::DocumentNotFound => e
             Service.create!(serv)
         rescue => e
@@ -74,28 +90,28 @@ class ServiceConfiguration < VNFManager
         depends_on = []
         serv_reg['depends_on'].each do |serv|
             begin
-                logger.info "Checking if dependant Services of #{serv} is Up and Running...."
+                logger.debug "Checking if dependant Services of #{serv} is Up and Running...."
                 s = Service.where(name: serv).first
                 next if s.nil?
                 dependant_status = is_port_open?(s['host'], s['port'])
                 if dependant_status == false
-                    logger.info "Service found but is down."
+                    logger.debug "Service found but is down."
                     s.destroy
                 else
+                    logger.debug 'Packing dependent services...'
                     depends_on << { name: s['name'], host: s['host'], port: s['port'], token: s['token'] }
                 end
             rescue Mongoid::Errors::DocumentNotFound => e
-                logger.error 'User not found.'
-                # halt 404
+                logger.error 'Service not found.'
             end
         end
 
-        logger.error 'Find service that has this module as dependency:'
-        # Service
+        logger.debug 'Find services that have this module as dependency:'
         dependencies = Service.any_of(depends_on: serv[:name]).entries
-        logger.error dependencies
+        logger.debug dependencies
         if dependencies.any?
             dependencies.each do |dependency|
+                puts dependency
                 begin
                     RestClient.post dependency['host'] + ':' + dependency['port'] + '/gk_dependencies', serv.to_json, :content_type => :json, 'X-Auth-Token' => dependency['token']
                 rescue => e
@@ -111,114 +127,15 @@ class ServiceConfiguration < VNFManager
     put '/services' do
     end
 
+    # @method delete_modules_services_name
+    # @overload delete '/modules/services/:name'
+    # Remove a microservice
     delete '/services/:name' do |name|
         begin
-           Service.find_by(:name => name).destroy
+           Service.find_by(name: name).destroy
        rescue Mongoid::Errors::DocumentNotFound => e
            halt 404
        end
         halt 200
     end
-
-
-
-
-
-
-=begin
-	# @method put_configs_config_id
-	# @overload put '/configs/:config_id'
-	# 	Update a configuration value
-	# 	@param [Integer] config_id the configuration ID
-	# Update a configuration
-	put '/:config_id' do
-		halt 501, 'Not implemented yet'
-
-		# Return if service ID is invalid
-		halt 400, 'Invalid service ID' unless ['vnf-catalogue', 'vnf-provisioning', 'vnf-monitoring', 'vnf-scaling'].include? params[:config_id]
-
-		begin
-			response = RestClient.put settings.ns_manager + '/configs/services', 'X-Auth-Token' => @client_token
-		rescue Errno::ECONNREFUSED
-			halt 500, 'NS Manager unreachable'
-		rescue => e
-			logger.error e.response
-			halt e.response.code, e.response.body
-		end
-
-		halt response.code, response.body
-	end
-
-	# @method get_configs
-	# @overload get '/configs'
-	# 	List all configurations
-	# Get all configs
-	get '/' do
-		if params['name']
-			begin
-				response = ServiceModel.find_by(name: params["name"]).to_json
-			rescue Mongoid::Errors::DocumentNotFound => e
-				halt 404
-			end
-			  return response
-	    else
-			  return ServiceModel.all.to_json
-	    end
-	end
-
-	# @method get_configs_config_id
-	# @overload get '/configs/:config_id'
-	# 	Show a specific configuration
-	# 	@param [Integer] config_id the configuration ID
-	# Get a specific config
-	get '/:config_id' do
-		# Forward request to NS Manager
-		begin
-			response = RestClient.get settings.ns_manager + '/configs/services', {params: {name: params[:config_id]}}, 'X-Auth-Token' => @client_token
-		rescue Errno::ECONNREFUSED
-			halt 500, 'NS Manager unreachable'
-		rescue RestClient::NotFound => e
-				halt 404
-		rescue => e
-			logger.error e.response
-			halt e.response.code, e.response.body
-		end
-
-		halt response.code, response.body
-	end
-
-	# @method delete_configs_config_id
-	# @overload delete '/configs/:config_id'
-	# 	Delete a specific configuration
-	# 	@param [Integer] config_id the configuration ID
-	# Delete a configuration
-	delete '/:config_id' do
-		# Forward request to NS Manager
-		begin
-			response = RestClient.delete settings.ns_manager + '/configs/services', {params: {name: params[:config_id]}}, 'X-Auth-Token' => @client_token
-		rescue Errno::ECONNREFUSED
-			halt 500, 'NS Manager unreachable'
-		rescue => e
-			logger.error e.response
-			halt e.response.code, e.response.body
-		end
-
-		halt response.code, response.body
-	end
-
-	# @method get_configs_services_publish_microservice
-	# @overload get '/configs/services/:name/status'
-	# Get dependencies for specific microservice, asyncrhonous call
-	post '/services/publish/:microservice' do
-		name =  params[:microservice]
-
-		#registerService(request.body.read)
-
-		#Thread.new do
-		#	ServiceConfigurationHelper.publishServices()
-		#end
-
-		return 200
-	end
-=end
 end

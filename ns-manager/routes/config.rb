@@ -17,7 +17,9 @@
 #
 # @see TnovaManager
 class ServiceConfiguration < TnovaManager
-    # /modules/services
+    # @method get_modules_services
+    # @overload get '/modules/services'
+    # Retrieve the microservices list
     get '/services' do
         begin
             return 200, Service.all.to_json
@@ -28,6 +30,9 @@ class ServiceConfiguration < TnovaManager
         end
     end
 
+    # @method get_modules_services_id
+    # @overload get '/modules/services:id'
+    # Retrieve a microservice given an id
     get '/services/:id' do |id|
         begin
             service = Service.find(id)
@@ -38,9 +43,12 @@ class ServiceConfiguration < TnovaManager
         service.to_json
     end
 
+    # @method get_modules_services_name
+    # @overload get '/modules/services/:name'
+    # Retrieve the token of a microservice given a name
     get '/services/name/:name' do |name|
         begin
-            service = Service.find_by(:name => name)
+            service = Service.find_by(name: name)
         rescue Mongoid::Errors::DocumentNotFound => e
             logger.error 'DC not found'
             return 404
@@ -48,6 +56,9 @@ class ServiceConfiguration < TnovaManager
         service['token']
     end
 
+    # @method get_modules_services_type
+    # @overload get '/modules/services/:type'
+    # Retrieve the microservices list by type
     get '/services/type/:type' do |type|
         begin
             services = Service.where(:type => type)
@@ -58,9 +69,13 @@ class ServiceConfiguration < TnovaManager
         services.to_json
     end
 
+    # @method post_modules_services
+    # @overload post '/modules/services'
+    # Register a new microservice
     post '/services' do
         return 415 unless request.content_type == 'application/json'
         serv_reg, errors = parse_json(request.body.read)
+        logger.info "POST SERVICE REQUEST -------------------------------------------------------------- " + serv_reg['name']
 
         @token = JWT.encode({ service_name: serv_reg['name'] }, serv_reg['secret'], 'HS256')
         serv = {
@@ -88,7 +103,7 @@ class ServiceConfiguration < TnovaManager
                 logger.debug "Checking if dependant Services of #{serv} is Up and Running...."
                 s = Service.where(name: serv).first
                 next if s.nil?
-                dependant_status = is_port_open?(s['host'], s['port'])
+                dependant_status = ServiceConfigurationHelper.is_port_open?(s['host'], s['port'])
                 if dependant_status == false
                     logger.debug "Service found but is down."
                     s.destroy
@@ -96,41 +111,22 @@ class ServiceConfiguration < TnovaManager
                     depends_on << { name: s['name'], host: s['host'], port: s['port'], token: s['token'], depends_on: s['depends_on'] }
                 end
             rescue Mongoid::Errors::DocumentNotFound => e
-                logger.error 'User not found.'
-                # halt 404
+                logger.error 'Service not found.'
             end
         end
 
-        logger.debug 'Find service that has this module as dependency:'
-        # Service
+        logger.debug 'Find services that have this module as dependency:'
         dependencies = Service.any_of(depends_on: serv[:name]).entries
         logger.debug dependencies
         if dependencies.any?
             dependencies.each do |dependency|
-                begin
-                    RestClient.post dependency['host'] + ':' + dependency['port'] + '/gk_dependencies', serv.to_json, :content_type => :json, 'X-Auth-Token' => dependency['token']
-                rescue => e
-                    # logger.error e
-                    puts e
-                    # halt 500, {'Content-Type' => 'text/plain'}, "Error sending dependencies to " +service['name']
-                end
+                ServiceConfigurationHelper.send_dependencies_to_module(dependency, serv)
             end
         end
 
-puts "Manager..."
-puts serv[:type]
         if serv[:type] == 'manager'
-            puts "Send to VNF MANAger..."
-            depends_on.each do |dep|
-                puts dep
-                begin
-                    RestClient.post serv[:host] + ':' + serv[:port].to_s + '/modules/services', dep.to_json, :content_type => :json, 'X-Auth-Token' => serv['token']
-                rescue => e
-                    # logger.error e
-                    puts e
-                    # halt 500, {'Content-Type' => 'text/plain'}, "Error sending dependencies to " +service['name']
-                end
-            end
+            logger.debug "Sending dependencies to VNF Manager..."
+            ServiceConfigurationHelper.send_dependencies_to_manager(serv, depends_on)
         end
         halt 201, { depends_on: depends_on }.to_json
     end
@@ -138,9 +134,12 @@ puts serv[:type]
     put '/services' do
     end
 
+    # @method delete_modules_services_name
+    # @overload delete '/modules/services/:name'
+    # Remove a microservice
     delete '/services/:name' do |name|
         begin
-           Service.find_by(:name => name).destroy
+           Service.find_by(name: name).destroy
        rescue Mongoid::Errors::DocumentNotFound => e
            halt 404
        end
