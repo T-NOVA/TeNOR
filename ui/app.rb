@@ -8,8 +8,6 @@ class App < Sinatra::Base
   configure do
     #set :root, File.dirname(__FILE__)
     set :public_folder, 'app'
-    set :admin_user_uid, 1
-    set :admin_user_passwd, "Eq7K8h9gpg"
   end
 
   configure :development do
@@ -33,7 +31,6 @@ class App < Sinatra::Base
   end
 
   get '/bower_components/*' do
-    puts "Bower"
     tpl = 'bower_components/' + params[:splat][0]
     File.read(File.join('bower_components', params[:splat][0]))
   end

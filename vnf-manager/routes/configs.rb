@@ -84,6 +84,7 @@ class ServiceConfiguration < VNFManager
         rescue Mongoid::Errors::DocumentNotFound => e
             Service.create!(serv)
         rescue => e
+            logger.error e
             logger.error 'Error saving service.'
             halt 404
         end

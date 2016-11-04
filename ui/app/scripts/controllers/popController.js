@@ -16,10 +16,14 @@ angular.module('tNovaApp')
         $scope.neutron_version = "v2.0"
 
         $scope.openstack_ip = "";
+        $scope.infr_repo_url = undefined
 
         tenorService.get("modules/services/type/infr_repo").then(function (data) {
             if (data === undefined) return;
-            $scope.infr_repo_url = data[0].host + ":" + data[0].port;
+            console.log(data);
+            if (data.length > 0){
+                $scope.infr_repo_url = data[0].host + ":" + data[0].port;
+            }
             $scope.refreshPoPList();
         });
 
@@ -34,6 +38,9 @@ angular.module('tNovaApp')
                     })
                 });*/
                 console.log($scope.registeredDcList);
+                if ($scope.infr_repo_url == undefined){
+                    return;
+                }
 
                 var url = 'pop/';
                 infrRepoService.get($scope.infr_repo_url, url).then(function (_data) {
