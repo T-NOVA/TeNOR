@@ -12,11 +12,6 @@ threaded: true
 logger_host: 127.0.0.1
 logger_port: 24224
 
-vnf_manager: http://localhost:4567
-hot_generator: http://localhost:4571
-mapi: http://admin:changeme@10.10.1.67:1234
-
-gk:
-service_key:
+mapi: 
 
 dependencies: [vnf_manager, mapi, hot_generator]

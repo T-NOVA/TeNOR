@@ -12,11 +12,4 @@ threaded: true
 logger_host: 127.0.0.1
 logger_port: 24224
 
-vnf_manager: http://10.10.1.61:4567
-vim_monitoring: http://10.10.1.62:8080
-ns_manager: http://10.10.1.61:4000
-
-gk:
-service_key:
-
 dependencies: [ns_manager, vim_monitoring, vnf_manager]

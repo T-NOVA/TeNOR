@@ -11,14 +11,3 @@ daemonize: false
 threaded: true
 logger_host: 127.0.0.1
 logger_port: 24224
-
-#ns_catalogue: http://localhost:4011
-#ns_provisioner: http://localhost:4012
-#ns_monitoring: http://localhost:4014
-#ns_sla_enforcment: http://localhost:4016
-
-gatekeeper: http://localhost:8000
-gk_token:
-gk_user: t-nova-admin
-gk_user_id: 1
-gk_pass: Eq7K8h9gpg
