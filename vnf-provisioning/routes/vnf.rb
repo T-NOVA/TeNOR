@@ -133,13 +133,16 @@ class Provisioning < VnfProvisioning
             end
             hot_generator_message['flavours'] = flavors
         end
+
         begin
             hot = parse_json(RestClient.post(settings.hot_generator + '/hot/' + vnf_flavour, hot_generator_message.to_json, content_type: :json, accept: :json))
         rescue Errno::ECONNREFUSED
             halt 500, 'HOT Generator unreachable'
         rescue => e
-            logger.error e.response
-            halt e.response.code, e.response.body
+            logger.error e
+            logger.error e.response if e.response
+            halt e.response.code, e.response.body if e.response
+            halt 500, e
         end
 
         logger.debug 'HEAT template generated'
@@ -148,13 +151,14 @@ class Provisioning < VnfProvisioning
         response = provision_vnf(vim_info, vnf['vnfd']['name'].delete(' ') + '_' + vnfr.id, hot)
         logger.debug 'Provision response: ' + response.to_json
 
+        # Update the VNFR
+        vnfr.push(lifecycle_event_history: 'CREATE_IN_PROGRESS')
+
+        # save the VNF information into the VNFR
         vdu = []
         vnf['vnfd']['vdu'].each do |v|
             vdu << { id: v['id'], alias: v['alias'] }
         end
-
-        # Update the VNFR
-        vnfr.push(lifecycle_event_history: 'CREATE_IN_PROGRESS')
 
         vlrs = []
         vnf['vnfd']['vlinks'].each do |vlink|
@@ -223,17 +227,9 @@ class Provisioning < VnfProvisioning
         callback_url = destroy_info['callback_url']
 
         # if the stack contains nested templates, remove nesed before
-        #         resources = getStackResources(vnfr.stack_url, auth_token)
-        #         resources.each do |resource|
-        #             next unless resource['resource_type'] == 'OS::Heat::AutoScalingGroup'
-        #             next unless resource['links'].find { |link| link['rel'] == 'nested' }
-        #             stack_url = resource['links'].find { |link| link['rel'] == 'nested' }['href']
-        #             response = delete_stack_with_wait(stack_url, auth_token)
-        #             logger.debug 'VIM response to destroy the AutoScalingGroup: ' + response.to_json
-        #         end
         vnfr['scale_resources'].each do |resource|
             stack_url = resource['stack_url']
-            logger.info 'Sending request to Openstack for Remove scaled resources'
+            logger.info 'Sending request to Openstack for Remove scaled resource'
             response, errors = delete_stack_with_wait(stack_url, vim_info['token'])
             vnfr.pull(scale_resources: resource)
             logger.info 'Removed scaled resources.'
@@ -288,7 +284,7 @@ class Provisioning < VnfProvisioning
         # Return if event doesn't have information
         halt 400, 'Event has no information' if vnfr.lifecycle_info['events'][config_info['event']].nil?
 
-        halt 200, 'mAPI not defined. No execution performed.' if settings.mapi.nil?
+        halt 400, 'mAPI not defined. No execution performed.' if settings.mapi.nil?
 
         # Build mAPI request
         mapi_request = {
@@ -396,38 +392,6 @@ class Provisioning < VnfProvisioning
                     private_key = output['output_value']
                 elsif output['output_key'] =~ /^.*#id$/i
                     vms_id[output['output_key'].match(/^(.*)#id$/i)[1]] = output['output_value']
-                #                 elsif output['output_key']  =~ /^.*#scale_in_url/i
-                #                     scale_resource = auto_scale_resources.find { |res| res[:vdu] == output['output_key'].match(/^(.*)#scale_in_url/i)[1] }
-                #                     if scale_resource.nil?
-                #                         auto_scale_resources << { vdu: output['output_key'].match(/^(.*)#scale_in_url/i)[1], scale_in: output['output_value'] }
-                #                     else
-                #                         scale_resource[:scale_in] = output['output_value']
-                #                     end
-                #                 elsif output['output_key']  =~ /^.*#scale_out_url/i
-                #                     scale_resource = auto_scale_resources.find { |res| res[:vdu] == output['output_key'].match(/^(.*)#scale_out_url/i)[1] }
-                #                     if scale_resource.nil?
-                #                         auto_scale_resources << { vdu: output['output_key'].match(/^(.*)#scale_out_url/i)[1], scale_out: output['output_value'] }
-                #                     else
-                #                         scale_resource[:scale_out] = output['output_value']
-                #                     end
-                #                 elsif output['output_key'] =~ /^.*#scale_group/i
-                #                     scale_resource = auto_scale_resources.find { |res| res[:vdu] == output['output_key'].match(/^(.*)#scale_group/i)[1] }
-                #                     if scale_resource.nil?
-                #                         auto_scale_resources << { vdu: output['output_key'].match(/^(.*)#scale_group/i)[1], id: output['output_value'] }
-                #                     else
-                #                         scale_resource[:id] = output['output_value']
-                #                     end
-                #                 elsif output['output_key'] =~ /^.*#vdus/i
-                #                     vms_id[output['output_key']] = output['output_value']
-                #                 elsif output['output_key'] =~ /^.*#networks/i
-                #                 # TODO
-                #                 # scale_resource = auto_scale_resources.find { |res| res[:vdu] == output['output_key'].match(/^(.*)#networks/i)[1] }
-                #                 # if scale_resource.nil?
-                #                 #  auto_scale_resources << {:vdu => output['output_key'].match(/^(.*)#scale_out_url/i)[1], :networks => output['output_value']}
-                #                 # else
-                #                 #  scale_resource[:networks] = output['output_value']
-                #                 # end
-                #                 # vnf_addresses[output['output_key']] = output['output_value']
                 else
 
                     if output['output_key'] =~ /^.*#PublicIp$/i
@@ -438,11 +402,11 @@ class Provisioning < VnfProvisioning
                     vnfr.lifecycle_info['events'].each do |event, event_info|
                         next if event_info.nil?
                         JSON.parse(event_info['template_file']).each do |id, parameter|
-                            logger.debug parameter
+                            #logger.debug parameter
                             parameter_match = parameter.delete(' ').match(/^get_attr\[(.*)\]$/i).to_a
                             string = parameter_match[1].split(',').map(&:strip)
                             key_string = string.join('#')
-                            logger.debug 'Key string: ' + key_string.to_s + '. Out_key: ' + output['output_key'].to_s
+                            #logger.debug 'Key string: ' + key_string.to_s + '. Out_key: ' + output['output_key'].to_s
                             if string[1] == 'PublicIp' # DEPRECATED: to be removed when all VNF developers uses the new form
                                 vnf_addresses[output['output_key']] = output['output_value']
                                 lifecycle_events_values[event] = {} unless lifecycle_events_values.key?(event)
