@@ -68,26 +68,6 @@ module PopHelper
         popUrls
     end
 
-    # Returns all the registered PoPs
-    #
-    # @return [Hash, nil] if the parsed message is a valid JSON
-    # @return [Hash, String] if the parsed message is an invalid JSON
-    def getPops
-        begin
-            response = RestClient.get "#{settings.manager}/gatekeeper/dc", content_type: :json
-        rescue => e
-            logger.error e
-            logger.error 'PoP no exists?'
-            return 400, 'no exists'
-        end
-        popInfo, errors = parse_json(response)
-        return 400, errors if errors
-
-        logger.error popInfo
-
-        popInfo
-    end
-
     # Returns an object with the properties of a PoP
     # @param [string] The extra information in string
     # @return [Hash] The PoP information in hash format

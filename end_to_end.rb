@@ -13,7 +13,7 @@ end
 @OPENSTACK_DNS = ENV['OPENSTACK_DNS']
 
 if @OPENSTACK_HOST.nil?
-  puts "Execute the environment script! (. ./end_to_end_env.sh)"
+  puts "Execute the environment script! (. ./env_end_to_end.sh)"
   exit
 end
 
@@ -41,7 +41,7 @@ def end_to_end_script()
   puts "Removing PoPs if exists...."
   pops_names = ["admin_v2", "admin_v3", "non_admin_v2", "non_admin_v3"]
   pops_names.each do |pop|
-    remove_pops_if_exists(pop)
+    #remove_pops_if_exists(pop)
   end
 
   puts "All PoPs are removed\n"
@@ -121,6 +121,7 @@ def end_to_end_script()
     puts errors if errors
     recover_state(errors) if errors
     @e2e[:instances] << {:id => ns_instance_id, :status => "INIT"}
+    break
 	end
 	pop = @e2e[:pops].find { |p| p[:name] == "admin_v2"}
   #ns_instance, errors = create_instance(pop[:id])
@@ -150,7 +151,7 @@ def end_to_end_script()
         if @e2e[:instances].find {|ins| ins[:status] != "INSTANTIATED"}
           next
         else
-          puts "All instantiated???"
+          puts "All instances are INSTANTIATED"
           counter = 30
           break
         end
@@ -164,7 +165,7 @@ def end_to_end_script()
 
   puts "All instances created correctly..."
 
-  puts "Removing..."
+  puts "Start removing of instances..."
 
   @e2e[:instances].each do |instances|
 		delete_instance(instances[:id])
@@ -300,8 +301,6 @@ def delete_descriptors()
 	end
 puts "Remving VNFD...."
 	if !@e2e[:vnfd_id].nil?
-    puts @e2e[:vnfd_id].to_s
-    puts "#{@tenor}/vnfs/" + @e2e[:vnfd_id].to_s
 		begin
 			response = RestClient.delete "#{@tenor}/vnfs/" + @e2e[:vnfd_id].to_s
 		rescue => e
