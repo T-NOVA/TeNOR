@@ -72,11 +72,8 @@ module HotHelper
             return 500, error
         rescue RestClient::ExceptionWithResponse => e
             logger.error e
-            logger.error e.response.body
-            return e.response.code, e.response.body
-        rescue RestClient::ExceptionWithResponse => e
-            # logger.error e
             logger.error e.response
+            logger.error e.response.body if e.response
             error = { 'info' => 'Error creating the network stack.' }
             return 500, error
         end

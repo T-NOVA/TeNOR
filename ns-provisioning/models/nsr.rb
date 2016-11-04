@@ -52,5 +52,6 @@ class Nsr
   field :mapping_time, type: Time
   field :instantiation_start_time, type: Time
   field :instantiation_end_time, type: Time
+  field :authentication, type: Array
 
 end

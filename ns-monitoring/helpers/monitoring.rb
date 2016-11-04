@@ -133,7 +133,7 @@ module MonitoringHelper
     def self.startSubcription
         logger.info 'Getting list of instances...'
         begin
-            response = RestClient.get Sinatra::Application.settings.ns_provisioner + '/ns-instances', content_type: :json
+            response = RestClient.get Sinatra::Application.settings.manager + '/ns-instances', content_type: :json
             @ns_instances = JSON.parse(response)
 
             logger.info 'Creating a monitoring thread for each instance...'

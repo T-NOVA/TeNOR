@@ -81,7 +81,8 @@ class Provisioner < NsProvisioning
             notification: instantiation_info['callback_url'],
             lifecycle_event_history: ['INIT'],
             audit_log: [],
-            marketplace_callback: instantiation_info['callback_url']
+            marketplace_callback: instantiation_info['callback_url'],
+            authentication: []
         }
 
         @instance = Nsr.new(instance)
@@ -140,13 +141,16 @@ class Provisioner < NsProvisioning
                     logger.info 'Pop_id: ' + vnf['pop_id'].to_s
                     raise 'VNF not defined' if vnf['pop_id'].nil?
 
-                    popInfo, errors = getPopInfo(vnf['pop_id'])
+                    pop_info, errors = getPopInfo(vnf['pop_id'])
+                    logger.errors if errors
                     raise 400, errors if errors
 
-                    if popInfo == 400
+                    if pop_info == 400
                         logger.error 'Pop id no exists.'
                         return
                     end
+
+                    logger.error @nsInstance['authentication']
 
                     pop_auth = @nsInstance['authentication'].find { |pop| pop['pop_id'] == vnf['pop_id'] }
                     popUrls = pop_auth['urls']

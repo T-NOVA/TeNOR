@@ -22,17 +22,20 @@ module MappingHelper
     # @param [JSON] Microservice information
     # @return [Hash, nil] if the parsed message is a valid JSON
     # @return [Hash, String] if the parsed message is an invalid JSON
-    def callMapping(ms, _nsd)
+    def callMapping(mapping_host, ms, _nsd)
         begin
-          response = RestClient.post settings.mapping + '/mapper', ms.to_json, content_type: :json
-      rescue => e
-          logger.error e
-          if defined?(e.response).nil?
-              # halt 400, "NS-Mapping unavailable"
-          end
-          return 500, 'Service Mapping error.'
-          # halt e.response.code, e.response.body
-      end
+            response = RestClient.post mapping_host, ms.to_json, content_type: :json
+            # response = RestClient.post settings.mapping + '/mapper', ms.to_json, content_type: :json
+        rescue => e
+            logger.error e
+            if defined?(e.response).nil?
+                # halt 400, "NS-Mapping unavailable"
+            end
+            logger.error e.response
+            return 500, 'Service Mapping error.'
+            # halt e.response.code, e.response.body
+        end
+        logger.info response
 
         mapping, errors = parse_json(response.body)
         return 400, errors if errors
@@ -50,14 +53,27 @@ module MappingHelper
         mapping = {
             'created_at' => 'Thu Nov  5 10:13:25 2015',
             'links_mapping' =>
-                [
-                    {
-                        'vld_id' => 'vld1',
-                        'maps_to_link' => '/pop/link/85b0bc34-dff0-4399-8435-4fb2ed65790a'
-                    }
-                ],
+            [
+                {
+                    'vld_id' => 'vld1',
+                    'maps_to_link' => '/pop/link/85b0bc34-dff0-4399-8435-4fb2ed65790a'
+                }
+            ],
             'vnf_mapping' => vnf_mapping
         }
+        mapping
+    end
+
+    def replace_pop_name_by_pop_id(mapping, pops)
+        mapping['vnf_mapping'].each do |m|
+            found_pops = pops.find{ |q| q['name'] ==  m['maps_to_PoP'].split("/pop/")[1] }
+            puts found_pops
+            if found_pops.nil?
+                return 400, "The PoP from Mapping cannot be matched to a PoP in TeNOR."
+            else
+                m['maps_to_PoP'] = "/pop/" + pops.find{ |q| q['name'] ==  m['maps_to_PoP'].split("/pop/")[1] }['id'].to_s
+            end
+        end
         mapping
     end
 end
