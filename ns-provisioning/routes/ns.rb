@@ -150,8 +150,6 @@ class Provisioner < NsProvisioning
                         return
                     end
 
-                    logger.error @nsInstance['authentication']
-
                     pop_auth = @nsInstance['authentication'].find { |pop| pop['pop_id'] == vnf['pop_id'] }
                     popUrls = pop_auth['urls']
                     callback_url = settings.manager + '/ns-instances/' + @instance['id']
