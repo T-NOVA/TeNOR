@@ -29,22 +29,40 @@ module HotHelper
         return
     end
 
-    def getStackResources(stack_url, auth_token)
+    def getStackResources(stack_url, token)
         begin
-            response = RestClient.get stack_url + '/resources', 'X-Auth-Token' => auth_token
+            response = RestClient.get stack_url + '/resources', 'X-Auth-Token' => token
         rescue Errno::ECONNREFUSED
             error = { 'info' => 'VIM unrechable.' }
             return
         rescue => e
             logger.error e
             logger.error e.response
-            error = { 'info' => 'Error creating the network stack.' }
+            error = { 'info' => 'Error getting stack resources.' }
             return
         end
         resources, errors = parse_json(response)
         return 400, errors if errors
 
         resources['resources']
+    end
+
+    def getStackEvents(stack_url, token)
+        begin
+              response = RestClient.get stack_url + '/events', 'X-Auth-Token' => token
+          rescue Errno::ECONNREFUSED
+              error = { 'info' => 'VIM unrechable.' }
+              return
+          rescue => e
+              logger.error e
+              logger.error e.response
+              error = { 'info' => 'Error getting stack events.' }
+              return
+          end
+        events, errors = JSON.parse(response)
+        return 400, errors if errors
+
+        events['events']
     end
 
     def delete_stack_with_wait(stack_url, auth_token)

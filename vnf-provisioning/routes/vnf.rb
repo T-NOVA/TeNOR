@@ -96,7 +96,8 @@ class Provisioning < VnfProvisioning
                 lifecycle_info: vnf['vnfd']['vnf_lifecycle_events'].find { |lifecycle| lifecycle['flavor_id_ref'].casecmp(vnf_flavour.downcase).zero? },
                 lifecycle_events_values: nil,
                 security_group_id: instantiation_info['security_group_id'],
-                public_network_id: instantiation_info['reserved_resources']['public_network_id']
+                public_network_id: instantiation_info['reserved_resources']['public_network_id'],
+                resource_stats: []
             )
         rescue Moped::Errors::OperationFailure => e
             return 400, 'ERROR: Duplicated VNF ID' if e.message.include? 'E11000'
@@ -477,6 +478,14 @@ class Provisioning < VnfProvisioning
             vnfr.vms_id.each { |_key, value| vnfi_id << value }
             message = { vnfd_id: vnfr.vnfd_reference, vnfi_id: vnfi_id, vnfr_id: vnfr.id, vnf_addresses: vnf_addresses, stack_resources: vnfr }
             nsmanager_callback(stack_info['ns_manager_callback'], message)
+
+            Thread.new{
+                resource_stats = []
+                events, errors = getStackEvents(vnfr.stack_url, auth_token)
+                resource_stats = calculate_event_time(resources, events)
+                vnfr.update_attributes!(resource_stats: resource_stats)
+
+            }
         else
             # If the stack has failed to create
             if params[:status] == 'create_failed'

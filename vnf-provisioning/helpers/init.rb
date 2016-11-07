@@ -15,6 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+require_relative 'utils'
 require_relative 'vnf'
 require_relative 'mapi'
 require_relative 'hot'

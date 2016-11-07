@@ -54,4 +54,5 @@ class Vnfr
 	field :vdu, type: Array
 	field :security_group_id, type: String
 	field :public_network_id, type: String
+	field :resource_stats, type: Array
 end
