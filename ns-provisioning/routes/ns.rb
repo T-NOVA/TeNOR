@@ -131,6 +131,8 @@ class Provisioner < NsProvisioning
             halt 404
         end
 
+        @nsInstance.update_attribute('status', 'DELETING')
+
         if params[:status] === 'terminate'
             logger.info 'Starting thread for removing VNF and NS instances.'
             Thread.abort_on_exception = false

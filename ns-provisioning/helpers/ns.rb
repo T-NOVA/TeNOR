@@ -216,6 +216,7 @@ module NsProvisioner
         @instance['vnfrs'] = []
         #@instance['authentication'] = []
 
+        @instance.update_attribute('status', 'CREATING AUTHENTICATIONS')
         # if mapping of all VNFs are in the same PoP. Create Authentication and network 1 time
         mapping['vnf_mapping'].each do |vnf|
             logger.info 'Start authentication process of ' + vnf.to_s
@@ -235,6 +236,8 @@ module NsProvisioner
         logger.info 'Authentication generated'
 
         # check if @instance['authentication'] has the credentials for each PoP in mapping['vnf_mapping'] ? compare sizes?
+
+        @instance.update_attribute('status', 'CREATING NETWORKS')
 
         # generate networks in each PoP?
         if @instance['authentication'].size > 1
