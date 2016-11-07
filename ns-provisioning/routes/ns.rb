@@ -346,6 +346,18 @@ class Provisioner < NsProvisioning
             end
         end
 
+        if @instance['resource_reservation'].find { |resource| resource.has_key?('wicm_stack')}
+            logger.info 'Starting traffic redirection in the WICM'
+            Thread.new do
+                begin
+                    response = RestClient.put settings.wicm + '/vnf-connectivity/' + nsr_id, '', content_type: :json, accept: :json
+                rescue => e
+                    logger.error e
+                end
+                logger.info response
+            end
+        end
+
         logger.info 'Starting monitoring workflow...'
         Thread.new do
             sleep(5)

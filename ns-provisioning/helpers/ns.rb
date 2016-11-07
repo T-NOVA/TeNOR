@@ -286,7 +286,7 @@ module NsProvisioner
                 return handleError(@instance, errors) if errors
 
                 resource_reservation = @instance['resource_reservation']
-                resource_reservation << { wicm_stack: stack, pop_id: pop_auth['pop_id'] }
+                resource_reservation << { wicm_stack: stack, pop_id: pop_auth['pop_id']  }
                 @instance.update_attribute('resource_reservation', resource_reservation)
             end
         end
