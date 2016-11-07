@@ -48,11 +48,11 @@
                             <td>{{row.vendor}}</td>
                             <td>{{row.version}}</td>
                             <td>{{row.status}}
-                                <td>{{row.created_at| date:'yyyy-MM-dd HH:mm:ss'}}</td>
-                                <span ng-if="row.status === 'instantiated'">Instantiated</span>
-                                <span ng-if="row.status === 1">Tear-up</span>
-                                <span ng-if="row.status === 2">In progress</span>
-                                <span ng-if="row.status === 3">Terminated</span></td>
+                                <div class="progress progress_sm">
+                                  <div class="progress-bar progress-bar-striped" ng-class="{active: row.status!='INSTANTIATED'}" role="progressbar" data-transitiongoal="{{row.status | progress}}" style="width: {{row.status | progress}}%;" aria-valuenow="56"></div>
+                                </div>
+                            </td>
+                            <td>{{row.created_at| date:'yyyy-MM-dd HH:mm:ss'}}</td>
                             <td>
                                 <button ng-click="go('/nsMonitoring/' + row.id)" class="btn btn-success btn-xs" ng-disabled="row.status !== 'INSTANTIATED' && row.status !== 'START'">Monitoring</button>
                                 <button ng-click="scale_out(row.id)" class="btn btn-warning btn-xs" ng-enabled="row.status === 'INSTANTIATED'">Scale out</button>
