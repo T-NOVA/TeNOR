@@ -17,13 +17,14 @@
             </div>
             <div class="col-md-12 col-xs-12">
                 <div class="modal-body">
-                    <div modalscroll style="overflow-y: scroll;">
-                        <pre class="beautify" ng-bind-html="descriptor | prettify"></pre>
+                    <div style="overflow-y: scroll;">
+                        <!--pre class="beautify" ng-bind-html="descriptor | prettify"></pre-->
+                        <pre modalscroll ng-jsoneditor ng-model="obj.data" options="obj.options"></pre>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button ng-click="uploadFile(descriptor)" type="submit" class="btn btn-primary">Submit</button>
+                <button ng-click="uploadFile(obj.data)" type="submit" class="btn btn-primary">Submit</button>
             </div>
         </div>
     </div>
