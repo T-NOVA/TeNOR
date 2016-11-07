@@ -75,7 +75,6 @@ class ServiceConfiguration < TnovaManager
     post '/services' do
         return 415 unless request.content_type == 'application/json'
         serv_reg, errors = parse_json(request.body.read)
-        logger.info "POST SERVICE REQUEST -------------------------------------------------------------- " + serv_reg['name']
 
         @token = JWT.encode({ service_name: serv_reg['name'] }, serv_reg['secret'], 'HS256')
         serv = {
@@ -87,7 +86,7 @@ class ServiceConfiguration < TnovaManager
             depends_on: serv_reg['depends_on'],
             type: serv_reg['type']
         }
-        logger.debug serv
+        logger.debug 'Registring a new service: ' + serv_reg['name']
         begin
             s = Service.find_by(name: serv_reg['name'])
             s.update_attributes!(host: serv_reg['host'], port: serv_reg['port'], token: @token, depends_on: serv_reg['depends_on'], type: serv_reg['type'])
@@ -147,79 +146,4 @@ class ServiceConfiguration < TnovaManager
         halt 200
     end
 
-    # DEPRECATED..............
-
-    # @method post_configs_registerService
-    # @overload post '/configs/registerService'
-    # Register a microservice
-    post '/registerService' do
-        return registerService(request.body.read)
-    end
-
-    # @method post_configs_registerExternalService
-    # @overload post '/configs/registerExternalService'
-    # Register a external service
-    post '/registerExternalService' do
-        return registerExternalService(request.body.read)
-    end
-
-    # @method post_configs_unRegisterService
-    # @overload post '/configs/unRegisterService/:service_id'
-    # Unregister a service
-    post '/unRegisterService/:microservice' do
-        logger.info('Unregister service ' + params['microservice'])
-        unregisterService(params['microservice'])
-        logger.info('Service ' + @json['name'] + ' unregistred correctly')
-    end
-
-    # @method delete_configs_services
-    # @overload delete '/configs/services/:microservice'
-    # Delete a registered service
-    delete '/services/:microservice' do
-        ServiceModel.find_by(name: params['microservice']).delete
-    end
-
-    # @method get_configs_services
-    # @overload get '/configs/services'
-    # Get all available services
-    get '/services' do
-        if params['name']
-            return ServiceModel.find_by(name: params['name']).to_json
-        else
-            return ServiceModel.all.to_json
-        end
-    end
-
-    # @method put_configs_services
-    # @overload put '/configs/services'
-    # Update service information
-    put '/services' do
-        updateService(request.body.read)
-        return 'Correct update.'
-    end
-
-    # @method put_configs_services
-    # @overload put '/configs/services/:name/status'
-    # Update service status
-    put '/services/:name/status' do
-        @service = ServiceModel.find_by(name: params['name'])
-        @service.update_attribute(:status, request.body.read)
-        return 'Correct update.'
-    end
-
-    # @method get_configs_services_publish_microservice
-    # @overload get '/configs/services/:name/status'
-    # Get dependencies for specific microservice, asyncrhonous call
-    post '/services/publish/:microservice' do
-        name = params[:microservice]
-
-        registerService(request.body.read)
-
-        Thread.new do
-            logger.debug 'Publishing `' + name + '` to other services services...'
-            ServiceConfigurationHelper.publishServices
-        end
-
-        return 200
-    end
 end

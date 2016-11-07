@@ -90,7 +90,6 @@ RSpec.describe TnovaManager do
 		context 'given a valid token' do
 			let(:response) { post '/validation', {token: token.token}.to_json, rack_env={'CONTENT_TYPE' => 'application/json'} }
 			it 'responds with a 200' do
-				puts token.token
 				expect(response.status).to eq 200
       end
 		end
@@ -140,7 +139,6 @@ RSpec.describe TnovaManager do
 			let(:response) { put '/invalid_id/update_password', {name: 'teste'}.to_json, rack_env={'CONTENT_TYPE' => 'application/x-www-form-urlencoded'} }
 
 			it 'responds with a 415' do
-				puts user.id
 				expect(response.status).to eq 415
 			end
 
@@ -165,12 +163,10 @@ RSpec.describe TnovaManager do
 			let(:response) { put '/' + user.id.to_s + '/update_password', {old_password: "secret2", password: "secret2", re_password: "secret2"}.to_json, rack_env={'CONTENT_TYPE' => 'application/json'} }
 
 			it 'responds with a 404' do
-				puts user.id
 				expect(response.status).to eq 404
       end
 
 			it 'response body should contain a String' do
-				puts user.id
 				expect(response.body).to be_a String
 			end
 		end
@@ -179,7 +175,6 @@ RSpec.describe TnovaManager do
 			let(:response) { put '/' + user.id.to_s + '/update_password', {old_password: "secret", password: "secret2", re_password: "secret3"}.to_json, rack_env={'CONTENT_TYPE' => 'application/json'} }
 
 			it 'responds with a 404' do
-				puts user.id
 				expect(response.status).to eq 404
       end
 
@@ -192,9 +187,6 @@ RSpec.describe TnovaManager do
 			let(:response) { put '/' + user.id.to_s + '/update_password', {old_password: "secret", password: "secret2", re_password: "secret2"}.to_json, rack_env={'CONTENT_TYPE' => 'application/json'} }
 
 			it 'responds with a 200' do
-
-					puts user.name
-					puts user.password
 				expect(response.status).to eq 200
       end
 

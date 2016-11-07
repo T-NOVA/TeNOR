@@ -100,7 +100,20 @@ class DcController < TnovaManager
         halt 201, { id: dc._id }.to_json
     end
 
-    put '/services' do
+    put '/dc/:id' do |id|
+        return 415 unless request.content_type == 'application/json'
+        pop_info, errors = parse_json(request.body.read)
+
+        begin
+            dc = Dc.find(id.to_i)
+        rescue Mongoid::Errors::DocumentNotFound => e
+            logger.error 'DC not found'
+            return 404
+        end
+
+        dc.update_attributes(pop_info)
+
+        halt 200
     end
 
     # @method delete_pops_dc_id
