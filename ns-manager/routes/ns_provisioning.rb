@@ -49,8 +49,7 @@ class NsProvisioner < TnovaManager
     pop_list = []
     mapping_info = {}
     if instantiation_info['pop_id'].nil?
-      pop_list, errors = JSON.parse(getDcs())
-      halt 400, "Error getting DC list." if errors
+      pop_list = JSON.parse(getDcs())
       if pop_list.empty?
         halt 400, "No PoPs registereds."
       end
