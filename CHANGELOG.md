@@ -1,3 +1,12 @@
+## 0.9.0
+- Refactor. Removed unused files and functions.
+- Hide credentials from logs.
+- Implemented missing WICM calls.
+- UI VNFD JSON editor.
+- UI included progress bar in instance status
+- Calculation of creation time of each resource in a stack. Saved in the VNFR.
+- Updated Dockerfile and Vagrant according last updates.
+
 ## 0.8.0
 - Changed authentication method. No external entity is required for authentication.
 - Authentication between modules enabled when environment is production using JWT.
