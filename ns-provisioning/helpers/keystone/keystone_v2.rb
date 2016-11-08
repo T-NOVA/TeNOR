@@ -56,7 +56,7 @@ module Authenticationv2Helper
             if pop_auth['tenant_id'].nil? || pop_auth['user_id'].nil?
                 error = 'Tenant or user not created.'
                 logger.error error
-                @instance.push(audit_log: errors) if errors
+                @instance.push(audit_log: error)
                 @instance.update_attribute('status', 'ERROR_CREATING')
                 return 400, error.to_json
             end

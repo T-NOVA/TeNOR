@@ -32,6 +32,7 @@ module InstantiationHelper
 
         pop_auth = {}
         pop_auth['pop_id'] = pop_info['id'].to_s
+        pop_auth['is_admin'] = pop_info['is_admin']
         extra_info = pop_info['extra_info']
         popUrls = getPopUrls(extra_info)
         pop_auth['urls'] = popUrls
@@ -162,7 +163,7 @@ module InstantiationHelper
                 end
             end
             logger.error 'Handle error.'
-            return 400, 'Error with the VNF'
+            return 400, 'Error with the VNF: ' + e.response
         end
 
         vnf_manager_response, errors = parse_json(response)
