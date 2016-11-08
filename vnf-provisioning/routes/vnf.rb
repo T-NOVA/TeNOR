@@ -256,7 +256,7 @@ class Provisioning < VnfProvisioning
 
         logger.info 'Removing the VNFR from the database...'
         vnfr.destroy
-        halt 200, response.body
+        halt 200 # , response.body
     end
 
     # @method post_vnf_provisioning_instances_id_config
@@ -329,7 +329,8 @@ class Provisioning < VnfProvisioning
             vms = []
             vms_id = {}
             # get stack resources
-            resources = getStackResources(vnfr.stack_url, auth_token)
+            resources, errors = getStackResources(vnfr.stack_url, auth_token)
+            logger.error errors if errors
             resources.each do |resource|
                 # map ports to openstack_port_id
                 unless vnfr.port_instances.detect { |port| resource['resource_name'] == port['id'] }.nil?
@@ -403,11 +404,11 @@ class Provisioning < VnfProvisioning
                     vnfr.lifecycle_info['events'].each do |event, event_info|
                         next if event_info.nil?
                         JSON.parse(event_info['template_file']).each do |id, parameter|
-                            #logger.debug parameter
+                            # logger.debug parameter
                             parameter_match = parameter.delete(' ').match(/^get_attr\[(.*)\]$/i).to_a
                             string = parameter_match[1].split(',').map(&:strip)
                             key_string = string.join('#')
-                            #logger.debug 'Key string: ' + key_string.to_s + '. Out_key: ' + output['output_key'].to_s
+                            # logger.debug 'Key string: ' + key_string.to_s + '. Out_key: ' + output['output_key'].to_s
                             if string[1] == 'PublicIp' # DEPRECATED: to be removed when all VNF developers uses the new form
                                 vnf_addresses[output['output_key']] = output['output_value']
                                 lifecycle_events_values[event] = {} unless lifecycle_events_values.key?(event)
@@ -479,13 +480,12 @@ class Provisioning < VnfProvisioning
             message = { vnfd_id: vnfr.vnfd_reference, vnfi_id: vnfi_id, vnfr_id: vnfr.id, vnf_addresses: vnf_addresses, stack_resources: vnfr }
             nsmanager_callback(stack_info['ns_manager_callback'], message)
 
-            Thread.new{
+            Thread.new do
                 resource_stats = []
                 events, errors = getStackEvents(vnfr.stack_url, auth_token)
                 resource_stats = calculate_event_time(resources, events)
                 vnfr.update_attributes!(resource_stats: resource_stats)
-
-            }
+            end
         else
             # If the stack has failed to create
             if params[:status] == 'create_failed'

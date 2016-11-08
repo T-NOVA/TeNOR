@@ -58,20 +58,17 @@ module UtilsHelper
     end
 
     def calculate_event_time(resources, events)
+        events.each { |a| puts a }
         resource_stats = []
-    	resources.each do |resource|
-    		if resource['resource_status'] == "CREATE_COMPLETE"
-                puts role['logical_resource_id'].to_s
-                puts resource['logical_resource_id'].to_s
-    			events_resource = events.find_all{ |role| role['logical_resource_id'].to_s == resource['logical_resource_id'].to_s }
-    			event = events_resource.find{ |role| role['resource_status'] == "CREATE_COMPLETE" }
-    			if !event.nil?
-    				creation_time = DateTime.parse(resource['creation_time']).to_time.to_i
-    				final_time = DateTime.parse(event['event_time']).to_time.to_i
-                    resource_stats << { id: event['logical_resource_id'], type: resource['resource_type'], time: (final_time - creation_time ).to_s }
-    			end
-    		end
-    	end
+        resources.each do |resource|
+            next unless resource['resource_status'] == 'CREATE_COMPLETE'
+            events_resource = events.find_all { |role| role['logical_resource_id'].to_s == resource['logical_resource_id'].to_s }
+            event = events_resource.find { |role| role['resource_status'] == 'CREATE_COMPLETE' }
+            next if event.nil?
+            creation_time = DateTime.parse(resource['creation_time']).to_time.to_i
+            final_time = DateTime.parse(event['event_time']).to_time.to_i
+            resource_stats << { id: event['logical_resource_id'], type: resource['resource_type'], time: (final_time - creation_time).to_s }
+        end
+        resource_stats
     end
-
 end
