@@ -323,3 +323,4 @@ angular.module('tNovaApp', ['ui.router', 'ngSanitize', 'tNovaApp.config', 'tNova
 var services = angular.module('tNovaApp.services', ['ngResource']);
 var graph;
 var defaultTimer = 50000; //2000
+var defaultTimer2 = 5000; //2000

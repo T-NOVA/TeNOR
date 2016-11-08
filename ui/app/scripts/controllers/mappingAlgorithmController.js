@@ -66,7 +66,6 @@ angular.module('tNovaApp')
         $loading.start('scatter');
         tenorService.get("statistics/performance_stats").then(function (data) {
             instances = data;
-            console.log(instances.length);
             var d;
             var k = 0;
             for (var i = 0; i <= instances.length - 1; i++) {
@@ -85,51 +84,9 @@ angular.module('tNovaApp')
 
                     $scope.data.items.add({
                         x: Math.floor(d.created_at),
-                        y: Math.floor(d.instantiation),
+                        y: Math.floor(d.instantiation/1000),
                         group: 0
                     });
-
-                    //get date -> day
-                    //console.log(Math.floor(d.created_at));
-                    /*
-                    var time = new Date(Math.floor(d.created_at));
-                    var q = $scope.monitoringData.filter(function (a) {
-                        return (a.x.getFullYear() == time.getFullYear() && a.x.getMonth() == time.getMonth() && a.x.getDate() == time.getDate());
-                    });
-                    //console.log(q.length);
-                    if (q.length < 1) {
-                        console.log(time.getDate());
-                        $scope.monitoringData.push({
-                            x: new Date(time.getFullYear(), time.getMonth(), time.getDate(), "12", "00", "00"),
-                            y: 1,
-                            group: 0
-                        });
-                        $scope.monitoringData.push({
-                            x: new Date(time.getFullYear(), time.getMonth(), time.getDate(), "12", "00", "00"),
-                            y: 1,
-                            group: 1
-                        });
-                        $scope.monitoringData.push({
-                            x: new Date(time.getFullYear(), time.getMonth(), time.getDate(), "12", "00", "00"),
-                            y: 1,
-                            group: 2
-                        });
-                    } else {
-                        //console.log(q);
-                        q[0].y = q[0].y + 1;
-                        q[1].y = q[1].y + 1;
-                        q[2].y = q[2].y + 1;
-                    }
-*/
-
-                    //if day = day +1 -> push
-
-                    /*$scope.monitoringData.push({
-                        x: new Date("2015", "01", "11", "14", "50", "55"),
-                        y: 14,
-                        group: 0
-                    });*/
-
                 }
 
                 if (i === instances.length - 1) {

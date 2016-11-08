@@ -22,8 +22,10 @@ angular.module('tNovaApp')
                         var dt = new Date(o.created_at);
                         return -dt;
                     });
-                    page++;
-                    $scope.getServiceList(page);
+                    if(data.length == page_num){
+                        page++;
+                        $scope.getServiceList(page);
+                    }
                 }
             });
         };
@@ -209,8 +211,7 @@ angular.module('tNovaApp')
         $scope.updateInstanceList();
         var promise = $interval(function () {
             $scope.updateInstanceList();
-            //        }, defaultTimer);
-        }, 120000);
+        }, defaultTimer2);
 
         $scope.stop = function (id) { //change status in the repo
             tenorService.put("ns-instances/" + id + '/stop', '').then(function (data) {});
