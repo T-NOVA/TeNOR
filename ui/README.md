@@ -17,7 +17,7 @@ Copy the sample config file:
 Run `cp app/config.js.sample app/config.js`
 And edit the config.js with the correct IPs.
 
-The UI uses the Gatekeeper Authentication. By default the UI has preconfigured the default user and password of Gatekeeper. If the admin password is different, please update the file app.rb.
+The UI uses the TeNOR Authentication. By default the UI has preconfigured the default user and password.
 
 3. Execute the UI
 Run `rake start` and the server will listen on port 9000 by default.

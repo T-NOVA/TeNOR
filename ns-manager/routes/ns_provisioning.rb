@@ -45,16 +45,32 @@ class NsProvisioner < TnovaManager
     end
 
     logger.info "INSTANTIATION INFO: " + instantiation_info.to_s
+
     pop_list = []
+    mapping_info = {}
     if instantiation_info['pop_id'].nil?
       pop_list = JSON.parse(getDcs())
       if pop_list.empty?
         halt 400, "No PoPs registereds."
       end
+      if !instantiation_info['mapping_id'].nil?
+        #using the Mapping algorithm specified in the instantiation request
+        mapping = ServiceConfigurationHelper.get_module_by_id(instantiation_info['mapping_id'])
+        mapping_info = mapping.host + ":" + mapping.port.to_s + mapping.path
+      elsif pop_list.size > 1
+        #using the first mapping algorithm
+        mapping, errors = ServiceConfigurationHelper.get_module_by_type('mapping')
+        mapping_info = mapping.host + ":" + mapping.port.to_s + mapping.path
+      else
+        #deploy to the unic PoP
+      end
     else
-      pop_list = []
+      #deploying the Instance into the requested PoP
       pop_list << JSON.parse(getDc(instantiation_info['pop_id']))
     end
+
+    infr_repo_url, errors = ServiceConfigurationHelper.get_module_by_type('infr_repo')
+    infr_repo_url = nil if errors
 
     provisioning = {
         :nsd => JSON.parse(nsd),
@@ -63,9 +79,8 @@ class NsProvisioner < TnovaManager
         :callback_url => instantiation_info['callbackUrl'],
         :flavour => instantiation_info['flavour'],
         :pop_list => pop_list,
-        #:pop_id => instantiation_info['pop_id'],
-        #:pop_info => pop_info,
-        :mapping_id => instantiation_info['mapping_id']
+        :mapping => mapping_info,
+        :infr_repo_url => infr_repo_url
       }
     begin
       response = RestClient.post provisioner.host + request.fullpath, provisioning.to_json, 'X-Auth-Token' => provisioner.token, :content_type => :json

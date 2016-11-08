@@ -3,26 +3,39 @@
 angular.module('tNovaApp')
     .controller('nsController', function ($scope, $stateParams, $filter, tenorService, $interval, $modal, $location, AuthService, $window, $alert) {
 
-        $scope.registeredDcList = [];
-        $scope.serviceMapping = [{
-            id: 0,
-            name: "UniMi"
-        }];
         $scope.descriptor = {};
-        var page = 0;
+        $scope.descriptor_options = { mode: 'code' };
+        $scope.obj = {data: {}, options: { mode: 'code' }};
 
-        $scope.getServiceList = function () {
-            tenorService.get('network-services?limit=1000').then(function (data) {
-                $scope.dataCollection = _.sortBy(data, function (o) {
-                    var dt = new Date(o.created_at);
-                    return -dt;
-                });
+        $scope.registeredDcList = [];
+        tenorService.get("modules/services/type/mapping").then(function (data) {
+            if (data === undefined) return;
+            $scope.serviceMapping = data;
+        });
+        var page_num = 20;
+        var page = 1;
+        $scope.dataCollection = [];
+        $scope.getServiceList = function (page) {
+            tenorService.get('network-services?offset=' + page + '&limit=' + page_num).then(function (data) {
+                if (data.length > 0) {
+                    $scope.dataCollection = _.sortBy($scope.dataCollection.concat(data), function (o) {
+                        var dt = new Date(o.created_at);
+                        return -dt;
+                    });
+                    page++;
+                    $scope.getServiceList(page);
+                }
             });
         };
 
-        $scope.getServiceList();
+        $scope.restartServiceList = function (page) {
+            $scope.dataCollection = [];
+            $scope.getServiceList(page);
+        };
+
+        $scope.getServiceList(page);
         var promise = $interval(function () {
-            $scope.getServiceList();
+            $scope.restartServiceList(page);
         }, defaultTimer);
 
         $scope.deleteDialog = function (id) {
@@ -36,7 +49,7 @@ angular.module('tNovaApp')
         };
         $scope.deleteItem = function (id) {
             tenorService.delete('network-services/' + id).then(function (data) {
-                $scope.getServiceList();
+                $scope.restartServiceList(1);
             });
             this.$hide();
         };
@@ -62,6 +75,7 @@ angular.module('tNovaApp')
             $scope.getPoPs();
             $scope.nsd = nsd;
             $scope.object = {};
+            $scope.object.vnfds = nsd.vnfds;
             $scope.object.ns_id = nsd.id;
             $scope.object.callbackUrl = "https://httpbin.org/post";
             $scope.object.pop_id = null;
@@ -150,12 +164,13 @@ angular.module('tNovaApp')
         $scope.uploadFile = function(files){
             var fd = new FormData();
             //Take the first selected file
-            fd.append('file', files[0]);
-            var obj = JSON.parse(files);
+            //fd.append('file', files[0]);
+            //var obj = JSON.parse(files);
+            var obj = files;
             console.log(obj);
             tenorService.post('network-services', obj).then(function (data) {
                 console.log(data);
-                $scope.getServiceList(page);
+                $scope.restartServiceList(1);
             });
             this.$hide();
         }
@@ -165,7 +180,8 @@ angular.module('tNovaApp')
             var reader = new FileReader();
             reader.onload = function () { //event waits the file content
                 $scope.$apply(function () {
-                    $scope.descriptor = JSON.stringify(JSON.parse(reader.result), undefined, 4); //JSON.parse(reader.result);
+                    //$scope.descriptor = JSON.stringify(JSON.parse(reader.result), undefined, 4); //JSON.parse(reader.result);
+                    $scope.obj.data = JSON.parse(reader.result); //JSON.parse(reader.result);
                 });
             };
             reader.readAsText(file);

@@ -17,7 +17,6 @@
 #
 # @see NSProvisioner
 module InstantiationHelper
-
     # Create an authentication to PoP_id
     #
     # @param [JSON] instance NSR instance
@@ -26,7 +25,7 @@ module InstantiationHelper
     # @param [JSON] callback_url Callback url in case of error happens
     # @return [Hash, nil] authentication
     # @return [Hash, String] if the parsed message is an invalid JSON
-    def create_authentication(instance, nsd_id, pop_info, callback_url)
+    def create_authentication(instance, _nsd_id, pop_info, _callback_url)
         @instance = instance
 
         logger.info 'Authentication not created for this PoP. Starting creation of credentials.'
@@ -38,7 +37,7 @@ module InstantiationHelper
         pop_auth['urls'] = popUrls
 
         # create credentials for pop_id
-        if popUrls[:keystone].nil? || popUrls[:orch].nil? #|| popUrls[:tenant].nil?
+        if popUrls[:keystone].nil? || popUrls[:orch].nil? # || popUrls[:tenant].nil?
             return handleError(@instance, 'Internal error: Keystone and/or openstack urls missing.')
         end
 
@@ -56,29 +55,17 @@ module InstantiationHelper
             token = credentials[:token]
 
             if !pop_info['is_admin']
-                  pop_auth['username'] = pop_info['user']
-                  pop_auth['tenant_name'] = pop_info['tenant_name']
-                  pop_auth['password'] = pop_info['password']
-                  pop_auth['tenant_id'] = tenant_id
-                  pop_auth['user_id'] = user_id
-                  pop_auth['token'] = token
+                pop_auth['username'] = pop_info['user']
+                pop_auth['tenant_name'] = pop_info['tenant_name']
+                pop_auth['password'] = pop_info['password']
+                pop_auth['tenant_id'] = tenant_id
+                pop_auth['user_id'] = user_id
+                pop_auth['token'] = token
             else
-                #generate credentials
+                # generate credentials
                 credentials, errors = generate_credentials(@instance, keystone_url, popUrls, tenant_id, user_id, token)
                 return 400, errors if errors
                 pop_auth = pop_auth.merge(credentials)
-=begin
-                keystone_version = URI(keystone_url).path.split('/').last
-                if keystone_version == 'v2.0'
-                    credentials, errors = generate_v2_credentials(@instance, popUrls, tenant_id, user_id, token)
-                    return 400, errors if errors
-                    pop_auth = pop_auth.merge(credentials)
-                elsif keystone_version == 'v3'
-                    pop_auth, errors = generate_v3_credentials(@instance, popUrls, tenant_id, user_id, token)
-                    return 400, errors if errors
-                    pop_auth = pop_auth.merge(credentials)
-                end
-=end
             end
         end
         pop_auth
@@ -119,13 +106,13 @@ module InstantiationHelper
             auth: {
                 url: {
                     keystone: popUrls[:keystone],
-                    orch: popUrls[:orch],# to remove
+                    orch: popUrls[:orch], # to remove
                     heat: popUrls[:orch],
                     compute: popUrls[:compute]
                 },
                 tenant_id: pop_auth['tenant_id'],
                 token: pop_auth['token'],
-				is_admin: pop_auth['is_admin']
+                is_admin: pop_auth['is_admin']
             },
             reserved_resources: @instance['resource_reservation'].find { |resources| resources[:pop_id] == pop_id },
             security_group_id: pop_auth['security_group_id'],
@@ -138,18 +125,17 @@ module InstantiationHelper
 
         begin
             response = RestClient.post settings.vnf_manager + '/vnf-provisioning/vnf-instances', vnf_provisioning_info.to_json, content_type: :json
-=begin        rescue RestClient::ExceptionWithResponse => e
-            puts "Excepion with response"
-            puts e
-            logger.error e
-            logger.error e.response
-            if !e.response.nil?
-                logger.error e.response.body
-            end
-            #return e.response.code, e.response.body
-            logger.error 'Handle error.'
-            return
-=end
+        #        rescue RestClient::ExceptionWithResponse => e
+        #             puts "Excepion with response"
+        #             puts e
+        #             logger.error e
+        #             logger.error e.response
+        #             if !e.response.nil?
+        #                 logger.error e.response.body
+        #             end
+        #             #return e.response.code, e.response.body
+        #             logger.error 'Handle error.'
+        #             return
         rescue => e
             @instance.push(lifecycle_event_history: 'ERROR_CREATING ' + vnf_id.to_s + ' VNF')
             @instance.update_attribute('status', 'ERROR_CREATING')
@@ -177,7 +163,7 @@ module InstantiationHelper
                 end
             end
             logger.error 'Handle error.'
-            return 400, "Error wiht the VNF"
+            return 400, 'Error wiht the VNF'
         end
 
         vnf_manager_response, errors = parse_json(response)

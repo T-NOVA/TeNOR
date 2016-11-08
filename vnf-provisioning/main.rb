@@ -39,7 +39,8 @@ class VnfProvisioning < Sinatra::Application
     # Load configurations
     config_file 'config/config.yml'
 
-	helpers ProvisioningHelper
+    helpers UtilsHelper
+    helpers ProvisioningHelper
 	helpers MapiHelper
 	helpers HotHelper
     helpers ComputeHelper

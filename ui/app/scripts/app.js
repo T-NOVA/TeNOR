@@ -9,7 +9,7 @@
  * Main module of the application.
  */
 
-angular.module('tNovaApp', ['ui.router', 'ngSanitize', 'tNovaApp.config', 'tNovaApp.controllers', 'tNovaApp.directives', 'tNovaApp.services', 'smart-table', 'mgcrea.ngStrap', 'LocalStorageModule', 'cb.x2js', 'darthwade.dwLoading', 'checklist-model', 'angularResizable', 'FBAngular'])
+angular.module('tNovaApp', ['ui.router', 'ngSanitize', 'tNovaApp.config', 'tNovaApp.controllers', 'tNovaApp.directives', 'tNovaApp.services', 'smart-table', 'mgcrea.ngStrap', 'LocalStorageModule', 'cb.x2js', 'darthwade.dwLoading', 'checklist-model', 'angularResizable', 'FBAngular', 'ng.jsoneditor'])
     .config(function (localStorageServiceProvider) {
         localStorageServiceProvider
             .setPrefix('tNovaApp')
@@ -237,8 +237,10 @@ angular.module('tNovaApp', ['ui.router', 'ngSanitize', 'tNovaApp.config', 'tNova
                                 } else {
                                     config.url = config.url + '?token=' + authToken;
                                 }
-                                if (Math.floor(Date.now() / 1000) > $window.localStorage.expiration)
+                                if (Math.floor(Date.now() / 1000) > $window.localStorage.expiration){
+                                $window.localStorage.clear();
                                     $rootScope.logout();
+                                  }
                             } else {
                               $location.path('/login');
                             }

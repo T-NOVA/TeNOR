@@ -15,7 +15,4 @@ logger_port: 24224
 xml_schema: assets/schemas/vnfd.xsd
 json_schema: assets/schemas/vnfd_schema.json
 
-gk:
-service_key:
-
 dependencies: []

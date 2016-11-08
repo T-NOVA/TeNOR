@@ -35,7 +35,6 @@ class DcController < TnovaManager
     # @overload get '/pops/dc/:id'
     #  Returns a DC
     get '/dc/:id' do |id|
-        puts Dc.all.to_json
         begin
             dc = Dc.find(id.to_i)
         rescue Mongoid::Errors::DocumentNotFound => e
@@ -81,14 +80,12 @@ class DcController < TnovaManager
             description: pop_info['description'],
             extra_info: pop_info['extra_info']
         }
-        logger.debug serv
         begin
             dc = Dc.find_by(name: pop_info['name'])
             halt 409, 'DC Duplicated. Use PUT for update.'
         # i es.update_attributes!(:host => pop_info['host'], :port => pop_info['port'], :token => @token, :depends_on => serv_reg['depends_on'])
         rescue Mongoid::Errors::DocumentNotFound => e
             begin
-                puts serv
                 dc = Dc.create!(serv)
             rescue => e
                 puts 'ERROR.................'
@@ -103,7 +100,20 @@ class DcController < TnovaManager
         halt 201, { id: dc._id }.to_json
     end
 
-    put '/services' do
+    put '/dc/:id' do |id|
+        return 415 unless request.content_type == 'application/json'
+        pop_info, errors = parse_json(request.body.read)
+
+        begin
+            dc = Dc.find(id.to_i)
+        rescue Mongoid::Errors::DocumentNotFound => e
+            logger.error 'DC not found'
+            return 404
+        end
+
+        dc.update_attributes(pop_info)
+
+        halt 200
     end
 
     # @method delete_pops_dc_id

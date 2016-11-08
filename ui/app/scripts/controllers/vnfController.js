@@ -4,25 +4,32 @@ angular.module('tNovaApp')
     .controller('vnfController', function ($scope, $stateParams, $filter, tenorService, $interval, $modal) {
 
         $scope.descriptor = {};
-        var page_num = 200;
-        var page = 0;
+        $scope.descriptor_options = { mode: 'code' };
+        $scope.obj = {data: {}, options: { mode: 'code' }};
+        var page_num = 20;
+        var page = 1;
         $scope.dataCollection = [];
         $scope.getVnfList = function (page) {
-            $scope.dataCollection = [];
             tenorService.get('vnfs?offset=' + page + '&limit=' + page_num).then(function (data) {
-                if (data !== []) {
-                    $scope.dataCollection = _.sortBy(angular.extend($scope.dataCollection, data), function (o) {
+                if (data.length > 0) {
+                    $scope.dataCollection = _.sortBy($scope.dataCollection.concat(data), function (o) {
                         var dt = new Date(o.created_at);
                         return -dt;
-                    })
-                    page = page++;
-                    //$scope.getVnfList(page);
+                    });
+                    page++;
+                    $scope.getVnfList(page);
                 }
             });
         };
 
+        $scope.restartServiceList = function (page) {
+            $scope.dataCollection = [];
+            $scope.getVnfList(page);
+        };
+
         $scope.getVnfList(page);
         var promise = $interval(function () {
+            $scope.dataCollection = [];
             $scope.getVnfList(page);
         }, 1000000);
 
@@ -37,7 +44,7 @@ angular.module('tNovaApp')
         };
         $scope.deleteItem = function (id) {
             tenorService.delete('vnfs/' + id).then(function (data) {
-                $scope.getVnfList(page);
+                $scope.restartServiceList(1);
             });
             this.$hide();
         };
@@ -71,12 +78,13 @@ angular.module('tNovaApp')
         $scope.uploadFile = function(files){
             var fd = new FormData();
             //Take the first selected file
-            fd.append('file', files[0]);
-            var obj = JSON.parse(files);
+            //fd.append('file', files[0]);
+            //var obj = JSON.parse(files);
+            var obj = files;
             console.log(obj);
             tenorService.post('vnfs', obj).then(function (data) {
                 console.log(data);
-                $scope.getVnfList(page);
+                $scope.restartServiceList(1);
             });
             this.$hide();
         }
@@ -86,7 +94,8 @@ angular.module('tNovaApp')
             var reader = new FileReader();
             reader.onload = function () { //event waits the file content
                 $scope.$apply(function () {
-                    $scope.descriptor = JSON.stringify(JSON.parse(reader.result), undefined, 4); //JSON.parse(reader.result);
+                    //$scope.descriptor = JSON.stringify(JSON.parse(reader.result), undefined, 4); //JSON.parse(reader.result);
+                    $scope.obj.data = JSON.parse(reader.result); //JSON.parse(reader.result);
                 });
             };
             reader.readAsText(file);

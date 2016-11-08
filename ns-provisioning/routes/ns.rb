@@ -17,15 +17,14 @@
 #
 # @see NsProvisioning
 class Provisioner < NsProvisioning
-
     # @method get_ns_instances
     # @overload get "/ns-instances"
     # Gets all ns-instances
     get '/' do
         instances = if params[:status]
-                           Nsr.where(status: params[:status])
-                       else
-                           Nsr.all
+                        Nsr.where(status: params[:status])
+                    else
+                        Nsr.all
                        end
 
         return instances.to_json
@@ -82,7 +81,8 @@ class Provisioner < NsProvisioning
             notification: instantiation_info['callback_url'],
             lifecycle_event_history: ['INIT'],
             audit_log: [],
-            marketplace_callback: instantiation_info['callback_url']
+            marketplace_callback: instantiation_info['callback_url'],
+            authentication: []
         }
 
         @instance = Nsr.new(instance)
@@ -133,6 +133,7 @@ class Provisioner < NsProvisioning
 
         if params[:status] === 'terminate'
             logger.info 'Starting thread for removing VNF and NS instances.'
+            @nsInstance.update_attribute('status', 'DELETING')
             Thread.abort_on_exception = false
             Thread.new do
                 # operation = proc {
@@ -141,12 +142,13 @@ class Provisioner < NsProvisioning
                     logger.info 'Pop_id: ' + vnf['pop_id'].to_s
                     raise 'VNF not defined' if vnf['pop_id'].nil?
 
-                    popInfo, errors = getPopInfo(vnf['pop_id'])
+                    pop_info, errors = getPopInfo(vnf['pop_id'])
+                    logger.errors if errors
                     raise 400, errors if errors
 
-                    if popInfo == 400
+                    if pop_info == 400
                         logger.error 'Pop id no exists.'
-                         return
+                        return
                     end
 
                     pop_auth = @nsInstance['authentication'].find { |pop| pop['pop_id'] == vnf['pop_id'] }
@@ -342,6 +344,18 @@ class Provisioner < NsProvisioning
             rescue => e
                 logger.error e.response
                 logger.error 'Error with the start command'
+            end
+        end
+
+        if @instance['resource_reservation'].find { |resource| resource.has_key?('wicm_stack')}
+            logger.info 'Starting traffic redirection in the WICM'
+            Thread.new do
+                begin
+                    response = RestClient.put settings.wicm + '/vnf-connectivity/' + nsr_id, '', content_type: :json, accept: :json
+                rescue => e
+                    logger.error e
+                end
+                logger.info response
             end
         end
 

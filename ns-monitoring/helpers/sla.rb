@@ -17,53 +17,51 @@
 #
 # @see NSMonitoring
 module SlaHelper
+    def self.process_breach
+        puts 'BREACh.'
+        logger.info 'SLA Breach!'
 
-  def self.process_breach()
-    puts "BREACh."
-    logger.info "SLA Breach!"
+        logger.info 'Inform to NS Manager about this.'
 
-    logger.info "Inform to NS Manager about this."
+        puts Sinatra::Application.settings.manager
 
-    puts Sinatra::Application.settings.manager
+        begin
+            response = RestClient.get settings.vnf_provisioning + '/vnf-provisioning/vnf-instances/' + vnfr_id, content_type: :json, accept: :json
+        rescue => e
+            puts e
+        end
+      end
 
-    begin
-      response = RestClient.get settings.vnf_provisioning + "/vnf-provisioning/vnf-instances/" + vnfr_id, :content_type => :json, :accept => :json
-    rescue => e
-      puts e
+    # Check if the value is inside the threshold
+    # Threshold format: GT(#integer), LE(#integer)...
+    def self.check_breach_sla(threshold, value)
+        operation = threshold.split('(')[0]
+        threshold = threshold.split('(')[1].split(')')[0]
+        response = false
+
+        case operation
+        when 'GT'
+            response = threshold.to_f < value.to_f
+        when 'LT'
+            response = threshold.to_f > value.to_f
+        when 'GE'
+            response = threshold.to_f <= value.to_f
+        when 'LE'
+            response = threshold.to_f >= value.to_f
+        when 'EQ'
+            response = threshold.to_f == value.to_f
+        when 'NE'
+            response = threshold.to_f != value.to_f
+        end
+        response
     end
 
-  end
-
-  # Check if the value is inside the threshold
-  # Threshold format: GT(#integer), LE(#integer)...
-  def self.check_breach_sla(threshold, value)
-    operation = threshold.split("(")[0]
-    threshold = threshold.split("(")[1].split(")")[0]
-    response = false
-
-    case operation
-    when 'GT'
-      response = threshold.to_f < value.to_f
-    when 'LT'
-      response = threshold.to_f > value.to_f
-    when 'GE'
-      response = threshold.to_f <= value.to_f
-    when 'LE'
-      response = threshold.to_f >= value.to_f
-    when 'EQ'
-      response = threshold.to_f == value.to_f
-    when 'NE'
-      response = threshold.to_f != value.to_f
+    def self.logger
+        Logging.logger
     end
-    return response
-  end
 
-  def self.logger
-    Logging.logger
-  end
-
-  # Global, memoized, lazy initialized instance of a logger
-  def self.logger
-    @logger ||= Logger.new(STDOUT)
-  end
+    # Global, memoized, lazy initialized instance of a logger
+    def self.logger
+        @logger ||= Logger.new(STDOUT)
+    end
 end

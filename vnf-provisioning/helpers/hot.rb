@@ -18,35 +18,51 @@
 # @see HotHelper
 module HotHelper
     def deleteStack(stack_url, auth_token)
-        begin
-            response = RestClient.delete stack_url, 'X-Auth-Token' => auth_token, :accept => :json
-        rescue Errno::ECONNREFUSED
+        response = RestClient.delete stack_url, 'X-Auth-Token' => auth_token, :accept => :json
+    rescue Errno::ECONNREFUSED
         # halt 500, 'VIM unreachable'
-        rescue RestClient::ResourceNotFound
-            logger.error 'Already removed from the VIM.'
-            return 404
-        rescue => e
-            logger.error e.response
-            return
-        end
+    rescue RestClient::ResourceNotFound
+        logger.error 'Already removed from the VIM.'
+        return 404
+    rescue => e
+        logger.error e.response
+        return
     end
 
-    def getStackResources(stack_url, auth_token)
+    def getStackResources(stack_url, token)
         begin
-            response = RestClient.get stack_url + '/resources', 'X-Auth-Token' => auth_token
+            response = RestClient.get stack_url + '/resources', 'X-Auth-Token' => token
         rescue Errno::ECONNREFUSED
             error = { 'info' => 'VIM unrechable.' }
             return
         rescue => e
             logger.error e
             logger.error e.response
-            error = { 'info' => 'Error creating the network stack.' }
+            error = { 'info' => 'Error getting stack resources.' }
             return
         end
         resources, errors = parse_json(response)
         return 400, errors if errors
 
-        resources['resources']
+        [resources['resources'], nil]
+    end
+
+    def getStackEvents(stack_url, token)
+        begin
+            response = RestClient.get stack_url + '/events', 'X-Auth-Token' => token
+        rescue Errno::ECONNREFUSED
+            error = { 'info' => 'VIM unrechable.' }
+            return
+        rescue => e
+            logger.error e
+            logger.error e.response
+            error = { 'info' => 'Error getting stack events.' }
+            return
+        end
+        events, errors = parse_json(response)
+        return 400, errors if errors
+
+        [events['events'], nil]
     end
 
     def delete_stack_with_wait(stack_url, auth_token)
@@ -55,7 +71,7 @@ module HotHelper
         code = deleteStack(stack_url, auth_token)
         if code == 404
             status = 'DELETE_COMPLETE'
-            return 200
+            return 200 # , "Delete completed."
         end
         while status != 'DELETE_COMPLETE' && status != 'DELETE_FAILED'
             sleep(5)

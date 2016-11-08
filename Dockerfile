@@ -35,7 +35,7 @@ WORKDIR /root
 RUN apt-get -q -y install curl
 
 # Clone the conf files into the docker container
-RUN git clone https://github.com/jbatalle/TeNOR /root/TeNOR
+RUN git clone https://github.com/T-NOVA/TeNOR /root/TeNOR
 
 ENV RAILS_ENV development
 WORKDIR /root/TeNOR
@@ -43,6 +43,7 @@ RUN bundle --version
 RUN cat Gemfile
 RUN gem install bundle
 RUN bundle install
+RUN sed -i 's/rake db:seed/bundle exec rake db:seed/g' tenor_install.sh
 RUN ./tenor_install.sh 1
 
 RUN chown -R mongodb:mongodb /var/lib/mongodb

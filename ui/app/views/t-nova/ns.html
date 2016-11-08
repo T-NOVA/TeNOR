@@ -37,7 +37,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr ng-repeat="row in displayedCollection">
+                        <tr ng-repeat="row in displayedCollection track by $index">
                             <td><a ng-click="showDescriptor(row.nsd)">{{row.nsd.id}}</a></td>
                             <td>{{row.nsd.name}}</td>
                             <td>{{row.nsd.description}}</td>

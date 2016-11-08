@@ -99,7 +99,7 @@ class NSMonitoring < Sinatra::Application
     #	Unsubcribe ns instance
     #	@param [Integer] external_ns_id NS external ID
     post '/monitoring-data/unsubscribe/:nsi_id' do |nsi_id|
-        logger.info "Unsubcribe " + nsi_id
+        logger.info 'Unsubcribe ' + nsi_id
         begin
             monMetrics = NsMonitoringParameter.find_by('nsi_id' => nsi_id)
         rescue Mongoid::Errors::DocumentNotFound => e
@@ -132,7 +132,7 @@ class NSMonitoring < Sinatra::Application
         monMetrics.destroy
         sla.destroy
 
-        halt 200, "Correct unsubcription."
+        halt 200, 'Correct unsubcription.'
     end
 
     # This interface is with the VNF Monitoring micro-service, upon successfully receiving a monitoring parameter reading for a given VNF instance.

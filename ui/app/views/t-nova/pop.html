@@ -67,9 +67,9 @@
                             <tbody>
                                 <tr ng-repeat="row in displayedCollection2">
                                     <td>{{row['occi.epa.popuuid']}}</td>
-                                    <td>{{row['occi.epa.pop.lon']}}</td>
+                                    <td>{{row['occi.epa.pop.name']}}</td>
                                     <td>
-                                        <button ng-click="addDialog(row['occi.epa.popuuid'])" class="btn btn-primary btn-xs" ng-disabled="row.state === '0'">Add</button>
+                                        <button ng-click="addDialog(row)" class="btn btn-primary btn-xs" ng-disabled="row.state === '0'">Add</button>
                                     </td>
                                 </tr>
                             </tbody>

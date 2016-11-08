@@ -11,8 +11,7 @@ Vagrant.configure(2) do |config|
         vb.customize ['modifyvm', :id, '--natdnsproxy1', 'on']
     end
 
-    # config.vm.network :forwarded_port, guest: 4000, host: 4000 # tenor port
-    config.vm.network :forwarded_port, guest: 8000, host: 8000 # gatekeeper port
+    config.vm.network :forwarded_port, guest: 4000, host: 4000 # tenor port
     config.vm.network :forwarded_port, guest: 9000, host: 9000 # tenor UI port
     config.vm.network :forwarded_port, guest: 27017, host: 27017 # tenor UI port
 
@@ -36,7 +35,7 @@ Vagrant.configure(2) do |config|
     rvm group add rvm vagrant
     rvm fix-permissions
     cd ~
-    git clone https://github.com/TeNOR/TeNOR.git
+    git clone https://github.com/T-NOVA/TeNOR.git
     cd TeNOR/
     ./dependencies/install_dependencies.sh y y n
 

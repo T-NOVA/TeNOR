@@ -1,5 +1,6 @@
 ---
 servicename: vnf_manager
+type: manager
 manager: localhost:4000
 environment: development
 address: 0.0.0.0
@@ -11,14 +12,5 @@ daemonize: false
 threaded: true
 logger_host: 127.0.0.1
 logger_port: 24224
-
-vnf_catalogue: http://localhost:4569
-vnf_provisioning: http://localhost:4572
-vnf_monitoring: http://localhost:4573
-ns_manager: http://localhost:4000
-wicm: http://193.136.92.173:12891
-
-gk:
-service_key:
 
 dependencies: [ns_manager, wicm, mAPI, mapping, hot_generator, infr_repository]

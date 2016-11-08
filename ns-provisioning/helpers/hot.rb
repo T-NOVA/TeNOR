@@ -72,11 +72,8 @@ module HotHelper
             return 500, error
         rescue RestClient::ExceptionWithResponse => e
             logger.error e
-            logger.error e.response.body
-            return e.response.code, e.response.body
-        rescue RestClient::ExceptionWithResponse => e
-            # logger.error e
             logger.error e.response
+            logger.error e.response.body if e.response
             error = { 'info' => 'Error creating the network stack.' }
             return 500, error
         end
@@ -258,7 +255,7 @@ module HotHelper
 
     def generateUserHotTemplate(hot_generator_message)
         begin
-            response = RestClient.post settings.hot_generator + "/userhot", hot_generator_message.to_json, content_type: :json, accept: :json
+            response = RestClient.post settings.hot_generator + '/userhot', hot_generator_message.to_json, content_type: :json, accept: :json
         rescue Errno::ECONNREFUSED
             error = { 'info' => 'HOT Generator unrechable.' }
             return 500, error

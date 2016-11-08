@@ -241,6 +241,7 @@ configureFiles(){
 
   configureIps $1
 
+  printf "Removing old config files...."
   rm **/config/config.yml
 
   for folder in $(find . -type d  \( -name "ns*" -o -name "vnf*" -o -name "hot-generator" \) ); do

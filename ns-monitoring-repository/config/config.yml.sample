@@ -12,7 +12,4 @@ threaded: true
 logger_host: 127.0.0.1
 logger_port: 24224
 
-gk:
-service_key:
-
 dependencies: []

@@ -18,9 +18,7 @@
 # @see NSMonitoring
 module ExpressionEvaluatorHelper
     def self.calc_expression(formula, values)
-        if values.size == 1
-            return values[0]
-        end
+        return values[0] if values.size == 1
         operations = formula.split('(')[0]
 
         response = 0
@@ -56,15 +54,15 @@ module ExpressionEvaluatorHelper
     def find_avg(values)
         val = 0
         values.each do |v|
-            val = val + v
+            val += v
         end
-        val/values.size
+        val / values.size
     end
 
     def find_sum(values)
         val = 0
         values.each do |v|
-            val = val + v
+            val += v
         end
         val
     end

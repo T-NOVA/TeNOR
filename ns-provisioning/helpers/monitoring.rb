@@ -17,72 +17,67 @@
 #
 # @see OrchestratorNsProvisioner
 module MonitoringHelper
+    # Prepare the monitoring data and sends to the NS Monitoring
+    #
+    # @param [JSON] message the NSD
+    # @param [JSON] message the NSR id
+    # @param [JSON] message the ns instance
+    # @return [Hash, nil] if the parsed message is a valid JSON
+    # @return [Hash, String] if the parsed message is an invalid JSON
+    def monitoringData(nsd, nsi_id, instance)
+        monitoring = { nsi_id: nsi_id }
 
-  # Prepare the monitoring data and sends to the NS Monitoring
-  #
-  # @param [JSON] message the NSD
-  # @param [JSON] message the NSR id
-  # @param [JSON] message the ns instance
-  # @return [Hash, nil] if the parsed message is a valid JSON
-  # @return [Hash, String] if the parsed message is an invalid JSON
-  def monitoringData(nsd, nsi_id, instance)
+        vnfs =  nsd['vnfds']
+        monitor = nsd['monitoring_parameters']
 
-    monitoring = {:nsi_id => nsi_id}
+        paramsVnf = []
+        paramsNs = []
+        sla = nsd['sla']
+        sla.each do |s|
+            assurance_parameters = s['assurance_parameters']
+            assurance_parameters.each_with_index do |x, i|
+                paramsVnf << { id: i + 1, name: x['name'], unit: x['unit'] }
+                paramsNs << { id: i + 1, name: x['name'], formula: x['formula'], value: x['value'] }
+            end
+        end
+        monitoring[:parameters] = paramsNs
+        vnf_instances = []
+        instance['vnfrs'].each do |x|
+            vnf_instances << { id: x['vnfd_id'], parameters: paramsVnf, vnfr_id: x['vnfr_id'] }
+        end
+        monitoring[:vnf_instances] = vnf_instances
 
-    vnfs =  nsd['vnfds']
-    monitor =  nsd['monitoring_parameters']
+        # puts JSON.pretty_generate(monitoring)
 
-    paramsVnf = []
-    paramsNs = []
-    sla = nsd['sla']
-    sla.each {|s|
-      assurance_parameters = s['assurance_parameters']
-      assurance_parameters.each_with_index {|x, i|
-        paramsVnf << {:id => i+1, :name => x['name'], :unit => x['unit']}
-        paramsNs << {:id => i+1, :name => x['name'], :formula => x['formula'], :value => x['value']}
-      }
-    }
-    monitoring[:parameters] = paramsNs
-    vnf_instances = []
-    instance['vnfrs'].each {|x|
-      vnf_instances << {:id => x['vnfd_id'], :parameters => paramsVnf, :vnfr_id => x['vnfr_id']}
-    }
-    monitoring[:vnf_instances] = vnf_instances
+        begin
+            response = RestClient.post settings.ns_monitoring + '/ns-monitoring/monitoring-parameters', monitoring.to_json, content_type: :json
+        rescue Errno::ECONNREFUSED
+            puts 'NS Monitoring unreachable'
+        #      halt 500, 'NS Monitoring unreachable'
+        rescue => e
+            logger.error e
+            # halt e.response.code, e.response.body
+        end
 
-    #puts JSON.pretty_generate(monitoring)
-
-    begin
-      response = RestClient.post settings.ns_monitoring + '/ns-monitoring/monitoring-parameters', monitoring.to_json, :content_type => :json
-    rescue Errno::ECONNREFUSED
-      puts 'NS Monitoring unreachable'
-#      halt 500, 'NS Monitoring unreachable'
-    rescue => e
-      logger.error e
-      #halt e.response.code, e.response.body
+        # return monitoring
     end
 
-    #return monitoring
-  end
+    def sla_enforcement(nsd, instance_id)
+        parameters = []
 
-  def sla_enforcement(nsd, instance_id)
-    parameters = []
-
-    nsd['sla'].each do |sla|
-      #sla['id']
-      sla['assurance_parameters'].each do |assurance_parameter|
-        parameters.push({:param_name => assurance_parameter['param_name'], :minimum => nil, :maximum => nil})
-      end
-
+        nsd['sla'].each do |sla|
+            # sla['id']
+            sla['assurance_parameters'].each do |assurance_parameter|
+                parameters.push(param_name: assurance_parameter['param_name'], minimum: nil, maximum: nil)
+            end
+        end
+        sla = { nsi_id: instance_id, parameters: parameters }
+        begin
+            response = RestClient.post settings.sla_enforcement + '/sla-enforcement/slas', sla.to_json, content_type: :json
+        rescue => e
+            logger.error e
+            halt 503, 'SLA-Enforcement unavailable' if defined?(e.response).nil?
+            halt e.response.code, e.response.body
+        end
     end
-    sla = {:nsi_id => instance_id, :parameters => parameters}
-    begin
-      response = RestClient.post settings.sla_enforcement + "/sla-enforcement/slas", sla.to_json, :content_type => :json
-    rescue => e
-      logger.error e
-      if (defined?(e.response)).nil?
-        halt 503, "SLA-Enforcement unavailable"
-      end
-      halt e.response.code, e.response.body
-    end
-  end
 end

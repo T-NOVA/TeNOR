@@ -1,9 +1,9 @@
 <h3>Configuration</h3>
 
 <div class="row">
-    <div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="col-md-4 col-sm-4 col-xs-4">
         <div class="x_panel">
-            <div class="x_title">Modules <small>List of connected services in the orchestrator. table with status. Should be able to edit ip/port.</small>
+            <div class="x_title">Internal Modules <small>List of connected services in the orchestrator. table with status. Should be able to edit ip/port.</small>
                 <br/>
                 <table st-table="displayedCollection" st-safe-src="modulesCollection" class="table table-striped">
                     <thead>
@@ -22,7 +22,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr ng-repeat="row in displayedCollection ">
+                        <tr ng-repeat="row in displayedCollection">
                             <td>{{row.name}}</td>
                             <td>{{row.host}}</td>
                             <td>{{row.port}}</td>
@@ -43,29 +43,77 @@
             </div>
         </div>
     </div>
-    <div class="col-md-4 ">
-        <div class="content-box-large ">
-            <div class="panel-heading ">
-                <div class="panel-title ">Register new service</div>
+    <div class="col-md-4 col-sm-4 col-xs-4">
+        <div class="x_panel">
+            <div class="x_title">External Modules <small>List of connected services in the orchestrator. table with status. Should be able to edit ip/port.</small>
+                <br/>
+                <table st-table="displayedCollection2" st-safe-src="externalModulesCollection" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th st-sort="name" class="col-sm-2 col-md-2 col-lg-2">Name</th>
+                            <th st-sort="ip" data-title="'ip'" class="col-sm-1 col-md-1 col-lg-1">IP</th>
+                            <th st-sort="port" data-title=" 'port' " class="col-sm-1 col-md-1 col-lg-1 ">Port</th>
+                            <th data-title="type" class="col-sm-1 col-md-1 col-lg-1 ">Type</th>
+                            <th st-sort="status " data-title=" 'status' " class="col-sm-1 col-md-1 col-lg-1 ">Status</th>
+                            <th data-title=" 'action' " class="col-sm-1 col-md-1 col-lg-1 ">Actions</th>
+                        </tr>
+                        <tr>
+                            <th colspan="2 ">
+                                <input st-search=" " class="form-control " placeholder="global search ... " type="text " />
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="row in displayedCollection2">
+                            <td>{{row.name}}</td>
+                            <td>{{row.host}}</td>
+                            <td>{{row.port}}</td>
+                            <td>{{row.type}}</td>
+                            <td ng-style="{ 'color': (row.status==='up' ? 'green': 'red')} ">{{row.status}}</td>
+                            <td>
+                                <button ng-click="deleteDialog(mS.service_name) " class="btn btn-danger btn-xs ">Delete</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td class="text-center " st-pagination=" " st-items-by-page="10 " colspan="4 ">
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
             </div>
+        </div>
+    </div>
+    <div class="col-md-4 ">
+            <div class="x_panel">
+                <div class="x_title">Register new service</div>
             <div class="panel-body ">
                 <form action=" ">
                     <fieldset>
                         <div class="form-group ">
                             <label>Service name</label>
-                            <input ng-model="service.service_name " class="form-control " placeholder="name " type="text ">
-                        </div>
-                        <div class="form-group ">
-                            <label>Path</label>
-                            <input ng-model="service.service_path " class="form-control " placeholder="/path " type="text " value="mypassword ">
+                            <input ng-model="service.name " class="form-control " placeholder="name " type="text ">
                         </div>
                         <div class="form-group ">
                             <label>Ip</label>
-                            <input ng-model="service.service_host " class="form-control " placeholder="IP " type="text " value=" ">
+                            <input ng-model="service.host " class="form-control " placeholder="IP " type="text " value=" ">
                         </div>
                         <div class="form-group ">
                             <label>Port</label>
-                            <input ng-model="service.service_port " class="form-control " placeholder="Port " type="text " value=" ">
+                            <input ng-model="service.port " class="form-control " placeholder="Port " type="text " value=" ">
+                        </div>
+                        <div class="form-group ">
+                            <label>Path</label>
+                            <input ng-model="service.path " class="form-control " placeholder="/path " type="text " value="mypassword ">
+                        </div>
+                        <div class="form-group ">
+                            <label for="flavour" class="col-sm-2 control-label">Type</label>
+                            <div class="col-sm-10">
+                                <button type="button" class="btn btn-default" ng-model="service.type" data-html="1" bs-options="types as types for types in types_modules" bs-select>
+                                  Action <span class="caret"></span>
+                              </button>
+                            </div>
                         </div>
                     </fieldset>
                     <div>

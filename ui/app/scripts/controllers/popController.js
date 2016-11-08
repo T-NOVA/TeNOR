@@ -16,6 +16,16 @@ angular.module('tNovaApp')
         $scope.neutron_version = "v2.0"
 
         $scope.openstack_ip = "";
+        $scope.infr_repo_url = undefined
+
+        tenorService.get("modules/services/type/infr_repo").then(function (data) {
+            if (data === undefined) return;
+            console.log(data);
+            if (data.length > 0){
+                $scope.infr_repo_url = data[0].host + ":" + data[0].port;
+            }
+            $scope.refreshPoPList();
+        });
 
         $scope.refreshPoPList = function () {
             tenorService.get('pops/dc').then(function (d) {
@@ -28,14 +38,17 @@ angular.module('tNovaApp')
                     })
                 });*/
                 console.log($scope.registeredDcList);
+                if ($scope.infr_repo_url == undefined){
+                    return;
+                }
 
                 var url = 'pop/';
-                infrRepoService.get(url).then(function (_data) {
+                infrRepoService.get($scope.infr_repo_url, url).then(function (_data) {
                     $scope.pops = _data;
                     $scope.availableDcList = [];
                     angular.forEach(_data, function (pop, index, array) {
                         url = pop.identifier.slice(1);
-                        infrRepoService.get(url).then(function (_data) {
+                        infrRepoService.get($scope.infr_repo_url, url).then(function (_data) {
 
                             var exist = _.some($scope.registeredDcList, function (c) {
                                 return _data.attributes['occi.epa.popuuid'] !== c;
@@ -49,19 +62,31 @@ angular.module('tNovaApp')
                 });
             });
         };
-        $scope.refreshPoPList();
+        //$scope.refreshPoPList();
 
-        $scope.addDialog = function (id) {
-            if (id === "") {
-                $scope.emptyId = true;
-            }
+        $scope.addDialog = function (infr_repo_pop) {
             $scope.object = $scope.defaultPoP;
-            $scope.object.id = id;
+            console.log($scope.object);
+
+            console.log(infr_repo_pop);
+            if (infr_repo_pop !== undefined){
+                $scope.object.id = infr_repo_pop['occi.epa.popuuid'];
+                $scope.object.msg = infr_repo_pop['occi.epa.pop.name'];
+                $scope.emptyId = true;
+            }else{
+                $scope.object.id = "Pop_identification";
+                $scope.object.msg = "Pop_description";
+            };
+            /*if (id === "") {
+                $scope.emptyId = true;
+            }*/
+
+            //$scope.object.id = id;
             $scope.dc_default = $scope.defaultPoP;
             $scope.openstack_ip = "";
             $scope.dc_default = {
-                msg: "Description",
-                id: "infrRepository-Pop-ID",
+                msg: $scope.object.msg,
+                id: $scope.object.id,
                 adminid: "admin",
                 password: "adminpass",
                 isAdmin: false,
@@ -73,7 +98,7 @@ angular.module('tNovaApp')
                 dns: "8.8.8.8"
             };
             $modal({
-                title: "Registring DC - " + id,
+                title: "Registring DC - " + $scope.object.id,
                 template: "views/t-nova/modals/addPop.html",
                 show: true,
                 scope: $scope,

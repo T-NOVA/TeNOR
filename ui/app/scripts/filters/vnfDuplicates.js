@@ -15,7 +15,7 @@ angular.module('tNovaApp')
                                 break;
                             }
                         }
-                        
+
                         if (!isDuplicate) {
                             newItems.push(item);
                         }

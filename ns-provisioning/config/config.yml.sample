@@ -12,22 +12,16 @@ threaded: true
 logger_host: 127.0.0.1
 logger_port: 24224
 
-mapping: http://localhost:4042
-sla_enforcement: http://localhost:4016
-
 #optional fields
 default_tenant: true
 default_user_name: tenor_user
 default_user_password: secretsecret
 default_tenant_name: tenor_tenant
 
+ns_monitoring: localhost:4014
+vnf_manager: localhost:4567
+hot_generator: localhost:4571
 dependencies: [ns_monitoring, vnf_manager, wicm, mAPI, mapping, hot_generator, infr_repository, netfloc]
-
-gk:
-service_key:
-
-#infr_repo: http://10.10.1.1:8080
-#wicm: http://10.30.0.12:12891
 
 netfloc:
 odl_username: admin

@@ -17,7 +17,6 @@
 #
 # @see MapiHelper
 module MapiHelper
-
     def registerRequestToMAPI(vnfr)
         logger.debug 'Registring VNF to mAPI...'
 
@@ -43,7 +42,7 @@ module MapiHelper
     end
 
     def sendCommandToMAPI(vnfr_id, mapi_request)
-        logger.debug "Sending command to mAPI..."
+        logger.debug 'Sending command to mAPI...'
         # Send request to the mAPI
         begin
             if mapi_request[:event].casecmp('start').zero?
@@ -57,11 +56,11 @@ module MapiHelper
             logger.error e.response
             halt e.response.code, e.response.body
         end
-        return response
+        response
     end
 
     def sendDeleteCommandToMAPI(vnfr_id)
-        logger.debug "Sending remove command to mAPI..."
+        logger.debug 'Sending remove command to mAPI...'
         begin
             response = RestClient.delete "#{settings.mapi}/vnf_api/#{vnfr_id}/"
         rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH
@@ -76,5 +75,4 @@ module MapiHelper
             logger.error e
         end
     end
-
 end

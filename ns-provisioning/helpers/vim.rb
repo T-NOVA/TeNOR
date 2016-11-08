@@ -17,29 +17,6 @@
 #
 # @see NSProvisioner
 module VimHelper
-
-	#deprecated
-    def deleteTenant(keystoneUrl, tenant_id, token)
-        begin
-            response = RestClient.delete keystoneUrl + '/tenants/' + tenant_id, :content_type => :json, :'X-Auth-Token' => token
-        rescue => e
-            logger.error e
-            logger.error e.response.body
-        end
-        nil
-    end
-#deprecated
-    def deleteUser(keystoneUrl, user_id, token)
-        begin
-            response = RestClient.delete keystoneUrl + '/users/' + user_id, :content_type => :json, :'X-Auth-Token' => token
-        rescue => e
-            logger.error e
-            # logger.error e.response.body
-        end
-
-        nil
-    end
-
     def getAdminRole(keystoneUrl, token)
         begin
             response = RestClient.get keystoneUrl + '/OS-KSADM/roles', :content_type => :json, :'X-Auth-Token' => token
@@ -77,9 +54,7 @@ module VimHelper
         if network.nil?
             network = networks['networks'].find { |role| role['router:external'] }
         end
-        if network.nil?
-            return 400, "No external network defined in Openstack."
-        end
+        return 400, 'No external network defined in Openstack.' if network.nil?
         network['id']
     end
 

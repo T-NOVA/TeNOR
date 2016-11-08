@@ -1,10 +1,9 @@
 #!/bin/bash
 SESSION='nsmanager'
 SESSION2='vnfmanager'
-SESSION3='gatekeeper'
-SESSION4='ui'
+SESSION3='ui'
 
-byobu -2 new-session -d -s $SESSION4
+byobu -2 new-session -d -s $SESSION3
 echo "Starting User Interface..."
 byobu rename-window 'UI'
 byobu send-keys "cd ui" C-m

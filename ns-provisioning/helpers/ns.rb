@@ -131,21 +131,21 @@ module NsProvisioner
             end
 
             unless settings.default_tenant && !popUrls[:is_admin]
-                logger.info "Removing user stack...."
+                logger.info 'Removing user stack....'
                 stack_url = auth_info['stack_url']
-                logger.debug 'Removing user reserved stack...'
                 if !auth_info['stack_url'].nil?
                     response, errors = delete_stack_with_wait(auth_info['stack_url'], token)
                     logger.error errors if errors
                     return 400, errors if errors
-                    logger.info "User and tenant removed correctly."
+                    logger.info 'User and tenant removed correctly.'
                 else
-                    logger.info "No user and tenant to remove."
+                    logger.info 'No user and tenant to remove.'
                 end
 
             end
-            logger.info "REMOVED: User " + auth_info['user_id'].to_s + " and tenant '" + auth_info['tenant_id'].to_s
+            logger.info 'REMOVED: User ' + auth_info['user_id'].to_s + " and tenant '" + auth_info['tenant_id'].to_s
         end
+        logger.debug "Tenants and users removed correctly."
 
         message = {
             code: 200,
@@ -168,69 +168,57 @@ module NsProvisioner
         callback_url = @instance['notification']
         flavour = @instance['service_deployment_flavour']
         pop_list = instantiation_info['pop_list']
-        #pop_id = instantiation_info['pop_id']
-        mapping_id = instantiation_info['mapping_id']
+        mapping_info = instantiation_info['mapping']
         nap_id = instantiation_info['nap_id']
         customer_id = instantiation_info['customer_id']
+        infr_repo_url = instantiation_info['infr_repo_url']
         slaInfo = nsd['sla'].find { |sla| sla['sla_key'] == flavour }
 
         if slaInfo.nil?
-            return generateMarketplaceResponse(callbackUrl, generateError(nsd['id'], 'FAILED', 'Internal error: SLA inconsistency'))
+            return handleError(@instance, 'Internal error: SLA inconsistency')
         end
         sla_id = nsd['sla'].find { |sla| sla['sla_key'] == flavour }['id']
         logger.debug 'SLA id: ' + sla_id
 
-        infr_repo_url = if settings.environment == 'development'
-                            { 'host' => '', 'port' => '' }
-                        else
-                            settings.infr_repository
-                        end
-
-        logger.info 'List of available PoPs: ' + pop_list.to_s
-        if pop_list.size == 1 || mapping_id.nil?
+        if pop_list.size == 1 && mapping_info.empty?
             pop_id = pop_list[0]['id']
-        elsif !mapping_id.nil?
-            # call specified mapping with the id
-            # TODO
-        end
-
-        if !pop_id.nil?
-            logger.debug 'Deploy to PoP id: ' + pop_id.to_s
+            logger.info 'Deploy to PoP id: ' + pop_id.to_s
             mapping = getMappingResponse(nsd, pop_id)
-        else
+        elsif !mapping_info.empty?
+            logger.info "Calling Mapping algorithm "
+            logger.info mapping_info
+            if infr_repo_url.nil?
+                return handleError(@instance, 'Internal error: Infrastructure Repository not reachable.')
+            end
+
             ms = {
                 NS_id: nsd['id'],
-                tenor_api: settings.manager,
-                infr_repo_api: infr_repo_url,
-                development: true,
                 NS_sla: sla_id,
-                overcommitting: 'true'
+                tenor_api: settings.manager,
+                infr_repo_api: infr_repo_url#,
+                #development: true,
+                #overcommitting: 'true'
             }
-            mapping, errors = callMapping(ms, nsd)
-            # mapping Mapper PoPs with gatekeeper PoPs.
-            return generateMarketplaceResponse(callback_url, generateError(nsd['id'], 'FAILED', 'Internal error: Mapping not reachable.')) if errors
+            logger.info ms
+            mapping, errors = callMapping(mapping_info, ms, nsd)
+            if mapping['vnf_mapping']
+                mapping, errors = replace_pop_name_by_pop_id(mapping, pop_list)
+                return handleError(@instance, errors) if errors
+            else
+                return handleError(@instance, 'Internal error: Mapping: not enough resources.')
+            end
+            return handleError(@instance, 'Internal error: Mapping not reachable.') if errors
         end
 
         @instance.update_attribute('mapping_time', DateTime.now.iso8601(3).to_s)
-
-        unless mapping['vnf_mapping']
-            generateMarketplaceResponse(callback_url, generateError(nsd['id'], 'FAILED', 'Internal error: Mapping: not enough resources.'))
-            return
-        end
-
-        if @instance.nil?
-            generateMarketplaceResponse(callback_url, generateError(nsd['id'], 'FAILED', 'Internal error: instance is null.'))
-            return
-        end
-
         @instance.push(lifecycle_event_history: 'MAPPED FOUND')
 
         @instance['vnfrs'] = []
-        @instance['authentication'] = []
+        #@instance['authentication'] = []
 
+        @instance.update_attribute('status', 'CREATING AUTHENTICATIONS')
         # if mapping of all VNFs are in the same PoP. Create Authentication and network 1 time
         mapping['vnf_mapping'].each do |vnf|
-
             logger.info 'Start authentication process of ' + vnf.to_s
             pop_id = vnf['maps_to_PoP'].gsub('/pop/', '')
             pop_info = pop_list.find { |p| p['id'] == pop_id.to_i }
@@ -241,12 +229,15 @@ module NsProvisioner
             next unless authentication.nil?
             pop_auth, errors = create_authentication(@instance, nsd['id'], pop_info, callback_url)
             return handleError(@instance, errors) if errors
-            @instance['authentication'] << pop_auth
+            #@instance['authentication'] << pop_auth
+            @instance.push(authentication: pop_auth)
         end
 
         logger.info 'Authentication generated'
 
         # check if @instance['authentication'] has the credentials for each PoP in mapping['vnf_mapping'] ? compare sizes?
+
+        @instance.update_attribute('status', 'CREATING NETWORKS')
 
         # generate networks in each PoP?
         if @instance['authentication'].size > 1
@@ -298,7 +289,7 @@ module NsProvisioner
                 return handleError(@instance, errors) if errors
 
                 resource_reservation = @instance['resource_reservation']
-                resource_reservation << { wicm_stack: stack, pop_id: pop_auth['pop_id'] }
+                resource_reservation << { wicm_stack: stack, pop_id: pop_auth['pop_id']  }
                 @instance.update_attribute('resource_reservation', resource_reservation)
             end
         end
@@ -308,7 +299,7 @@ module NsProvisioner
             # generate networks for this PoP
 
             if @instance['authentication'].nil?
-                return handleError(@instance, "Authentication not valid.")
+                return handleError(@instance, 'Authentication not valid.')
             end
 
             pop_auth = @instance['authentication'][0]
@@ -328,7 +319,7 @@ module NsProvisioner
             hot, errors = generateNetworkHotTemplate(sla_id, hot_generator_message)
             return handleError(@instance, errors) if errors
 
-            logger.info 'Send network template to HEAT Orchestration'
+            logger.info 'Sending network template to HEAT Orchestration'
             stack_name = 'network_' + @instance['id'].to_s
             template = { stack_name: stack_name, template: hot }
             stack, errors = sendStack(popUrls[:orch], pop_auth['tenant_id'], template, tenant_token)
@@ -336,14 +327,14 @@ module NsProvisioner
 
             stack_id = stack['stack']['id']
 
-            #save stack_url in reserved resurces
-            logger.info "Saving reserved stack...."
+            # save stack_url in reserved resurces
+            logger.info 'Saving reserved stack....'
 
             @resource_reservation = @instance['resource_reservation']
             resource_reservation = []
             resource_reservation << {
                 ports: [],
-                network_stack: {:id => stack_id, :stack_url => stack['stack']['links'][0]['href']},
+                network_stack: { id: stack_id, stack_url: stack['stack']['links'][0]['href'] },
                 public_network_id: publicNetworkId,
                 dns_server: popUrls[:dns],
                 pop_id: pop_auth['pop_id'],
@@ -377,20 +368,20 @@ module NsProvisioner
             @instance.push(lifecycle_event_history: 'NETWORK CREATED')
             @instance.update_attribute('vlr', networks)
 
-            #get array
-            object = @resource_reservation.find {|s| s[:network_stack][:id] == stack['stack']['id'] }
-            #remove array
+            # get array
+            object = @resource_reservation.find { |s| s[:network_stack][:id] == stack['stack']['id'] }
+            # remove array
             @instance.pull(resource_reservation: object)
-            #add array
-            resource_reservation = resource_reservation.find {|s| s[:network_stack][:id] == stack['stack']['id'] }
+            # add array
+            resource_reservation = resource_reservation.find { |s| s[:network_stack][:id] == stack['stack']['id'] }
             resource_reservation[:routers] = routers
             resource_reservation[:networks] = networks
             @instance.push(resource_reservation: resource_reservation)
         end
 
+        #instantiate each VNF
         @instance.update_attribute('status', 'INSTANTIATING VNFs')
         vnfrs = []
-        # for each VNF, instantiate
         mapping['vnf_mapping'].each do |vnf|
             response, errors = instantiate_vnf(@instance, nsd['id'], vnf, slaInfo)
             return handleError(@instance, errors) if errors

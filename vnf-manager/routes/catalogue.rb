@@ -90,7 +90,7 @@ class Catalogue < VNFManager
 
     # Forward request to VNF Catalogue
     begin
-      response = RestClient.get catalogue.host + '/vnfs', 'X-Auth-Token' => catalogue.token
+      response = RestClient.get catalogue.host + request.fullpath, 'X-Auth-Token' => catalogue.token
     rescue Errno::ECONNREFUSED
       halt 500, 'VNF Catalogue unreachable'
     rescue => e
@@ -141,7 +141,7 @@ class Catalogue < VNFManager
 
     catalogue, errors = ServiceConfigurationHelper.get_module('vnf_catalogue')
     halt 500, errors if errors
-    
+
     # Forward request to VNF Catalogue
     begin
       response = RestClient.delete catalogue.host + '/vnfs/' + external_vnf_id, 'X-Auth-Token' => catalogue.token

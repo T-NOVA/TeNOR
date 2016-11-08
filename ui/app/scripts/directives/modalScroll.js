@@ -10,11 +10,11 @@ angular.module('tNovaApp')
                 }, function (newValue, oldValue) {
                     var windowElement = angular.element($window);
                     var scrollHeight = element[0].scrollHeight;
-                    if (scrollHeight + 180 > windowElement.height()) {
-                        console.log("Set bigger")
-                        element.css('height', windowElement.height() - 200);
+                    if (scrollHeight + 180 < windowElement.height()) {
+                        console.log("Set bigger");
+                        element.css('height', windowElement.height() - 220);
                     } else {
-                        console.log("Set small")
+                        console.log("Set small");
                         if(scrollHeight == 22) element.css('height', windowElement.height() - 200);
                         else element.css('height', scrollHeight);
                     }

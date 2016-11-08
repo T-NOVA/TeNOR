@@ -21,7 +21,7 @@ class Scaling < VnfProvisioning
     # @overload post '/vnf-instances/scaling/:id/scale_out'
     # Post a Scale out request
     # @param [JSON]
-    post '/:vnfr_id/scale_out' do |vnfr_id|
+    post '/:vnfr_id/scale_out' do |_vnfr_id|
         # Return if content-type is invalid
         halt 415 unless request.content_type == 'application/json'
 
@@ -48,7 +48,7 @@ class Scaling < VnfProvisioning
             # check if the VNFR can scale_out
             scaled_vdu = []
             vnfr['scale_resources'].each do |scaled_resource|
-                if scaled_resource.key?("vdus")
+                if scaled_resource.key?('vdus')
                     scaled_vdu.push(scaled_resource['vdus'].find { |v| v == vdu['id'] })
                 end
             end
@@ -58,9 +58,7 @@ class Scaling < VnfProvisioning
             end
         end
 
-        if vdus_to_scale.size == 0
-          halt 200, "No VDUs to scale."
-        end
+        halt 200, 'No VDUs to scale.' if vdus_to_scale.empty?
         vdus_id_to_scale = []
         vdus_to_scale.each do |vdu|
             vdus_id_to_scale.push(vdu['id'])
@@ -101,8 +99,8 @@ class Scaling < VnfProvisioning
         logger.debug 'Provision response: ' + response.to_json
 
         stack_url = response['stack']['links'][0]['href']
-        vnfr.push(scale_resources: {stack_url: stack_url, name: name, vdus: vdus_id_to_scale})
-        create_thread_to_monitor_stack(vnfr['_id'], stack_url, vim_info, vnfr['notifications'][0], vnfr['scale_resources'][vnfr['scale_resources'].size - 1 ])
+        vnfr.push(scale_resources: { stack_url: stack_url, name: name, vdus: vdus_id_to_scale })
+        create_thread_to_monitor_stack(vnfr['_id'], stack_url, vim_info, vnfr['notifications'][0], vnfr['scale_resources'][vnfr['scale_resources'].size - 1])
 
         vnfr.push(lifecycle_event_history: "Executed a #{event}")
 
@@ -114,7 +112,6 @@ class Scaling < VnfProvisioning
     # Post a Scale in request
     # @param [JSON]
     post '/:vnfr_id/scale_in' do
-
         halt 415 unless request.content_type == 'application/json'
 
         begin
@@ -131,13 +128,11 @@ class Scaling < VnfProvisioning
 
         event = 'scaling_in'
 
-        if vnfr['scale_resources'].size == 0
-            halt 200, "Nothing to scale in."
-        end
+        halt 200, 'Nothing to scale in.' if vnfr['scale_resources'].empty?
 
         resource = vnfr['scale_resources'][vnfr['scale_resources'].size - 1]
         logger.debug resource
-        logger.debug "Using scaling-in saved events..."
+        logger.debug 'Using scaling-in saved events...'
         scaling_in_events = {}
         resource['lifecycle_events_values']['scaling_in'].each do |param, value|
             scaling_in_events[param] = value
@@ -155,9 +150,9 @@ class Scaling < VnfProvisioning
         # Send request to the mAPI
         response = sendCommandToMAPI(params[:vnfr_id], mapi_request)
 
-        #wait 60 seconds?
-        logger.info "Waiting 60 seconds..."
-        #sleep(60)
+        # wait 60 seconds?
+        logger.info 'Waiting 60 seconds...'
+        # sleep(60)
 
         vim_info = scale_info['auth']
         vim_info['keystone'] = vim_info['url']['keystone']
@@ -168,7 +163,7 @@ class Scaling < VnfProvisioning
         logger.info 'Sending request to Openstack for Scale IN'
         response, errors = delete_stack_with_wait(stack_url, vim_info['token'])
         vnfr.pull(scale_resources: resource)
-        logger.info "Scale in correct"
+        logger.info 'Scale in correct'
 
         # Update the VNFR event history
         vnfr.push(lifecycle_event_history: "Executed a #{mapi_request[:event]}")
@@ -214,9 +209,9 @@ class Scaling < VnfProvisioning
             vim_info = scale_info['auth']
             vim_info['keystone'] = vim_info['url']['keystone']
             vim_info['heat'] = vim_info['url']['heat']
-            #token_info = request_auth_token(vim_info)
-            #tenant_id = token_info['access']['token']['tenant']['id']
-            #auth_token = token_info['access']['token']['id']
+            # token_info = request_auth_token(vim_info)
+            # tenant_id = token_info['access']['token']['tenant']['id']
+            # auth_token = token_info['access']['token']['id']
             auth_token = vim_info['token']
             tenant_id =  vim_info['tenant_id']
 
