@@ -119,7 +119,6 @@ module InstantiationHelper
             callback_url: settings.manager + '/ns-instances/' + @instance['id'] + '/instantiate'
         }
 
-        logger.debug vnf_provisioning_info
         @instance.push(lifecycle_event_history: 'INSTANTIATING ' + vnf_id.to_s + ' VNF')
         @instance.update_attribute('instantiation_start_time', DateTime.now.iso8601(3).to_s)
 
@@ -163,7 +162,7 @@ module InstantiationHelper
                 end
             end
             logger.error 'Handle error.'
-            return 400, 'Error wiht the VNF'
+            return 400, 'Error with the VNF'
         end
 
         vnf_manager_response, errors = parse_json(response)
