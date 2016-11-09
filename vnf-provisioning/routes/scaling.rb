@@ -133,11 +133,12 @@ class Scaling < VnfProvisioning
         resource = vnfr['scale_resources'][vnfr['scale_resources'].size - 1]
         logger.debug resource
         logger.debug 'Using scaling-in saved events...'
+        
         scaling_in_events = {}
-        vnfr['lifecycle_events_values']['scaling_in'].each do |param, value|
+        logger.debug vnfr['lifecycle_events_values'][event]
+        vnfr['lifecycle_events_values'][event].each do |param, value|
             scaling_in_events[param] = value
         end
-        logger.debug vnfr['lifecycle_events_values'][event]
 
         # Build mAPI request
         mapi_request = {
