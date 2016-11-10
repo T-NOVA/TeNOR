@@ -34,9 +34,6 @@ class NsMonitoring < TnovaManager
             composedUrl = "/vnf-monitoring/#{instance_id}/monitoring-data/?" + request.env['QUERY_STRING']
         end
 
-        if params['metric']
-            # composedUrl = composedUrl + "/" + params["metric"]
-        end
         begin
             response = RestClient.get monitoring.host + composedUrl.to_s, 'X-Auth-Token' => monitoring.token, :content_type => :json
         rescue Errno::ECONNREFUSED
