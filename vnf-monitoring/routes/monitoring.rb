@@ -33,44 +33,42 @@ class VNFMonitoring < Sinatra::Application
         logger.info 'VNFR: '
         logger.debug @json['vnfr']
 
-        types = []
-        instances = []
         @json['vnfd']['vnfd']['vdu'].each do |vdu|
+            types = []
+            puts @json['vnfr']['vms_id'][vdu['id']]
+            vdu_id = @json['vnfr']['vms_id'][vdu['id']]
+            #@json['vnfr']['vms_id'].find { |_key, value| instances << value }
             vdu['monitoring_parameters'].each do |mP|
                 types.push(mP['metric']) unless types.include?(mP['metric'])
             end
             vdu['monitoring_parameters_specific'].to_a.each do |mP|
                 types.push(mP['metric']) unless types.include?(mP['metric'])
             end
+
+            logger.info "Creating subcription message for vdu #{vdu['id']}"
+            callbackUrl = settings.vnf_manager + "/vnf-monitoring/#{vnfr_id}/readings"
+            url = 'http://' + callbackUrl unless callbackUrl.include? 'http://'
+            subscribe = {
+                types: types,
+                instances: vdu_id,
+                interval: 1,
+                callbackUrl: url
+            }
+            logger.debug subscribe.to_json
+            begin
+                response = RestClient.post settings.vim_monitoring + '/api/subscriptions', subscribe.to_json, content_type: :json, accept: :json
+            rescue => e
+                puts e
+                halt 400, 'VIM Monitoring Module not available'
+            end
+
+            monitoring_info = {
+                :vnfr_id => vnfr_id,
+                :vdu_id => vdu_id,
+                :subcription_id => response.split("under ID ")[1]
+            }
+            MonitoringMetric.new(monitoring_info).save!
         end
-        @json['vnfr']['vms_id'].each { |_key, value| instances << value }
-
-        logger.info 'Creating subcription message'
-        callbackUrl = settings.vnf_manager + '/vnf-monitoring/' + params['vnfr_id'] + '/readings'
-        url = 'http://' + callbackUrl unless callbackUrl.include? 'http://'
-        subscribe = {
-            types: types,
-            instances: instances,
-            interval: 1,
-            callbackUrl: url
-        }
-        logger.debug subscribe.to_json
-        begin
-            response = RestClient.post settings.vim_monitoring + '/api/subscriptions', subscribe.to_json, content_type: :json, accept: :json
-        rescue => e
-            puts e
-            halt 400, 'VIM Monitoring Module not available'
-        end
-
-        #subscription_response, errors = parse_json(response)
-        #return 400, errors.to_json if errors
-        #logger.debug subscription_response
-
-        monitoring_info = {
-            :vnfr_id => vnfr_id,
-            :subcription_id => response.split("under ID ")[1]
-        }
-        MonitoringMetric.new(monitoring_info).save!
 
         return 200, monitoring_info.to_json
     end
@@ -79,7 +77,7 @@ class VNFMonitoring < Sinatra::Application
         begin
             mon_data = MonitoringMetric.find_by(:vnfr_id => vnfr_id)
         rescue Mongoid::Errors::DocumentNotFound => e
-            logger.error "MOnitoring Metric no exists."
+            logger.error "Monitoring Metric no exists."
             halt 400, 'Sla no exists'
         end
         logger.debug mon_data

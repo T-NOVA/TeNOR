@@ -25,7 +25,10 @@
                             <tr ng-repeat="row in displayedCollection">
                                 <td><a>{{row.id}}</a></td>
                                 <td><a ng-click="getPopInfo(row)">{{row.name}}</a></td>
-                                <td><button ng-click="removePopDialog(row.id)" class="btn btn-danger btn-xs">Delete</button></td>
+                                <td>
+                                    <button ng-click="editPopDialog(row)" class="btn btn-info btn-xs">Edit</button>
+                                    <button ng-click="removePopDialog(row.id)" class="btn btn-danger btn-xs">Delete</button>
+                                </td>
                             </tr>
                         </tbody>
                         <tfoot>

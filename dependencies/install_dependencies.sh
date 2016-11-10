@@ -86,9 +86,9 @@ function install_ruby {
     cd ~
     . ~/.rvm/scripts/rvm
 
-    echo "Installing Ruby 2.2.5..."
-    rvm install 2.2.5
-    echo "Installation of Ruby 2.2.5 done."
+    echo "Installing Ruby 2.3.1..."
+    rvm install 2.3.1
+    echo "Installation of Ruby 2.3.1 done."
 
     echo "Installing Bundler..."
     gem install bundler invoker

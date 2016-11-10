@@ -126,9 +126,11 @@ class Provisioning < VnfProvisioning
         unless vim_info['is_admin']
             flavors = []
             vnf['vnfd']['vdu'].each do |vdu|
-                flavour_id = get_vdu_flavour(vdu, vim_info['compute'], vim_info['tenant_id'], vim_info['token'])
-                if flavour_id.nil?
+                flavour_id, errors = get_vdu_flavour(vdu, vim_info['compute'], vim_info['tenant_id'], vim_info['token'])
+                if errors == 'Flavor not found.'
                     halt 400, 'No flavours available for the vdu ' + vdu['id'].to_s
+                elsif errors == 'Error getting flavours'
+                    halt 400, 'Error getting flavors for vdu ' + vdu['id'].to_s
                 end
                 flavors << { id: vdu['id'], flavour_id: flavour_id }
             end

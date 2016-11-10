@@ -16,8 +16,10 @@ angular.module('tNovaApp')
                         var dt = new Date(o.created_at);
                         return -dt;
                     });
-                    page++;
-                    $scope.getVnfList(page);
+                    if(data.length == page_num){
+                        page++;
+                        $scope.getVnfList(page);
+                    }
                 }
             });
         };
@@ -122,8 +124,7 @@ angular.module('tNovaApp')
         $scope.updateInstanceList();
         var promise = $interval(function () {
             $scope.updateInstanceList();
-            //        }, defaultTimer);
-        }, 120000);
+        }, defaultTimer2);
 
         $scope.stop = function (instance) { //change status in the repo
             if (instance.status === 3) instance.status = 0;

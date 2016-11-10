@@ -21,12 +21,12 @@ class Scaling < VnfProvisioning
     # @overload post '/vnf-instances/scaling/:id/scale_out'
     # Post a Scale out request
     # @param [JSON]
-    post '/:vnfr_id/scale_out' do |_vnfr_id|
+    post '/:vnfr_id/scale_out' do |vnfr_id|
         # Return if content-type is invalid
         halt 415 unless request.content_type == 'application/json'
 
         begin
-            vnfr = Vnfr.find(params[:vnfr_id])
+            vnfr = Vnfr.find(vnfr_id)
         rescue Mongoid::Errors::DocumentNotFound => e
             logger.error 'VNFR record not found'
             halt 404
@@ -111,11 +111,11 @@ class Scaling < VnfProvisioning
     # @overload post '/vnf-instances/scaling/:id/scale_in'
     # Post a Scale in request
     # @param [JSON]
-    post '/:vnfr_id/scale_in' do
+    post '/:vnfr_id/scale_in' do |vnfr_id|
         halt 415 unless request.content_type == 'application/json'
 
         begin
-            vnfr = Vnfr.find(params[:vnfr_id])
+            vnfr = Vnfr.find(vnfr_id)
         rescue Mongoid::Errors::DocumentNotFound => e
             logger.error 'VNFR record not found'
             halt 404
@@ -133,11 +133,12 @@ class Scaling < VnfProvisioning
         resource = vnfr['scale_resources'][vnfr['scale_resources'].size - 1]
         logger.debug resource
         logger.debug 'Using scaling-in saved events...'
+        
         scaling_in_events = {}
-        resource['lifecycle_events_values']['scaling_in'].each do |param, value|
+        logger.debug vnfr['lifecycle_events_values'][event]
+        vnfr['lifecycle_events_values'][event].each do |param, value|
             scaling_in_events[param] = value
         end
-        logger.debug vnfr['lifecycle_events_values'][event]
 
         # Build mAPI request
         mapi_request = {
@@ -148,7 +149,7 @@ class Scaling < VnfProvisioning
         logger.debug 'mAPI request: ' + mapi_request.to_json
 
         # Send request to the mAPI
-        response = sendCommandToMAPI(params[:vnfr_id], mapi_request)
+        response = sendCommandToMAPI(vnfr_id, mapi_request)
 
         # wait 60 seconds?
         logger.info 'Waiting 60 seconds...'

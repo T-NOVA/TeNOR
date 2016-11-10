@@ -3,11 +3,14 @@
 angular.module('tNovaApp')
     .controller('PoPController', function ($scope, $window, $interval, $modal, $alert, tenorService, AuthService, infrRepoService) {
 
+        $scope.obj = {};
+        $scope.obj = {data: {}, options: { mode: 'code' }};
+
         $scope.defaultPoP = {};
         $scope.registeredDcList = [];
         $scope.keystone_versions = [{"id": "v2.0"}, {"id": "v3"}];
         $scope.heat_versions = [{"id": "v1"}];
-        $scope.compute_versions = [{"id": "v2.1"}];
+        $scope.compute_versions = [{"id": "v2"}, {"id": "v2.1"}];
         $scope.neutron_versions = [{"id": "v2.0"}];
 
         $scope.keystone_version = "v2.0"
@@ -150,17 +153,32 @@ angular.module('tNovaApp')
         };
 
         $scope.getPopInfo = function (pop_info) {
-            //tenorService.get('pops/dc/' + popId).then(function (pop_info) {
-                console.log(pop_info);
-                $scope.popInfo = pop_info;
-                $scope.jsonObj = JSON.stringify(pop_info, undefined, 4);
-                $modal({
-                    title: "Pop - " + pop_info['id'] + " - " + pop_info['name'],
-                    template: "views/t-nova/modals/info/showPop.html",
-                    show: true,
-                    scope: $scope,
-                });
-            //});
+            $scope.popInfo = pop_info;
+            $scope.jsonObj = JSON.stringify(pop_info, undefined, 4);
+            $modal({
+                title: "Pop - " + pop_info['id'] + " - " + pop_info['name'],
+                template: "views/t-nova/modals/info/showPop.html",
+                show: true,
+                scope: $scope,
+            });
+        };
+
+        $scope.editPopDialog = function(pop_info){
+            $scope.obj.data = pop_info;
+            $modal({
+                title: "Pop - " + pop_info['id'] + " - " + pop_info['name'],
+                template: "views/t-nova/modals/editPop.html",
+                show: true,
+                scope: $scope,
+            });
+        };
+
+        $scope.updateDc = function(pop_info){
+            console.log(pop_info);
+            tenorService.put('pops/dc/' +pop_info.id, pop_info).then(function (d) {
+                console.log(d);
+            });
+            this.$hide();
         };
 
         $scope.removePopDialog = function (id) {
