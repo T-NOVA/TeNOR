@@ -4,7 +4,7 @@ angular.module('tNovaApp')
     .controller('modulesController', function ($scope, $filter, tenorService, $interval, $modal) {
 
         $scope.types_internal_modules = ["", "manager"];
-        $scope.types_external_modules = ["mapping", "infr_repo"];
+        $scope.types_external_modules = ["mapping", "infr_repo", "mapi"];
         $scope.types_modules = $scope.types_internal_modules.concat($scope.types_external_modules)
         $scope.externalModulesCollection = [];
 
