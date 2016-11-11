@@ -21,8 +21,12 @@ default_tenant_name: tenor_tenant
 ns_monitoring: localhost:4014
 vnf_manager: localhost:4567
 hot_generator: localhost:4571
-dependencies: [ns_monitoring, vnf_manager, wicm, mAPI, mapping, hot_generator, infr_repository, netfloc]
+wicm: 
+mapping: 
+infr_repository: 
+netfloc: 
 
-netfloc:
+dependencies: [ns_monitoring, vnf_manager, wicm, mapping, hot_generator, infr_repository, netfloc]
+
 odl_username: admin
 odl_password: admin

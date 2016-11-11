@@ -13,4 +13,11 @@ threaded: true
 logger_host: 127.0.0.1
 logger_port: 24224
 
-dependencies: [ns_manager, wicm, mAPI, mapping, hot_generator, infr_repository]
+ns_manager: 
+hot_generator: 
+mapi:
+wicm:
+infr_repository:
+vim_monitoring:
+
+dependencies: [ns_manager, wicm, mapi, hot_generator, infr_repository, vim_monitoring]

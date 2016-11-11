@@ -108,7 +108,7 @@ class ServiceConfiguration < TnovaManager
                     logger.debug "Service found but is down."
                     s.destroy
                 else
-                    depends_on << { name: s['name'], host: s['host'], port: s['port'], token: s['token'], depends_on: s['depends_on'] }
+                    depends_on << { name: s['name'], host: s['host'], port: s['port'], token: s['token'], depends_on: s['depends_on'], type: s['type'] }
                 end
             rescue Mongoid::Errors::DocumentNotFound => e
                 logger.error 'Service not found.'
@@ -117,7 +117,6 @@ class ServiceConfiguration < TnovaManager
 
         logger.debug 'Find services that have this module as dependency:'
         dependencies = Service.any_of(depends_on: serv[:name]).entries
-        logger.debug dependencies
         if dependencies.any?
             dependencies.each do |dependency|
                 ServiceConfigurationHelper.send_dependencies_to_module(dependency, serv)
