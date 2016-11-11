@@ -44,7 +44,7 @@ module ComputeHelper
         flavors, errors = get_list_flavors(compute_url, tenant_id, query_params, auth_token)
         logger.info flavors
         logger.error errors if errors
-        return 400, 'Error getting flavours.'
+        return 400, 'Error getting flavours.' if errors
         flavors, errors = parse_json(flavors)
         logger.error errors if errors
         return flavors['flavors'][0]['name'], nil unless flavors['flavors'].empty?
