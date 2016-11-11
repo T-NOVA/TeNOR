@@ -228,7 +228,6 @@ angular.module('tNovaApp', ['ui.router', 'ngSanitize', 'tNovaApp.config', 'tNova
                             var isRestCall = config.url.indexOf('rest') === 0;
                             var isRestCall = config.url.indexOf('login') !== -1;
                             var isRestCall = config.url.indexOf('rest/api/auth/token/') !== -1;
-                            console.log($window.localStorage.token);
                             if (!isRestCall && angular.isDefined($window.localStorage.token)) {
                                 //  if (angular.isDefined($window.localStorage.token)) {
                                 var authToken = $window.localStorage.token;
@@ -271,11 +270,7 @@ angular.module('tNovaApp', ['ui.router', 'ngSanitize', 'tNovaApp.config', 'tNova
     }
   ]
     ).run(function ($window, $rootScope, $location, $state, AuthService) {
-      console.log($rootScope.username)
-      console.log($window.localStorage.username);
         if ($window.localStorage.username) $rootScope.username = $window.localStorage.username;
-        console.log($rootScope.username)
-        //if ($window.localStorage.user) $rootScope.user = JSON.parse($window.localStorage.user);
         $rootScope.$state = $state;
 
         $rootScope.logout = function () {
