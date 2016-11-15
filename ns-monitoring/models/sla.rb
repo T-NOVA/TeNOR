@@ -29,7 +29,7 @@ class Sla < ActiveRecord::Base
     end
 
     def store_breach(parameter, reading)
-        @breach = Breach.create(nsi_id: nsi_id, external_parameter_id: parameter.id, value: reading)
+        @breach = Breach.create(nsi_id: nsi_id, external_parameter_id: parameter.parameter_id, value: reading)
     end
 
     def notify_ns_manager(breach)

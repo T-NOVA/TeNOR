@@ -133,7 +133,7 @@ class Scaling < VnfProvisioning
         resource = vnfr['scale_resources'][vnfr['scale_resources'].size - 1]
         logger.debug resource
         logger.debug 'Using scaling-in saved events...'
-        
+
         scaling_in_events = {}
         logger.debug vnfr['lifecycle_events_values'][event]
         vnfr['lifecycle_events_values'][event].each do |param, value|
@@ -149,11 +149,11 @@ class Scaling < VnfProvisioning
         logger.debug 'mAPI request: ' + mapi_request.to_json
 
         # Send request to the mAPI
-        response = sendCommandToMAPI(vnfr_id, mapi_request)
+        response, errors = sendCommandToMAPI(vnfr_id, mapi_request)
 
         # wait 60 seconds?
         logger.info 'Waiting 60 seconds...'
-        # sleep(60)
+        sleep(60)
 
         vim_info = scale_info['auth']
         vim_info['keystone'] = vim_info['url']['keystone']

@@ -1,0 +1,422 @@
+{
+    "name": "complex_VNFD",
+    "vnfd": {
+        "vdu": [
+            {
+                "resource_requirements": {
+                    "network_interface_bandwidth_unit": "",
+                    "hypervisor_parameters": {
+                        "version": "10002|12001|2.6.32-358.el6.x86_64",
+                        "type": "QEMU-KVM"
+                    },
+                    "memory_unit": "GB",
+                    "network_interface_card_capabilities": {
+                        "SR-IOV": true,
+                        "mirroring": false
+                    },
+                    "storage": {
+                        "size_unit": "GB",
+                        "persistence": false,
+                        "size": 4
+                    },
+                    "network_interface_bandwidth": "",
+                    "platform_pcie_parameters": {
+                        "SR-IOV": true,
+                        "device_pass_through": true
+                    },
+                    "vcpus": 1,
+                    "vswitch_capabilities": {
+                        "version": "2.0",
+                        "type": "ovs",
+                        "overlay_tunnel": "GRE"
+                    },
+                    "data_processing_acceleration_library": "",
+                    "memory": 1,
+                    "memory_parameters": {
+                        "large_pages_required": false,
+                        "numa_allocation_policy": ""
+                    },
+                    "cpu_support_accelerator": "AES-NI"
+                },
+                "bootstrap_script": "",
+                "vm_image": "http://cloud-images.ubuntu.com/xenial/current/xenial-server-cloudimg-amd64-disk1.img",
+                "id": "vdu0",
+                "networking_resources": "",
+                "monitoring_parameters_specific": [
+                ],
+                "wc_notify": true,
+                "alias": "OAM_1411",
+                "controller": true,
+                "connection_points": [
+                    {
+                        "vlink_ref": "vl0",
+                        "id": "CPdvkz"
+                    },
+                    {
+                        "vlink_ref": "vl1",
+                        "id": "CPvku6"
+                    },
+                    {
+                        "vlink_ref": "vl2",
+                        "id": "CPd2fl"
+                    },
+                    {
+                        "vlink_ref": "vl3",
+                        "id": "CPv634"
+                    },
+                    {
+                        "vlink_ref": "vl4",
+                        "id": "CPpvfj"
+                    },
+                    {
+                        "vlink_ref": "vl5",
+                        "id": "CPx39g"
+                    },
+                    {
+                        "vlink_ref": "vl6",
+                        "id": "CPjb99"
+                    }
+                ],
+                "monitoring_parameters": [
+                ],
+                "scale_in_out": {
+                    "minimum": 1,
+                    "maximum": 1
+                },
+                "vm_image_md5": "fe9bc72c4bff6a82b5b22a90d5beb6c9",
+                "vm_image_format": "qcow2"
+            },
+            {
+                "resource_requirements": {
+                    "network_interface_bandwidth_unit": "",
+                    "hypervisor_parameters": {
+                        "version": "10002|12001|2.6.32-358.el6.x86_64",
+                        "type": "QEMU-KVM"
+                    },
+                    "memory_unit": "GB",
+                    "network_interface_card_capabilities": {
+                        "SR-IOV": true,
+                        "mirroring": false
+                    },
+                    "storage": {
+                        "size_unit": "GB",
+                        "persistence": false,
+                        "size": 4
+                    },
+                    "network_interface_bandwidth": "",
+                    "platform_pcie_parameters": {
+                        "SR-IOV": true,
+                        "device_pass_through": true
+                    },
+                    "vcpus": 1,
+                    "vswitch_capabilities": {
+                        "version": "2.0",
+                        "type": "ovs",
+                        "overlay_tunnel": "GRE"
+                    },
+                    "data_processing_acceleration_library": "",
+                    "memory": 1,
+                    "memory_parameters": {
+                        "large_pages_required": false,
+                        "numa_allocation_policy": ""
+                    },
+                    "cpu_support_accelerator": "AES-NI"
+                },
+                "bootstrap_script": "",
+                "vm_image": "http://cloud-images.ubuntu.com/xenial/current/xenial-server-cloudimg-amd64-disk1.img",
+                "id": "vdu1",
+                "networking_resources": "",
+                "monitoring_parameters_specific": [
+                ],
+                "wc_notify": true,
+                "alias": "BGW_1411",
+                "controller": false,
+                "connection_points": [
+                    {
+                        "vlink_ref": "vl0",
+                        "id": "CPb14l"
+                    },
+                    {
+                        "vlink_ref": "vl1",
+                        "id": "CPkh7y"
+                    },
+                    {
+                        "vlink_ref": "vl2",
+                        "id": "CPri2n"
+                    },
+                    {
+                        "vlink_ref": "vl7",
+                        "id": "CPix7l"
+                    },
+                    {
+                        "vlink_ref": "vl8",
+                        "id": "CPtsvo"
+                    }
+                ],
+                "monitoring_parameters": [
+                ],
+                "scale_in_out": {
+                    "minimum": 1,
+                    "maximum": 2
+                },
+                "vm_image_md5": "e2e7bd299386a6d066a82b4b455b7a0d",
+                "vm_image_format": "qcow2"
+            }
+        ],
+        "name": "COMPLEX_EXAMPLE",
+        "provider_id": 6,
+        "trade": false,
+        "descriptor_version": "1",
+        "deployment_flavours": [
+            {
+                "vdu_reference": [
+                    "vdu0",
+                    "vdu1"
+                ],
+                "constraint": "",
+                "flavour_key": "gold",
+                "vlink_reference": [
+                    "vl0",
+                    "vl1",
+                    "vl2",
+                    "vl3",
+                    "vl4",
+                    "vl5",
+                    "vl6",
+                    "vl7",
+                    "vl8"
+                ],
+                "id": "flavor0",
+                "assurance_parameters": []
+            }
+        ],
+        "version": "1",
+        "vnf_lifecycle_events": [
+            {
+                "authentication_username": "italtel",
+                "driver": "http",
+                "authentication_type": "HTTPBasicAuth",
+                "authentication": "tnovatnova",
+                "authentication_port": 8080,
+                "flavor_id_ref": "flavor0",
+                "events": {
+                    "start": {
+                        "command": "POST /vnf_api/vSBC/config",
+                        "template_file": "{\"controller\":\"get_attr[vdu0,CPdvkz,PublicIp]\"}",
+                        "template_file_format": "JSON"
+                    },
+                    "stop": {
+                        "command": "PUT /vnf_api/vSBC/config",
+                        "template_file": "{\"controller\":\"get_attr[vdu0,CPdvkz,PublicIp]\"}",
+                        "template_file_format": "JSON"
+                    },
+                    "scaling_out": {
+                        "command": "POST /vnf_api/vSBC/scale_out",
+                        "template_file": "{\"controller\":\"get_attr[vdu0,CPdvkz,PublicIp]\",\"vdu1\":\"get_attr[vdu1,vdus]\",\"locip_vupl0\":\"get_attr[CPix7l,fixed_ips,0,ip_address]\",\"extip_vupl0\":\"get_attr[vdu1,CPix7l,PublicIp]\",\"locip_vupl1\":\"get_attr[CPtsvo,fixed_ips,0,ip_address]\",\"extip_vupl1\":\"get_attr[vdu1,CPtsvo,PublicIp]\"}",
+                        "template_file_format": "JSON"
+                    },
+                    "scaling_in": {
+                        "command": "POST /vnf_api/vSBC/scale_in",
+                        "template_file": "{\"controller\":\"get_attr[vdu0,CPdvkz,PublicIp]\",\"vdu1\":\"get_attr[vdu1,vdus]\",\"locip_vupl0\":\"get_attr[CPix7l,fixed_ips,0,ip_address]\",\"extip_vupl0\":\"get_attr[vdu1,CPix7l,PublicIp]\",\"locip_vupl1\":\"get_attr[CPtsvo,fixed_ips,0,ip_address]\",\"extip_vupl1\":\"get_attr[vdu1,CPtsvo,PublicIp]\"}",
+                        "template_file_format": "JSON"
+                    }
+                },
+                "vnf_container": "/vnf_api/vSBC/"
+            }
+        ],
+        "billing_model": {
+            "price": {
+                "setup": 12,
+                "max_per_period": 180,
+                "min_per_period": 180,
+                "unit": "EUR"
+            },
+            "model": "PAYG",
+            "period": "P1D"
+        },
+        "provider": "ITALTEL",
+        "release": "T-NOVA",
+        "vlinks": [
+            {
+                "leaf_requirement": "10Gbps",
+                "connectivity_type": "E-LINE",
+                "vdu_reference": [
+                    "vdu0",
+                    "vdu1"
+                ],
+                "external_access": true,
+                "port_security_enabled": false,
+                "connection_points_reference": [
+                    "CPdvkz",
+                    "CPb14l"
+                ],
+                "net_segment": "172.22.48.32/28",
+                "access": true,
+                "alias": "ITL1411",
+                "dhcp": true,
+                "root_requirement": "10Gbps",
+                "qos": "",
+                "id": "vl0"
+            },
+            {
+                "leaf_requirement": "10Gbps",
+                "connectivity_type": "E-LINE",
+                "vdu_reference": [
+                    "vdu0",
+                    "vdu1"
+                ],
+                "external_access": false,
+                "port_security_enabled": false,
+                "connection_points_reference": [
+                    "CPvku6",
+                    "CPkh7y"
+                ],
+                "net_segment": "102.1.0.0/16",
+                "access": false,
+                "alias": "PRIV_A1411",
+                "dhcp": true,
+                "root_requirement": "10Gbps",
+                "qos": "",
+                "id": "vl1"
+            },
+            {
+                "leaf_requirement": "10Gbps",
+                "connectivity_type": "E-LINE",
+                "vdu_reference": [
+                    "vdu0",
+                    "vdu1"
+                ],
+                "external_access": false,
+                "port_security_enabled": false,
+                "connection_points_reference": [
+                    "CPd2fl",
+                    "CPri2n"
+                ],
+                "net_segment": "102.2.0.0/16",
+                "access": false,
+                "alias": "PRIV_B1411",
+                "dhcp": true,
+                "root_requirement": "10Gbps",
+                "qos": "",
+                "id": "vl2"
+            },
+            {
+                "leaf_requirement": "10Gbps",
+                "connectivity_type": "E-LINE",
+                "vdu_reference": [
+                    "vdu0"
+                ],
+                "external_access": true,
+                "port_security_enabled": false,
+                "connection_points_reference": [
+                    "CPv634"
+                ],
+                "net_segment": "172.22.48.64/29",
+                "access": true,
+                "alias": "VUPLZEROOAM",
+                "dhcp": true,
+                "root_requirement": "10Gbps",
+                "qos": "",
+                "id": "vl3"
+            },
+            {
+                "leaf_requirement": "10Gbps",
+                "connectivity_type": "E-LINE",
+                "vdu_reference": [
+                    "vdu0"
+                ],
+                "external_access": true,
+                "port_security_enabled": false,
+                "connection_points_reference": [
+                    "CPpvfj"
+                ],
+                "net_segment": "172.22.48.72/29",
+                "access": true,
+                "alias": "VUPLONEOAM",
+                "dhcp": true,
+                "root_requirement": "10Gbps",
+                "qos": "",
+                "id": "vl4"
+            },
+            {
+                "leaf_requirement": "10Gbps",
+                "connectivity_type": "E-LINE",
+                "vdu_reference": [
+                    "vdu0"
+                ],
+                "external_access": true,
+                "port_security_enabled": false,
+                "connection_points_reference": [
+                    "CPx39g"
+                ],
+                "net_segment": "172.22.48.96/29",
+                "access": true,
+                "alias": "VUPLTWOOAM",
+                "dhcp": true,
+                "root_requirement": "10Gbps",
+                "qos": "",
+                "id": "vl5"
+            },
+            {
+                "leaf_requirement": "10Gbps",
+                "connectivity_type": "E-LINE",
+                "vdu_reference": [
+                    "vdu0"
+                ],
+                "external_access": true,
+                "port_security_enabled": false,
+                "connection_points_reference": [
+                    "CPjb99"
+                ],
+                "net_segment": "172.22.48.104/29",
+                "access": true,
+                "alias": "VUPLTHREEOAM",
+                "dhcp": true,
+                "root_requirement": "10Gbps",
+                "qos": "",
+                "id": "vl6"
+            },
+            {
+                "leaf_requirement": "10Gbps",
+                "connectivity_type": "E-LINE",
+                "vdu_reference": [
+                    "vdu1"
+                ],
+                "external_access": true,
+                "port_security_enabled": false,
+                "connection_points_reference": [
+                    "CPix7l"
+                ],
+                "net_segment": "172.22.48.80/29",
+                "access": true,
+                "alias": "VUPLZEROBGW",
+                "dhcp": true,
+                "root_requirement": "10Gbps",
+                "qos": "",
+                "id": "vl7"
+            },
+            {
+                "leaf_requirement": "10Gbps",
+                "connectivity_type": "E-LINE",
+                "vdu_reference": [
+                    "vdu1"
+                ],
+                "external_access": true,
+                "port_security_enabled": false,
+                "connection_points_reference": [
+                    "CPtsvo"
+                ],
+                "net_segment": "172.22.48.112/29",
+                "access": true,
+                "alias": "VUPLONEBGW",
+                "dhcp": true,
+                "root_requirement": "10Gbps",
+                "qos": "",
+                "id": "vl8"
+            }
+        ],
+        "type": "vProxy",
+        "description": "Italtel_vSBC",
+        "id": 39921
+    }
+}

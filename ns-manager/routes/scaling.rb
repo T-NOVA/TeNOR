@@ -22,13 +22,13 @@ class NsScaling< TnovaManager
   # @overload post "/ns-instances/scaling/:nsr_id/scale_out"
   # Manual scaling out given ns instance id
   # @param [string] nsr_id NS instance id
-  post '/:nsr_id/scale_out' do
+  post '/:nsr_id/scale_out' do |nsr_id|
 
     return 415 unless request.content_type == 'application/json'
 
-    ns_provisioner, errors = ServiceConfigurationHelper.get_module("ns_provisioner")
+    provisioner, errors = ServiceConfigurationHelper.get_module('ns_provisioner')
     halt 500, errors if errors
-    ns_catalogue, errors = ServiceConfigurationHelper.get_module("ns_catalogue")
+    catalogue, errors = ServiceConfigurationHelper.get_module('ns_catalogue')
     halt 500, errors if errors
 
     # Validate JSON format
@@ -36,7 +36,7 @@ class NsScaling< TnovaManager
 
     # Get NS Instance by NSR id
     begin
-      instantiation_info, errors = parse_json(RestClient.get ns_provisioner + '/ns-instances/' + params['nsr_id'].to_s, :accept => :json)
+      instantiation_info, errors = parse_json(RestClient.get provisioner.host + '/ns-instances/' + nsr_id, :accept => :json)
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Provisioning unreachable'
     rescue => e
@@ -48,7 +48,7 @@ class NsScaling< TnovaManager
     logger.error instantiation_info['nsd_id']
     # Get NS by id
     begin
-      nsd = RestClient.get ns_catalogue + '/network-services/' + instantiation_info['nsd_id'].to_s, 'X-Auth-Token' => @client_token
+      nsd = RestClient.get catalogue.host + '/network-services/' + instantiation_info['nsd_id'].to_s, 'X-Auth-Token' => @client_token
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Catalogue unreachable'
     rescue => e
@@ -58,7 +58,7 @@ class NsScaling< TnovaManager
     end
 
     begin
-      response = RestClient.post ns_provisioner + request.fullpath, "", 'X-Auth-Token' => @client_token, :content_type => :json
+      response = RestClient.post provisioner.host + request.fullpath, "", 'X-Auth-Token' => @client_token, :content_type => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Provisioning unreachable'
     rescue => e
@@ -75,13 +75,13 @@ class NsScaling< TnovaManager
   # @overload post "/ns-instances/scaling/:nsr_id/scale_in"
   # Manual scaling in given ns instance id
   # @param [string] nsr_id NS instance id
-  post '/:nsr_id/scale_in' do
+  post '/:nsr_id/scale_in' do |nsr_id|
 
     return 415 unless request.content_type == 'application/json'
 
-    ns_provisioner, errors = ServiceConfigurationHelper.get_module("ns_provisioner")
+    provisioner, errors = ServiceConfigurationHelper.get_module('ns_provisioner')
     halt 500, errors if errors
-    ns_catalogue, errors = ServiceConfigurationHelper.get_module("ns_catalogue")
+    catalogue, errors = ServiceConfigurationHelper.get_module('ns_catalogue')
     halt 500, errors if errors
 
     # Validate JSON format
@@ -89,7 +89,7 @@ class NsScaling< TnovaManager
 
     # Get NS Instance by NSR id
     begin
-      instantiation_info, errors = parse_json(RestClient.get ns_provisioner + '/ns-instances/' + params['nsr_id'].to_s, :accept => :json)
+      instantiation_info, errors = parse_json(RestClient.get provisioner.host + '/ns-instances/' + nsr_id, :accept => :json)
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Provisioning unreachable'
     rescue => e
@@ -100,7 +100,7 @@ class NsScaling< TnovaManager
 
     # Get NS by id
     begin
-      nsd = RestClient.get ns_catalogue + '/network-services/' + instantiation_info['nsd_id'].to_s, 'X-Auth-Token' => @client_token
+      nsd = RestClient.get catalogue.host + '/network-services/' + instantiation_info['nsd_id'].to_s, 'X-Auth-Token' => @client_token
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Catalogue unreachable'
     rescue => e
@@ -110,7 +110,7 @@ class NsScaling< TnovaManager
     end
 
     begin
-      response = RestClient.post ns_provisioner + request.fullpath, "", 'X-Auth-Token' => @client_token, :content_type => :json
+      response = RestClient.post provisioner.host + request.fullpath, "", 'X-Auth-Token' => @client_token, :content_type => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Provisioning unreachable'
     rescue => e
@@ -128,14 +128,11 @@ class NsScaling< TnovaManager
   # Autoscalin
   # @param [string] nsr_id NS instance id
   post '/:nsr_id/auto_scale' do |nsr_id|
-    logger.info "Launching autoscaling..."
     logger.info "----------------------------------- Request for AUTO SCALE -----------------------------------"
 
     return 415 unless request.content_type == 'application/json'
 
-    ns_provisioner, errors = ServiceConfigurationHelper.get_module("ns_provisioner")
-    halt 500, errors if errors
-    ns_catalogue, errors = ServiceConfigurationHelper.get_module("ns_catalogue")
+    provisioner, errors = ServiceConfigurationHelper.get_module('ns_provisioner')
     halt 500, errors if errors
 
     # Validate JSON format
@@ -143,7 +140,7 @@ class NsScaling< TnovaManager
 
     # Get NS Instance by NSR id
     begin
-      instantiation_info, errors = parse_json(RestClient.get ns_provisioner + '/ns-instances/' + nsr_id, :accept => :json)
+      instantiation_info, errors = parse_json(RestClient.get provisioner.host + '/ns-instances/' + nsr_id, :accept => :json)
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Provisioning unreachable'
     rescue => e
@@ -152,21 +149,35 @@ class NsScaling< TnovaManager
       halt e.response.code, e.response.body
     end
 
-    # Get NS by id
+    logger.info "Breach of parameter: " + auto_scale_info['parameter_id'].to_s
+
+    flavour = instantiation_info['service_deployment_flavour']
+    halt 500, "Flavour not found for autoscale." if flavour.nil?
+    halt 500, "No autoscale policy for flavour: #{flavour}." if instantiation_info['auto_scale_policy'][flavour].nil?
+
+    auto_scale_policy = instantiation_info['auto_scale_policy'][flavour].find { |as| as['criteria'][0]['assurance_parameter_id'] == auto_scale_info['parameter_id'].to_s }
+    halt 500, "No autoscale policy for flavour with this parameter." if auto_scale_policy.nil?
+
+    #if auto_scale_policy
+    if auto_scale_policy['actions'][0]['type'] == "Scale Out"
+      event = "scale_out"
+    elsif auto_scale_policy['actions'][0]['type'] == "Scale In"
+      event = "scale_in"
+    else
+      halt 400, "No event defined for this scale request."
+    end
+
     begin
-      nsd = RestClient.get ns_catalogue + '/network-services/' + instantiation_info['nsd_id'].to_s, 'X-Auth-Token' => @client_token
+      response = RestClient.post provisioner.host + "/ns-instances/scaling/#{nsr_id}/#{event}", "", 'X-Auth-Token' => provisioner.token, :content_type => :json
     rescue Errno::ECONNREFUSED
-      halt 500, 'NS Catalogue unreachable'
+      halt 500, 'NS Provisioning unreachable'
     rescue => e
-      logger.error e
       logger.error e.response
       halt e.response.code, e.response.body
     end
 
-    #reading the auto_scale_policy and match with the auto_scale_info['parameter_id']
-    #send the scale_in/out accordingly
-    logger.info "Breach of parameter: " + auto_scale_info['parameter_id'].to_s
-
+    logger.error "AutoScaling executed."
+    return response.code, response.body
   end
 
 end

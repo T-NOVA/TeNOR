@@ -31,8 +31,8 @@ class NSMonitoring < Sinatra::Application
     # 	   }
     # 	 ],
     # 	 "parameters": [
-    # 	   { "id": "1", "name": "availability", "formula": "min(vnf_instance[1].availability, vnf_instance[2].availability)"},
-    # 	   { "id": "2", "name": "num_sessions", "formula": "vnf_instances[1].num_sessions+vnf_instances[2].num_sessions"}
+    # 	   { "uid": "ap_id", "id": "1", "name": "availability", "formula": "min(vnf_instance[1].availability, vnf_instance[2].availability)"},
+    # 	   { "uid": "ap_id2", "id": "2", "name": "num_sessions", "formula": "vnf_instances[1].num_sessions+vnf_instances[2].num_sessions"}
     # 	 ]
     # 	}
 
@@ -58,7 +58,7 @@ class NSMonitoring < Sinatra::Application
         return 422, "Could not create SLA from #{monitoring}.\n" unless sla
 
         monitoring['parameters'].each do |parameter|
-            sla.parameters << Parameter.new(parameter_id: parameter['id'], name: parameter['name'], threshold: parameter['value'])
+            sla.parameters << Parameter.new(parameter_id: parameter['uid'], name: parameter['name'], threshold: parameter['value'])
         end
         sla.save!
 

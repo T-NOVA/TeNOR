@@ -18,9 +18,10 @@
                 <table ng-table="tableParams" class="table ng-table-responsive">
                     <tr ng-repeat="row in tableData">
                         <td data-title="'Statistic'" class="col-sm-2 col-md-2 col-lg-2">{{row.type}}</td>
+                        <td data-title="'Statistic'" class="col-sm-2 col-md-2 col-lg-2">{{row.vdu}}</td>
                         <td data-title="'Current value'" class="col-sm-2 col-md-2 col-lg-2">{{row.valueType}}</td>
                         <td data-title="'Action'" class="col-sm-2 col-md-2 col-lg-2">
-                            <button ng-click="reloadGraph(row.valueType)" class="btn btn-primary btn-xs">Show graph</button>
+                            <button ng-click="reloadGraph(row.vdu, row.valueType)" class="btn btn-primary btn-xs">Show graph</button>
                         </td>
                     </tr>
                 </table>
