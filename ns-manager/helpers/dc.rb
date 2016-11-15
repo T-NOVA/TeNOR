@@ -24,7 +24,7 @@ module DcHelper
   # @return [String] the object converted into the expected format.
   def getDcs()
     begin
-        return Dc.all.to_json
+        return Dc.all
     rescue => e
         logger.error e
         logger.error 'Error Establishing a Database Connection'
@@ -43,7 +43,7 @@ module DcHelper
         logger.error 'DC not found'
         return 404
     end
-    return dc.to_json
+    return dc
   end
 
   def getDcsTokens()
