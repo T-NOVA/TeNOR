@@ -127,11 +127,13 @@ class Provisioning < VnfProvisioning
             flavors = []
             vnf['vnfd']['vdu'].each do |vdu|
                 flavour_id, errors = get_vdu_flavour(vdu, vim_info['compute'], vim_info['tenant_id'], vim_info['token'])
+                logger.error errors if errors
                 if errors == 'Flavor not found.'
                     halt 400, 'No flavours available for the vdu ' + vdu['id'].to_s
-                elsif errors == 'Error getting flavours'
+                elsif errors == 'Error getting flavours.'
                     halt 400, 'Error getting flavors for vdu ' + vdu['id'].to_s
                 end
+                halt 400, 'Error getting flavors for vdu ' + vdu['id'].to_s if errors
                 flavors << { id: vdu['id'], flavour_id: flavour_id }
             end
             hot_generator_message['flavours'] = flavors

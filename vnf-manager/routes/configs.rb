@@ -91,7 +91,7 @@ class ServiceConfiguration < VNFManager
         depends_on = []
         serv_reg['depends_on'].each do |serv|
             begin
-                logger.debug "Checking if dependant Services of #{serv} is Up and Running...."
+                logger.debug "Checking if dependant Services of #{serv} are Up and Running...."
                 s = Service.where(name: serv).first
                 next if s.nil?
                 dependant_status = is_port_open?(s['host'], s['port'])
@@ -109,10 +109,8 @@ class ServiceConfiguration < VNFManager
 
         logger.debug 'Find services that have this module as dependency:'
         dependencies = Service.any_of(depends_on: serv[:name]).entries
-        logger.debug dependencies
         if dependencies.any?
             dependencies.each do |dependency|
-                puts dependency
                 begin
                     RestClient.post dependency['host'] + ':' + dependency['port'] + '/gk_dependencies', serv.to_json, :content_type => :json, 'X-Auth-Token' => dependency['token']
                 rescue => e

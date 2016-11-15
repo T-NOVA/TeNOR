@@ -32,7 +32,7 @@ module ComputeHelper
             return 400, e
             # halt e.response.code, e.response.body
         end
-        [response, nil]
+        [JSON.parse(response), nil]
       end
 
     def get_vdu_flavour(vdu, compute_url, tenant_id, auth_token)
@@ -41,31 +41,31 @@ module ComputeHelper
         retries = 0
         retries_max = 10
         query_params = "?minDisk=#{minDisk}&minRam=#{minRam}"
+        logger.info "Flavors of: " + query_params
         flavors, errors = get_list_flavors(compute_url, tenant_id, query_params, auth_token)
-        logger.info flavors
-        logger.error errors if errors
-        return 400, 'Error getting flavours.'
-        flavors, errors = parse_json(flavors)
-        logger.error errors if errors
+        return 400, 'Error getting flavours.' if errors
         return flavors['flavors'][0]['name'], nil unless flavors['flavors'].empty?
 
         static_disk = nil
         static_ram = nil
         while retries < retries_max
             query_params = "?minDisk=#{minDisk}"
-            flavors_disk = get_list_flavors(compute_url, tenant_id, query_params, auth_token)
+            logger.info "Flavors of: " + query_params
+            flavors_disk, errors = get_list_flavors(compute_url, tenant_id, query_params, auth_token)
+            return 400, 'Error getting flavours.' if errors
             if !flavors['flavors'].empty?
-                puts 'Disk size has flavours'
+                logger.debug 'Disk size has flavours'
                 minRam /= 2
                 query_params = "?minRam=#{minRam}"
-                flavors_disk = get_list_flavors(compute_url, tenant_id, query_params, auth_token)
+                logger.info "Flavors of: " + query_params
+                flavors_disk, errors = get_list_flavors(compute_url, tenant_id, query_params, auth_token)
+                return 400, 'Error getting flavours.' if errors
                 return flavors['flavors'][0]['name'], nil
             else
                 minDisk /= 2
             end
             retries += 1
         end
-        puts 'Raise??'
         return 400, 'Flavor not found.'
     end
 end

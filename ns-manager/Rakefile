@@ -20,7 +20,7 @@ namespace :db do
     task :seed do
         puts 'Creating the admin user....'
         begin
-            User.find_by(name: 'admin').destroy unless User.find_by(name: 'admin').nil?
+            User.find_by(name: 'admin')
         rescue  Mongoid::Errors::DocumentNotFound => e
             salt = BCrypt::Engine.generate_salt
             user1 = User.create(name: 'admin', email: 'mail@mail.com', password: 'adminpass', password_confirmation: 'adminpass', password_salt: salt, password_hash: BCrypt::Engine.hash_secret('adminpass', salt), active: 1)

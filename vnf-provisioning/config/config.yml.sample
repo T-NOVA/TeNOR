@@ -12,6 +12,8 @@ threaded: true
 logger_host: 127.0.0.1
 logger_port: 24224
 
+vnf_manager: 
 mapi: 
+hot_generator: 
 
 dependencies: [vnf_manager, mapi, hot_generator]

@@ -45,8 +45,12 @@ module Sinatra
                 return 400, errors.to_json if errors
 
                 services['depends_on'].each do |service|
-                    Sinatra::Application.set service['name'], service['host'] + ':' + service['port'].to_s # unless service['name'] == 'logstash'
+                    name = service['name'].to_s
+                    host = service['host'] + ':' + service['port'].to_s
+                    Sinatra::Application.set service['name'], host # unless service['name'] == 'logstash'
                     Sinatra::Application.set service['name'] + '_token', service['token'] # unless service['name'] == 'logstash'
+                    eval('settings.'+name+'="'+host+'"')
+                    eval('settings.'+name+'_token="'+service['token']+'"')
                 end
                 response
             end
@@ -101,6 +105,14 @@ module Sinatra
             app.before do
                 return if settings.environment == 'development'
                 authorized?
+            end
+
+            app.get '/services' do
+                arr = []
+                settings.dependencies.each do |s, k|
+                    arr << { name: s, host: eval("settings."+s.to_s) }
+                end
+                arr.to_json
             end
 
             app.post '/gk_dependencies' do

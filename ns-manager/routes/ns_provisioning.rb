@@ -49,7 +49,7 @@ class NsProvisioner < TnovaManager
     pop_list = []
     mapping_info = {}
     if instantiation_info['pop_id'].nil?
-      pop_list = JSON.parse(getDcs())
+      available_pops = getDcs()
       if pop_list.empty?
         halt 400, "No PoPs registereds."
       end
@@ -63,10 +63,11 @@ class NsProvisioner < TnovaManager
         mapping_info = mapping.host + ":" + mapping.port.to_s + mapping.path
       else
         #deploy to the unic PoP
+        pop_list << getDc(available_pops[0]['id'])
       end
     else
       #deploying the Instance into the requested PoP
-      pop_list << JSON.parse(getDc(instantiation_info['pop_id']))
+      pop_list << getDc(instantiation_info['pop_id'])
     end
 
     infr_repo_url, errors = ServiceConfigurationHelper.get_module_by_type('infr_repo')
