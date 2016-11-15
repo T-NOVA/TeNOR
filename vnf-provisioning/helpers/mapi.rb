@@ -54,7 +54,7 @@ module MapiHelper
             return 500, 'mAPI unreachable'
         rescue => e
             logger.error e.response
-            halt e.response.code, e.response.body
+            return e.response.code, e.response.body
         end
         response
     end

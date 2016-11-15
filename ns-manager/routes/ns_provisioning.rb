@@ -50,17 +50,19 @@ class NsProvisioner < TnovaManager
     mapping_info = {}
     if instantiation_info['pop_id'].nil?
       available_pops = getDcs()
-      if pop_list.empty?
+      if available_pops.empty?
         halt 400, "No PoPs registereds."
       end
       if !instantiation_info['mapping_id'].nil?
         #using the Mapping algorithm specified in the instantiation request
         mapping = ServiceConfigurationHelper.get_module_by_id(instantiation_info['mapping_id'])
         mapping_info = mapping.host + ":" + mapping.port.to_s + mapping.path
+        pop_list = available_pops
       elsif pop_list.size > 1
         #using the first mapping algorithm
         mapping, errors = ServiceConfigurationHelper.get_module_by_type('mapping')
         mapping_info = mapping.host + ":" + mapping.port.to_s + mapping.path
+        pop_list = available_pops
       else
         #deploy to the unic PoP
         pop_list << getDc(available_pops[0]['id'])
