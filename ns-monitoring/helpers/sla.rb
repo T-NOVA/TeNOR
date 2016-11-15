@@ -18,7 +18,7 @@
 # @see NSMonitoring
 module SlaHelper
     def self.process_breach
-        puts 'BREACh.'
+        puts 'BREACh. TO REMOOOVE.................'
         logger.info 'SLA Breach!'
 
         logger.info 'Inform to NS Manager about this.'
