@@ -36,7 +36,9 @@ class Scaling < NsProvisioning
             puts 'Pop_id: ' + vnf['pop_id'].to_s
             raise 'VNF not defined' if vnf['pop_id'].nil?
 
-            pop_info = getPopInfo(vnf['pop_id'])
+            pop_info, errors = getPopInfo(vnf['pop_id'])
+            return 400, errors.to_json if errors
+
             if pop_info == 400
                 logger.error 'Pop id no exists.'
                 return
@@ -45,19 +47,13 @@ class Scaling < NsProvisioning
             pop_auth = instance['authentication'].find { |pop| pop['pop_id'] == vnf['pop_id'] }
             pop_urls = pop_auth['urls']
 
-            scale = {
-                auth => {
-                    tenant => pop_auth['tenant_name'],
-                    username => pop_auth['username'],
-                    password => pop_auth['password'],
-                    url => {
-                        keystone => pop_urls[:keystone],
-                        heat => pop_urls[:orch]
-                    }
-                }
-            }
+            credentials, errors = authenticate(pop_urls[:keystone], pop_auth['tenant_name'], pop_auth['username'], pop_auth['password'])
+            logger.error errors if errors
+            return if errors
+            scale = { auth: { tenant_id: credentials[:tenant_id], user_id: credentials[:user_id], token: credentials[:token], url: { keystone: pop_urls[:keystone], heat: pop_urls[:orch] } }}
+            
             begin
-                response = RestClient.post settings.vnf_manager + '/vnf-instances/scaling/' + vnf['vnfr_id'] + '/scale_out', scale.to_json, content_type => :json
+                response = RestClient.post settings.vnf_manager + '/vnf-instances/scaling/' + vnf['vnfr_id'] + '/scale_out', scale.to_json, content_type: :json
             rescue => e
                 logger.error e
             end
@@ -95,19 +91,13 @@ class Scaling < NsProvisioning
             pop_auth = instance['authentication'].find { |pop| pop['pop_id'] == vnf['pop_id'] }
             pop_urls = pop_auth['urls']
 
-            scale = {
-                auth => {
-                    tenant => pop_auth['tenant_name'],
-                    username => pop_auth['username'],
-                    password => pop_auth['password'],
-                    url => {
-                        keystone => pop_urls[:keystone],
-                        heat => pop_urls[:orch]
-                    }
-                }
-            }
+            credentials, errors = authenticate(pop_urls[:keystone], pop_auth['tenant_name'], pop_auth['username'], pop_auth['password'])
+            logger.error errors if errors
+            return if errors
+            scale = { auth: { tenant_id: credentials[:tenant_id], user_id: credentials[:user_id], token: credentials[:token], url: { keystone: pop_urls[:keystone], heat: pop_urls[:orch] } }}
+
             begin
-                response = RestClient.post settings.vnf_manager + '/vnf-instances/scaling/' + vnf['vnfr_id'] + '/scale_in', scale.to_json, content_type => :json
+                response = RestClient.post settings.vnf_manager + '/vnf-instances/scaling/' + vnf['vnfr_id'] + '/scale_in', scale.to_json, content_type: :json
             rescue => e
                 logger.error e
             end

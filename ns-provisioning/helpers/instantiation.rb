@@ -32,6 +32,7 @@ module InstantiationHelper
 
         pop_auth = {}
         pop_auth['pop_id'] = pop_info['id'].to_s
+        pop_auth['is_admin'] = pop_info['is_admin']
         extra_info = pop_info['extra_info']
         popUrls = getPopUrls(extra_info)
         pop_auth['urls'] = popUrls
@@ -119,7 +120,6 @@ module InstantiationHelper
             callback_url: settings.manager + '/ns-instances/' + @instance['id'] + '/instantiate'
         }
 
-        logger.debug vnf_provisioning_info
         @instance.push(lifecycle_event_history: 'INSTANTIATING ' + vnf_id.to_s + ' VNF')
         @instance.update_attribute('instantiation_start_time', DateTime.now.iso8601(3).to_s)
 
@@ -163,7 +163,7 @@ module InstantiationHelper
                 end
             end
             logger.error 'Handle error.'
-            return 400, 'Error wiht the VNF'
+            return 400, 'Error with the VNF: ' + e.response
         end
 
         vnf_manager_response, errors = parse_json(response)

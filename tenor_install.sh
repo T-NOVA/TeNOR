@@ -9,8 +9,8 @@ normal=$(tput sgr0)
 
 show_menus() {
   clear
-  echo "       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-  echo "       MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  echo "  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  echo "  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
   MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMNo,. ..:kMMMMMMMMMMMMMMMMMMMMMM
   MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMk    .    .NMMMMMMMMMMMMMMMMMMMM
   MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM0    OMM:   .MMMMMMMMMMMMMMMMMMMM
@@ -26,7 +26,7 @@ show_menus() {
   MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
   MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
   MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM"
-  echo "       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  echo "  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
   echo "1. Install TeNOR"
   echo "2. Reconfigure configuration files"
   echo "3. Register microservices"
@@ -55,7 +55,7 @@ installTenor(){
   echo "Checking the Ruby version: " $RUBY_VERSION
   ruby_version=`ruby -e "print(RUBY_VERSION < '2.2.0' ? '1' : '0' )"`
   if [[ ! `which ruby` ]]; then
-    echo "Ruby is not installed, please install a version higer than 2.2.0."
+    echo "Ruby is not installed, please install a version higer than 2.2.5."
     pause
     return
   fi
@@ -63,7 +63,7 @@ installTenor(){
     ruby --version > /dev/null 2>&1
     RUBY_IS_INSTALLED=$?
     echo "Ruby version: " $RUBY_VERSION
-    echo "Please, install a ruby version higher or equal to 2.2.0"
+    echo "Please, install a ruby version higher or equal to 2.2.5"
     pause
     return
   fi
@@ -271,7 +271,7 @@ configureFiles(){
       sed -i -e 's/127.0.0.1:27017/'$mongo_ip'/' config/mongoid.yml
     fi
     if [ -f config/database.yml ]; then
-      sed -i -e 's/127.0.0.1:27017/'$cassandra_address'/' config/database.yml
+      sed -i -e 's/127.0.0.1/'$cassandra_address'/' config/database.yml
     fi
     if [ "$folder" = "./ns-monitoring" ]; then
       rake db:migrate > /dev/null 2>&1

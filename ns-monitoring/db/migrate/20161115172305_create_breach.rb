@@ -4,7 +4,7 @@ class CreateBreach < ActiveRecord::Migration
       t.string :nsi_id, null: false
       t.string :vnfi_id
       t.integer :nli_id
-      t.integer :external_parameter_id, null: false
+      t.string :external_parameter_id, null: false
       t.float :value
 
       t.timestamps null: false

@@ -36,7 +36,6 @@
                             <td>{{row.vnfd_reference}}</td>
                             <td>{{row.created_at| date:'yyyy-MM-dd HH:mm:ss'}}</td>
                             <td>
-                                <span ng-if="row.vnf_status === 'instantiated'">INSTATIATED</span>
                                 <span ng-if="row.vnf_status === '1'">RUNNING</span>
                                 <span ng-if="row.vnf_status === '2'">STOPPED</span>
                                 <span ng-if="row.vnf_status === '3'">CREATING</span></td>

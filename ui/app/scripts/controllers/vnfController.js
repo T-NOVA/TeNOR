@@ -16,8 +16,10 @@ angular.module('tNovaApp')
                         var dt = new Date(o.created_at);
                         return -dt;
                     });
-                    page++;
-                    $scope.getVnfList(page);
+                    if(data.length == page_num){
+                        page++;
+                        $scope.getVnfList(page);
+                    }
                 }
             });
         };
@@ -122,8 +124,7 @@ angular.module('tNovaApp')
         $scope.updateInstanceList();
         var promise = $interval(function () {
             $scope.updateInstanceList();
-            //        }, defaultTimer);
-        }, 120000);
+        }, defaultTimer2);
 
         $scope.stop = function (instance) { //change status in the repo
             if (instance.status === 3) instance.status = 0;
@@ -187,7 +188,11 @@ angular.module('tNovaApp')
         };
 
         $scope.oldType = "";
-        $scope.reloadGraph = function (type) {
+        $scope.reloadGraph = function (vdu_id, type) {
+            //vdu_id to vdu_openstack_id
+            console.log(vdu_id);
+            console.log($scope.instance);
+            vdu_id = $scope.instance.vms_id[vdu_id];
             $interval.cancel(promise1);
             $interval.cancel(promise2);
             $scope.monitoringData.clear();
@@ -195,10 +200,10 @@ angular.module('tNovaApp')
             if ($scope.oldType !== type) {
                 $scope.oldType = type;
             }
-            $scope.showGraphWithHistoric(type);
+            $scope.showGraphWithHistoric(vdu_id, type);
         }
 
-        $scope.showGraphWithHistoric = function (type) {
+        $scope.showGraphWithHistoric = function (vdu_id, type) {
             $scope.graph_name = type;
             var historicInterval = 1000; //seconds
             var realTimeInterval = 61000; //seconds
@@ -206,7 +211,7 @@ angular.module('tNovaApp')
             var lastEndDate = Math.floor(new Date().getTime() / 1000);
             var url;
             promise1 = $interval(function () {
-                url = "instances/" + $stateParams.id + "/monitoring-data/?instance_type=vnf&metric=" + type + "&end=" + lastEndDate;
+                url = "instances/" + $stateParams.id + "/monitoring-data/?instance_type=vnf&vdu_id=" + vdu_id + "&metric=" + type + "&end=" + lastEndDate;
                 tenorService.get(url).then(function (data) {
                     if (data.length == 0) {
                         $interval.cancel(promise1);
@@ -221,7 +226,7 @@ angular.module('tNovaApp')
                 });
             }, historicInterval);
             promise2 = $interval(function () {
-                url = "instances/" + $stateParams.id + "/monitoring-data/?instance_type=vnf&metric=" + type + "&start=" + lastStartDate;
+                url = "instances/" + $stateParams.id + "/monitoring-data/?instance_type=vnf&vdu_id=" + vdu_id + "&metric=" + type + "&start=" + lastStartDate;
                 tenorService.get(url).then(function (data) {
                     if (data.length == 0) return
                     _.each(data, function (t) {

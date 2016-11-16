@@ -113,8 +113,10 @@ module ServiceConfigurationHelper
 
     def self.send_dependencies_to_manager(manager, depends_on)
         depends_on.each do |dep|
+            dep = dep[:name] if dep.is_a?(Hash)
+            s = Service.where(name: dep).first
             begin
-                RestClient.post manager[:host] + ':' + manager[:port].to_s + '/modules/services', dep.to_json, :content_type => :json, 'X-Auth-Token' => manager['token']
+                RestClient.post manager[:host] + ':' + manager[:port].to_s + '/modules/services', s.to_json, :content_type => :json, 'X-Auth-Token' => manager['token']
             rescue => e
                 logger.error e
             end

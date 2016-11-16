@@ -13,7 +13,8 @@ angular.module('tNovaApp')
               {id: "INSTANTIATING VNFs", progress: "70"},
               {id: "INSTANTIATED", progress: "100"},
               {id: "START", progress: "100"},
-              {id: "DELETING", progress: "50"}
+              {id: "DELETING", progress: "50"},
+              {id: "ERROR_CREATING", progress: "50"}
       ];
       var t = $filter('filter')(status, {id: item})[0];
       return t.progress;

@@ -37,7 +37,11 @@ module MonitoringHelper
             assurance_parameters = s['assurance_parameters']
             assurance_parameters.each_with_index do |x, i|
                 paramsVnf << { id: i + 1, name: x['name'], unit: x['unit'] }
-                paramsNs << { id: i + 1, name: x['name'], formula: x['formula'], value: x['value'] }
+                if x['uid'].nil?
+                    paramsNs << { uid: i + 1, name: x['name'], formula: x['formula'], value: x['value'] }
+                else
+                    paramsNs << { uid: x['uid'], id: i + 1, name: x['name'], formula: x['formula'], value: x['value'] }
+                end
             end
         end
         monitoring[:parameters] = paramsNs

@@ -4,18 +4,18 @@ development:
     default:
       database: vnf_provisioning
       hosts:
-      - localhost:27017
+      - 127.0.0.1:27017
 
 test:
   sessions:
     default:
       database: vnf_provisioning_test
       hosts:
-      - localhost:27017
+      - 127.0.0.1:27017
 
 production:
   sessions:
     default:
       database: vnf_provisioning
       hosts:
-      - localhost:27017
+      - 127.0.0.1:27017

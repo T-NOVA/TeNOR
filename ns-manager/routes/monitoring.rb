@@ -17,84 +17,60 @@
 #
 # @see TnovaManager
 class NsMonitoring < TnovaManager
+    # @method get_instances_monitoring_data
+    # @overload get '/instances/:instance_id/monitoring-data/'
+    # Get monitoring data given instance type and/or metrics
+    # @param [string] instance_type
+    # @param [string] instance_id
+    # @param [string] metric
+    get '/:instance_id/monitoring-data/' do |instance_id|
+        if params['instance_type'] == 'ns'
+            monitoring, errors = ServiceConfigurationHelper.get_module('ns_monitoring')
+            halt 500, errors if errors
+            composedUrl = "/ns-monitoring/#{instance_id}/monitoring-data/?" + request.env['QUERY_STRING']
+        elsif params['instance_type'] == 'vnf'
+            monitoring, errors = ServiceConfigurationHelper.get_module('vnf_manager')
+            halt 500, errors if errors
+            composedUrl = "/vnf-monitoring/#{instance_id}/monitoring-data/?" + request.env['QUERY_STRING']
+        end
 
-  # @method get_instances_monitoring_data
-  # @overload get '/instances/:instance_id/monitoring-data/'
-  # Get monitoring data given instance type and/or metrics
-  # @param [string] instance_type
-  # @param [string] instance_id
-  # @param [string] metric
-  get '/:instance_id/monitoring-data/' do
-    if params['instance_type'] == 'ns'
-      monitoring, errors = ServiceConfigurationHelper.get_module('ns_monitoring')
-      halt 500, errors if errors
-      composedUrl = "/ns-monitoring/"+params['instance_id'].to_s+"/monitoring-data/?"+request.env['QUERY_STRING']
-    elsif params['instance_type'] == 'vnf'
-      monitoring, errors = ServiceConfigurationHelper.get_module('vnf_manager')
-      halt 500, errors if errors
-      composedUrl = "/vnf-monitoring/"+params['instance_id'].to_s+"/monitoring-data/?"+request.env['QUERY_STRING']
+        begin
+            response = RestClient.get monitoring.host + composedUrl.to_s, 'X-Auth-Token' => monitoring.token, :content_type => :json
+        rescue Errno::ECONNREFUSED
+            halt 500, 'NS Monitoring unreachable'
+        rescue => e
+            logger.error e
+            # halt e.response.code, e.response.body
+        end
+
+        return 200 if response.nil?
+        return 200, response.body
     end
 
-    if (params["metric"])
-      #composedUrl = composedUrl + "/" + params["metric"]
+    # @method get_monitoring_data_last100
+    # @overload get '/instances/:instance_id/monitoring-data/last100'
+    # Get last 100 values
+    # @param [string] Instance id
+    get '/:instance_id/monitoring-data/last100/' do |instance_id|
+        if params['instance_type'] == 'ns'
+            monitoring, errors = ServiceConfigurationHelper.get_module('ns_monitoring')
+            halt 500, errors if errors
+            composedUrl = "/ns-monitoring/#{instance_id}/monitoring-data/last100/?" + request.env['QUERY_STRING']
+        elsif params['instance_type'] == 'vnf'
+            monitoring, errors = ServiceConfigurationHelper.get_module('vnf_manager')
+            halt 500, errors if errors
+            composedUrl = "/vnf-monitoring/#{instance_id}/monitoring-data/last100/?" + request.env['QUERY_STRING']
+        end
+
+        begin
+            response = RestClient.get monitoring.host + composedUrl.to_s, 'X-Auth-Token' => monitoring.token, :content_type => :json
+        rescue Errno::ECONNREFUSED
+            halt 500, 'NS Monitoring unreachable'
+        rescue => e
+            logger.error e.response
+            halt e.response.code, e.response.body
+        end
+
+        return response
     end
-    begin
-      response = RestClient.get monitoring.host + composedUrl.to_s, 'X-Auth-Token' => monitoring.token, :content_type => :json
-    rescue Errno::ECONNREFUSED
-      halt 500, 'NS Monitoring unreachable'
-    rescue => e
-      logger.error e
-      #halt e.response.code, e.response.body
-    end
-    #return response.code, response.body
-    logger.debug response
-    if response.nil?
-      return 200
-    end
-
-
-    return 200, response.body
-  end
-
-  #/instances/:instance_id/monitoring-data/?instance_type=ns&metric
-=begin
-  {
-      "nsi_id": "123",
-      "external_parameter_id": "987",
-      "value": "10.5"
-  }
-=end
-  post '/ns-manager/sla-breaches' do
-
-  end
-
-  # @method get_monitoring_data_last100
-  # @overload get '/instances/:instance_id/monitoring-data/last100'
-  # Get last 100 values
-  # @param [string] Instance id
-  get '/:instance_id/monitoring-data/last100/' do
-
-    if params['instance_type'] == 'ns'
-      monitoring, errors = ServiceConfigurationHelper.get_module('ns_monitoring')
-      halt 500, errors if errors
-      composedUrl = "/ns-monitoring/"+params['instance_id'].to_s+"/monitoring-data/last100/?"+request.env['QUERY_STRING']
-    elsif params['instance_type'] == 'vnf'
-      monitoring, errors = ServiceConfigurationHelper.get_module('vnf_manager')
-      halt 500, errors if errors
-      composedUrl = "/vnf-monitoring/"+params['instance_id'].to_s+"/monitoring-data/last100/?"+request.env['QUERY_STRING']
-    end
-
-    begin
-      response = RestClient.get monitoring.host + composedUrl.to_s, 'X-Auth-Token' => monitoring.token, :content_type => :json
-    rescue Errno::ECONNREFUSED
-      halt 500, 'NS Monitoring unreachable'
-    rescue => e
-      logger.error e.response
-      halt e.response.code, e.response.body
-    end
-
-    return response
-  end
-
-
 end

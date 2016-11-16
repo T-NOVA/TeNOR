@@ -58,7 +58,6 @@ module UtilsHelper
     end
 
     def calculate_event_time(resources, events)
-        events.each { |a| puts a }
         resource_stats = []
         resources.each do |resource|
             next unless resource['resource_status'] == 'CREATE_COMPLETE'

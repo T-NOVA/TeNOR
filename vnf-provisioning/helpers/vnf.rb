@@ -171,8 +171,6 @@ module ProvisioningHelper
             halt 404
         end
 
-        auth_token = vim_info['token']
-
         lifecycle_events_values = {}
         vnf_addresses = {}
         scale_urls = {}

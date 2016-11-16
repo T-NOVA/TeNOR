@@ -45,13 +45,13 @@ module VnfMonitoringHelper
   def self.save_monitoring(instance_id, json)
     @db = Sinatra::Application.settings.db
     json.each do |item|
-      @db.execute("INSERT INTO vnfmonitoring (instanceid, date, metricname, unit, value) VALUES ('#{instance_id.to_s}', #{item['timestamp']}, '#{item['type']}', '#{item['unit']}', '#{item['value']}' )")
+      @db.execute("INSERT INTO vnfmonitoring (instanceid, vduid, date, metricname, unit, value) VALUES ('#{instance_id.to_s}', '#{item['vdu_id'].to_s}', #{item['timestamp']}, '#{item['type']}', '#{item['unit']}', '#{item['value']}' )")
     end
   end
 
   def self.delete_monitoring(instance_id)
     @db = Sinatra::Application.settings.db
-    @db.execute("DELETE FROM vnfmonitoring WHERE instanceid='#{instance_id.to_s}'")    
+    @db.execute("DELETE FROM vnfmonitoring WHERE instanceid='#{instance_id.to_s}'")
   end
 
   def self.startSubcription()

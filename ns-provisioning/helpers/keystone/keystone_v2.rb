@@ -35,7 +35,7 @@ module Authenticationv2Helper
                 else
                     pop_auth['tenant_id'] = createTenant(popUrls[:keystone], pop_auth['tenant_name'], token) if pop_auth['tenant_id'].nil?
                     if pop_auth['user_id'].nil?
-                        pop_auth['user_id'] = createUser(popUrls[:keystone], pop_auth['tenant_id'], pop_auth['username'], pop_auth['password'], tenant_id, token)
+                        pop_auth['user_id'] = createUser(popUrls[:keystone], pop_auth['tenant_id'], pop_auth['username'], pop_auth['password'], token)
                     else
                         unless settings.default_user_password.nil?
                             pop_auth['password'] = settings.default_user_password
@@ -56,7 +56,7 @@ module Authenticationv2Helper
             if pop_auth['tenant_id'].nil? || pop_auth['user_id'].nil?
                 error = 'Tenant or user not created.'
                 logger.error error
-                @instance.push(audit_log: errors) if errors
+                @instance.push(audit_log: error)
                 @instance.update_attribute('status', 'ERROR_CREATING')
                 return 400, error.to_json
             end
