@@ -10,8 +10,7 @@ class Sla < ActiveRecord::Base
 
     def process_reading(parameter_values, reading)
         # parameter = Parameter.where("sla_id = ? AND parameter_id = ?", self.id, parameter_values['id']).first
-        parameter = Parameter.where('sla_id = ? AND name = ?', id, parameter_values['name']).first
-
+        parameter = Parameter.where('sla_id = ? AND parameter_id = ?', id, parameter_values['uid']).first
         unless parameter.nil?
             if SlaHelper.check_breach_sla(parameter['threshold'], reading)
                 @breach = process_breach(parameter, reading)
@@ -21,11 +20,12 @@ class Sla < ActiveRecord::Base
                 if breaches.size >= parameter.violations[0].breaches_count
                     initial_time = breaches[0].created_at
                     final_time = breaches[breaches.size - 1].created_at
-                    if initial_time + parameter.violations[0].interval < final_time
+                    if initial_time + parameter.violations[0].interval > final_time
                         notify_ns_manager @breach
                         breaches.each do |br|
                             br.destroy
                         end
+                        return
                     else
                         breaches[0].destroy
                     end
@@ -49,6 +49,7 @@ class Sla < ActiveRecord::Base
     def notify_ns_manager(breach)
         self
 
+        puts "Notify Manager about NSD #{nsi_id} and param: #{breach.external_parameter_id}"
         request = {
             parameter_id: breach.external_parameter_id
         }

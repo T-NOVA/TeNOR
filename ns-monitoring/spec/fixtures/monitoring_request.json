@@ -5,14 +5,26 @@
       "uid": 1,
       "name": "cpu_util",
       "formula": "MAX(VNF:2910.cpu_util)",
-      "value": "LE(10)",
+      "value": "GT(60)",
       "violations": [
         {
-          "breaches_count": 2,
+          "breaches_count": 1,
           "interval": 60
         }
       ]
-    }
+    },
+      {
+        "uid": 2,
+        "name": "cpu_util",
+        "formula": "MIN(VNF:2910.cpu_util)",
+        "value": "LT(18)",
+        "violations": [
+          {
+            "breaches_count": 1,
+            "interval": 60
+          }
+        ]
+      }
   ],
   "vnf_instances": [
     {

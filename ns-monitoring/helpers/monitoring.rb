@@ -94,8 +94,8 @@ module MonitoringHelper
     def self.calculate_sla(list_vnfs_parameters, _vnf_instances, parameters, measurements, nsi_id)
         @list_vnfs_parameters = list_vnfs_parameters
         logger.debug @list_vnfs_parameters.to_json
-        param = parameters.find { |p| p['name'] == measurements['type'] }
-        if param.nil?
+        params = parameters.find_all { |p| p['name'] == measurements['type'] }
+        if params.empty?
             logger.debug 'Params outside the SLA (assurance parameters field)'
             calculation = measurements['value']
         else
@@ -104,15 +104,17 @@ module MonitoringHelper
             @list_vnfs_parameters.each do |p|
                 values << p['value']
             end
-
-            calculation = ExpressionEvaluatorHelper.calc_expression(param['formula'], values)
-            logger.debug 'Calculation response: ' + calculation.to_s
-
-            begin
-                sla = Sla.find_by!(nsi_id: nsi_id)
-                sla.process_reading(param, calculation)
-            rescue ActiveRecord::RecordNotFound => e
-                logger.error 'SLA information not found for NSR ' + nsi_id
+            params.each do |param|
+                calculation = ExpressionEvaluatorHelper.calc_expression(param['formula'], values)
+                logger.debug 'Calculation response: ' + calculation.to_s
+                begin
+                    sla = Sla.find_by!(nsi_id: nsi_id)
+                    breach = sla.process_reading(param, calculation)
+                rescue ActiveRecord::RecordNotFound => e
+                    logger.error 'SLA information not found for NSR ' + nsi_id
+                end
+                # if breach, try with the next
+                break if !breach.nil?
             end
         end
         ns_measurement = {
