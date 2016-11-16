@@ -1,0 +1,30 @@
+{
+  "nsi_id": "id",
+  "parameters": [
+    {
+      "uid": 1,
+      "name": "cpu_util",
+      "formula": "MAX(VNF:2910.cpu_util)",
+      "value": "LE(10)",
+      "violations": [
+        {
+          "breaches_count": 2,
+          "interval": 60
+        }
+      ]
+    }
+  ],
+  "vnf_instances": [
+    {
+      "id": "id",
+      "parameters": [
+        {
+          "id": 1,
+          "name": "cpu_uti",
+          "unit": "%"
+        }
+      ],
+      "vnfr_id": "vnfr_id"
+    }
+  ]
+}

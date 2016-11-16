@@ -17,21 +17,7 @@
 #
 # @see NSMonitoring
 module SlaHelper
-    def self.process_breach
-        puts 'BREACh. TO REMOOOVE.................'
-        logger.info 'SLA Breach!'
-
-        logger.info 'Inform to NS Manager about this.'
-
-        puts Sinatra::Application.settings.manager
-
-        begin
-            response = RestClient.get settings.vnf_provisioning + '/vnf-provisioning/vnf-instances/' + vnfr_id, content_type: :json, accept: :json
-        rescue => e
-            puts e
-        end
-      end
-
+    
     # Check if the value is inside the threshold
     # Threshold format: GT(#integer), LE(#integer)...
     def self.check_breach_sla(threshold, value)

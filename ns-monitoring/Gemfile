@@ -13,8 +13,14 @@ gem 'activerecord'
 gem 'sinatra-activerecord', '~>2.0.10'
 gem 'sqlite3'
 
-group :development do
-	gem 'rerun'
+group :development, :test do
+	gem 'webmock', '2.1.0'
+  gem 'rspec', '3.5.0'
+  gem 'rack-test', '0.6.3'
+  gem 'rspec-its', '1.2.0'
+  gem 'rerun'
+  gem 'database_cleaner'
+  gem 'factory_girl'
 end
 
 group :doc do
