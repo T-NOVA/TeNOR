@@ -1,3 +1,12 @@
+## 0.10.0
+- Included Compute api v2
+- Provisioning fixes. Handling errors when Auth and flavor errors occurs.
+- Updated Gemfiles for Monitoring.
+- Fixed autoscaling using the assurance parameters.
+- Saving monitoring per VDU.
+- Fix Scaling forwarding.
+- Fix registration of modules.
+
 ## 0.9.0
 - Refactor. Removed unused files and functions.
 - Hide credentials from logs.
