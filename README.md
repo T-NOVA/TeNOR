@@ -5,17 +5,18 @@ TeNOR is the NFV Orchestrator platform developed by the [T-NOVA](http://www.t-no
 [![Build Status](https://travis-ci.org/T-NOVA/TeNOR.svg?branch=master)](https://travis-ci.org/T-NOVA/TeNOR) [![License](https://img.shields.io/badge/License-Apache%202.0-yellowgreen.svg)](https://opensource.org/licenses/Apache-2.0)
 
 ## Prerequisites
-- Ruby >= 2.2.5 (installation provided in dependencies/install_dependencies.sh)
+- Ruby >= 2.2.5 (Recommended 2.3.1) (installation provided in dependencies/install_dependencies.sh)
 - Bundler (installation provided in dependencies/install_dependencies.sh)
 - MongoDB (installation provided in dependencies/install_dependencies.sh)
 - Openstack Juno version or higher
+- Enable Keystone and Nova_Flavors in Openstack Heat resources ([How to do it](#enable_heat_resources))
 
 ## Optional Requirements
-- Service Mapping (https://github.com/T-NOVA/TeNOR/tree/master/service-mapper). Used when more than 1 PoP is available.
+- Service Mapping (https://github.com/T-NOVA/TeNOR/tree/master/service-mapper). Used when more than 1 PoP is available. Requires the Infrastructure Repository.
 - Infrastructure Repository (https://github.com/T-NOVA/infrastructure-repository). Used by the UI and the Service Mapping algorithm.
 - Middleware API (https://github.com/T-NOVA/mAPI) (required for start/stop the Lifecycle events inside the VNFS)
 - VIM Monitoring (https://github.com/T-NOVA/vim-monitoring). Used for receive the monitoring from each VNF.
-- Netfloc (https://github.com/T-NOVA/netfloc). Used for the VNFFG.
+- Netfloc (https://github.com/T-NOVA/netfloc). Used for the VNFFG. Requires ODL.
 - WICM (https://github.com/T-NOVA/WICM).
 - Apache Cassandra (optional, used for monitoring) (installation provided in dependencies/install_cassandra.sh)
 - RabbitMq (optional, used for monitoring) (installation provided in dependencies/install_dependencies.sh)
@@ -228,6 +229,16 @@ In each VNFD can have 5 types of lifecycle event: start, stop, restart, scaling_
  - Get the last PrivateIps for scaling-out: get_attr[CPsx4l,fixed_ips,0,ip_address]
  - Get the last PublicIps for scaling-out: get_attr[vdu0,CPudhr,PublicIp]
  - Timeout before remove instance due scale-in event:
+
+# Enable heat resources
+TeNOR uses Openstack heat templates in order to deploy the VNFs. Make sure that Openstack used has the basic resource types. In general, Nova Flavors and Keystone types are disabled by default. Please, enable these resources.
+
+You can see the available list of resources in:
+` /usr/lib/python2.7/dist-packages/heat/contrib/ `
+
+Then, modify the heat.conf (/etc/heat/heat.conf) and add the line:
+`plugin_dirs=/usr/lib/python2.7/dist-packages/heat/contrib/nova_flavor/nova_flavor `
+`plugin_dirs=/usr/lib/python2.7/dist-packages/heat/contrib/heat_keystone/heat_keystone `
 
 # Development
 

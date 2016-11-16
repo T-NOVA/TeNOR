@@ -55,7 +55,7 @@ installTenor(){
   echo "Checking the Ruby version: " $RUBY_VERSION
   ruby_version=`ruby -e "print(RUBY_VERSION < '2.2.0' ? '1' : '0' )"`
   if [[ ! `which ruby` ]]; then
-    echo "Ruby is not installed, please install a version higer than 2.2.0."
+    echo "Ruby is not installed, please install a version higer than 2.2.5."
     pause
     return
   fi
@@ -63,7 +63,7 @@ installTenor(){
     ruby --version > /dev/null 2>&1
     RUBY_IS_INSTALLED=$?
     echo "Ruby version: " $RUBY_VERSION
-    echo "Please, install a ruby version higher or equal to 2.2.0"
+    echo "Please, install a ruby version higher or equal to 2.2.5"
     pause
     return
   fi
