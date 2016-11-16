@@ -39,23 +39,34 @@ require './main'
 require 'webmock/rspec'
 
 RSpec.configure do |config|
-
+  config.include Rack::Test::Methods
   WebMock.disable_net_connect!(allow_localhost: true)
+  #config.include FactoryGirl::Syntax::Methods
+  #FactoryGirl.definition_file_paths = %w{./spec/factories}
+  #FactoryGirl.find_definitions
+  Mongoid.purge!
+
+  config.before do
+    #Mongoid.purge!
+    #Mongoid.raise_not_found_error = false
+  end
+
   config.before(:each) do
     stub_request(:get, "http://10.10.1.61:4018/vnf-monitoring/:instance_id/monitoring-data/?instance_type=vnf").
-        with(headers: {'Accept'=>'*/*', 'User-Agent'=>'Ruby'}).
-        to_return(status: 200, body: "stubbed response", headers: {})
-  end
-  config.before(:each) do
-    stub_request(:get, /api.github.com/).
-        with(headers: {'Accept'=>'*/*', 'User-Agent'=>'Ruby'}).
-        to_return(status: 200, body: "stubbed response", headers: {})
+          with(headers: {'Accept'=>'*/*', 'User-Agent'=>'Ruby'}).
+          to_return(status: 200, body: "stubbed response", headers: {})
+    stub_request(:delete, "http://127.0.0.1:4018/vnf-monitoring/vnfr_id").to_return(status: 200, body: "", headers: {})
+
+    # Monitoring VIM
+    stub_request(:post, "http://10.10.1.62:8080/api/subscriptions").to_return(status: 200, body: "Subcription under ID _abcdef", headers: {})
+    stub_request(:delete, "http://10.10.1.62:8080/api/subscriptions/_abcdef").to_return(status: 200, body: "Subcription under ID _abcdef", headers: {})
+
   end
 
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest
   # assertions if you prefer.
-  config.expect_with :spec do |expectations|
+  config.expect_with :rspec do |expectations|
     # This option will default to `true` in RSpec 4. It makes the `description`
     # and `failure_message` of custom matchers include text for helper methods
     # defined using `chain`, e.g.:
@@ -68,7 +79,7 @@ RSpec.configure do |config|
 
   # rspec-mocks config goes here. You can use an alternate test double
   # library (such as bogus or mocha) by changing the `mock_with` option here.
-  config.mock_with :spec do |mocks|
+  config.mock_with :rspec do |mocks|
     # Prevents you from mocking or stubbing a method that does not exist on
     # a real object. This is generally recommended, and will default to
     # `true` in RSpec 4.
@@ -92,9 +103,9 @@ RSpec.configure do |config|
 
   # Limits the available syntax to the non-monkey patched syntax that is
   # recommended. For more details, see:
-  #   - http://rspec.info/blog/2012/06/rspecs-new-expectation-syntax/
+  #   - http://myronmars.to/n/dev-blog/2012/06/rspecs-new-expectation-syntax
   #   - http://www.teaisaweso.me/blog/2013/05/27/rspecs-new-message-expectation-syntax/
-  #   - http://rspec.info/blog/2014/05/notable-changes-in-rspec-3/#zero-monkey-patching-mode
+  #   - http://myronmars.to/n/dev-blog/2014/05/notable-changes-in-rspec-3#new__config_option_to_disable_rspeccore_monkey_patching
   config.disable_monkey_patching!
 
   # This setting enables warnings. It's recommended, but in some cases may

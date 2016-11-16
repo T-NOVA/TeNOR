@@ -11,10 +11,13 @@ gem 'mongoid', '~>4.0' # MongoDB driver
 gem 'bunny', '~>2.3.1'
 
 group :development, :test do
-	gem 'rerun'
-	gem 'rspec'
-	gem 'rack-test'
-	gem "webmock"
+	gem 'webmock', '2.1.0'
+  gem 'rspec', '3.5.0'
+  gem 'rack-test', '0.6.3'
+  gem 'rspec-its', '1.2.0'
+  gem 'rerun'
+  gem 'database_cleaner'
+  gem 'factory_girl'
 end
 
 group :doc do

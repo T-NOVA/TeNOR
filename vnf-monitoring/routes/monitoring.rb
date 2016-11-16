@@ -42,7 +42,7 @@ class VNFMonitoring < Sinatra::Application
                 types.push(mP['metric']) unless types.include?(mP['metric'])
             end
 
-            logger.info "Creating subscription message for vdu #{vdu['id']}"
+            logger.info "Creating subscription message for VDU: #{vdu['id']}"
             callbackUrl = settings.vnf_manager + "/vnf-monitoring/#{vnfr_id}/readings"
             url = 'http://' + callbackUrl unless callbackUrl.include? 'http://'
             subscribe = {
@@ -52,6 +52,7 @@ class VNFMonitoring < Sinatra::Application
                 callbackUrl: url
             }
             logger.debug subscribe.to_json
+
             begin
                 response = RestClient.post settings.vim_monitoring + '/api/subscriptions', subscribe.to_json, content_type: :json, accept: :json
             rescue => e
@@ -79,7 +80,7 @@ class VNFMonitoring < Sinatra::Application
             logger.error "Monitoring Metric no exists."
             halt 400, 'Sla no exists'
         end
-        logger.debug mon_data
+
         begin
             response = RestClient.delete settings.vim_monitoring + '/api/subscriptions/' + mon_data['subscription_id'], accept: :json
         rescue => e
@@ -87,32 +88,14 @@ class VNFMonitoring < Sinatra::Application
             halt 400, 'VIM Monitoring Module not available'
         end
         mon_data.destroy
-
         destroy_monitoring_data(vnfr_id)
-
-        halt 200, "Correct unsubscription."
+        halt 200
     end
 
-    # store data in VNF-Monitoring-Repository
-    #    [
-    #   {
-    #     "instance": "27ad39af-0267-4f81-bdc6-deda0d64c9ac",
-    #     "measurements": [
-    #       {
-    #         "timestamp": "1970-01-01T00:00:00Z",
-    #         "value": 197742,
-    #         "units": "jiffies",
-    #         "type": "cpuidle"
-    #       }
-    #     ]
-    #   }
-    # ]
-    # curl http://10.10.1.61:4567/vnf-monitoring/5730bdfdb18cfb5a82000003/readings -H "Content-Type: application/json" -d '[{"instance": "cc58b58f-d38c-48b6-8e83-d238bea0568e", "measurements": [{"timestamp": "1970-01-01T00:00:00Z", "value": 197742, "units": "jiffies", "type": "cpuidle"}]}]'
     # @method post_vnf_monitoring_readings
     # @overload post '/vnf-monitoring/:vnfi_id/readings'
     # Receive the monitoring data
     post '/vnf-monitoring/:vnfr_id/readings' do |vnfr_id|
-        logger.info 'Readings from Monitoring VIM'
         return 415 unless request.content_type == 'application/json'
         json, errors = parse_json(request.body.read)
         return 400, errors.to_json if errors
@@ -139,7 +122,6 @@ class VNFMonitoring < Sinatra::Application
                 q = ch.queue('vnf_repository')
                 q.publish(metric.to_json, persistent: true)
             end
-
 =begin
             begin
                 respone = RestClient.post settings.manager + '/vnf-monitoring/' + vnfr_id, metrics.to_json, content_type: :json, accept: :json
@@ -160,7 +142,7 @@ class VNFMonitoring < Sinatra::Application
     end
 
     # @method get_monitoring_data
-    # @overload delete '/vnf-monitoring/:instance_id/monitoring-data/last'
+    # @overload get '/vnf-monitoring/:instance_id/monitoring-data/last'
     #	Get monitoring data, last 100 values
     #	@param [Integer] instance_id
     get '/vnf-monitoring/:instance_id/monitoring-data/' do
@@ -174,7 +156,7 @@ class VNFMonitoring < Sinatra::Application
     end
 
     # @method get_monitoring_data_100
-    # @overload delete '/vnf-monitoring/:instance_id/monitoring-data/last100'
+    # @overload get '/vnf-monitoring/:instance_id/monitoring-data/last100'
     #	Get monitoring data, last 100 values
     #	@param [Integer] instance_id
     get '/vnf-monitoring/:instance_id/monitoring-data/last100/' do

@@ -1,0 +1,9 @@
+[{
+    "instance": "27ad39af-0267-4f81-bdc6-deda0d64c9ac",
+    "measurements": [{
+        "timestamp": "1970-01-01T00:00:00Z",
+        "value": 197742,
+        "units": "jiffies",
+        "type": "cpuidle"
+    }]
+}]
