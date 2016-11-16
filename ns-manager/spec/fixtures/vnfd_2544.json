@@ -1,0 +1,315 @@
+{
+    "_id": "580f9a70b18cfb2a0c00003e",
+    "created_at": "2016-10-25T17:46:24.137+00:00",
+    "name": "TEMP",
+    "updated_at": "2016-10-25T17:46:24.137+00:00",
+    "version": 1,
+    "vnf-manager": "TEMP",
+    "vnfd": {
+        "provider_id": 4,
+        "vdu": [
+            {
+                "resource_requirements": {
+                    "network_interface_bandwidth_unit": "",
+                    "hypervisor_parameters": {
+                        "version": "10002|12001|2.6.32-358.el6.x86_64",
+                        "type": "QEMU-KVM"
+                    },
+                    "memory_unit": "GB",
+                    "network_interface_card_capabilities": {
+                        "SR-IOV": true,
+                        "mirroring": false
+                    },
+                    "storage": {
+                        "size_unit": "GB",
+                        "persistence": false,
+                        "size": 20
+                    },
+                    "network_interface_bandwidth": "",
+                    "platform_pcie_parameters": {
+                        "SR-IOV": true,
+                        "device_pass_through": true
+                    },
+                    "vcpus": 1,
+                    "vswitch_capabilities": {
+                        "version": "2.0",
+                        "type": "ovs",
+                        "overlay_tunnel": "GRE"
+                    },
+                    "data_processing_acceleration_library": "",
+                    "memory": 2,
+                    "memory_parameters": {
+                        "large_pages_required": false,
+                        "numa_allocation_policy": ""
+                    },
+                    "cpu_support_accelerator": "AES-NI"
+                },
+                "alias": "proxy",
+                "vm_image_format": "qcow2",
+                "networking_resources": "",
+                "monitoring_parameters_specific": [
+                    {
+                        "metric": "httpnum",
+                        "unit": "INT",
+                        "desc": "Number of HTTP requests received by Squid"
+                    },
+                    {
+                        "metric": "hits",
+                        "unit": "%",
+                        "desc": "Cache hits percentage of all requests for the last 5 minutes"
+                    },
+                    {
+                        "metric": "hits_bytes",
+                        "unit": "%",
+                        "desc": "Cache hits percentage of bytes sent for the last 5 minutes"
+                    },
+                    {
+                        "metric": "memoryhits",
+                        "unit": "%",
+                        "desc": "Memory hits percentage for the last 5 minutes (hits that are logged as TCP_MEM_HIT)"
+                    },
+                    {
+                        "metric": "diskhits",
+                        "unit": "%",
+                        "desc": "Disk hits percentage for the last 5 minutes (hits that are logged as TCP_HIT)"
+                    },
+                    {
+                        "metric": "cachediskutilization",
+                        "unit": "%",
+                        "desc": "Cache disk utilization"
+                    },
+                    {
+                        "metric": "cachememkutilization",
+                        "unit": "%",
+                        "desc": "Cache memory utilization"
+                    },
+                    {
+                        "metric": "usernum",
+                        "unit": "INT",
+                        "desc": "Number of users accessing the proxy"
+                    },
+                    {
+                        "metric": "cpuusage",
+                        "unit": "%",
+                        "desc": "CPU consumed by Squid for the last 5 minutes"
+                    }
+                ],
+                "wc_notify": true,
+                "vm_image": "http://10.10.1.167:8080/NFS/files/PXaaS-080316_new.qcow2",
+                "controller": true,
+                "connection_points": [
+                    {
+                        "vlink_ref": "vl0",
+                        "id": "CP6kpi"
+                    },
+                    {
+                        "vlink_ref": "vl1",
+                        "id": "CP7awl"
+                    }
+                ],
+                "monitoring_parameters": [
+                    {
+                        "metric": "cpuidle",
+                        "unit": "%",
+                        "desc": "CPU Idle"
+                    },
+                    {
+                        "metric": "cpu_util",
+                        "unit": "%",
+                        "desc": "CPU Utilization"
+                    },
+                    {
+                        "metric": "fsfree",
+                        "unit": "GB",
+                        "desc": "Free Storage"
+                    },
+                    {
+                        "metric": "memfree",
+                        "unit": "MB",
+                        "desc": "Free Memory"
+                    },
+                    {
+                        "metric": "network_incoming",
+                        "unit": "Mbps",
+                        "desc": "Network Incoming"
+                    },
+                    {
+                        "metric": "network_outgoing",
+                        "unit": "Mbps",
+                        "desc": "Network Outgoing"
+                    },
+                    {
+                        "metric": "load_shortterm",
+                        "unit": "%",
+                        "desc": "Load Average (1 Minute)"
+                    },
+                    {
+                        "metric": "load_midterm",
+                        "unit": "%",
+                        "desc": "Load Average (5 Minutes)"
+                    },
+                    {
+                        "metric": "load_longterm",
+                        "unit": "%",
+                        "desc": "Load Average (15 Minutes)"
+                    },
+                    {
+                        "metric": "processes_blocked",
+                        "unit": "INT",
+                        "desc": "Blocked Processes"
+                    },
+                    {
+                        "metric": "processes_paging",
+                        "unit": "INT",
+                        "desc": "Paging Processes"
+                    },
+                    {
+                        "metric": "processes_running",
+                        "unit": "INT",
+                        "desc": "Running Processes"
+                    },
+                    {
+                        "metric": "processes_sleeping",
+                        "unit": "INT",
+                        "desc": "Sleeping Processes"
+                    },
+                    {
+                        "metric": "processes_stopped",
+                        "unit": "INT",
+                        "desc": "Stopped Processes"
+                    },
+                    {
+                        "metric": "processes_zombie",
+                        "unit": "INT",
+                        "desc": "Zombie Processes"
+                    }
+                ],
+                "scale_in_out": {
+                    "minimum": 1,
+                    "maximum": 1
+                },
+                "vm_image_md5": "bcfeb21476221db5ec2269369e27fed5",
+                "id": "vdu0"
+            }
+        ],
+        "name": "Proxy1_DEMO",
+        "created_at": "2016-10-10T11:24:48Z",
+        "modified_at": "2016-10-10T11:24:48Z",
+        "trade": false,
+        "descriptor_version": "1",
+        "deployment_flavours": [
+            {
+                "vdu_reference": [
+                    "vdu0"
+                ],
+                "constraint": "",
+                "flavour_key": "gold",
+                "vlink_reference": [
+                    "vl0",
+                    "vl1"
+                ],
+                "id": "flavor0",
+                "assurance_parameters": [
+                    {
+                        "violation": [
+                            {
+                                "interval": 60,
+                                "breaches_count": 2
+                            }
+                        ],
+                        "value": 90,
+                        "penalty": {
+                            "expression": 2,
+                            "type": "Discount",
+                            "unit": "%",
+                            "validity": "P1D"
+                        },
+                        "formula": "cpu_util LT 90",
+                        "rel_id": "param0",
+                        "id": "cpu_util",
+                        "unit": "%"
+                    }
+                ]
+            }
+        ],
+        "version": "1",
+        "vnf_lifecycle_events": [
+            {
+                "authentication_username": "vagrant",
+                "driver": "ssh",
+                "authentication_type": "PubKeyAuthentication",
+                "authentication": "-----BEGIN RSA PRIVATE KEY-----\nMIIEpAIBAAKCAQEAqKzv1O+8SG53PJsMWHpAaBbbwQ5bEbHMplnOvnfWiL21cfU+\nEQdY2JgjsLMJyMnS2mMBmopJQ8y2c1KS2yz30oz/2ac/PcbiRmX4PV2qqUgDdVj1\n5w5YQreSBMNfi+hXs2uhs5dsDfG1mbedXhyT9QFlimeiZH+WwmX+91A9GQrCTrQU\nSp7FQsiXyDBNUYmVsYYdP19XcNNc1OoReY8oCBzrrBR+vOf7XA6dh86HlM/ZBuQf\nSUEn8SdYeQM0975aDIrjhW8m3Fd3ZE3ZZKuCl7rbMLY8RRB8pSAkpFrBtyeqtN0H\nRj7HpAd+BGjfgrL+ivXmG5AZ3fSehTFSKsGDDQIDAQABAoIBACgFkIpXr7cH7ubE\nazN7HlkUQ2QVQep643H9ER8EVDTxvmGhrO5hbeVGhAFjGck4if0jTLgcY7HgmtHW\nH949VzfwGKzOECVaUUoe273DwcCUw61ORFpkfvClmdHjgYIyyMxbl2yDWzIbzdkB\nRieUZE7X2/3xBQkPdPf/N3X65eRQ1FYRR6wOp2dAONzw0xpq2TYOKdVBqgZS3Sa6\npksSDycaLlSJA/NN2y/FiIU8kkoUShYflRrsyheipQ9D5KMEmQASxWkDQu3xW+Wl\n60aUwnOrEGoMNAXAHUshfpbrsu3A6d59/6rykhc37z9tVUdTnPbX5KPDkWbKqC7H\nDdMSMsECgYEA34kRR8+nBd+fBNHPGsn++S8eaeczX0kMqRiATWq0ZPspcIbA2ojS\n0X5txoEFBjcZ8C2Nq56MjZtqfZRZCLfm1e/Dk2LP0x8vRS9BQRKwL//hypYqEC5l\norokfy91Ow0kxnHxiYvJy2riinTcqSc4/8u2PuDVGW6JnLRxCIcW1kUCgYEAwSw0\n9jVjwQCWhkRJr/17vCLuCmkSMzmTFSu9SEsrVAmrYeE2qJPNRySjTfnDa/yA3OxG\nj620F5yMrD0ONCtoSqU6VQt23KiS0DPmWkeCuv6eOYMxXGy721idHshCtY9PlSZg\nC/QKa2KQnKV/88UfHUt/3hcAlpJzSdWBSku4iikCgYEAgv1LRw2EDokQIj7gYg5k\nf5kA9YYqMHgaFyzoYnVY6KPVkL8mW+k5wNGZem04iH/Zj0jib+Mk8gZUzOoVkmpR\ntqQds0yABHONu7kJQBy3ailEIvcEBx9pJ4Z0xKMGy2fUWQWESNnFkpI71m7Mr8Lw\nP9UcIpSVy6Vetpl2c0zWMRECgYAGBlbwhuHBlz8amO6jaoh9aal68aP7rQQFWQPi\nSVXknRiXSOrnfxSb72yYdf2+VHXAbi4VNRm00tEgXhcfUWtDSLv1AxKF90v86mF4\n11ogcuiEaq8TbuC9Cpp750sNVpbo0/WS6d2ZU82m1RKUi8VYqI4oYxdFmvO1jc8m\nfg4XYQKBgQCebRk5OiGmHTKUHHuBnFyA1ZJpVPGzBBmyQo83gRQ9+KvBOHQHYQcC\nv8JYWnuTwKCcIJhcqA8UbIGhRKHtBnqLr3Ipg97gKBElO3bTzUUut0QcMd14i6ab\n9oaS/tg7BhxKkQyuYwIpSeqFeZeecID4dfMCMHgaPaAsz+epjv1NIw==\n-----END RSA PRIVATE KEY-----",
+                "authentication_port": 21,
+                "vnf_container": "/home/vagrant/container/",
+                "events": {
+                    "start": {
+                        "command": "/home/vagrant/scripts/start",
+                        "template_file": "{\"controller\":\"get_attr[vdu0,PublicIp]\"}",
+                        "template_file_format": "JSON"
+                    },
+                    "stop": {
+                        "command": "/home/vagrant/scripts/stop",
+                        "template_file": "{}",
+                        "template_file_format": "JSON"
+                    }
+                },
+                "flavor_id_ref": "flavor0"
+            }
+        ],
+        "billing_model": {
+            "price": {
+                "setup": 2,
+                "max_per_period": 1,
+                "min_per_period": 1,
+                "unit": "EUR"
+            },
+            "model": "PAYG",
+            "period": "P1D"
+        },
+        "provider": "TEIC",
+        "release": "T-NOVA",
+        "vlinks": [
+            {
+                "leaf_requirement": "1Gbps",
+                "connectivity_type": "E-LINE",
+                "vdu_reference": [
+                    "vdu0"
+                ],
+                "alias": "management",
+                "connection_points_reference": [
+                    "CP6kpi"
+                ],
+                "net_segment": "",
+                "access": true,
+                "external_access": true,
+                "dhcp": true,
+                "root_requirement": "1Gbps",
+                "port_security_enabled": false,
+                "id": "vl0",
+                "qos": ""
+            },
+            {
+                "leaf_requirement": "1Gbps",
+                "connectivity_type": "E-LINE",
+                "vdu_reference": [
+                    "vdu0"
+                ],
+                "alias": "data",
+                "connection_points_reference": [
+                    "CP7awl"
+                ],
+                "net_segment": "",
+                "access": true,
+                "external_access": true,
+                "dhcp": true,
+                "root_requirement": "1Gbps",
+                "port_security_enabled": false,
+                "id": "vl1",
+                "qos": ""
+            }
+        ],
+        "type": "vPXAAS",
+        "description": "proxy1_DEMO",
+        "id": 2544
+    }
+}

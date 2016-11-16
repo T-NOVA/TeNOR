@@ -52,6 +52,12 @@ RSpec.configure do |config|
 
   config.before(:each) do
 
+    #catalogues
+    stub_request(:get, 'http://localhost:4011/network-services').to_return(status: 200, body: File.read(File.join('spec', 'fixtures', 'ns_catalogue.json')))
+    stub_request(:get, 'http://localhost:4011/network-services/5829ac034431124ef1f54ed7').to_return(status: 200, body: File.read(File.join('spec', 'fixtures', 'nsd_5829ac034431124ef1f54ed7.json')))
+    stub_request(:get, 'http://localhost:4567/vnfs').to_return(status: 200, body: File.read(File.join('spec', 'fixtures', 'vnf_catalogue.json')))
+    stub_request(:get, 'http://localhost:4567/vnfs/5829ac034431124ef1f54ed7').to_return(status: 200, body: File.read(File.join('spec', 'fixtures', 'vnfd_2544.json')))
+
     #scaling stub
     stub_request(:get, 'http://localhost:4012/ns-instances/5825ce99c098a434c100000c').to_return(status: 200, body: File.read(File.join('spec', 'fixtures', 'ns_instance.json')))
     stub_request(:post, 'http://localhost:4012/ns-instances/scaling/5825ce99c098a434c100000c/scale_out').to_return(status: 200, body: "")
