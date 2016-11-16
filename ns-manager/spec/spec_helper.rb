@@ -52,6 +52,11 @@ RSpec.configure do |config|
 
   config.before(:each) do
 
+    #scaling stub
+    stub_request(:get, 'http://localhost:4012/ns-instances/5825ce99c098a434c100000c').to_return(status: 200, body: File.read(File.join('spec', 'fixtures', 'ns_instance.json')))
+    stub_request(:post, 'http://localhost:4012/ns-instances/scaling/5825ce99c098a434c100000c/scale_out').to_return(status: 200, body: "")
+    stub_request(:post, 'http://localhost:4012/ns-instances/scaling/5825ce99c098a434c100000c/scale_in').to_return(status: 200, body: "")
+
   end
 
   # rspec-expectations config goes here. You can use an alternate
