@@ -63,6 +63,11 @@ RSpec.configure do |config|
     stub_request(:post, 'http://localhost:4012/ns-instances/scaling/5825ce99c098a434c100000c/scale_out').to_return(status: 200, body: "")
     stub_request(:post, 'http://localhost:4012/ns-instances/scaling/5825ce99c098a434c100000c/scale_in').to_return(status: 200, body: "")
 
+    #monitoring
+    stub_request(:get, 'http://localhost:4014/ns-monitoring/id/monitoring-data/?instance_type=ns').to_return(status: 200, body: File.read(File.join('spec', 'fixtures', 'ns_catalogue.json')))
+    stub_request(:get, 'http://localhost:4567/vnf-monitoring/id/monitoring-data/?instance_type=vnf').to_return(status: 200, body: File.read(File.join('spec', 'fixtures', 'ns_catalogue.json')))
+
+
   end
 
   # rspec-expectations config goes here. You can use an alternate
