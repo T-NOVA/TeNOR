@@ -358,12 +358,14 @@ module NsProvisioner
             networks = []
             stack_networks.each do |network|
                 net, errors = getStackResource(popUrls[:orch], pop_auth['tenant_id'], stack_name, stack_id, network['resource_name'], tenant_token)
-                networks.push(id: net['resource']['attributes']['id'], alias: net['resource']['attributes']['name'])
+                #networks.push(id: net['resource']['attributes']['id'], alias: net['resource']['attributes']['name'])
+                networks.push(id: net['resource']['physical_resource_id'], alias: net['resource']['physical_resource_id'])
             end
             routers = []
             stack_routers.each do |router|
                 router, errors = getStackResource(popUrls[:orch], pop_auth['tenant_id'], stack_name, stack_id, router['resource_name'], tenant_token)
-                routers.push(id: router['resource']['attributes']['id'], alias: router['resource']['attributes']['name'])
+                #routers.push(id: router['resource']['attributes']['id'], alias: router['resource']['attributes']['name'])
+                routers.push(id: router['resource']['physical_resource_id'], alias: router['resource']['physical_resource_id'])
             end
             @instance.push(lifecycle_event_history: 'NETWORK CREATED')
             @instance.update_attribute('vlr', networks)
