@@ -11,7 +11,6 @@
                             <th st-sort="name" class="col-sm-2 col-md-2 col-lg-2">Name</th>
                             <th st-sort="ip" data-title="'ip'" class="col-sm-1 col-md-1 col-lg-1">IP</th>
                             <th st-sort="port" data-title=" 'port' " class="col-sm-1 col-md-1 col-lg-1 ">Port</th>
-                            <!--th data-title=" 'port' " class="col-sm-1 col-md-1 col-lg-1 ">Service key</th-->
                             <th st-sort="status " data-title=" 'status' " class="col-sm-1 col-md-1 col-lg-1 ">Status</th>
                             <th data-title=" 'action' " class="col-sm-1 col-md-1 col-lg-1 ">Actions</th>
                         </tr>
@@ -29,7 +28,7 @@
                             <!--td>{{row.service_key}}</td-->
                             <td ng-style="{ 'color': (row.status==='up' ? 'green': 'red')} ">{{row.status}}</td>
                             <td>
-                                <button ng-click="deleteDialog(mS.service_name) " class="btn btn-danger btn-xs ">Delete</button>
+                                <button ng-click="deleteDialog(row.id) " class="btn btn-danger btn-xs ">Delete</button>
                             </td>
                         </tr>
                     </tbody>
@@ -43,7 +42,7 @@
             </div>
         </div>
     </div>
-    <div class="col-md-4 col-sm-4 col-xs-4">
+    <div class="col-md-5 col-sm-5 col-xs-5">
         <div class="x_panel">
             <div class="x_title">External Modules <small>List of connected services in the orchestrator. table with status. Should be able to edit ip/port.</small>
                 <br/>
@@ -71,7 +70,7 @@
                             <td>{{row.type}}</td>
                             <td ng-style="{ 'color': (row.status==='up' ? 'green': 'red')} ">{{row.status}}</td>
                             <td>
-                                <button ng-click="deleteDialog(mS.service_name) " class="btn btn-danger btn-xs ">Delete</button>
+                                <button ng-click="deleteDialog(row.id) " class="btn btn-danger btn-xs ">Delete</button>
                             </td>
                         </tr>
                     </tbody>
@@ -85,7 +84,7 @@
             </div>
         </div>
     </div>
-    <div class="col-md-4 ">
+    <div class="col-md-3 ">
             <div class="x_panel">
                 <div class="x_title">Register new service</div>
             <div class="panel-body ">

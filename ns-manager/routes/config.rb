@@ -37,7 +37,7 @@ class ServiceConfiguration < TnovaManager
         begin
             service = Service.find(id)
         rescue Mongoid::Errors::DocumentNotFound => e
-            logger.error 'DC not found'
+            logger.error 'Service not found'
             return 404
         end
         service.to_json
@@ -50,7 +50,7 @@ class ServiceConfiguration < TnovaManager
         begin
             service = Service.find_by(name: name)
         rescue Mongoid::Errors::DocumentNotFound => e
-            logger.error 'DC not found'
+            logger.error 'Service not found'
             return 404
         end
         service['token']
@@ -63,7 +63,7 @@ class ServiceConfiguration < TnovaManager
         begin
             services = Service.where(:type => type)
         rescue Mongoid::Errors::DocumentNotFound => e
-            logger.error 'DC not found'
+            logger.error 'Service not found'
             return 404
         end
         services.to_json
@@ -133,12 +133,12 @@ class ServiceConfiguration < TnovaManager
     put '/services' do
     end
 
-    # @method delete_modules_services_name
-    # @overload delete '/modules/services/:name'
+    # @method delete_modules_services_id
+    # @overload delete '/modules/services/:id'
     # Remove a microservice
-    delete '/services/:name' do |name|
+    delete '/services/:id' do |id|
         begin
-           Service.find_by(name: name).destroy
+           Service.find(id).destroy
        rescue Mongoid::Errors::DocumentNotFound => e
            halt 404
        end
