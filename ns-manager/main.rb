@@ -39,6 +39,15 @@ class TnovaManager < Sinatra::Application
     require_relative 'routes/init'
     require_relative 'helpers/init'
 
+    #enable_swagger_doc_endpoint path: '/'
+
+    helpers ApplicationHelper
+    helpers ServiceConfigurationHelper
+    helpers AuthenticationHelper
+    helpers DcHelper
+    helpers StatisticsHelper
+    helpers VimHelper
+
     configure do
         # Configure logging
         logger = FluentLoggerSinatra::Logger.new('tenor', settings.servicename, settings.logger_host, settings.logger_port)
@@ -47,14 +56,17 @@ class TnovaManager < Sinatra::Application
 
     before do
         env['rack.logger'] = settings.logger
-    end
+        #check token if production
+        if settings.environment == 'production' && request.path_info != "/login" && request.path_info != "/services"
+            if request.env['HTTP_X_AUTH_TOKEN'].to_s.empty?
+                halt 401, { 'Content-Type' => 'text/plain' }, 'Token invalid.'
+            end
 
-    helpers ApplicationHelper
-    helpers ServiceConfigurationHelper
-    helpers AuthenticationHelper
-    helpers DcHelper
-    helpers StatisticsHelper
-    helpers VimHelper
+            if !AuthenticationHelper.check_token(request.env['HTTP_X_AUTH_TOKEN'])
+                halt 401, { 'Content-Type' => 'text/plain' }, 'Invalid token'
+            end
+        end
+    end
 
     #publish services
     ServiceConfigurationHelper.publishModules

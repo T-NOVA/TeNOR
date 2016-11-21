@@ -103,7 +103,7 @@ module Sinatra
             app.helpers Gk_Auth::Helpers
 
             app.before do
-                return if settings.environment == 'development'
+                return if settings.environment == 'development' || request.path_info != "/services"
                 authorized?
             end
 
