@@ -274,18 +274,17 @@ module NsProvisioner
             resource_reservation = []
             @instance['authentication'].each do |auth|
                 logger.info 'WICM in POP  ' + auth['pop_id']
-                pop_id = auth['pop_id']
-                pop_auth = @instance['authentication'].find { |pop| pop['pop_id'] == pop_id }
-                popUrls = pop_auth['urls']
+                pop_auth = @instance['authentication'].find { |pop| pop['pop_id'] == auth['pop_id'] }
+                pop_urls = pop_auth['urls']
 
                 logger.info 'Send WICM template to HEAT Orchestration'
                 stack_name = 'WICM_SFC_' + @instance['id'].to_s
                 template = { stack_name: stack_name, template: hot_template }
-                stack, errors = sendStack(popUrls[:orch], vnf_info['tenant_id'], template, tenant_token)
+                stack, errors = sendStack(pop_urls[:orch], vnf_info['tenant_id'], template, tenant_token)
                 return handleError(@instance, errors) if errors
 
                 # Wait for the WICM - SFC provisioning to finish
-                stack_info, errors = create_stack_wait(popUrls[:orch], vnf_info['tenant_id'], stack_name, tenant_token, 'NS WICM')
+                stack_info, errors = create_stack_wait(pop_urls[:orch], vnf_info['tenant_id'], stack_name, tenant_token, 'NS WICM')
                 return handleError(@instance, errors) if errors
 
                 resource_reservation = @instance['resource_reservation']

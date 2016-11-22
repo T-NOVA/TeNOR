@@ -1,0 +1,21 @@
+{
+	"heat_template_version": "2014-10-16",
+	"description": "Resources for Netfloc integration",
+	"parameters": {},
+	"resources": {
+		"Netfloc_0": {
+			"type": "Netfloc::Service::Chain",
+			"properties": {
+				"neutron_ports": [
+					"08fb386a-063f-4951-9e7b-3273e990542a",
+					"08fb386a-063f-4951-9e7b-3273e990542b",
+					"08fb386a-063f-4951-9e7b-3273e990542c"
+				],
+				"odl_username": "odl",
+				"odl_password": "pass",
+				"netfloc_ip_port": "10.10.10.10"
+			}
+		}
+	},
+	"outputs": {}
+}

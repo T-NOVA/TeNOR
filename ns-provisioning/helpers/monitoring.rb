@@ -65,23 +65,4 @@ module MonitoringHelper
 
         # return monitoring
     end
-
-    def sla_enforcement(nsd, instance_id)
-        parameters = []
-
-        nsd['sla'].each do |sla|
-            # sla['id']
-            sla['assurance_parameters'].each do |assurance_parameter|
-                parameters.push(param_name: assurance_parameter['param_name'], minimum: nil, maximum: nil)
-            end
-        end
-        sla = { nsi_id: instance_id, parameters: parameters }
-        begin
-            response = RestClient.post settings.sla_enforcement + '/sla-enforcement/slas', sla.to_json, content_type: :json
-        rescue => e
-            logger.error e
-            halt 503, 'SLA-Enforcement unavailable' if defined?(e.response).nil?
-            halt e.response.code, e.response.body
-        end
-    end
 end

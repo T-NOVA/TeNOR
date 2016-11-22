@@ -37,7 +37,7 @@ class Nsr
   field :vnfrs, type: Array
   field :lifecycle_event, type: Hash
   field :vnf_dependency, type: Array
-  field :vnffgr, type: Array
+  field :vnffgd, type: Hash
   field :pnfr, type: Array
   field :descriptor_reference, type: String
   field :resource_reservation, type: Array
