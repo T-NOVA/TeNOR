@@ -213,7 +213,7 @@ class NsProvisioner < TnovaManager
 
     logger.info "Sending terminate request to NS Provisioning"
     begin
-      response = RestClient.put provisioner.host + request.fullpath.to_s + '/terminate', {ç.to_json, 'X-Auth-Token' => provisioner.token, :content_type => :json
+      response = RestClient.put provisioner.host + request.fullpath.to_s + '/terminate', {}.to_json, 'X-Auth-Token' => provisioner.token, :content_type => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Provisioning unreachable'
     rescue => e
