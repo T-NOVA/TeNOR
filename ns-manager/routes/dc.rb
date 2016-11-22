@@ -23,7 +23,7 @@ class DcController < TnovaManager
     #  Returns a DCs
     get '/dc' do
         begin
-            return 200, Dc.all.to_json
+            return 200, Dc.all.to_json(:except => :password)
         rescue => e
             logger.error e
             logger.error 'Error Establishing a Database Connection'
@@ -41,7 +41,7 @@ class DcController < TnovaManager
             logger.error 'DC not found'
             return 404
         end
-        return dc.to_json
+        return dc.to_json(:except => :password)
     end
 
     # @method get_pops_dc
@@ -61,7 +61,7 @@ class DcController < TnovaManager
             logger.error 'DC not found'
             return 404
         end
-        return dc.to_json
+        return dc.to_json(:except => :password)
     end
 
     # @method post_pops_dc
