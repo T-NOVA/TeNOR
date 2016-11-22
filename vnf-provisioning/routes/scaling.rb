@@ -34,7 +34,6 @@ class Scaling < VnfProvisioning
 
         # Validate JSON format
         scale_info = parse_json(request.body.read)
-        # logger.debug 'Scale out: ' + scale_info.to_json
         halt 400, 'VNFD not found' unless scale_info.key?('vnfd')
 
         vnfd = scale_info['vnfd']

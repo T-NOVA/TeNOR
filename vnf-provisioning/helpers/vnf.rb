@@ -23,7 +23,7 @@ module ProvisioningHelper
     #
     # @param [Hash] auth_info the keystone url, the tenant name, the username and the password
     # @return [Hash] the auth token and the tenant id
-    def request_auth_token(vim_info)
+    def request_auth_token_to_remove(vim_info)
         # Build request message
         request = {
             auth: {
@@ -231,6 +231,7 @@ module ProvisioningHelper
         resource = vnfr['scale_resources'].find { |res| res['name'] == scale_resources[:name] }
         resource = vnfr['scale_resources'][vnfr['scale_resources'].size - 1]
         scaled_resource = vnfr['scale_resources'].find { |res| res['name'] == scale_resources[:name] }
+        return if scaled_resource.nil?
         vnfr.pull(scale_resources: resource)
 
         scaled_resource['vnf_addresses'] = vnf_addresses

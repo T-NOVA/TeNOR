@@ -37,8 +37,8 @@ module MapiHelper
             logger.error message
             logger.info 'Error registring the request to mAPI.'
         end
-        logger.info 'Recevied response??'
         logger.info response
+        return
     end
 
     def sendCommandToMAPI(vnfr_id, mapi_request)
@@ -56,7 +56,6 @@ module MapiHelper
             logger.error e.response
             return e.response.code, e.response.body
         end
-        #response
         return
     end
 
