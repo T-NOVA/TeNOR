@@ -17,45 +17,6 @@
 #
 # @see ProvisioningHelper
 module ProvisioningHelper
-    # Checks if a JSON message is valid
-    #
-    # @param [JSON] message some JSON message
-    # @return [Hash] the parsed message
-    def parse_json(message)
-        # Check JSON message format
-        begin
-            parsed_message = JSON.parse(message) # parse json message
-        rescue JSON::ParserError => e
-            # If JSON not valid, return with errors
-            logger.error "JSON parsing: #{e}"
-            halt 400, e.to_s + "\n"
-        end
-
-        parsed_message
-    end
-
-    # Method which lists all available interfaces
-    #
-    # @return [Array] an array of hashes containing all interfaces
-    def interfaces_list
-        [
-            {
-                uri: '/',
-                method: 'GET',
-                purpose: 'REST API Structure and Capability Discovery'
-            },
-            {
-                uri: '/vnf-provisioning/vnf-instances',
-                method: 'POST',
-                purpose: 'Provision a VNF'
-            },
-            {
-                uri: '/vnf-provisioning/vnf-instances/:id/destroy',
-                method: 'POST',
-                purpose: 'Destroy a VNF'
-            }
-        ]
-    end
 
     # DEPCREATED
     # Request an auth token from the VIM
@@ -106,19 +67,23 @@ module ProvisioningHelper
         auth_token = vim_info['token']
         tenant_id =  vim_info['tenant_id']
 
-        # Requests VIM to provision the VNF
+        template = { stack_name: vnf_name, template: hot }
         begin
-            response = parse_json(RestClient.post("#{vim_info['heat']}/#{tenant_id}/stacks", { stack_name: vnf_name, template: hot }.to_json, 'X-Auth-Token' => auth_token, :content_type => :json, :accept => :json))
+            response = RestClient.post "#{vim_info['heat']}/#{tenant_id}/stacks", template.to_json, 'X-Auth-Token' => auth_token, :content_type => :json, :accept => :json
         rescue Errno::ECONNREFUSED
-            halt 500, 'VIM unreachable'
-        rescue => e
+            error = { 'info' => 'VIM unrechable.' }
+            return 500, error
+        rescue RestClient::ExceptionWithResponse => e
+            logger.error e
             logger.error e.response
-            logger.error e.response.code
-            logger.error e.response.body
-            halt e.response.code, e.response.body
+            logger.error e.response.body if e.response
+            error = { 'info' => 'Error creating the VNF stack.' }
+            return 500, error
         end
+        stack, errors = parse_json(response)
+        return 400, errors if errors
 
-        response
+        stack
     end
 
     # Monitor stack state
@@ -175,6 +140,22 @@ module ProvisioningHelper
         vnf_addresses = {}
         scale_urls = {}
         vms_id = {}
+        if stack_info['stack']['outputs'].nil?
+            event = "scaling_in"
+            # Build mAPI request
+            mapi_request = {
+                event: event,
+                vnf_controller: [],
+                parameters: []
+            }
+            logger.debug 'mAPI request: ' + mapi_request.to_json
+
+            response = sendCommandToMAPI(vnfr['id'], mapi_request) unless settings.mapi.nil?
+
+            # Update the VNFR event history
+            vnfr['lifecycle_event_history'].push("Executed a #{mapi_request[:event]}")
+            return
+        end
         stack_info['stack']['outputs'].select do |output|
             if output['output_key'] == 'private_key'
                 private_key = output['output_value']

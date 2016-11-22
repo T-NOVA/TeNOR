@@ -67,7 +67,12 @@ RSpec.configure do |config|
         # keystone
         stub_request(:post, 'http://vimurl:5000/tokens').to_return(status: 200, body: File.read(File.join('spec', 'fixtures', 'authentication.json')))
         # heat stack
-        stub_request(:post, 'http://vimurl:9000/tenant_id/stacks').to_return(status: 200, body: File.read(File.join('spec', 'fixtures', 'heat_response.json')))
+        stub_request(:post, 'http://vimurl:8004/tenant_id/stacks').to_return(status: 200, body: File.read(File.join('spec', 'fixtures', 'heat_response.json')))
+        stub_request(:get, 'http://localhost/stackurl/resources').to_return(status: 200, body: File.read(File.join('spec', 'fixtures', 'heat_resources_response.json')))
+        # compute flavors
+        stub_request(:get, 'http://vimurl:8774/tenant_id/flavors?minDisk=8&minRam=2000').to_return(status: 200, body: File.read(File.join('spec', 'fixtures', 'flavor_response.json')))
+        stub_request(:post, 'http://localhost:4000/ns-instances/582d8a06c098a4738b000002/instantiate').to_return(status: 200)
+
     end
 
     # rspec-expectations config goes here. You can use an alternate

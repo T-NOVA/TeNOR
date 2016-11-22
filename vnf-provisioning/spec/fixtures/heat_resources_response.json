@@ -1,0 +1,396 @@
+{
+  "resources": [
+    {
+      "resource_name": "testVNF_10",
+      "links": [
+        {
+          "href": "http://10.10.1.2:8004/v1/16b6c1cdb8604e3a84569e40edfce83a/stacks/testVNF_582d8a1ac098a44336000000/3b9d2cf4-3e37-454a-b7fe-9c86da948210/resources/testVNF_10",
+          "rel": "self"
+        },
+        {
+          "href": "http://10.10.1.2:8004/v1/16b6c1cdb8604e3a84569e40edfce83a/stacks/testVNF_582d8a1ac098a44336000000/3b9d2cf4-3e37-454a-b7fe-9c86da948210",
+          "rel": "stack"
+        }
+      ],
+      "logical_resource_id": "testVNF_10",
+      "creation_time": "2016-11-17T10:44:44",
+      "resource_status": "CREATE_COMPLETE",
+      "updated_time": "2016-11-17T10:44:44",
+      "required_by": [],
+      "resource_status_reason": "state changed",
+      "physical_resource_id": "68936",
+      "resource_type": "OS::Neutron::FloatingIPAssociation"
+    },
+    {
+      "resource_name": "vdu0",
+      "links": [
+        {
+          "href": "http://10.10.1.2:8004/v1/16b6c1cdb8604e3a84569e40edfce83a/stacks/testVNF_582d8a1ac098a44336000000/3b9d2cf4-3e37-454a-b7fe-9c86da948210/resources/vdu0",
+          "rel": "self"
+        },
+        {
+          "href": "http://10.10.1.2:8004/v1/16b6c1cdb8604e3a84569e40edfce83a/stacks/testVNF_582d8a1ac098a44336000000/3b9d2cf4-3e37-454a-b7fe-9c86da948210",
+          "rel": "stack"
+        }
+      ],
+      "logical_resource_id": "vdu0",
+      "creation_time": "2016-11-17T10:44:44",
+      "resource_status": "CREATE_COMPLETE",
+      "updated_time": "2016-11-17T10:44:44",
+      "required_by": [],
+      "resource_status_reason": "state changed",
+      "physical_resource_id": "a068b518-0734-4111-8d99-d6c7da924d98",
+      "resource_type": "OS::Nova::Server"
+    },
+    {
+      "resource_name": "testVNF_12",
+      "links": [
+        {
+          "href": "http://10.10.1.2:8004/v1/16b6c1cdb8604e3a84569e40edfce83a/stacks/testVNF_582d8a1ac098a44336000000/3b9d2cf4-3e37-454a-b7fe-9c86da948210/resources/testVNF_12",
+          "rel": "self"
+        },
+        {
+          "href": "http://10.10.1.2:8004/v1/16b6c1cdb8604e3a84569e40edfce83a/stacks/testVNF_582d8a1ac098a44336000000/3b9d2cf4-3e37-454a-b7fe-9c86da948210",
+          "rel": "stack"
+        }
+      ],
+      "logical_resource_id": "testVNF_12",
+      "creation_time": "2016-11-17T10:44:45",
+      "resource_status": "CREATE_COMPLETE",
+      "updated_time": "2016-11-17T10:44:45",
+      "required_by": [
+        "testVNF_13"
+      ],
+      "resource_status_reason": "state changed",
+      "physical_resource_id": "d845b3d4-9e25-4379-a729-dd69cab5c910",
+      "resource_type": "OS::Neutron::FloatingIP"
+    },
+    {
+      "resource_name": "testVNF_13",
+      "links": [
+        {
+          "href": "http://10.10.1.2:8004/v1/16b6c1cdb8604e3a84569e40edfce83a/stacks/testVNF_582d8a1ac098a44336000000/3b9d2cf4-3e37-454a-b7fe-9c86da948210/resources/testVNF_13",
+          "rel": "self"
+        },
+        {
+          "href": "http://10.10.1.2:8004/v1/16b6c1cdb8604e3a84569e40edfce83a/stacks/testVNF_582d8a1ac098a44336000000/3b9d2cf4-3e37-454a-b7fe-9c86da948210",
+          "rel": "stack"
+        }
+      ],
+      "logical_resource_id": "testVNF_13",
+      "creation_time": "2016-11-17T10:44:44",
+      "resource_status": "CREATE_COMPLETE",
+      "updated_time": "2016-11-17T10:44:44",
+      "required_by": [],
+      "resource_status_reason": "state changed",
+      "physical_resource_id": "68940",
+      "resource_type": "OS::Neutron::FloatingIPAssociation"
+    },
+    {
+      "resource_name": "testVNF_14",
+      "links": [
+        {
+          "href": "http://10.10.1.2:8004/v1/16b6c1cdb8604e3a84569e40edfce83a/stacks/testVNF_582d8a1ac098a44336000000/3b9d2cf4-3e37-454a-b7fe-9c86da948210/resources/testVNF_14",
+          "rel": "self"
+        },
+        {
+          "href": "http://10.10.1.2:8004/v1/16b6c1cdb8604e3a84569e40edfce83a/stacks/testVNF_582d8a1ac098a44336000000/3b9d2cf4-3e37-454a-b7fe-9c86da948210",
+          "rel": "stack"
+        }
+      ],
+      "logical_resource_id": "testVNF_14",
+      "creation_time": "2016-11-17T10:44:44",
+      "resource_status": "CREATE_COMPLETE",
+      "updated_time": "2016-11-17T10:44:44",
+      "required_by": [
+        "vdu0",
+        "testVNF_15"
+      ],
+      "resource_status_reason": "state changed",
+      "physical_resource_id": "5c08d64f72774dcf90a70c94a7afc151",
+      "resource_type": "OS::Heat::WaitConditionHandle"
+    },
+    {
+      "resource_name": "testVNF_15",
+      "links": [
+        {
+          "href": "http://10.10.1.2:8004/v1/16b6c1cdb8604e3a84569e40edfce83a/stacks/testVNF_582d8a1ac098a44336000000/3b9d2cf4-3e37-454a-b7fe-9c86da948210/resources/testVNF_15",
+          "rel": "self"
+        },
+        {
+          "href": "http://10.10.1.2:8004/v1/16b6c1cdb8604e3a84569e40edfce83a/stacks/testVNF_582d8a1ac098a44336000000/3b9d2cf4-3e37-454a-b7fe-9c86da948210",
+          "rel": "stack"
+        }
+      ],
+      "logical_resource_id": "testVNF_15",
+      "creation_time": "2016-11-17T10:44:44",
+      "resource_status": "CREATE_COMPLETE",
+      "updated_time": "2016-11-17T10:44:44",
+      "required_by": [],
+      "resource_status_reason": "state changed",
+      "physical_resource_id": "",
+      "resource_type": "OS::Heat::WaitCondition"
+    },
+    {
+      "resource_name": "CPfs0h",
+      "links": [
+        {
+          "href": "http://10.10.1.2:8004/v1/16b6c1cdb8604e3a84569e40edfce83a/stacks/testVNF_582d8a1ac098a44336000000/3b9d2cf4-3e37-454a-b7fe-9c86da948210/resources/CPfs0h",
+          "rel": "self"
+        },
+        {
+          "href": "http://10.10.1.2:8004/v1/16b6c1cdb8604e3a84569e40edfce83a/stacks/testVNF_582d8a1ac098a44336000000/3b9d2cf4-3e37-454a-b7fe-9c86da948210",
+          "rel": "stack"
+        }
+      ],
+      "logical_resource_id": "CPfs0h",
+      "creation_time": "2016-11-17T10:44:44",
+      "resource_status": "CREATE_COMPLETE",
+      "updated_time": "2016-11-17T10:44:44",
+      "required_by": [
+        "testVNF_10",
+        "vdu0"
+      ],
+      "resource_status_reason": "state changed",
+      "physical_resource_id": "49025d9c-170f-4070-86b5-906ca663598c",
+      "resource_type": "OS::Neutron::Port"
+    },
+    {
+      "resource_name": "testVNF_6",
+      "links": [
+        {
+          "href": "http://10.10.1.2:8004/v1/16b6c1cdb8604e3a84569e40edfce83a/stacks/testVNF_582d8a1ac098a44336000000/3b9d2cf4-3e37-454a-b7fe-9c86da948210/resources/testVNF_6",
+          "rel": "self"
+        },
+        {
+          "href": "http://10.10.1.2:8004/v1/16b6c1cdb8604e3a84569e40edfce83a/stacks/testVNF_582d8a1ac098a44336000000/3b9d2cf4-3e37-454a-b7fe-9c86da948210",
+          "rel": "stack"
+        }
+      ],
+      "logical_resource_id": "testVNF_6",
+      "creation_time": "2016-11-17T10:44:45",
+      "resource_status": "CREATE_COMPLETE",
+      "updated_time": "2016-11-17T10:44:45",
+      "required_by": [
+        "testVNF_10",
+        "testVNF_13"
+      ],
+      "resource_status_reason": "state changed",
+      "physical_resource_id": "12a738d0-eb79-49df-9e37-f32882d2a546:subnet_id=0dafd642-5f7f-4eab-a54f-55ddb4cace13",
+      "resource_type": "OS::Neutron::RouterInterface"
+    },
+    {
+      "resource_name": "testVNF_7",
+      "links": [
+        {
+          "href": "http://10.10.1.2:8004/v1/16b6c1cdb8604e3a84569e40edfce83a/stacks/testVNF_582d8a1ac098a44336000000/3b9d2cf4-3e37-454a-b7fe-9c86da948210/resources/testVNF_7",
+          "rel": "self"
+        },
+        {
+          "href": "http://10.10.1.2:8004/v1/16b6c1cdb8604e3a84569e40edfce83a/stacks/testVNF_582d8a1ac098a44336000000/3b9d2cf4-3e37-454a-b7fe-9c86da948210",
+          "rel": "stack"
+        }
+      ],
+      "logical_resource_id": "testVNF_7",
+      "creation_time": "2016-11-17T10:44:45",
+      "resource_status": "CREATE_COMPLETE",
+      "updated_time": "2016-11-17T10:44:45",
+      "required_by": [
+        "vdu0"
+      ],
+      "resource_status_reason": "state changed",
+      "physical_resource_id": "5ce2252b-9b0f-41c0-a189-a4b88f21fc82",
+      "resource_type": "OS::Glance::Image"
+    },
+    {
+      "resource_name": "testVNF_5",
+      "links": [
+        {
+          "href": "http://10.10.1.2:8004/v1/16b6c1cdb8604e3a84569e40edfce83a/stacks/testVNF_582d8a1ac098a44336000000/3b9d2cf4-3e37-454a-b7fe-9c86da948210/resources/testVNF_5",
+          "rel": "self"
+        },
+        {
+          "href": "http://10.10.1.2:8004/v1/16b6c1cdb8604e3a84569e40edfce83a/stacks/testVNF_582d8a1ac098a44336000000/3b9d2cf4-3e37-454a-b7fe-9c86da948210",
+          "rel": "stack"
+        }
+      ],
+      "logical_resource_id": "testVNF_5",
+      "creation_time": "2016-11-17T10:44:45",
+      "resource_status": "CREATE_COMPLETE",
+      "updated_time": "2016-11-17T10:44:45",
+      "required_by": [
+        "testVNF_6",
+        "CPng8r"
+      ],
+      "resource_status_reason": "state changed",
+      "physical_resource_id": "0dafd642-5f7f-4eab-a54f-55ddb4cace13",
+      "resource_type": "OS::Neutron::Subnet"
+    },
+    {
+      "resource_name": "testVNF_2",
+      "links": [
+        {
+          "href": "http://10.10.1.2:8004/v1/16b6c1cdb8604e3a84569e40edfce83a/stacks/testVNF_582d8a1ac098a44336000000/3b9d2cf4-3e37-454a-b7fe-9c86da948210/resources/testVNF_2",
+          "rel": "self"
+        },
+        {
+          "href": "http://10.10.1.2:8004/v1/16b6c1cdb8604e3a84569e40edfce83a/stacks/testVNF_582d8a1ac098a44336000000/3b9d2cf4-3e37-454a-b7fe-9c86da948210",
+          "rel": "stack"
+        }
+      ],
+      "logical_resource_id": "testVNF_2",
+      "creation_time": "2016-11-17T10:44:45",
+      "resource_status": "CREATE_COMPLETE",
+      "updated_time": "2016-11-17T10:44:45",
+      "required_by": [
+        "CPfs0h",
+        "testVNF_3"
+      ],
+      "resource_status_reason": "state changed",
+      "physical_resource_id": "90969789-aa19-44f1-b9f5-ff54931de4ef",
+      "resource_type": "OS::Neutron::Subnet"
+    },
+    {
+      "resource_name": "testVNF_3",
+      "links": [
+        {
+          "href": "http://10.10.1.2:8004/v1/16b6c1cdb8604e3a84569e40edfce83a/stacks/testVNF_582d8a1ac098a44336000000/3b9d2cf4-3e37-454a-b7fe-9c86da948210/resources/testVNF_3",
+          "rel": "self"
+        },
+        {
+          "href": "http://10.10.1.2:8004/v1/16b6c1cdb8604e3a84569e40edfce83a/stacks/testVNF_582d8a1ac098a44336000000/3b9d2cf4-3e37-454a-b7fe-9c86da948210",
+          "rel": "stack"
+        }
+      ],
+      "logical_resource_id": "testVNF_3",
+      "creation_time": "2016-11-17T10:44:45",
+      "resource_status": "CREATE_COMPLETE",
+      "updated_time": "2016-11-17T10:44:45",
+      "required_by": [
+        "testVNF_10",
+        "testVNF_13"
+      ],
+      "resource_status_reason": "state changed",
+      "physical_resource_id": "12a738d0-eb79-49df-9e37-f32882d2a546:subnet_id=90969789-aa19-44f1-b9f5-ff54931de4ef",
+      "resource_type": "OS::Neutron::RouterInterface"
+    },
+    {
+      "resource_name": "testVNF_0",
+      "links": [
+        {
+          "href": "http://10.10.1.2:8004/v1/16b6c1cdb8604e3a84569e40edfce83a/stacks/testVNF_582d8a1ac098a44336000000/3b9d2cf4-3e37-454a-b7fe-9c86da948210/resources/testVNF_0",
+          "rel": "self"
+        },
+        {
+          "href": "http://10.10.1.2:8004/v1/16b6c1cdb8604e3a84569e40edfce83a/stacks/testVNF_582d8a1ac098a44336000000/3b9d2cf4-3e37-454a-b7fe-9c86da948210",
+          "rel": "stack"
+        }
+      ],
+      "logical_resource_id": "testVNF_0",
+      "creation_time": "2016-11-17T10:44:45",
+      "resource_status": "CREATE_COMPLETE",
+      "updated_time": "2016-11-17T10:44:45",
+      "required_by": [
+        "vdu0"
+      ],
+      "resource_status_reason": "state changed",
+      "physical_resource_id": "ZK6IM_xSI2IX",
+      "resource_type": "OS::Nova::KeyPair"
+    },
+    {
+      "resource_name": "vl0",
+      "links": [
+        {
+          "href": "http://10.10.1.2:8004/v1/16b6c1cdb8604e3a84569e40edfce83a/stacks/testVNF_582d8a1ac098a44336000000/3b9d2cf4-3e37-454a-b7fe-9c86da948210/resources/vl0",
+          "rel": "self"
+        },
+        {
+          "href": "http://10.10.1.2:8004/v1/16b6c1cdb8604e3a84569e40edfce83a/stacks/testVNF_582d8a1ac098a44336000000/3b9d2cf4-3e37-454a-b7fe-9c86da948210",
+          "rel": "stack"
+        }
+      ],
+      "logical_resource_id": "vl0",
+      "creation_time": "2016-11-17T10:44:45",
+      "resource_status": "CREATE_COMPLETE",
+      "updated_time": "2016-11-17T10:44:45",
+      "required_by": [
+        "CPfs0h",
+        "testVNF_2"
+      ],
+      "resource_status_reason": "state changed",
+      "physical_resource_id": "41c071c5-0eb7-4fe7-b8be-221a0253027d",
+      "resource_type": "OS::Neutron::Net"
+    },
+    {
+      "resource_name": "vl1",
+      "links": [
+        {
+          "href": "http://10.10.1.2:8004/v1/16b6c1cdb8604e3a84569e40edfce83a/stacks/testVNF_582d8a1ac098a44336000000/3b9d2cf4-3e37-454a-b7fe-9c86da948210/resources/vl1",
+          "rel": "self"
+        },
+        {
+          "href": "http://10.10.1.2:8004/v1/16b6c1cdb8604e3a84569e40edfce83a/stacks/testVNF_582d8a1ac098a44336000000/3b9d2cf4-3e37-454a-b7fe-9c86da948210",
+          "rel": "stack"
+        }
+      ],
+      "logical_resource_id": "vl1",
+      "creation_time": "2016-11-17T10:44:45",
+      "resource_status": "CREATE_COMPLETE",
+      "updated_time": "2016-11-17T10:44:45",
+      "required_by": [
+        "testVNF_5",
+        "CPng8r"
+      ],
+      "resource_status_reason": "state changed",
+      "physical_resource_id": "e45ca010-c05c-4f37-bb82-9094d1984c39",
+      "resource_type": "OS::Neutron::Net"
+    },
+    {
+      "resource_name": "CPng8r",
+      "links": [
+        {
+          "href": "http://10.10.1.2:8004/v1/16b6c1cdb8604e3a84569e40edfce83a/stacks/testVNF_582d8a1ac098a44336000000/3b9d2cf4-3e37-454a-b7fe-9c86da948210/resources/CPng8r",
+          "rel": "self"
+        },
+        {
+          "href": "http://10.10.1.2:8004/v1/16b6c1cdb8604e3a84569e40edfce83a/stacks/testVNF_582d8a1ac098a44336000000/3b9d2cf4-3e37-454a-b7fe-9c86da948210",
+          "rel": "stack"
+        }
+      ],
+      "logical_resource_id": "CPng8r",
+      "creation_time": "2016-11-17T10:44:45",
+      "resource_status": "CREATE_COMPLETE",
+      "updated_time": "2016-11-17T10:44:45",
+      "required_by": [
+        "vdu0",
+        "testVNF_13"
+      ],
+      "resource_status_reason": "state changed",
+      "physical_resource_id": "c8bd2d46-38a4-482b-879e-ae675c6f9707",
+      "resource_type": "OS::Neutron::Port"
+    },
+    {
+      "resource_name": "testVNF_9",
+      "links": [
+        {
+          "href": "http://10.10.1.2:8004/v1/16b6c1cdb8604e3a84569e40edfce83a/stacks/testVNF_582d8a1ac098a44336000000/3b9d2cf4-3e37-454a-b7fe-9c86da948210/resources/testVNF_9",
+          "rel": "self"
+        },
+        {
+          "href": "http://10.10.1.2:8004/v1/16b6c1cdb8604e3a84569e40edfce83a/stacks/testVNF_582d8a1ac098a44336000000/3b9d2cf4-3e37-454a-b7fe-9c86da948210",
+          "rel": "stack"
+        }
+      ],
+      "logical_resource_id": "testVNF_9",
+      "creation_time": "2016-11-17T10:44:45",
+      "resource_status": "CREATE_COMPLETE",
+      "updated_time": "2016-11-17T10:44:45",
+      "required_by": [
+        "testVNF_10"
+      ],
+      "resource_status_reason": "state changed",
+      "physical_resource_id": "5bd9715e-04cd-4afc-9d7f-8a25d18c437b",
+      "resource_type": "OS::Neutron::FloatingIP"
+    }
+  ]
+}

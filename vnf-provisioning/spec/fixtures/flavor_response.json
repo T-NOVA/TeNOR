@@ -1,0 +1,46 @@
+{
+  "flavors": [
+    {
+      "id": "5",
+      "links": [
+        {
+          "href": "http://10.10.1.2:8774/v2/5ec795bba92e4eaaa9eabd0af44891e3/flavors/5",
+          "rel": "self"
+        },
+        {
+          "href": "http://10.10.1.2:8774/5ec795bba92e4eaaa9eabd0af44891e3/flavors/5",
+          "rel": "bookmark"
+        }
+      ],
+      "name": "m1.xlarge"
+    },
+    {
+      "id": "d7a32b21-b857-416b-9872-f2eecd44c0bd",
+      "links": [
+        {
+          "href": "http://10.10.1.2:8774/v2/5ec795bba92e4eaaa9eabd0af44891e3/flavors/d7a32b21-b857-416b-9872-f2eecd44c0bd",
+          "rel": "self"
+        },
+        {
+          "href": "http://10.10.1.2:8774/5ec795bba92e4eaaa9eabd0af44891e3/flavors/d7a32b21-b857-416b-9872-f2eecd44c0bd",
+          "rel": "bookmark"
+        }
+      ],
+      "name": "OAM"
+    },
+    {
+      "id": "fa7e9fac-7d03-4f02-a24a-42fd65ad5866",
+      "links": [
+        {
+          "href": "http://10.10.1.2:8774/v2/5ec795bba92e4eaaa9eabd0af44891e3/flavors/fa7e9fac-7d03-4f02-a24a-42fd65ad5866",
+          "rel": "self"
+        },
+        {
+          "href": "http://10.10.1.2:8774/5ec795bba92e4eaaa9eabd0af44891e3/flavors/fa7e9fac-7d03-4f02-a24a-42fd65ad5866",
+          "rel": "bookmark"
+        }
+      ],
+      "name": "vSBC_1411_582c67c5b18cfb37b5000000-vSBC_1411_29-dwcqd7jp2adr"
+    }
+  ]
+}

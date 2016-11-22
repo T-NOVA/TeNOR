@@ -304,7 +304,7 @@ class Provisioning < VnfProvisioning
         # Update the VNFR event history
         vnfr.push(lifecycle_event_history: "Executed a #{mapi_request[:event]}")
 
-        halt code, body
+        halt 200
     end
 
     # @method post_vnf_provisioning_id_stack_status
@@ -335,6 +335,7 @@ class Provisioning < VnfProvisioning
             # get stack resources
             resources, errors = getStackResources(vnfr.stack_url, auth_token)
             logger.error errors if errors
+            logger.info resources
             resources.each do |resource|
                 # map ports to openstack_port_id
                 unless vnfr.port_instances.detect { |port| resource['resource_name'] == port['id'] }.nil?
@@ -388,7 +389,6 @@ class Provisioning < VnfProvisioning
 
             # update vnfr with the key generated in the stack
             private_key = outputs.find { |res| res[:key] == 'private_key' }
-
             lifecycle_events_values = {}
             vnf_addresses = {}
             scale_urls = {}
@@ -399,7 +399,6 @@ class Provisioning < VnfProvisioning
                 elsif output['output_key'] =~ /^.*#id$/i
                     vms_id[output['output_key'].match(/^(.*)#id$/i)[1]] = output['output_value']
                 else
-
                     if output['output_key'] =~ /^.*#PublicIp$/i
                         #            vnf_addresses['controller'] = output['output_value']
                     end
@@ -449,7 +448,6 @@ class Provisioning < VnfProvisioning
                     end
                 end
             end
-
             logger.debug 'VMs ID: ' + vms_id.to_json
             logger.debug 'VNF Addresses: ' + vnf_addresses.to_json
             logger.debug 'Lifecycle events values: ' + lifecycle_events_values.to_json

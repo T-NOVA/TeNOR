@@ -21,7 +21,7 @@ module ComputeHelper
         begin
             response = RestClient.get compute_url + "/#{tenant_id}/flavors" + query_params, 'X-Auth-Token' => auth_token, :accept => :json
         rescue Errno::ECONNREFUSED
-        # halt 500, 'VIM unreachable'
+            return 500, "Compute API unrechable."
         rescue RestClient::ExceptionWithResponse => e
                  puts "Excepion with response"
                  puts e

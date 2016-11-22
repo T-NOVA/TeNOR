@@ -1,0 +1,82 @@
+{
+  "stack": {
+    "disable_rollback": true,
+    "description": "Test VNF example",
+    "parent": "",
+    "tags": "",
+    "stack_name": "testVNF_582d8a1ac098a44336000000",
+    "stack_user_project_id": "af796d90d9194deeb590bb93c28bed28",
+    "stack_status_reason": "Stack CREATE completed successfully",
+    "creation_time": "2016-11-17T10:44:44",
+    "links": [
+      {
+        "href": "http://vimurl:8004/v1/16b6c1cdb8604e3a84569e40edfce83a/stacks/testVNF_582d8a1ac098a44336000000/3b9d2cf4-3e37-454a-b7fe-9c86da948210",
+        "rel": "self"
+      }
+    ],
+    "capabilities": [
+
+    ],
+    "notification_topics": [
+
+    ],
+    "updated_time": "",
+    "timeout_mins": "",
+    "stack_status": "CREATE_COMPLETE",
+    "stack_owner": "",
+    "parameters": {
+      "OS::project_id": "16b6c1cdb8604e3a84569e40edfce83a",
+      "OS::stack_id": "3b9d2cf4-3e37-454a-b7fe-9c86da94 8210",
+      "OS::stack_name": "testVNF_582d8a1ac098a44336000000"
+    },
+    "id": "3b9d2cf4-3e37-454a-b7fe-9c86da948210",
+    "outputs": [
+      {
+        "output_value": "-----BEGIN RSA PRIVATE KEY-----\nMIIEqAIBAAKCAQEAv0yWd Cdybv3R69/L/BMJyyNHeF32sWuJFpbjyCStuSCVj7sX\nZ4Tr/5k1TP/RQq8HH3w66KCpPAICkHaubjc4FGrfZXLdfLoCBviE6RLt7KtsPXA1\nMB3i4ATovjNqrnUhITyczmst1RIuTRbXnl9L1a4ywlOl0H1R9i/QOdfDzvbSeW4+\nHp5RSVLarbjeybn d5eL0okN4UBYYBDKatQH1ly53u1bx/nh3Ro11V7joMfaftauD\nbAagFa5HKO6BqtuU8zeScx/8c4QUHQQgMuAj1jzSGz7J+ZhKfggghTvsdzWim5yv\nJB7DPh31AJDM8wYrwLnVw4SkHOx02MfgURrtRwIDAQABAoIBAQCKWvMJ6SnLeonj\n5cWbd42Cv O5I8PSl1xecHd96doSquxVQkcjYlvs0rnMtUGvhpcMqE2hrrR8ZBn8i\nSqPXlNpbcfxGXDAysDkdH4rJI2au4EB1ovzk4wieaw6F2ZwTtyUR68uhQ0UvsGmK\nWbXylgu77LRLdcIcKzcnLeeUnifBO+QHFNrz8Dg8GhFF0VUrPYEG8LpQqY+VP2+t\n0hE CN0w67cM0+MmCkIXxYBZfkfcIJEVpgEuetU/pqZmgU9Pet/PgX3YL32c/sBUe\nlLBkkRJ3tRY8R7pcMril5/l4R0NgX3pKljE6RheOu2S8b8XVI/B0yB5h4iILhkyQ\nT34bBMRhAoIAgQDTbQSKUsr7GHbXGgiysyCxIW8WRruRImi89praemTBWrriInz t\nYFn2zjpQLSVnJtqweSgPbUelCm6poPPN9uOBdmTR/c59d+pxHLoAQ1olsmA98Zy5\nYTfpLKoxCsmVjDMNku+UALxRXtETyfxWgjhYe83z1cqsK0wsfu9Q819otwKCAIEA\n56FNPpdTyWcAnT7eRl3B+khA5ftJVkb0G852XPPScx5GwXRMSJN1HT/j1 /Yi7x6n\nTwNGlWqMrDpXkovHdORuy/jEnB0JidU1VincnBNFFBR4p+w5cH1YINk/C5xLvwM7\n8pKelBRQbDfqAdzns2V1NAB7lyAWbCnb6KHDySMub/ECggCACn6NzCPh6WbEd1bW\nebBEfiZPskZehwyzMDX5Z8DNgX90aUcW9l1i+cowwMwM4DrgfgP 1hhaBiOKkrYzM\nrTuE/WcYCAhWGIo8O9MWNG8jaV2aQ1jb06PMt6k85WRIr0CfRBw4AhurPUq8jAPp\nn42lKFc02NaS0crwZAEE9fqukK8CggCAeSO4BUsZa9St0o9FqmFwiJfvMRhJ05CK\nLFy/NH/kCYbFFHnhR3evIVv/qju1K3/Jmp4o9Q3jglOE5 0SpTO4HMC/ri4X4LhjO\nq0B7ezjswMKwE4qMw9MaGxvjSAw25TAo0wVxYBp7sQ1RGiZRG1athEPYX0JN18XQ\nmAq6HWCD8dECggCAECQ3p1Mf7620RiXojGsYxinS55eUIf+//hbor2jC+4na6dO4\ntkLCCdc0utkKO/JLd3S6ZMv/Pme8tDp7kZF8kw/ qpJwEryxyj9J4KIdCOam4Hj3j\nHS0rwm3r9LnK95Kf4zqpCEFsVq444FyqXys0yoq49I/W5G3RRRn6fSTITeA=\n-----END RSA PRIVATE KEY-----\n",
+        "description": "Private key",
+        "output_key": "private_key"
+      },
+      {
+        "output_value": "a068b518-0734-4111-8d99-d6c7da924d98",
+        "description": "vdu0 ID",
+        "output_key": "vdu0#id"
+      },
+      {
+        "output_value": "10.10.1.254",
+        "description": "CPng8r Floating IP",
+        "output_key": "vdu0#CPn g8r#PublicIp"
+      },
+      {
+        "output_value": "10.10.1.52",
+        "description": "CPfs0h Floating IP",
+        "output_key": "vdu0#CPfs0h#PublicIp"
+      },
+      {
+        "output_value": "192.242.91.3",
+        "description": "CPfs0h private addre ss",
+        "output_key": "vdu0#CPfs0h#fixed_ips#0#ip_address"
+      },
+      {
+        "output_value": "192.110.37.2",
+        "description": "CPng8r private address",
+        "output_key": "vdu0#CPng8r#fixed_ips#0#ip_address"
+      }
+    ],
+    "template_description": "Test VNF example"
+  },
+  "ns_manager_callback": "localhost:4000/ns-instances/582d8a06c098a4738b000002/instantiate",
+  "vim_info": {
+    "url": {
+      "keystone": "http://vimurl:35357/v2.0",
+      "orch": "http://vimurl:8004/v1",
+      "heat": "http://vimurl:8004/v1",
+      "compute": "http://vimurl:8774/v2.1"
+    },
+    "tenant_id": "16b6c1cdb8604e3a84569e40edfce83a",
+    "token": "eeebc59ad28d44e1b f70e91d7495ad5f",
+    "is_admin": false,
+    "keystone": "http://vimurl:35357/v2.0",
+    "heat": "http://vimurl:8004/v1",
+    "compute": "http://vimurl:8774/v2.1"
+  }
+}
