@@ -41,7 +41,7 @@ module DcHelper
         dc = Dc.find(id)
     rescue Mongoid::Errors::DocumentNotFound => e
         logger.error 'DC not found'
-        return 404
+        return nil
     end
     return dc
   end

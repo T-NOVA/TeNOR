@@ -211,9 +211,9 @@ class NsProvisioner < TnovaManager
     provisioner, errors = ServiceConfigurationHelper.get_module('ns_provisioner')
     halt 500, errors if errors
 
-    logger.info "Sending terminate request to NS Provisioning"
+    logger.info "Get NS instance"
     begin
-      response = RestClient.put provisioner.host + request.fullpath.to_s + '/terminate', {}.to_json, 'X-Auth-Token' => provisioner.token, :content_type => :json
+      response = RestClient.get provisioner.host + request.fullpath.to_s, 'X-Auth-Token' => provisioner.token, :content_type => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Provisioning unreachable'
     rescue => e
@@ -221,7 +221,24 @@ class NsProvisioner < TnovaManager
       logger.error e.response
       halt e.response.code, e.response.body
     end
-    logger.info "Calling NS Provisioner done..."
+    nsr, errors = parse_json(response)
+
+    #get DCs info of this NSR
+    pop_info = []
+    nsr['vnfrs'].each do |vnfr|
+      pop_info << getDc(vnfr['pop_id'].to_i)
+    end
+
+    logger.info "Sending terminate request to NS Provisioning"
+    begin
+      response = RestClient.put provisioner.host + request.fullpath.to_s + '/terminate', {pop_info: pop_info}.to_json, 'X-Auth-Token' => provisioner.token, :content_type => :json
+    rescue Errno::ECONNREFUSED
+      halt 500, 'NS Provisioning unreachable'
+    rescue => e
+      logger.error e
+      logger.error e.response
+      halt e.response.code, e.response.body
+    end
 
     updateStatistics('ns_terminated_requests')
 

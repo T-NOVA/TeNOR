@@ -65,8 +65,7 @@ module NsProvisioner
     # @param [JSON] instance NSr
     # @return [Hash, nil] NS
     # @return [Hash, String] if the parsed message is an invalid JSON
-    # def recoverState(popInfo, vnf_info, instance, error)
-    def recoverState(instance, _error)
+    def recoverState(instance, pops_auth, _error)
         logger.info 'Recover state executed.'
         @instance = instance
         @instance.update_attribute('status', 'DELETING')
@@ -80,17 +79,7 @@ module NsProvisioner
             break if resource['pop_id'].nil?
 
             auth_info = @instance['authentication'].find { |auth| auth['pop_id'] == resource['pop_id'] }
-            pop_info, errors = getPopInfo(resource['pop_id'])
-            logger.error errors if errors
-            return 400, errors.to_json if errors
-            popUrls = getPopUrls(pop_info['extra_info'])
-            keystone_url = popUrls[:keystone]
-
-            admin_credentials, errors = authenticate(keystone_url, pop_info['tenant_name'], pop_info['user'], pop_info['password'])
-            logger.error errors if errors
-            @instance.update_attribute('status', 'ERROR_REMOVING') if errors
-            @instance.push(audit_log: errors) if errors
-            return 400, errors.to_json if errors
+            keystone_url = auth_info['urls'][:keystone]
 
             credentials, errors = authenticate(keystone_url, auth_info['tenant_name'], auth_info['username'], auth_info['password'])
             logger.error errors if errors
@@ -98,7 +87,6 @@ module NsProvisioner
             @instance.push(audit_log: errors) if errors
             return 400, errors.to_json if errors
 
-            token = admin_credentials[:token]
             tenant_token = credentials[:token]
 
             stack_url = resource['network_stack']['stack_url']
@@ -111,11 +99,11 @@ module NsProvisioner
 
         logger.info 'Removing users and tenants...'
         @instance['authentication'].each do |pop_info|
-            logger.error 'Delete users of PoP : ' + pop_info['pop_id'].to_s
+            logger.error 'Delete users of PoP: ' + pop_info['pop_id'].to_s
 
-            pop_auth, errors = getPopInfo(pop_info['pop_id'])
-            logger.error errors if errors
-            return 400, errors.to_json if errors
+            pop_auth = pops_auth.find {|p| p['id'] == pop_info['pop_id'].to_s }
+            next if pop_auth.nil?
+            #return 400, "PoP not defined and the users cannot be removed." if pop_auth.nil?
             popUrls = getPopUrls(pop_auth['extra_info'])
 
             auth_info = @instance['authentication'].find { |auth| auth['pop_id'] == pop_info['pop_id'] }

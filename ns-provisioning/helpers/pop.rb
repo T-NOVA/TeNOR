@@ -17,29 +17,7 @@
 #
 # @see NsProvisioner
 module PopHelper
-    # Returns the information of PoPs
-    #
-    # @param [String] message the pop id
-    # @return [Hash, nil] if the parsed message is a valid JSON
-    # @return [Hash, String] if the parsed message is an invalid JSON
-    def getPopInfo(pop_id)
-        begin
-            response = RestClient.get "#{settings.manager}/pops/dc/#{pop_id}", content_type: :json
-        rescue RestClient::ResourceNotFound
-            logger.error 'PoP not found.'
-            return 400, 'PoP not found.'
-        rescue => e
-            logger.error e
-            puts 'Raise....'
-            return 400, 'no exists'
-            raise 'Pop id no exists'
-        end
-        popInfo, errors = parse_json(response)
-        return 400, errors if errors
-
-        popInfo
-    end
-
+    
     # Returns the list of URLs of the PoPs
     #
     # @param [JSON] message some JSON message
