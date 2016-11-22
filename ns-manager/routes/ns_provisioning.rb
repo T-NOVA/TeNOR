@@ -191,18 +191,7 @@ class NsProvisioner < TnovaManager
     halt 500, errors if errors
 
     begin
-      response = RestClient.get provisioner.host + '/ns-instances/' + params['nsr_id'], 'X-Auth-Token' => provisioner.token, :content_type => :json
-    rescue Errno::ECONNREFUSED
-      halt 500, 'NS Provisioning unreachable'
-    rescue => e
-      logger.error e.response
-      halt e.response.code, e.response.body
-    end
-    ns_instance, error = parse_json(response)
-
-    info = { :instance => ns_instance }
-    begin
-      response = RestClient.put provisioner.host + request.fullpath, info.to_json, 'X-Auth-Token' => provisioner.token, :content_type => :json
+      response = RestClient.put provisioner.host + request.fullpath, {}.to_json, 'X-Auth-Token' => provisioner.token, :content_type => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Provisioning unreachable'
     rescue => e
@@ -222,20 +211,9 @@ class NsProvisioner < TnovaManager
     provisioner, errors = ServiceConfigurationHelper.get_module('ns_provisioner')
     halt 500, errors if errors
 
-    begin
-      response = RestClient.get provisioner.host + '/ns-instances/' + params['nsr_id'], 'X-Auth-Token' => provisioner.token, :content_type => :json
-    rescue Errno::ECONNREFUSED
-      halt 500, 'NS Provisioning unreachable'
-    rescue => e
-      logger.error e.response
-      halt e.response.code, e.response.body
-    end
-    ns_instance, error = parse_json(response)
-
     logger.info "Sending terminate request to NS Provisioning"
-    info = { :instance => ns_instance }
     begin
-      response = RestClient.put provisioner.host + request.fullpath.to_s + '/terminate', info.to_json, 'X-Auth-Token' => provisioner.token, :content_type => :json
+      response = RestClient.put provisioner.host + request.fullpath.to_s + '/terminate', {ç.to_json, 'X-Auth-Token' => provisioner.token, :content_type => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Provisioning unreachable'
     rescue => e
@@ -288,7 +266,7 @@ class NsProvisioner < TnovaManager
     end
     nsd, error = parse_json(response)
 
-    info = { :callback_response => callback_response, :instance => ns_instance, :nsd => nsd}
+    info = { :callback_response => callback_response, :nsd => nsd }
     begin
       response = RestClient.post provisioner.host + request.fullpath, info.to_json, 'X-Auth-Token' => provisioner.token, :content_type => :json
     rescue Errno::ECONNREFUSED
