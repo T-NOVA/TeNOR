@@ -1,5 +1,5 @@
 #
-# TeNOR - VNF Provisioning
+# TeNOR - VNF Monitoring
 #
 # Copyright 2014-2016 i2CAT Foundation, Portugal Telecom Inovação
 #
@@ -22,20 +22,69 @@ RSpec.describe VNFMonitoring do
     VNFMonitoring
   end
 
-  describe 'GET /vnf-monitoring/instances/:instance_id/monitoring-data/', type: :request do
+  describe 'POST /ns-monitoring/monitoring-parameters' do
+        context 'given an invalid content type' do
+            let(:response) { post '/vnf-monitoring/vnfr_id/monitoring-parameters', File.read(File.expand_path('../fixtures/monitoring_request.json', __FILE__)), rack_env = { 'CONTENT_TYPE' => 'application/x-www-form-urlencoded' } }
 
-    it "should redirect to dashboard" do
+            it 'responds with a 415' do
+                expect(response.status).to eq 415
+            end
 
-      file_response = File.new './spec/file_response.json'
-      stub_request(:get, '/vnf-monitoring/instances/ff7/monitoring-data/?instance_type=vnf').to_return(:body => file_response)
-      stub_request(:get, "http://vnf-monitoring/instances/ff7/monitoring-data/?instance_type=vnf").
-          with(:headers => {'Accept'=>'*/*; q=0.5, application/xml', 'Accept-Encoding'=>'gzip, deflate', 'User-Agent'=>'Ruby'}).
-          to_return(:status => 200, :body => "", :headers => {})
+            it 'responds with an empty body' do
+                expect(response.body).to be_empty
+            end
+        end
 
-      RestClient.get("http://vnf-monitoring/instances/ff7/monitoring-data/?instance_type=vnf")
+        context 'given a valid Monitoring' do
+            let(:response) { post '/vnf-monitoring/vnfr_id/monitoring-parameters', File.read(File.expand_path('../fixtures/monitoring_request.json', __FILE__)), rack_env = { 'CONTENT_TYPE' => 'application/json' } }
+
+            it 'responds with a 200' do
+                expect(response.status).to eq 200
+            end
+
+            it 'responds with an empty body' do
+                expect(response.body).to be_empty
+            end
+        end
     end
 
-  end
+    describe 'POST /vnf-monitoring/:vnfr_id/readings' do
+          context 'given an invalid content type' do
+              let(:response) { post '/vnf-monitoring/vnfr_id/readings', File.read(File.expand_path('../fixtures/monitoring_data.json', __FILE__)), rack_env = { 'CONTENT_TYPE' => 'application/x-www-form-urlencoded' } }
 
+              it 'responds with a 415' do
+                  expect(response.status).to eq 415
+              end
 
+              it 'responds with an empty body' do
+                  expect(response.body).to be_empty
+              end
+          end
+
+          context 'given a valid Monitoring' do
+              let(:response) { post '/vnf-monitoring/vnfr_id/readings', File.read(File.expand_path('../fixtures/monitoring_data.json', __FILE__)), rack_env = { 'CONTENT_TYPE' => 'application/json' } }
+
+              it 'responds with a 200' do
+                  expect(response.status).to eq 200
+              end
+
+              it 'responds with an empty body' do
+                  expect(response.body).to be_empty
+              end
+          end
+      end
+
+      describe 'DELETE /vnf-monitoring/subscription/:vnfr_id' do
+            context 'given a valid Monitoring' do
+                let(:response) { delete '/vnf-monitoring/subscription/vnfr_id', rack_env = { 'CONTENT_TYPE' => 'application/json' } }
+
+                it 'responds with a 200' do
+                    expect(response.status).to eq 200
+                end
+
+                it 'responds with an empty body' do
+                    expect(response.body).to be_empty
+                end
+            end
+        end
 end

@@ -160,7 +160,7 @@ RSpec.describe TnovaManager do
 		end
 
 		context 'when the Services is found' do
-			let(:response_found) { delete '/services/' + obj.name }
+			let(:response_found) { delete '/services/' + obj.id }
 
 			it 'responds with an empty body' do
 				expect(response_found.body).to be_empty

@@ -34,16 +34,16 @@ module CommonMethods
 			hot.build(vnfd, flavour_key, networks_id, routers_id, security_group_id, vnfr_id, dns, flavours)
 		rescue CustomException::NoExtensionError => e
 			logger.error e.message
-			halt 400, e.message
+			return 400, e.message
 		rescue CustomException::InvalidExtensionError => e
 			logger.error e.message
-			halt 400, e.message
+			return 400, e.message
 		rescue CustomException::InvalidTemplateFileFormat => e
 			logger.error e.message
-			halt 400, e.message
+			return 400, e.message
 		rescue CustomException::NoFlavorError => e
 			logger.error e.message
-			halt 400, e.message
+			return 400, e.message
 		end
 	end
 

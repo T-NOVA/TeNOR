@@ -38,10 +38,9 @@ module MonitoringHelper
 
 	def destroy_monitoring_data(vnfr_id)
 		begin
-			response = RestClient.delete "#{settings.vnf_instance_repository}/vnf-monitoring/#{vnfr_id}", content_type: :json
+			response = RestClient.delete "#{settings.vnf_monitoring_repo}/vnf-monitoring/#{vnfr_id}", content_type: :json
 		rescue => e
 			logger.error e.response
-	    # return e.response.code, e.response.body
 	  end
 	end
 end

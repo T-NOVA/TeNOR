@@ -132,21 +132,6 @@ RSpec.describe VnfProvisioning do
         end
     end
 
-    describe 'POST /vnf-provisioning' do
-        context 'given an invalid content type' do
-            it 'responds with a 415' do
-                post '/vnf-instances', {}.to_json, 'CONTENT_TYPE' => 'application/x-www-form-urlencoded'
-                expect(last_response.status).to eq 415
-            end
-        end
-        context 'given a valid request' do
-            it 'provisions a new VNF in the VIM' do
-                response = post '/vnf-instances', File.read(File.expand_path('../fixtures/instantiation_info.json', __FILE__)), 'CONTENT_TYPE' => 'application/json'
-                expect(last_response.status).to eq 201
-            end
-        end
-    end
-
     describe 'DELETE /vnf-provisioning' do
 		let(:vnfr) { create :vnfr }
 
@@ -173,6 +158,22 @@ RSpec.describe VnfProvisioning do
 				expect(response_found.status).to eq 200
 			end
 		end
-
 	end
+
+    describe 'POST /:vnfr_id/stack/:status' do
+        let(:vnfr) { create :vnfr }
+
+		context 'when the VNF instance is not found' do
+            let(:response_found) { post '/' + vnfr._id.to_s + '/stack/create_complete', File.read(File.expand_path('../fixtures/create_complete.json', __FILE__)), 'CONTENT_TYPE' => 'application/json'}
+
+            it 'responds with a 200' do
+				expect(response_found.status).to eq 200
+			end
+
+            it 'responds with an empty body' do
+				expect(response_found.body).to be_empty
+			end
+        end
+
+    end
 end

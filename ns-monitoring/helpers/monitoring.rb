@@ -54,7 +54,7 @@ module MonitoringHelper
             logger.debug 'VNF_Instance_id: ' + vnf_instance['vnfr_id']
             begin
                 t = ch.queue(vnf_instance['vnfr_id'], exclusive: false).subscribe do |_delivery_info, _metadata, payload|
-                    logger.info 'Receving subcription data of' + vnf_instance['vnfr_id'].to_s
+                    logger.debug 'Receving subcription data of ' + vnf_instance['vnfr_id'].to_s
                     measurements = JSON.parse(payload)
                     logger.debug measurements.to_json
 
@@ -67,48 +67,9 @@ module MonitoringHelper
                     logger.debug @queue
                     begin
                         @list_vnfs_parameters = VnfQueue.where(nsi_id: nsi_id, parameter_id: measurements['type'])
+                        # ns_measurement = calculate_sla(@list_vnfs_parameters, vnf_instances, parameters, measurements)
                         if @list_vnfs_parameters.length == vnf_instances.length
-                            # logger.debug "Lisf of vnfs_params is equal."
-                            logger.debug @list_vnfs_parameters.to_json
-                            param = parameters.find { |p| p['name'] == measurements['type'] }
-                            if param.nil?
-                                logger.debug 'Params outside the SLA (assurance parameters field)'
-                                calculation = measurements['value']
-                            else
-                                logger.info 'Params inside the SLA (checking SLA)...'
-                                values = []
-                                @list_vnfs_parameters.each do |p|
-                                    values << p['value']
-                                end
-
-                                logger.debug 'Send to Expression Evaluator.'
-                                calculation = ExpressionEvaluatorHelper.calc_expression(param['formula'], values)
-                                logger.debug 'Calculation response: ' + calculation.to_s
-
-                                begin
-                                    sla = Sla.find_by!(nsi_id: nsi_id)
-                                    sla_breach = sla.process_reading(param, calculation)
-                                # if sla_breach
-                                # logger.info "Breach reached!"
-                                # end
-                                rescue ActiveRecord::RecordNotFound => e
-                                    logger.error 'SLA information not found for NSR ' + nsi_id
-                                    # return 404, "Could not find an SLA for NS Instance ID #{nsi_id}"
-                                end
-
-                                # logger.debug "Calculation: " + calculation
-                                # if SlaHelper.check_breach_sla(param['value'], calculation)
-                                # SlaHelper.process_breach()
-                                # end
-                            end
-                            ns_measurement = {
-                                instance_id: nsi_id,
-                                type: @queue['parameter_id'],
-                                unit: @queue['unit'],
-                                value: calculation,
-                                timestamp: @queue['timestamp']
-                            }
-                            logger.debug ns_measurement
+                            ns_measurement = calculate_sla(@list_vnfs_parameters, vnf_instances, parameters, measurements, nsi_id)
 
                             q = ch.queue('ns_monitoring')
                             q.publish(ns_measurement.to_json, persistent: true)
@@ -128,6 +89,42 @@ module MonitoringHelper
                 conn.close
             end
         end
+    end
+
+    def self.calculate_sla(list_vnfs_parameters, _vnf_instances, parameters, measurements, nsi_id)
+        @list_vnfs_parameters = list_vnfs_parameters
+        logger.debug @list_vnfs_parameters.to_json
+        params = parameters.find_all { |p| p['name'] == measurements['type'] }
+        if params.empty?
+            logger.debug 'Params outside the SLA (assurance parameters field)'
+            calculation = measurements['value']
+        else
+            logger.info 'Params inside the SLA (checking SLA)...'
+            values = []
+            @list_vnfs_parameters.each do |p|
+                values << p['value']
+            end
+            params.each do |param|
+                calculation = ExpressionEvaluatorHelper.calc_expression(param['formula'], values)
+                logger.debug 'Calculation response: ' + calculation.to_s
+                begin
+                    sla = Sla.find_by!(nsi_id: nsi_id)
+                    breach = sla.process_reading(param, calculation)
+                rescue ActiveRecord::RecordNotFound => e
+                    logger.error 'SLA information not found for NSR ' + nsi_id
+                end
+                # if breach, try with the next
+                break if !breach.nil?
+            end
+        end
+        ns_measurement = {
+            instance_id: nsi_id,
+            type: @queue['parameter_id'],
+            unit: @queue['unit'],
+            value: calculation,
+            timestamp: @queue['timestamp']
+        }
+        ns_measurement
     end
 
     def self.startSubcription

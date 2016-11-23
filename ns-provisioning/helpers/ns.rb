@@ -65,8 +65,7 @@ module NsProvisioner
     # @param [JSON] instance NSr
     # @return [Hash, nil] NS
     # @return [Hash, String] if the parsed message is an invalid JSON
-    # def recoverState(popInfo, vnf_info, instance, error)
-    def recoverState(instance, _error)
+    def recoverState(instance, pops_auth, _error)
         logger.info 'Recover state executed.'
         @instance = instance
         @instance.update_attribute('status', 'DELETING')
@@ -80,17 +79,7 @@ module NsProvisioner
             break if resource['pop_id'].nil?
 
             auth_info = @instance['authentication'].find { |auth| auth['pop_id'] == resource['pop_id'] }
-            pop_info, errors = getPopInfo(resource['pop_id'])
-            logger.error errors if errors
-            return 400, errors.to_json if errors
-            popUrls = getPopUrls(pop_info['extra_info'])
-            keystone_url = popUrls[:keystone]
-
-            admin_credentials, errors = authenticate(keystone_url, pop_info['tenant_name'], pop_info['user'], pop_info['password'])
-            logger.error errors if errors
-            @instance.update_attribute('status', 'ERROR_REMOVING') if errors
-            @instance.push(audit_log: errors) if errors
-            return 400, errors.to_json if errors
+            keystone_url = auth_info['urls'][:keystone]
 
             credentials, errors = authenticate(keystone_url, auth_info['tenant_name'], auth_info['username'], auth_info['password'])
             logger.error errors if errors
@@ -98,7 +87,6 @@ module NsProvisioner
             @instance.push(audit_log: errors) if errors
             return 400, errors.to_json if errors
 
-            token = admin_credentials[:token]
             tenant_token = credentials[:token]
 
             stack_url = resource['network_stack']['stack_url']
@@ -111,11 +99,11 @@ module NsProvisioner
 
         logger.info 'Removing users and tenants...'
         @instance['authentication'].each do |pop_info|
-            logger.error 'Delete users of PoP : ' + pop_info['pop_id'].to_s
+            logger.error 'Delete users of PoP: ' + pop_info['pop_id'].to_s
 
-            pop_auth, errors = getPopInfo(pop_info['pop_id'])
-            logger.error errors if errors
-            return 400, errors.to_json if errors
+            pop_auth = pops_auth.find {|p| p['id'] == pop_info['pop_id'].to_s }
+            next if pop_auth.nil?
+            #return 400, "PoP not defined and the users cannot be removed." if pop_auth.nil?
             popUrls = getPopUrls(pop_auth['extra_info'])
 
             auth_info = @instance['authentication'].find { |auth| auth['pop_id'] == pop_info['pop_id'] }
@@ -274,18 +262,17 @@ module NsProvisioner
             resource_reservation = []
             @instance['authentication'].each do |auth|
                 logger.info 'WICM in POP  ' + auth['pop_id']
-                pop_id = auth['pop_id']
-                pop_auth = @instance['authentication'].find { |pop| pop['pop_id'] == pop_id }
-                popUrls = pop_auth['urls']
+                pop_auth = @instance['authentication'].find { |pop| pop['pop_id'] == auth['pop_id'] }
+                pop_urls = pop_auth['urls']
 
                 logger.info 'Send WICM template to HEAT Orchestration'
                 stack_name = 'WICM_SFC_' + @instance['id'].to_s
                 template = { stack_name: stack_name, template: hot_template }
-                stack, errors = sendStack(popUrls[:orch], vnf_info['tenant_id'], template, tenant_token)
+                stack, errors = sendStack(pop_urls[:orch], vnf_info['tenant_id'], template, tenant_token)
                 return handleError(@instance, errors) if errors
 
                 # Wait for the WICM - SFC provisioning to finish
-                stack_info, errors = create_stack_wait(popUrls[:orch], vnf_info['tenant_id'], stack_name, tenant_token, 'NS WICM')
+                stack_info, errors = create_stack_wait(pop_urls[:orch], vnf_info['tenant_id'], stack_name, tenant_token, 'NS WICM')
                 return handleError(@instance, errors) if errors
 
                 resource_reservation = @instance['resource_reservation']
@@ -358,12 +345,14 @@ module NsProvisioner
             networks = []
             stack_networks.each do |network|
                 net, errors = getStackResource(popUrls[:orch], pop_auth['tenant_id'], stack_name, stack_id, network['resource_name'], tenant_token)
-                networks.push(id: net['resource']['attributes']['id'], alias: net['resource']['attributes']['name'])
+                #networks.push(id: net['resource']['attributes']['id'], alias: net['resource']['attributes']['name'])
+                networks.push(id: net['resource']['physical_resource_id'], alias: net['resource']['physical_resource_id'])
             end
             routers = []
             stack_routers.each do |router|
                 router, errors = getStackResource(popUrls[:orch], pop_auth['tenant_id'], stack_name, stack_id, router['resource_name'], tenant_token)
-                routers.push(id: router['resource']['attributes']['id'], alias: router['resource']['attributes']['name'])
+                #routers.push(id: router['resource']['attributes']['id'], alias: router['resource']['attributes']['name'])
+                routers.push(id: router['resource']['physical_resource_id'], alias: router['resource']['physical_resource_id'])
             end
             @instance.push(lifecycle_event_history: 'NETWORK CREATED')
             @instance.update_attribute('vlr', networks)

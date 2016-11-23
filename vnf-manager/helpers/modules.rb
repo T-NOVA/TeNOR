@@ -17,6 +17,24 @@
 #
 # @see ServiceConfigurationHelper
 module ServiceConfigurationHelper
+
+  def is_port_open?(ip, port)
+	  begin
+		Timeout::timeout(1) do
+      begin
+          ip = ip.split("@")[1] if ip.include? "@"
+          s = TCPSocket.new(ip, port)
+		      s.close
+          return true
+		  rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH
+		    return false
+      end
+	  end
+	  rescue Timeout::Error
+	  end
+	  return false
+  end
+  
   def self.get_module(name)
     begin
       service = Service.find_by(name: name)

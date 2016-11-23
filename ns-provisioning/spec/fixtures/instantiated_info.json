@@ -1,0 +1,450 @@
+{
+  "callback_response":{
+    "vnfd_id":"29366",
+    "vnfi_id":[
+      "67c6509e-b61b-4a1f-83c0-85585ba17f63"
+    ],
+    "vnfr_id":"5832febdc098a4433d00002a",
+    "vnf_addresses":{
+      "vdu0#CPnfwb#PublicIp":"10.100.0.188",
+      "vdu0#CPl5k3#fixed_ips#0#ip_address":"192.190.104.2",
+      "vdu0#CPnfwb#fixed_ips#0#ip_address":"192.217.191.2"
+    },
+    "stack_resources":{
+      "_id":"5832febdc098a4433d00002a",
+      "audit_log": "",
+      "created_at":"2016-11-21T14:03:41.240+00:00",
+      "deployment_flavour":"gold",
+      "lifecycle_event_history":[
+        "INIT",
+        "CREATE_IN_PROGRESS",
+        "CREATE_COMPLETE"
+      ],
+      "lifecycle_events_values":{
+        "start":{
+          "vdu0#PublicIp":"192.217.191.2",
+          "vdu1#PublicIp":"192.217.191.2"
+        },
+        "restart":{
+          "vdu0#PublicIp":"192.217.191.2",
+          "vdu1#PublicIp":"192.217.191.2"
+        }
+      },
+      "lifecycle_info":{
+        "authentication_username":"italtel",
+        "driver":"ssh",
+        "authentication_type":"PubKeyAuthentication",
+        "authentication":"-----BEGIN RSA PRIVATE KEY-----\nMIIEowIBAAKCAQEAz3mj9mVO2pz5JYOnvVXwHTia+56LZXoXXvwSRhujExv+2w1D\n3K8ldlucegfhMGqxRqPICQo7Teczal1LyGk9C1BlGWdqr1MRaFw/z3JrjCw2ajjn\nAjZzf0KwDA3/ayiQoUt/07rAah0WapEVJQWuOJWyyYijHUDrguS2Ccj3eYAx+UsF\nGTfX6GoIFavMiK0W9eIBZy4BT3jPzL87LFtll5jz7C6E0GiuYI1+Dfqy7M08/PhL\nlUpAEN/Yj15YFDvXG5kS8fFGByBbJfWMG8gHFi9UIiTmxeTJYkOQSDyIdTHgusmG\nSpmPA8+xPAedB0KwKkKNwYUXBGBh3P0t/NBX+QIDAQABAoIBAHpMAolQKE4W74nc\ndDjX+mTPJBQj3ZlggXw86+ylh9fQzcaDqDfiihudXrxT/rqSeZLhIh2qCVEfcqBF\nBFHLLu+HYUC7RBi6x20Ty41Vre1/dkfg6NLWE/i07577dU7OJ4rcPSoqUBd8s+T3\nRlZ/ZbX3D99aCoRI60pJ1MAp1S6pgWNuepi2tgQfs648j6hHRNLrKTzlnf09V0L2\nz228qIDt1Tencr1L2YXTB6tt1uErxp7gAxDyPPT/meJSvnImrVPKEvgKJ3nzRjCD\nkq+ctmdrwkROgxVqHCKZ1UPdP5OZ2JPVehWPNObCK/iaKGsRimuGynJq3g+0AFT+\nwOkmOoECgYEA76YZam2gd3Byc8ObqqTKzTxrMPqBNYtrrxDHpJGuoQWUhPT9KawC\n31AzSpM62+tkRoS145UOAkdWgjRep7ghoPDdbNzx1B6iw7dBUpLQFZrjPN4epf5r\nV4vbCuISMqBaeQlIc4SBHkgxg7b7MMMOOWbzqN7UTmPTYwbzG93Wt7ECgYEA3aGR\n4NBO8pqdKG/Gp7TNDhawqJIOx9ZK7RU6zSVR/FZwrLewu9r9G0foZU9cPl0ZyYCq\nJIHY0D6g3P4iHCwCyF1F4Pr0JJDplLroPLinAN/zXd+1mHxD+drE2Ln8AR87Keui\nVyYfXnMj2v9l+IO6z/4L+F3vChHV5YxZRmMhfskCgYAiacSujs2DOUeGLim1aHKi\n5DE0WFSjnsC44/z3OeBMySNZsGCGUmgbL0YeSGQkXnoI0lfYNXhMhXf7vI93IC7c\nEJqLXnLvlfKjjjY4KFLvN024WOEnzxAVA0VSG8KnOHWledrIk9eCxLUvh+AsUWZC\ngfEtZ8ou85DQYJgagVGrEQKBgD8l1vu4PpZPSXIJDxAfqsFV47XUD9QOkcClaOCk\nvoxoUKhVmkycI7vPLD8Zco3uVveb6l6GhLEo9wqgejWOsKhIMy3cMw3sIDGZY6xR\nbHwKUzwvDn3JAlFBbQ7XRx9Gt8PE+LdeDFgL9G5kkLhTSDoVB3IXyZET7d7+sz0j\n55pJAoGBAKdl5z7p2lbD5D3Du6BtX72/uyK4yl2PvtzU8q0Q8YgRD2allE/RKuqk\naTHowishnwRe7M+4hpVwOggxAETDxDHDkP30kXertclrOhc051XA8bT3tWY90/rI\nhIxit0+O62NfAgIdk1dgmkrdZDd0hzOKG7Xp57Wxxlbe1AaUmljT\n-----END RSA PRIVATE KEY-----",
+        "authentication_port":22,
+        "flavor_id_ref":"flavor0",
+        "events":{
+          "start":{
+            "command":"/vTU/bin/vTUstart",
+            "template_file":"{\"controller\":\"get_attr[vdu0,PublicIp]\",\"vdu0\":\"get_attr[vdu1,PublicIp]\"}",
+            "template_file_format":"JSON"
+          },
+          "stop":{
+            "command":"/vTU/bin/vTUstop",
+            "template_file":"{}",
+            "template_file_format":"JSON"
+          },
+          "restart":{
+            "command":"/vTU/bin/vTUrestart",
+            "template_file":"{\"controller\":\"get_attr[vdu0,PublicIp]\",\"vdu0\":\"get_attr[vdu1,PublicIp]\"}",
+            "template_file_format":"JSON"
+          }
+        },
+        "vnf_container":"/vTU"
+      },
+      "notifications":[
+        "localhost:4000/ns-instances/5832fea8c098a4689b000000/instantiate"
+      ],
+      "nsr_instance":"5832fea8c098a4689b000000",
+      "outputs":[
+
+      ],
+      "port_instances":[
+        {
+          "id":"CPnfwb",
+          "vlink_ref":"vl0",
+          "physical_resource_id":"c9d04a92-3383-4680-a0ca-dc554848bdaf"
+        },
+        {
+          "id":"CPl5k3",
+          "vlink_ref":"vl1",
+          "physical_resource_id":"4f740fd5-873a-466c-961c-81c31be4c0e5"
+        }
+      ],
+      "public_network_id":"7928f191-a301-496e-a150-2d49fbefc523",
+      "resource_stats":[
+
+      ],
+      "scale_info":{
+
+      },
+      "scale_resources":[
+
+      ],
+      "security_group_id": "",
+      "stack_url":"http://10.100.0.3:8004/v1/b1783f61a9264028ac59ec8ed0e1edb2/stacks/vTU22_without_notify_5832febdc098a4433d00002a/b6a3a351-a9e1-4752-a994-2978a72e4da0",
+      "updated_at":"2016-11-21T14:11:59.024+00:00",
+      "vdu":[
+        {
+          "id":"vdu0",
+          "alias":"vTU22"
+        }
+      ],
+      "vim_id":"6",
+      "vlr_instances":[
+        {
+          "id":"vl0",
+          "alias":"vtu-mng",
+          "physical_resource_id":"3cda118a-9239-48ee-b66a-f002265ca4fb"
+        },
+        {
+          "id":"vl1",
+          "alias":"vtu-data",
+          "physical_resource_id":"ff637a6b-c865-43d1-9e9d-f49086b821cd"
+        }
+      ],
+      "vms":[
+        {
+          "id":"vdu0",
+          "physical_resource_id":"67c6509e-b61b-4a1f-83c0-85585ba17f63",
+          "image_id":"74ea06f1-a5d8-4783-99f4-5dc90625401a"
+        }
+      ],
+      "vms_id":{
+        "vdu0":"67c6509e-b61b-4a1f-83c0-85585ba17f63"
+      },
+      "vnf_addresses":{
+        "vdu0#CPnfwb#PublicIp":"10.100.0.188",
+        "vdu0#CPl5k3#fixed_ips#0#ip_address":"192.190.104.2",
+        "vdu0#CPnfwb#fixed_ips#0#ip_address":"192.217.191.2"
+      },
+      "vnf_status":"1",
+      "vnfd_reference":"29366"
+    }
+  },
+  "nsd": {
+    "id": "582ec7q1e4b0094ef1f54edb",
+    "name": "test_multi_vnfs_without_notify",
+    "vendor": "3",
+    "version": "1",
+    "vnfds": [
+      "2251",
+      "29366"
+    ],
+    "vnffgd": {
+      "vnffgs": [
+        {
+          "vnffg_id": "vnffg0",
+          "number_of_endpoints": 2,
+          "number_of_virtual_links": 3,
+          "dependent_virtual_links": [
+            "vld0",
+            "vld1",
+            "vld2"
+          ],
+          "network_forwarding_path": [
+            {
+              "nfp_id": "nfp0",
+              "graph": [
+                "vld0",
+                "vld1",
+                "vld2"
+              ],
+              "connection_points": [
+                "ns_ext_in",
+                "VNF#2251:ext_mgnt",
+                "VNF#2251:ext_mgnt",
+                "VNF#29366:ext_vtu-mng",
+                "ns_ext_out",
+                "VNF#29366:ext_vtu-mng"
+              ],
+              "constituent_vnfs": [
+                {
+                  "vnf_ref_id": "2251",
+                  "vnf_flavor_key_ref": "gold"
+                },
+                {
+                  "vnf_ref_id": "29366",
+                  "vnf_flavor_key_ref": "gold"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "vnffg_id": "vnffg0",
+          "number_of_endpoints": 2,
+          "number_of_virtual_links": 3,
+          "dependent_virtual_links": [
+            "vld0",
+            "vld1",
+            "vld2"
+          ],
+          "network_forwarding_path": [
+            {
+              "nfp_id": "nfp0",
+              "graph": [
+                "vld0",
+                "vld1",
+                "vld2"
+              ],
+              "connection_points": [
+                "ns_ext_in",
+                "VNF#2251:ext_mgnt",
+                "VNF#2251:ext_mgnt",
+                "VNF#29366:ext_vtu-mng",
+                "ns_ext_out",
+                "VNF#29366:ext_vtu-mng"
+              ],
+              "constituent_vnfs": [
+                {
+                  "vnf_ref_id": "2251",
+                  "vnf_flavor_key_ref": "gold"
+                },
+                {
+                  "vnf_ref_id": "29366",
+                  "vnf_flavor_key_ref": "gold"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "vnffg_id": "vnffg0",
+          "number_of_endpoints": 2,
+          "number_of_virtual_links": 3,
+          "dependent_virtual_links": [
+            "vld0",
+            "vld1",
+            "vld2"
+          ],
+          "network_forwarding_path": [
+            {
+              "nfp_id": "nfp0",
+              "graph": [
+                "vld0",
+                "vld1",
+                "vld2"
+              ],
+              "connection_points": [
+                                      "ns_ext_in",
+                                      "VNF#2251:ext_traffic-in",
+                                      "VNF#2251:ext_traffic-out",
+                                      "VNF#29366:ext_vtu-mng",
+                                      "VNF#29366:ext_vtu-data",
+                                      "ns_ext_out"
+              ],
+              "constituent_vnfs": [
+                {
+                  "vnf_ref_id": "2251",
+                  "vnf_flavor_key_ref": "gold"
+                },
+                {
+                  "vnf_ref_id": "29366",
+                  "vnf_flavor_key_ref": "gold"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "vnffg_id": "vnffg1",
+          "number_of_endpoints": 2,
+          "number_of_virtual_links": 3,
+          "dependent_virtual_links": [
+            "vld0",
+            "vld1",
+            "vld2"
+          ],
+          "network_forwarding_path": [
+            {
+              "nfp_id": "nfp0",
+              "graph": [
+                "vld0",
+                "vld1",
+                "vld2"
+              ],
+              "connection_points": [
+                                            "ns_ext_in",
+                                           "VNF#2251:ext_traffic-in",
+                                           "VNF#2251:ext_traffic-out",
+                                          "ns_ext_out"
+              ],
+              "constituent_vnfs": [
+                {
+                  "vnf_ref_id": "2251",
+                  "vnf_flavor_key_ref": "gold"
+                },
+                {
+                  "vnf_ref_id": "29366",
+                  "vnf_flavor_key_ref": "gold"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "lifecycle_events": {
+      "start": [
+
+      ],
+      "stop": [
+
+      ],
+      "scale_out": [
+
+      ],
+      "scale_in": [
+
+      ]
+    },
+    "vnf_depedency": [
+
+    ],
+    "monitoring_parameters": [
+      {
+        "desc": "Availability",
+        "metric": "availability",
+        "unit": "%"
+      },
+      {
+        "desc": "End-to-End Bandwidth",
+        "metric": "end-to-end bandwidth",
+        "unit": "Mbps"
+      }
+    ],
+    "vld": {
+      "number_of_endpoints": 0,
+      "virtual_links": [
+        {
+          "vld_id": "vld0",
+          "alias": "in",
+          "root_requirements": "Unlimited",
+          "leaf_requirement": "Unlimited",
+          "qos": {
+            "average": "",
+            "peak": "",
+            "burst": ""
+          },
+          "connections": [
+            "VNF#2251:ext_traffic-in"
+          ],
+          "connectivity_type": "E-LINE",
+          "external_access": true,
+          "merge": false,
+          "sla_ref_id": "sla0"
+        },
+        {
+          "vld_id": "vld1",
+          "alias": "mid",
+          "root_requirements": "Unlimited",
+          "leaf_requirement": "Unlimited",
+          "qos": {
+            "average": "",
+            "peak": "",
+            "burst": ""
+          },
+          "connections": [
+            "VNF#2251:ext_traffic-out",
+            "VNF#29366:ext_vtu-mng"
+          ],
+          "connectivity_type": "E-LINE",
+          "external_access": false,
+          "merge": false,
+          "sla_ref_id": "sla0"
+        },
+        {
+          "vld_id": "vld2",
+          "alias": "out",
+          "root_requirements": "Unlimited",
+          "leaf_requirement": "Unlimited",
+          "qos": {
+            "average": "",
+            "peak": "",
+            "burst": ""
+          },
+          "connections": [
+            "VNF#29366:ext_vtu-data"
+          ],
+          "connectivity_type": "E-LINE",
+          "external_access": true,
+          "merge": false,
+          "sla_ref_id": "sla0"
+        }
+      ]
+    },
+    "sla": [
+      {
+        "id": "sla0",
+        "assurance_parameters": [
+          {
+            "formula": "MIN(VNF:2251.cpuidle)",
+            "id": "cpuidle",
+            "name": "cpuidle",
+            "penalty": {
+              "type": "Discount",
+              "unit": "%",
+              "validity": "P1D",
+              "value": 1
+            },
+            "unit": "%",
+            "value": "EQ(1)",
+            "violations": [
+              {
+                "breaches_count": 2,
+                "interval": 360
+              }
+            ],
+            "uid": "ap0"
+          }
+        ],
+        "billing": {
+          "model": "PAYG",
+          "price": {
+            "price_per_period": 1,
+            "setup": 1,
+            "unit": "EUR"
+          }
+        },
+        "constituent_vnf": [
+          {
+            "number_of_instances": 1,
+            "redundancy_model": "Active",
+            "vnf_flavour_id_reference": "gold",
+            "vnf_reference": "2251"
+          },
+          {
+            "number_of_instances": 1,
+            "redundancy_model": "Active",
+            "vnf_flavour_id_reference": "gold",
+            "vnf_reference": "29366"
+          }
+        ],
+        "sla_key": "basic"
+      }
+    ],
+    "auto_scale_policy": {
+      "criteria": [
+
+      ],
+      "basic": [
+
+      ]
+    },
+    "connection_points": [
+
+    ],
+    "vnf_dependency": [
+
+    ],
+    "provider": "T-Nova",
+    "description": "",
+    "provider_id": "3",
+    "descriptor_version": "1"
+  }
+}

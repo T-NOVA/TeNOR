@@ -31,18 +31,8 @@ class Scaling < NsProvisioning
         end
 
         instance['vnfrs'].each do |vnf|
-            logger.info 'Scale out VNF ' + vnf['vnfr_id'].to_s
-
-            puts 'Pop_id: ' + vnf['pop_id'].to_s
+            logger.info 'Scale out VNF ' + vnf['vnfr_id'].to_s + ' into Pop_id: ' + vnf['pop_id'].to_s
             raise 'VNF not defined' if vnf['pop_id'].nil?
-
-            pop_info, errors = getPopInfo(vnf['pop_id'])
-            return 400, errors.to_json if errors
-
-            if pop_info == 400
-                logger.error 'Pop id no exists.'
-                return
-            end
 
             pop_auth = instance['authentication'].find { |pop| pop['pop_id'] == vnf['pop_id'] }
             pop_urls = pop_auth['urls']
@@ -51,7 +41,7 @@ class Scaling < NsProvisioning
             logger.error errors if errors
             return if errors
             scale = { auth: { tenant_id: credentials[:tenant_id], user_id: credentials[:user_id], token: credentials[:token], url: { keystone: pop_urls[:keystone], heat: pop_urls[:orch] } }}
-            
+
             begin
                 response = RestClient.post settings.vnf_manager + '/vnf-instances/scaling/' + vnf['vnfr_id'] + '/scale_out', scale.to_json, content_type: :json
             rescue => e
@@ -77,16 +67,8 @@ class Scaling < NsProvisioning
         end
 
         instance['vnfrs'].each do |vnf|
-            logger.info 'Scale in VNF ' + vnf['vnfr_id'].to_s
-
-            puts 'Pop_id: ' + vnf['pop_id'].to_s
+            logger.info 'Scale in VNF ' + vnf['vnfr_id'].to_s + ' into Pop_id: ' + vnf['pop_id'].to_s
             raise 'VNF not defined' if vnf['pop_id'].nil?
-
-            pop_info = getPopInfo(vnf['pop_id'])
-            if pop_info == 400
-                logger.error 'Pop id no exists.'
-                return
-            end
 
             pop_auth = instance['authentication'].find { |pop| pop['pop_id'] == vnf['pop_id'] }
             pop_urls = pop_auth['urls']

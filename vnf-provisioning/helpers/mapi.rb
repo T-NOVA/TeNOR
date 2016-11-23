@@ -35,10 +35,10 @@ module MapiHelper
             logger.error e
             message = { status: 'mAPI_error', vnfd_id: vnfr.vnfd_reference, vnfr_id: vnfr.id }
             logger.error message
-            logger.info 'mAPI is not reachable'
+            logger.info 'Error registring the request to mAPI.'
         end
-        logger.info 'Recevied response??'
         logger.info response
+        return
     end
 
     def sendCommandToMAPI(vnfr_id, mapi_request)
@@ -56,7 +56,7 @@ module MapiHelper
             logger.error e.response
             return e.response.code, e.response.body
         end
-        response
+        return
     end
 
     def sendDeleteCommandToMAPI(vnfr_id)

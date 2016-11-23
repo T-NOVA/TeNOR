@@ -4,6 +4,7 @@ declare tenor_ip
 declare mongo_ip
 declare cassandra_address
 declare logger_address
+declare tenor_env
 bold=$(tput bold)
 normal=$(tput sgr0)
 
@@ -258,6 +259,7 @@ configureFiles(){
       cp config/database.yml.sample config/database.yml
     fi
 
+    sed -i -e 's/\(environment:\).*/\1 '$tenor_env'/' config/config.yml
     sed -i -e 's/\(logger_host:\).*/\1 '$logger_host'/' config/config.yml
     sed -i -e 's/\(logger_port:\).*/\1 '$logger_port'/' config/config.yml
     for i in "${tenor_ns_url[@]}"; do

@@ -30,6 +30,7 @@ module HotHelper
     end
 
     def getStackResources(stack_url, token)
+        puts stack_url + '/resources'
         begin
             response = RestClient.get stack_url + '/resources', 'X-Auth-Token' => token
         rescue Errno::ECONNREFUSED

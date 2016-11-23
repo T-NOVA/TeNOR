@@ -41,7 +41,7 @@ module DcHelper
         dc = Dc.find(id)
     rescue Mongoid::Errors::DocumentNotFound => e
         logger.error 'DC not found'
-        return 404
+        return nil
     end
     return dc
   end
@@ -55,27 +55,6 @@ module DcHelper
     end
     puts dcs_tokens
     halt 200, dcs_tokens.to_json
-  end
-
-  # Get list of PoPs
-  #
-  # @param [Symbol] format the format type, `:text` or `:html`
-  # @return [String] the object converted into the expected format.
-  def getPopInfo(pop_id)
-    AuthenticationHelper.loginGK()
-    begin
-      response = RestClient.get "#{settings.gatekeeper}/admin/dc/#{pop_id}", 'X-Auth-Token' => settings.gk_token, :content_type => :json
-    rescue RestClient::ResourceNotFound
-      halt 404, "PoP not found."
-    rescue => e
-      logger.error e
-      if (defined?(e.response)).nil?
-        error = {:info => "The PoP is not registered in Gatekeeper"}
-        halt 503, "The PoP is not registered in Gatekeeper"
-      end
-    end
-
-    return response
   end
 
   # Get list of PoPs
@@ -103,22 +82,6 @@ module DcHelper
     end
 
     return popUrls
-  end
-
-  def registerPop(pop_info)
-    AuthenticationHelper.loginGK()
-    begin
-      response = RestClient.post "#{settings.gatekeeper}/admin/dc/", pop_info.to_json, 'X-Auth-Token' => settings.gk_token, :content_type => :json
-    rescue RestClient::ResourceNotFound
-      halt 404, "PoP not found."
-    rescue => e
-      logger.error e
-      if (defined?(e.response)).nil?
-        error = {:info => "The PoP is not registered in Gatekeeper"}
-        halt 503, "The PoP is not registered in Gatekeeper"
-      end
-    end
-    return response
   end
 
 end

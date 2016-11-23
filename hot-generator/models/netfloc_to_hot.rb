@@ -32,7 +32,7 @@ class NetflocToHot
   # @return [HOT] returns an HOT object
   def build(ports, odl_username, odl_password, netfloc_ip_port)
 
-    create_chain(ports, odl_username, odl_password, netfloc_ip_port)
+    create_chains(ports, odl_username, odl_password, netfloc_ip_port)
 
     puts @hot.to_yaml
 
@@ -70,7 +70,7 @@ class NetflocToHot
   # Creates an HEAT Netfloc chain resource
   #
   # @return [String] the name of the created resource
-  def create_chain(ports, odl_username, odl_password, netfloc_ip_port)
+  def create_chains(ports, odl_username, odl_password, netfloc_ip_port)
     name = get_resource_name
     @hot.resources_list << Chain.new(name, ports, odl_username, odl_password, netfloc_ip_port)
     name

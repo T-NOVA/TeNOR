@@ -1,0 +1,852 @@
+{
+    "vnfr": {
+        "_id": "582c67c5b18cfb37b5000000",
+        "audit_log": null,
+        "created_at": "2016-11-16T14:05:57.156+00:00",
+        "deployment_flavour": "gold",
+        "lifecycle_event_history": [
+            "INIT",
+            "CREATE_IN_PROGRESS",
+            "CREATE_COMPLETE",
+            "Executed a start",
+            "Executed a scaling_out",
+            "CREATE_COMPLETE",
+            "Executed a scaling_in"
+        ],
+        "lifecycle_events_values": {
+            "scaling_out": {
+                "CPix7l#fixed_ips#0#ip_address": "172.22.48.82",
+                "vdu1#CPtsvo#PublicIp": "10.10.1.231",
+                "vdu1#CPix7l#PublicIp": "10.10.1.233",
+                "vdu0#CPdvkz#PublicIp": "10.10.1.235",
+                "CPtsvo#fixed_ips#0#ip_address": "172.22.48.114"
+            },
+            "scaling_in": {
+                "CPix7l#fixed_ips#0#ip_address": "172.22.48.82",
+                "vdu1#CPtsvo#PublicIp": "10.10.1.231",
+                "vdu1#CPix7l#PublicIp": "10.10.1.233",
+                "vdu0#CPdvkz#PublicIp": "10.10.1.235",
+                "CPtsvo#fixed_ips#0#ip_address": "172.22.48.114"
+            },
+            "start": {
+                "vdu0#CPdvkz#PublicIp": "10.10.1.235"
+            },
+            "stop": {
+                "vdu0#CPdvkz#PublicIp": "10.10.1.235"
+            }
+        },
+        "lifecycle_info": {
+            "authentication_username": "italtel",
+            "driver": "http",
+            "authentication_type": "HTTPBasicAuth",
+            "authentication": "tnovatnova",
+            "authentication_port": 8080,
+            "flavor_id_ref": "flavor0",
+            "events": {
+                "start": {
+                    "command": "POST /vnf_api/vSBC/config",
+                    "template_file": "{\"controller\":\"get_attr[vdu0,CPdvkz,PublicIp]\"}",
+                    "template_file_format": "JSON"
+                },
+                "stop": {
+                    "command": "PUT /vnf_api/vSBC/config",
+                    "template_file": "{\"controller\":\"get_attr[vdu0,CPdvkz,PublicIp]\"}",
+                    "template_file_format": "JSON"
+                },
+                "scaling_out": {
+                    "command": "POST /vnf_api/vSBC/scale_out",
+                    "template_file": "{\"controller\":\"get_attr[vdu0,CPdvkz,PublicIp]\",\"vdu1\":\"get_attr[vdu1,vdus]\",\"locip_vupl0\":\"get_attr[CPix7l,fixed_ips,0,ip_address]\",\"extip_vupl0\":\"get_attr[vdu1,CPix7l,PublicIp]\",\"locip_vupl1\":\"get_attr[CPtsvo,fixed_ips,0,ip_address]\",\"extip_vupl1\":\"get_attr[vdu1,CPtsvo,PublicIp]\"}",
+                    "template_file_format": "JSON"
+                },
+                "scaling_in": {
+                    "command": "POST /vnf_api/vSBC/scale_in",
+                    "template_file": "{\"controller\":\"get_attr[vdu0,CPdvkz,PublicIp]\",\"vdu1\":\"get_attr[vdu1,vdus]\",\"locip_vupl0\":\"get_attr[CPix7l,fixed_ips,0,ip_address]\",\"extip_vupl0\":\"get_attr[vdu1,CPix7l,PublicIp]\",\"locip_vupl1\":\"get_attr[CPtsvo,fixed_ips,0,ip_address]\",\"extip_vupl1\":\"get_attr[vdu1,CPtsvo,PublicIp]\"}",
+                    "template_file_format": "JSON"
+                }
+            },
+            "vnf_container": "/vnf_api/vSBC/"
+        },
+        "notifications": [
+            "localhost:4000/ns-instances/582c67b4b18cfb2631000004/instantiate"
+        ],
+        "nsr_instance": "582c67b4b18cfb2631000004",
+        "outputs": [],
+        "port_instances": [{
+            "id": "CPdvkz",
+            "vlink_ref": "vl0",
+            "physical_resource_id": "7239c663-2b80-4632-98c1-d9b4b79827a2"
+        }, {
+            "id": "CPvku6",
+            "vlink_ref": "vl1",
+            "physical_resource_id": "fc971866-4007-44bc-871b-900ff0481d31"
+        }, {
+            "id": "CPd2fl",
+            "vlink_ref": "vl2",
+            "physical_resource_id": "303200d6-d260-4a22-97b3-ede2f295c4e0"
+        }, {
+            "id": "CPv634",
+            "vlink_ref": "vl3",
+            "physical_resource_id": "e931625b-d2f2-4424-aa24-6f7e2f80c41a"
+        }, {
+            "id": "CPpvfj",
+            "vlink_ref": "vl4",
+            "physical_resource_id": "a69b5d89-35b9-4d03-af16-8bcc0ed90f4e"
+        }, {
+            "id": "CPx39g",
+            "vlink_ref": "vl5",
+            "physical_resource_id": "c792de74-7128-4888-aced-625d770cfe92"
+        }, {
+            "id": "CPjb99",
+            "vlink_ref": "vl6",
+            "physical_resource_id": "c8cbd88d-5bcd-4cb6-93df-f623d3b59c60"
+        }, {
+            "id": "CPb14l",
+            "vlink_ref": "vl0",
+            "physical_resource_id": "3da00540-9258-451e-84c4-cd681b25a959"
+        }, {
+            "id": "CPkh7y",
+            "vlink_ref": "vl1",
+            "physical_resource_id": "d4620192-78c5-4cfd-8dee-dca0a32e39e2"
+        }, {
+            "id": "CPri2n",
+            "vlink_ref": "vl2",
+            "physical_resource_id": "22de7818-7f66-4ada-b886-9304cd06e9ae"
+        }, {
+            "id": "CPix7l",
+            "vlink_ref": "vl7",
+            "physical_resource_id": "106efb73-4780-48b8-ae8b-f350b8f54228"
+        }, {
+            "id": "CPtsvo",
+            "vlink_ref": "vl8",
+            "physical_resource_id": "944181f8-d3c3-4dd9-bb9d-4aa690ad2340"
+        }],
+        "public_network_id": "121ad8e8-a656-4baf-a306-9b88db8de2a8",
+        "resource_stats": [{
+            "id": "vSBC_1411_54",
+            "type": "OS::Neutron::FloatingIPAssociation",
+            "time": "58"
+        }, {
+            "id": "vSBC_1411_53",
+            "type": "OS::Neutron::FloatingIP",
+            "time": "13"
+        }, {
+            "id": "vSBC_1411_50",
+            "type": "OS::Glance::Image",
+            "time": "14"
+        }, {
+            "id": "vSBC_1411_51",
+            "type": "OS::Nova::Flavor",
+            "time": "14"
+        }, {
+            "id": "vSBC_1411_58",
+            "type": "OS::Neutron::FloatingIP",
+            "time": "14"
+        }, {
+            "id": "vSBC_1411_59",
+            "type": "OS::Neutron::FloatingIPAssociation",
+            "time": "59"
+        }, {
+            "id": "vSBC_1411_12",
+            "type": "OS::Neutron::RouterInterface",
+            "time": "40"
+        }, {
+            "id": "vl8",
+            "type": "OS::Neutron::Net",
+            "time": "12"
+        }, {
+            "id": "vSBC_1411_36",
+            "type": "OS::Neutron::FloatingIP",
+            "time": "13"
+        }, {
+            "id": "vSBC_1411_11",
+            "type": "OS::Neutron::Subnet",
+            "time": "20"
+        }, {
+            "id": "CPb14l",
+            "type": "OS::Neutron::Port",
+            "time": "41"
+        }, {
+            "id": "vSBC_1411_17",
+            "type": "OS::Neutron::Subnet",
+            "time": "20"
+        }, {
+            "id": "vSBC_1411_32",
+            "type": "OS::Neutron::FloatingIPAssociation",
+            "time": "59"
+        }, {
+            "id": "vSBC_1411_15",
+            "type": "OS::Neutron::RouterInterface",
+            "time": "40"
+        }, {
+            "id": "vl1",
+            "type": "OS::Neutron::Net",
+            "time": "13"
+        }, {
+            "id": "vl0",
+            "type": "OS::Neutron::Net",
+            "time": "11"
+        }, {
+            "id": "vSBC_1411_18",
+            "type": "OS::Neutron::RouterInterface",
+            "time": "40"
+        }, {
+            "id": "vl2",
+            "type": "OS::Neutron::Net",
+            "time": "13"
+        }, {
+            "id": "vl5",
+            "type": "OS::Neutron::Net",
+            "time": "13"
+        }, {
+            "id": "vl3",
+            "type": "OS::Neutron::Net",
+            "time": "11"
+        }, {
+            "id": "vl7",
+            "type": "OS::Neutron::Net",
+            "time": "13"
+        }, {
+            "id": "vl6",
+            "type": "OS::Neutron::Net",
+            "time": "12"
+        }, {
+            "id": "CPv634",
+            "type": "OS::Neutron::Port",
+            "time": "40"
+        }, {
+            "id": "vSBC_1411_2",
+            "type": "OS::Neutron::Subnet",
+            "time": "19"
+        }, {
+            "id": "vl4",
+            "type": "OS::Neutron::Net",
+            "time": "11"
+        }, {
+            "id": "vSBC_1411_0",
+            "type": "OS::Nova::KeyPair",
+            "time": "13"
+        }, {
+            "id": "CPdvkz",
+            "type": "OS::Neutron::Port",
+            "time": "41"
+        }, {
+            "id": "vSBC_1411_3",
+            "type": "OS::Neutron::RouterInterface",
+            "time": "39"
+        }, {
+            "id": "CPx39g",
+            "type": "OS::Neutron::Port",
+            "time": "41"
+        }, {
+            "id": "vSBC_1411_5",
+            "type": "OS::Neutron::Subnet",
+            "time": "20"
+        }, {
+            "id": "vSBC_1411_6",
+            "type": "OS::Neutron::RouterInterface",
+            "time": "41"
+        }, {
+            "id": "vSBC_1411_48",
+            "type": "OS::Heat::WaitCondition",
+            "time": "973"
+        }, {
+            "id": "vSBC_1411_8",
+            "type": "OS::Neutron::Subnet",
+            "time": "20"
+        }, {
+            "id": "vSBC_1411_9",
+            "type": "OS::Neutron::RouterInterface",
+            "time": "40"
+        }, {
+            "id": "CPd2fl",
+            "type": "OS::Neutron::Port",
+            "time": "41"
+        }, {
+            "id": "vSBC_1411_14",
+            "type": "OS::Neutron::Subnet",
+            "time": "19"
+        }, {
+            "id": "CPpvfj",
+            "type": "OS::Neutron::Port",
+            "time": "42"
+        }, {
+            "id": "vdu1",
+            "type": "OS::Nova::Server",
+            "time": "452"
+        }, {
+            "id": "vdu0",
+            "type": "OS::Nova::Server",
+            "time": "672"
+        }, {
+            "id": "vSBC_1411_43",
+            "type": "OS::Neutron::FloatingIPAssociation",
+            "time": "58"
+        }, {
+            "id": "vSBC_1411_42",
+            "type": "OS::Neutron::FloatingIP",
+            "time": "14"
+        }, {
+            "id": "vSBC_1411_45",
+            "type": "OS::Neutron::FloatingIP",
+            "time": "13"
+        }, {
+            "id": "vSBC_1411_47",
+            "type": "OS::Heat::WaitConditionHandle",
+            "time": "13"
+        }, {
+            "id": "vSBC_1411_46",
+            "type": "OS::Neutron::FloatingIPAssociation",
+            "time": "58"
+        }, {
+            "id": "vSBC_1411_63",
+            "type": "OS::Heat::WaitConditionHandle",
+            "time": "14"
+        }, {
+            "id": "vSBC_1411_62",
+            "type": "OS::Neutron::FloatingIPAssociation",
+            "time": "58"
+        }, {
+            "id": "vSBC_1411_61",
+            "type": "OS::Neutron::FloatingIP",
+            "time": "12"
+        }, {
+            "id": "vSBC_1411_64",
+            "type": "OS::Heat::WaitCondition",
+            "time": "740"
+        }, {
+            "id": "vSBC_1411_27",
+            "type": "OS::Neutron::RouterInterface",
+            "time": "41"
+        }, {
+            "id": "vSBC_1411_26",
+            "type": "OS::Neutron::Subnet",
+            "time": "20"
+        }, {
+            "id": "vSBC_1411_24",
+            "type": "OS::Neutron::RouterInterface",
+            "time": "39"
+        }, {
+            "id": "vSBC_1411_23",
+            "type": "OS::Neutron::Subnet",
+            "time": "19"
+        }, {
+            "id": "vSBC_1411_21",
+            "type": "OS::Neutron::RouterInterface",
+            "time": "41"
+        }, {
+            "id": "vSBC_1411_20",
+            "type": "OS::Neutron::Subnet",
+            "time": "20"
+        }, {
+            "id": "vSBC_1411_29",
+            "type": "OS::Nova::Flavor",
+            "time": "13"
+        }, {
+            "id": "vSBC_1411_28",
+            "type": "OS::Glance::Image",
+            "time": "13"
+        }, {
+            "id": "CPkh7y",
+            "type": "OS::Neutron::Port",
+            "time": "40"
+        }, {
+            "id": "CPjb99",
+            "type": "OS::Neutron::Port",
+            "time": "41"
+        }, {
+            "id": "vSBC_1411_39",
+            "type": "OS::Neutron::FloatingIP",
+            "time": "13"
+        }, {
+            "id": "CPix7l",
+            "type": "OS::Neutron::Port",
+            "time": "41"
+        }, {
+            "id": "CPtsvo",
+            "type": "OS::Neutron::Port",
+            "time": "41"
+        }, {
+            "id": "CPvku6",
+            "type": "OS::Neutron::Port",
+            "time": "39"
+        }, {
+            "id": "CPri2n",
+            "type": "OS::Neutron::Port",
+            "time": "40"
+        }, {
+            "id": "vSBC_1411_40",
+            "type": "OS::Neutron::FloatingIPAssociation",
+            "time": "58"
+        }, {
+            "id": "vSBC_1411_37",
+            "type": "OS::Neutron::FloatingIPAssociation",
+            "time": "59"
+        }, {
+            "id": "vSBC_1411_31",
+            "type": "OS::Neutron::FloatingIP",
+            "time": "13"
+        }],
+        "scale_info": {},
+        "scale_resources": [],
+        "security_group_id": "14",
+        "stack_url": "http://10.10.1.2:8004/v1/5ec795bba92e4eaaa9eabd0af44891e3/stacks/vSBC_1411_582c67c5b18cfb37b5000000/86bd8b5f-5c3b-4fc2-8c7e-a63f480da5ae",
+        "updated_at": "2016-11-16T14:22:32.263+00:00",
+        "vdu": [{
+            "id": "vdu0",
+            "alias": "OAM_1411"
+        }, {
+            "id": "vdu1",
+            "alias": "BGW_1411"
+        }],
+        "vim_id": "1",
+        "vlr_instances": [{
+            "id": "vl0",
+            "alias": "ITL1411",
+            "physical_resource_id": "a8ab624c-e74f-4538-a98b-9a545a6bc6fb"
+        }, {
+            "id": "vl1",
+            "alias": "PRIV_A1411",
+            "physical_resource_id": "274abae7-2a2c-4ee4-b43b-6c4efe0e8046"
+        }, {
+            "id": "vl2",
+            "alias": "PRIV_B1411",
+            "physical_resource_id": "5500a848-8c9e-4271-a0e1-9c9a2a9320da"
+        }, {
+            "id": "vl3",
+            "alias": "VUPLZEROOAM",
+            "physical_resource_id": "aaa7b6f5-c1a1-4f55-b857-6baabc1f112d"
+        }, {
+            "id": "vl4",
+            "alias": "VUPLONEOAM",
+            "physical_resource_id": "4bb7f851-32cd-4a63-948c-db207325c348"
+        }, {
+            "id": "vl5",
+            "alias": "VUPLTWOOAM",
+            "physical_resource_id": "24c514de-1758-40e8-b087-0b4af1e69d19"
+        }, {
+            "id": "vl6",
+            "alias": "VUPLTHREEOAM",
+            "physical_resource_id": "e33e7e69-e445-4f85-86f8-7d49402bc55a"
+        }, {
+            "id": "vl7",
+            "alias": "VUPLZEROBGW",
+            "physical_resource_id": "1f3c1dd8-b8bc-4dcc-bcf0-dea395a4a1c3"
+        }, {
+            "id": "vl8",
+            "alias": "VUPLONEBGW",
+            "physical_resource_id": "1c6442c7-3697-4c72-b056-441b0bf1479c"
+        }],
+        "vms": [{
+            "id": "vdu1",
+            "image_id": "f7d3c26f-dd7e-45fe-9403-fce1ddeafc11",
+            "flavour_id": "cf0baa9c-a874-40cb-9a7b-a92d30bc364f",
+            "physical_resource_id": "03dac34f-70ea-4604-8064-60c7d02676e2"
+        }, {
+            "id": "vdu0",
+            "physical_resource_id": "b227fe6a-dda7-43cf-b94d-fcecf91e4644",
+            "flavour_id": "fa7e9fac-7d03-4f02-a24a-42fd65ad5866",
+            "image_id": "046a265d-98e6-41e7-9d3e-61c2c02742b7"
+        }],
+        "vms_id": {
+            "vdu1": "03dac34f-70ea-4604-8064-60c7d02676e2",
+            "vdu0": "b227fe6a-dda7-43cf-b94d-fcecf91e4644"
+        },
+        "vnf_addresses": {
+            "vdu1#CPix7l#fixed_ips#0#ip_address": "172.22.48.82",
+            "vdu1#CPtsvo#PublicIp": "10.10.1.231",
+            "vdu1#CPix7l#PublicIp": "10.10.1.233",
+            "controller": "10.10.1.235",
+            "vdu0#CPdvkz#PublicIp": "10.10.1.235",
+            "vdu1#CPtsvo#fixed_ips#0#ip_address": "172.22.48.114"
+        },
+        "vnf_status": "1",
+        "vnfd_reference": "2705",
+        "$$hashKey": "object:7849"
+    },
+    "vnfd":{
+        "vnfd": {
+            "vdu": [{
+                "resource_requirements": {
+                    "network_interface_bandwidth_unit": "",
+                    "hypervisor_parameters": {
+                        "version": "10002|12001|2.6.32-358.el6.x86_64",
+                        "type": "QEMU-KVM"
+                    },
+                    "memory_unit": "GB",
+                    "network_interface_card_capabilities": {
+                        "SR-IOV": true,
+                        "mirroring": false
+                    },
+                    "storage": {
+                        "size_unit": "GB",
+                        "persistence": false,
+                        "size": 4
+                    },
+                    "network_interface_bandwidth": "",
+                    "platform_pcie_parameters": {
+                        "SR-IOV": true,
+                        "device_pass_through": true
+                    },
+                    "vcpus": 1,
+                    "vswitch_capabilities": {
+                        "version": "2.0",
+                        "type": "ovs",
+                        "overlay_tunnel": "GRE"
+                    },
+                    "data_processing_acceleration_library": "",
+                    "memory": 1,
+                    "memory_parameters": {
+                        "large_pages_required": false,
+                        "numa_allocation_policy": ""
+                    },
+                    "cpu_support_accelerator": "AES-NI"
+                },
+                "bootstrap_script": "",
+                "vm_image": "http://cloud-images.ubuntu.com/xenial/current/xenial-server-cloudimg-amd64-disk1.img",
+                "id": "vdu0",
+                "networking_resources": "",
+                "monitoring_parameters_specific": [],
+                "wc_notify": true,
+                "alias": "OAM_1411",
+                "controller": true,
+                "connection_points": [{
+                    "vlink_ref": "vl0",
+                    "id": "CPdvkz"
+                }, {
+                    "vlink_ref": "vl1",
+                    "id": "CPvku6"
+                }, {
+                    "vlink_ref": "vl2",
+                    "id": "CPd2fl"
+                }, {
+                    "vlink_ref": "vl3",
+                    "id": "CPv634"
+                }, {
+                    "vlink_ref": "vl4",
+                    "id": "CPpvfj"
+                }, {
+                    "vlink_ref": "vl5",
+                    "id": "CPx39g"
+                }, {
+                    "vlink_ref": "vl6",
+                    "id": "CPjb99"
+                }],
+                "monitoring_parameters": [],
+                "scale_in_out": {
+                    "minimum": 1,
+                    "maximum": 1
+                },
+                "vm_image_md5": "fe9bc72c4bff6a82b5b22a90d5beb6c9",
+                "vm_image_format": "qcow2"
+            }, {
+                "resource_requirements": {
+                    "network_interface_bandwidth_unit": "",
+                    "hypervisor_parameters": {
+                        "version": "10002|12001|2.6.32-358.el6.x86_64",
+                        "type": "QEMU-KVM"
+                    },
+                    "memory_unit": "GB",
+                    "network_interface_card_capabilities": {
+                        "SR-IOV": true,
+                        "mirroring": false
+                    },
+                    "storage": {
+                        "size_unit": "GB",
+                        "persistence": false,
+                        "size": 4
+                    },
+                    "network_interface_bandwidth": "",
+                    "platform_pcie_parameters": {
+                        "SR-IOV": true,
+                        "device_pass_through": true
+                    },
+                    "vcpus": 1,
+                    "vswitch_capabilities": {
+                        "version": "2.0",
+                        "type": "ovs",
+                        "overlay_tunnel": "GRE"
+                    },
+                    "data_processing_acceleration_library": "",
+                    "memory": 1,
+                    "memory_parameters": {
+                        "large_pages_required": false,
+                        "numa_allocation_policy": ""
+                    },
+                    "cpu_support_accelerator": "AES-NI"
+                },
+                "bootstrap_script": "",
+                "vm_image": "http://cloud-images.ubuntu.com/xenial/current/xenial-server-cloudimg-amd64-disk1.img",
+                "id": "vdu1",
+                "networking_resources": "",
+                "monitoring_parameters_specific": [],
+                "wc_notify": true,
+                "alias": "BGW_1411",
+                "controller": false,
+                "connection_points": [{
+                    "vlink_ref": "vl0",
+                    "id": "CPb14l"
+                }, {
+                    "vlink_ref": "vl1",
+                    "id": "CPkh7y"
+                }, {
+                    "vlink_ref": "vl2",
+                    "id": "CPri2n"
+                }, {
+                    "vlink_ref": "vl7",
+                    "id": "CPix7l"
+                }, {
+                    "vlink_ref": "vl8",
+                    "id": "CPtsvo"
+                }],
+                "monitoring_parameters": [],
+                "scale_in_out": {
+                    "minimum": 1,
+                    "maximum": 2
+                },
+                "vm_image_md5": "e2e7bd299386a6d066a82b4b455b7a0d",
+                "vm_image_format": "qcow2"
+            }],
+            "name": "COMPLEX_EXAMPLE",
+            "provider_id": 6,
+            "trade": false,
+            "descriptor_version": "1",
+            "deployment_flavours": [{
+                "vdu_reference": [
+                    "vdu0",
+                    "vdu1"
+                ],
+                "constraint": "",
+                "flavour_key": "gold",
+                "vlink_reference": [
+                    "vl0",
+                    "vl1",
+                    "vl2",
+                    "vl3",
+                    "vl4",
+                    "vl5",
+                    "vl6",
+                    "vl7",
+                    "vl8"
+                ],
+                "id": "flavor0",
+                "assurance_parameters": []
+            }],
+            "version": "1",
+            "vnf_lifecycle_events": [{
+                "authentication_username": "italtel",
+                "driver": "http",
+                "authentication_type": "HTTPBasicAuth",
+                "authentication": "tnovatnova",
+                "authentication_port": 8080,
+                "flavor_id_ref": "flavor0",
+                "events": {
+                    "start": {
+                        "command": "POST /vnf_api/vSBC/config",
+                        "template_file": "{\"controller\":\"get_attr[vdu0,CPdvkz,PublicIp]\"}",
+                        "template_file_format": "JSON"
+                    },
+                    "stop": {
+                        "command": "PUT /vnf_api/vSBC/config",
+                        "template_file": "{\"controller\":\"get_attr[vdu0,CPdvkz,PublicIp]\"}",
+                        "template_file_format": "JSON"
+                    },
+                    "scaling_out": {
+                        "command": "POST /vnf_api/vSBC/scale_out",
+                        "template_file": "{\"controller\":\"get_attr[vdu0,CPdvkz,PublicIp]\",\"vdu1\":\"get_attr[vdu1,vdus]\",\"locip_vupl0\":\"get_attr[CPix7l,fixed_ips,0,ip_address]\",\"extip_vupl0\":\"get_attr[vdu1,CPix7l,PublicIp]\",\"locip_vupl1\":\"get_attr[CPtsvo,fixed_ips,0,ip_address]\",\"extip_vupl1\":\"get_attr[vdu1,CPtsvo,PublicIp]\"}",
+                        "template_file_format": "JSON"
+                    },
+                    "scaling_in": {
+                        "command": "POST /vnf_api/vSBC/scale_in",
+                        "template_file": "{\"controller\":\"get_attr[vdu0,CPdvkz,PublicIp]\",\"vdu1\":\"get_attr[vdu1,vdus]\",\"locip_vupl0\":\"get_attr[CPix7l,fixed_ips,0,ip_address]\",\"extip_vupl0\":\"get_attr[vdu1,CPix7l,PublicIp]\",\"locip_vupl1\":\"get_attr[CPtsvo,fixed_ips,0,ip_address]\",\"extip_vupl1\":\"get_attr[vdu1,CPtsvo,PublicIp]\"}",
+                        "template_file_format": "JSON"
+                    }
+                },
+                "vnf_container": "/vnf_api/vSBC/"
+            }],
+            "billing_model": {
+                "price": {
+                    "setup": 12,
+                    "max_per_period": 180,
+                    "min_per_period": 180,
+                    "unit": "EUR"
+                },
+                "model": "PAYG",
+                "period": "P1D"
+            },
+            "provider": "ITALTEL",
+            "release": "T-NOVA",
+            "vlinks": [{
+                "leaf_requirement": "10Gbps",
+                "connectivity_type": "E-LINE",
+                "vdu_reference": [
+                    "vdu0",
+                    "vdu1"
+                ],
+                "external_access": true,
+                "port_security_enabled": false,
+                "connection_points_reference": [
+                    "CPdvkz",
+                    "CPb14l"
+                ],
+                "net_segment": "172.42.48.32/28",
+                "access": true,
+                "alias": "COMPLEXITL1411",
+                "dhcp": true,
+                "root_requirement": "10Gbps",
+                "qos": "",
+                "id": "vl0"
+            }, {
+                "leaf_requirement": "10Gbps",
+                "connectivity_type": "E-LINE",
+                "vdu_reference": [
+                    "vdu0",
+                    "vdu1"
+                ],
+                "external_access": false,
+                "port_security_enabled": false,
+                "connection_points_reference": [
+                    "CPvku6",
+                    "CPkh7y"
+                ],
+                "net_segment": "10.44.0.0/16",
+                "access": false,
+                "alias": "COMPLEXPRIV_A1411",
+                "dhcp": true,
+                "root_requirement": "10Gbps",
+                "qos": "",
+                "id": "vl1"
+            }, {
+                "leaf_requirement": "10Gbps",
+                "connectivity_type": "E-LINE",
+                "vdu_reference": [
+                    "vdu0",
+                    "vdu1"
+                ],
+                "external_access": false,
+                "port_security_enabled": false,
+                "connection_points_reference": [
+                    "CPd2fl",
+                    "CPri2n"
+                ],
+                "net_segment": "10.42.0.0/16",
+                "access": false,
+                "alias": "COMPLEXPRIV_B1411",
+                "dhcp": true,
+                "root_requirement": "10Gbps",
+                "qos": "",
+                "id": "vl2"
+            }, {
+                "leaf_requirement": "10Gbps",
+                "connectivity_type": "E-LINE",
+                "vdu_reference": [
+                    "vdu0"
+                ],
+                "external_access": true,
+                "port_security_enabled": false,
+                "connection_points_reference": [
+                    "CPv634"
+                ],
+                "net_segment": "172.42.48.64/29",
+                "access": true,
+                "alias": "COMPLEXVUPLZEROOAM",
+                "dhcp": true,
+                "root_requirement": "10Gbps",
+                "qos": "",
+                "id": "vl3"
+            }, {
+                "leaf_requirement": "10Gbps",
+                "connectivity_type": "E-LINE",
+                "vdu_reference": [
+                    "vdu0"
+                ],
+                "external_access": true,
+                "port_security_enabled": false,
+                "connection_points_reference": [
+                    "CPpvfj"
+                ],
+                "net_segment": "172.42.48.72/29",
+                "access": true,
+                "alias": "COMPLEXVUPLONEOAM",
+                "dhcp": true,
+                "root_requirement": "10Gbps",
+                "qos": "",
+                "id": "vl4"
+            }, {
+                "leaf_requirement": "10Gbps",
+                "connectivity_type": "E-LINE",
+                "vdu_reference": [
+                    "vdu0"
+                ],
+                "external_access": true,
+                "port_security_enabled": false,
+                "connection_points_reference": [
+                    "CPx39g"
+                ],
+                "net_segment": "172.42.48.96/29",
+                "access": true,
+                "alias": "COMPLEXVUPLTWOOAM",
+                "dhcp": true,
+                "root_requirement": "10Gbps",
+                "qos": "",
+                "id": "vl5"
+            }, {
+                "leaf_requirement": "10Gbps",
+                "connectivity_type": "E-LINE",
+                "vdu_reference": [
+                    "vdu0"
+                ],
+                "external_access": true,
+                "port_security_enabled": false,
+                "connection_points_reference": [
+                    "CPjb99"
+                ],
+                "net_segment": "172.42.48.104/29",
+                "access": true,
+                "alias": "COMPLEXVUPLTHREEOAM",
+                "dhcp": true,
+                "root_requirement": "10Gbps",
+                "qos": "",
+                "id": "vl6"
+            }, {
+                "leaf_requirement": "10Gbps",
+                "connectivity_type": "E-LINE",
+                "vdu_reference": [
+                    "vdu1"
+                ],
+                "external_access": true,
+                "port_security_enabled": false,
+                "connection_points_reference": [
+                    "CPix7l"
+                ],
+                "net_segment": "172.42.48.80/29",
+                "access": true,
+                "alias": "COMPLEXVUPLZEROBGW",
+                "dhcp": true,
+                "root_requirement": "10Gbps",
+                "qos": "",
+                "id": "vl7"
+            }, {
+                "leaf_requirement": "10Gbps",
+                "connectivity_type": "E-LINE",
+                "vdu_reference": [
+                    "vdu1"
+                ],
+                "external_access": true,
+                "port_security_enabled": false,
+                "connection_points_reference": [
+                    "CPtsvo"
+                ],
+                "net_segment": "172.42.48.112/29",
+                "access": true,
+                "alias": "COMPLEXVUPLONEBGW",
+                "dhcp": true,
+                "root_requirement": "10Gbps",
+                "qos": "",
+                "id": "vl8"
+            }],
+            "type": "vProxy",
+            "description": "Italtel_vSBC",
+            "id": 39921
+        }
+    }
+}

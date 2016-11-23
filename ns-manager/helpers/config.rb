@@ -21,6 +21,7 @@ module ServiceConfigurationHelper
         begin
             Timeout.timeout(1) do
                 begin
+                    ip = ip.split("@")[1] if ip.include? "@"
                     s = TCPSocket.new(ip, port)
                     s.close
                     return true

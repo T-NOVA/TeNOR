@@ -18,12 +18,24 @@
 require_relative 'spec_helper'
 
 RSpec.describe VNFManager do
-	def app
-		Catalogue
+
+	before do
+		begin
+			DatabaseCleaner.start
+		ensure
+			DatabaseCleaner.clean
+		end
+		Service.create!({name: "vnf_catalogue", host: "localhost", port: "4569", path: "", token: "token", depends_on: [], type: ""})
 	end
 
+	let(:app) {
+		Rack::Builder.new do
+			eval File.read('config.ru')
+		end
+	}
+
 	describe 'GET /' do
-		let(:response) { get '/' }
+		let(:response) { get '/vnfs' }
 
 		it 'responds with a 200' do
 			expect(response.status).to eq 200
@@ -40,7 +52,7 @@ RSpec.describe VNFManager do
 
 	describe 'GET /vnfs' do
 		context 'when there are no VNFs' do
-			let(:response) { get '/' }
+			let(:response) { get '/vnfs' }
 
 			it 'returns an array' do
 				expect(JSON.parse response.body).to be_an Array
@@ -59,7 +71,7 @@ RSpec.describe VNFManager do
 	describe 'POST /vnfs' do
 		context 'given an invalid content type' do
 			let(:vnf) { build(:vnf) }
-			let(:response) { post '/', vnf.marshal_dump.to_json, rack_env={'CONTENT_TYPE' => 'application/x-www-form-urlencoded'} }
+			let(:response) { post '/vnfs', vnf.marshal_dump.to_json, rack_env={'CONTENT_TYPE' => 'application/x-www-form-urlencoded'} }
 
 			it 'responds with a 415' do
 				expect(response.status).to eq 415
@@ -72,7 +84,7 @@ RSpec.describe VNFManager do
 
 		context 'given an invalid VNF' do
 			let(:vnf) { build(:invalid_vnf) }
-			let(:response) { post '/', vnf.marshal_dump.to_json, rack_env={'CONTENT_TYPE' => 'application/json'} }
+			let(:response) { post '/vnfs', vnf.marshal_dump.to_json, rack_env={'CONTENT_TYPE' => 'application/json'} }
 
 			it 'responds with a 400' do
 				expect(response.status).to eq 400
@@ -85,7 +97,7 @@ RSpec.describe VNFManager do
 
 		context 'given a valid VNF' do
 			let(:vnf) { build(:vnf) }
-			let(:response) { post '/', vnf.marshal_dump.to_json, rack_env={'CONTENT_TYPE' => 'application/json'} }
+			let(:response) { post '/vnfs', vnf.marshal_dump.to_json, rack_env={'CONTENT_TYPE' => 'application/json'} }
 
 			it 'responds with a 200' do
 				expect(response.status).to eq 200

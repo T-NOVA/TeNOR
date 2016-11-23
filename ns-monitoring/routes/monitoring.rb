@@ -17,25 +17,7 @@
 #
 # @see NSMonitoring
 class NSMonitoring < Sinatra::Application
-    # definition metric should be monitoring, received from NSProvisioning
-    # 		{
-    # 	 "nsi_id": "1",
-    # 	 "vnf_instances": [
-    # 	   { "id": "1", "parameters": [
-    # 	     { "id": "1", "name": "availability", "unit": "percentage", "value": "string"},
-    # 	     { "id": "2", "name": "num_sessions", "unit": "integer", "value": "string"} ]
-    # 	   },
-    # 	   { "id": "2", "parameters": [
-    # 	     { "id": "1", "name": "availability", "unit": "percentage", "value": "string"},
-    # 	     { "id": "2", "name": "num_sessions", "unit": "integer", "value": "string"} ]
-    # 	   }
-    # 	 ],
-    # 	 "parameters": [
-    # 	   { "uid": "ap_id", "id": "1", "name": "availability", "formula": "min(vnf_instance[1].availability, vnf_instance[2].availability)"},
-    # 	   { "uid": "ap_id2", "id": "2", "name": "num_sessions", "formula": "vnf_instances[1].num_sessions+vnf_instances[2].num_sessions"}
-    # 	 ]
-    # 	}
-
+    
     # @method post_monitoring_parameters
     # @overload post '/network-services/:external_vnf_id'
     #	Post monitoring parameters
@@ -48,17 +30,19 @@ class NSMonitoring < Sinatra::Application
         return 400, errors.to_json if errors
 
         logger.debug monitoring
-
-        # logger.error threads
-        logger.error @@testThreads
         nsi_id = monitoring['nsi_id'].to_s
 
         # Create SLA object
         sla = Sla.new(nsi_id: nsi_id)
         return 422, "Could not create SLA from #{monitoring}.\n" unless sla
 
+        parameters = []
         monitoring['parameters'].each do |parameter|
-            sla.parameters << Parameter.new(parameter_id: parameter['uid'], name: parameter['name'], threshold: parameter['value'])
+            violations = []
+            parameter['violations'].each do |violation|
+                violations.push(Violation.new(breaches_count: violation['breaches_count'].to_i, interval: violation['interval'].to_i))
+            end
+            sla.parameters << Parameter.new(parameter_id: parameter['uid'], name: parameter['name'], threshold: parameter['value'], violations: violations)
         end
         sla.save!
 
@@ -66,16 +50,7 @@ class NSMonitoring < Sinatra::Application
 
         logger.info 'Sending subscription monitoring to VNF Manager.'
         monitoring['vnf_instances'].each do |vnf_instance|
-            logger.debug 'VNFD: ' + vnf_instance['id'] # vnf_id
-            logger.debug 'VNFr: ' + vnf_instance['vnfr_id']
             object = {}
-            #       object = {
-            #           :parameter_id => parameter['id'],
-            #           :name => parameter['name']
-            #           #:vnfr_id => @ns_instance['vnfrs'][0]['vnfr_id']
-            #           #,:unit => parameter['unit']
-            #       }
-            #       logger.debug object
             begin
                 response = RestClient.post settings.vnf_manager + '/vnf-monitoring/' + vnf_instance['vnfr_id'] + '/monitoring-parameters', object.to_json, content_type: :json, accept: :json
             rescue => e
@@ -91,7 +66,7 @@ class NSMonitoring < Sinatra::Application
             Thread.stop
         end
 
-        return 200, 'Subscription correct.'
+        return 200
     end
 
     # @method post_monitoring_data_unsubcribe
@@ -110,7 +85,7 @@ class NSMonitoring < Sinatra::Application
         monMetrics['vnf_instances'].each do |monitoring_vnf|
             logger.debug monitoring_vnf
             logger.debug monitoring_vnf['id']
-            logger.info 'Removing threads...'
+            logger.debug 'Removing threads...'
             @@testThreads.delete_if do |thr|
                 puts thr[:vnfi_id]
                 puts monitoring_vnf['vnfr_id']
@@ -132,9 +107,10 @@ class NSMonitoring < Sinatra::Application
         monMetrics.destroy
         sla.destroy
 
-        halt 200, 'Correct unsubcription.'
+        halt 200
     end
 
+    # DEPRECATED. USED FOR TESTS
     # This interface is with the VNF Monitoring micro-service, upon successfully receiving a monitoring parameter reading for a given VNF instance.
     #	{
     #  "parameter_id": "1",
@@ -157,17 +133,15 @@ class NSMonitoring < Sinatra::Application
         begin
             monMetrics = NsMonitoringParameter.find_by('vnf_instances.vnfr_id' => vnfr_id)
         rescue Mongoid::Errors::DocumentNotFound => e
-            # halt 400, "Monitoring Metric instance no exists"
+            halt 400, "Monitoring Metric instance no exists"
         end
-
-        logger.debug monMetrics
 
         conn = Bunny.new
         conn.start
 
         ch = conn.create_channel
         q = ch.queue(vnfr_id)
-        logger.error 'Publishing the values...'
+        logger.debug 'Publishing the values...'
         q.publish(measurements.to_json, persistent: true)
         conn.close
 

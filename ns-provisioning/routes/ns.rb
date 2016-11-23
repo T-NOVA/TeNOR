@@ -123,7 +123,6 @@ class Provisioner < NsProvisioning
     # @param [JSON]
     put '/:id/:status' do
         body, errors = parse_json(request.body.read)
-        @instance = body['instance']
 
         begin
             @nsInstance = Nsr.find(params['id'])
@@ -142,19 +141,9 @@ class Provisioner < NsProvisioning
                     logger.info 'Pop_id: ' + vnf['pop_id'].to_s
                     raise 'VNF not defined' if vnf['pop_id'].nil?
 
-                    pop_info, errors = getPopInfo(vnf['pop_id'])
-                    logger.errors if errors
-                    raise 400, errors if errors
-
-                    if pop_info == 400
-                        logger.error 'Pop id no exists.'
-                        return
-                    end
-
                     pop_auth = @nsInstance['authentication'].find { |pop| pop['pop_id'] == vnf['pop_id'] }
                     popUrls = pop_auth['urls']
-                    callback_url = settings.manager + '/ns-instances/' + @instance['id']
-
+                    callback_url = settings.manager + '/ns-instances/' + @nsInstance['id']
                     next if vnf['vnfr_id'].nil?
                     # get token
                     credentials, errors = authenticate(popUrls[:keystone], pop_auth['tenant_name'], pop_auth['username'], pop_auth['password'])
@@ -182,7 +171,7 @@ class Provisioner < NsProvisioning
 
                 logger.info 'VNFs removed correctly.'
                 error = 'Removing instance'
-                recoverState(@nsInstance, error)
+                recoverState(@nsInstance, body['pop_info'], error)
             end
             errback = proc do
                 logger.error 'Error with the removing process...'
@@ -191,7 +180,7 @@ class Provisioner < NsProvisioning
                 logger.info 'Removing finished correctly.'
             end
         elsif params[:status] === 'start'
-            @instance['vnfrs'].each do |vnf|
+            @nsInstance['vnfrs'].each do |vnf|
                 logger.info 'Starting VNF ' + vnf['vnfr_id'].to_s
                 event = { event: 'start' }
                 begin
@@ -206,10 +195,9 @@ class Provisioner < NsProvisioning
                 @nsInstance.push(lifecycle_event_history: 'Executed a start')
             end
 
-            @instance['status'] = params['status'].to_s.upcase
-            @nsInstance.update_attributes(@instance)
+            @nsInstance.update_attribute('status', params['status'].to_s.upcase)
         elsif params[:status] === 'stop'
-            @instance['vnfrs'].each do |vnf|
+            @nsInstance['vnfrs'].each do |vnf|
                 logger.debug vnf
                 event = { event: 'stop' }
                 begin
@@ -223,7 +211,7 @@ class Provisioner < NsProvisioning
                 end
             end
 
-            @instance['status'] = params['status'].to_s.upcase
+            @nsInstance['status'] = params['status'].to_s.upcase
             @nsInstance
         end
 
@@ -242,8 +230,8 @@ class Provisioner < NsProvisioning
     # @method post_ns_instances_id_instantiate
     # @overload post '/ns-instances/:id/instantiate'
     # Response from VNF-Manager, send a message to marketplace
-    post '/:nsr_id/instantiate' do
-        logger.info 'Instantiation response about ' + params['nsr_id'].to_s
+    post '/:nsr_id/instantiate' do |nsr_id|
+        logger.info 'Instantiation response about ' + nsr_id
         # Return if content-type is invalid
         return 415 unless request.content_type == 'application/json'
         # Validate JSON format
@@ -251,84 +239,75 @@ class Provisioner < NsProvisioning
         return 400, errors.to_json if errors
 
         callback_response = response['callback_response']
-        @instance = response['instance']
         begin
-            instance = Nsr.find(@instance['id'])
+            instance = Nsr.find(nsr_id)
         rescue Mongoid::Errors::DocumentNotFound => e
             logger.error e
             return 404
         end
         nsd = response['nsd']
-        nsr_id = params['nsr_id']
 
         if callback_response['status'] == 'ERROR_CREATING'
-            @instance['status'] = 'ERROR_CREATING'
-            @instance['lifecycle_event_history'].push('ERROR_CREATING')
-            @instance['audit_log'].push(callback_response['stack_resources']['stack']['stack_status_reason'])
-            instance.update_attributes(@instance)
-            generateMarketplaceResponse(@instance['notification'], { status: 'error', message: callback_response['stack_resources']['stack']['stack_status_reason'] }.to_s)
+            instance.update_attribute('status', 'ERROR_CREATING')
+            instance.push(lifecycle_event_history: 'ERROR_CREATING')
+            instance.push(audit_log: callback_response['stack_resources']['stack']['stack_status_reason'])
+            generateMarketplaceResponse(instance['notification'], { status: 'error', message: callback_response['stack_resources']['stack']['stack_status_reason'] }.to_s)
             return 200
         end
 
         logger.info callback_response['vnfd_id'].to_s + ' INSTANTIATED'
-
-        @instance['lifecycle_event_history'].push('VNF ' + callback_response['vnfd_id'].to_s + ' INSTANTIATED')
-        @vnfr = @instance['vnfrs'].find { |vnf_info| vnf_info['vnfd_id'] == callback_response['vnfd_id'] }
-        @vnfr['vnfi_id'] = callback_response['vnfi_id']
-        @vnfr['status'] = 'INSTANTIATED'
-        @vnfr['vnf_addresses'] = callback_response['vnf_addresses']
-
-        instance.update_attributes(@instance)
+        instance.push(lifecycle_event_history: 'VNF ' + callback_response['vnfd_id'].to_s + ' INSTANTIATED')
+        vnfr = instance['vnfrs'].find { |vnf_info| vnf_info['vnfd_id'] == callback_response['vnfd_id'] }
+        instance.pull(vnfrs: vnfr)
+        vnfr['vnfi_id'] = callback_response['vnfi_id']
+        vnfr['status'] = 'INSTANTIATED'
+        vnfr['vnf_addresses'] = callback_response['vnf_addresses']
+        instance.push(vnfrs: vnfr)
 
         # for each VNF instantiated, read the connection point in the NSD and extract the resource id
-        logger.error 'VNFR Stack Resources: ' + callback_response['stack_resources'].to_s
+        logger.info 'Updating VNFR virtual links'
         vnfr_resources = callback_response['stack_resources']
         nsd['vld']['virtual_links'].each do |vl|
             vl['connections'].each do |conn|
                 vnf_net = conn.split('#')[1]
                 vnf_id = vnf_net.split(':')[0]
                 net = vnf_net.split(':ext_')[1]
-
                 next unless vnf_id == vnfr_resources['vnfd_reference']
-                logger.info 'Searching ports for network ' + net.to_s
+                logger.debug 'Searching ports for network ' + net.to_s
                 next if net == 'undefined'
                 vlr = vnfr_resources['vlr_instances'].find { |vlr| vlr['alias'] == net }
-                logger.info vnfr_resources['port_instances']
-                logger.info vlr
                 next unless !vnfr_resources['port_instances'].empty? && !vlr.nil?
                 vnf_ports = vnfr_resources['port_instances'].find_all { |port| port['vlink_ref'] == vlr['id'] }
                 ports = {
                     ns_network: conn,
                     vnf_ports: vnf_ports
                 }
-                resources = @instance['resource_reservation'].find { |res| res['pop_id'] == @vnfr['pop_id'] }
+                resources = instance['resource_reservation'].find { |res| res['pop_id'] == vnfr['pop_id'] }
+                instance.pull(resource_reservation: resources)
                 resources['ports'] << ports
-                instance.update_attributes(@instance)
+                instance.push(resource_reservation: resources)
             end
         end
 
         logger.info 'Checking if all the VNFs are instantiated.'
-        nsd['vnfds'].each do |vnf|
-            vnf_instance = @instance['vnfrs'].find { |vnf_info| vnf_info['vnfd_id'] == vnf }
+        instance['vnfrs'].each do |vnf|
+            vnf_instance = instance['vnfrs'].find { |vnf_info| vnf_info['vnfd_id'] == vnf['vnfd_id'] }
             if vnf_instance['status'] != 'INSTANTIATED'
-                logger.info 'VNF ' + vnf.to_s + ' is not ready.'
+                logger.info 'VNF ' + vnf['vnfd_id'].to_s + ' is not ready.'
                 return
             end
         end
 
         logger.info 'Service is ready. All VNFs are instantiated'
-        @instance['status'] = 'INSTANTIATED'
-        @instance['lifecycle_event_history'].push('INSTANTIATED')
-        @instance['instantiation_end_time'] = DateTime.now.iso8601(3)
-        instance.update_attributes(@instance)
-
-        generateMarketplaceResponse(@instance['notification'], @instance)
-        logger.info 'Marketplace is notified'
+        instance.update_attribute('status', 'INSTANTIATED')
+        instance.push(lifecycle_event_history: 'INSTANTIATED')
+        instance.update_attribute('instantiation_end_time', DateTime.now.iso8601(3))
+        generateMarketplaceResponse(instance['notification'], instance)
 
         logger.info 'Sending statistic information to NS Manager'
         Thread.new do
             begin
-                RestClient.post settings.manager + '/statistics/performance_stats', @instance.to_json, content_type: :json
+                RestClient.post settings.manager + '/statistics/performance_stats', instance.to_json, content_type: :json
             rescue => e
                 logger.error e
             end
@@ -347,7 +326,7 @@ class Provisioner < NsProvisioning
             end
         end
 
-        if @instance['resource_reservation'].find { |resource| resource.has_key?('wicm_stack')}
+        if instance['resource_reservation'].find { |resource| resource.has_key?('wicm_stack')}
             logger.info 'Starting traffic redirection in the WICM'
             Thread.new do
                 begin
@@ -362,56 +341,64 @@ class Provisioner < NsProvisioning
         logger.info 'Starting monitoring workflow...'
         Thread.new do
             sleep(5)
-            monitoringData(nsd, nsr_id, @instance)
+            monitoringData(nsd, nsr_id, instance)
         end
 
         unless settings.netfloc.nil?
-            logger.info 'Create Netfloc HOT for each PoP'
-
-            chains_pop = []
+            logger.info 'Create Netfloc HOT for each PoP...........................'
+            logger.info instance['vnffgd']['vnffgs']
+            graphs = []
+            graphs_pops = []
             instance['vnffgd']['vnffgs'].each do |fg|
+                vnfg = {name: fg['vnffg_id'], ports: []}
                 fg['network_forwarding_path'].each do |path|
                     path['connection_points'].each do |port|
-                        resource = instance['resource_reservation'].find { |resource| resource['ports'].find { |p| p['ns_network'] == port } }
-                        vnf_port = resource['ports'].find { |p| p['ns_network'] == port }
-                        if chains_pop.detect { |chain| chain[:pop_id] == resource['pop_id'].to_s }.nil?
-                            chains_pop << { pop_id: resource['pop_id'].to_s, ports: [] }
-                            chains_pop.find { |chain| chain[:pop_id] == resource['pop_id'].to_s }[:ports] << vnf_port['vnf_ports'][0]['physical_resource_id']
-                        else
-                            chains_pop.find { |chain| chain[:pop_id] == resource['pop_id'].to_s }[:ports] << vnf_port['vnf_ports'][0]['physical_resource_id']
-                        end
+                        resource = instance['resource_reservation'].find { |resource| resource['ports'].find { |p| p[:ns_network] == port } }
+                        next if resource.nil?
+                        vnf_port = resource['ports'].find { |p| p[:ns_network] == port }
+                        vnfg[:ports] << { pop_id: resource['pop_id'].to_s, port_id: vnf_port[:vnf_ports][0]['physical_resource_id'] }
+                        graphs_pops.push(resource['pop_id'].to_s) unless graphs_pops.include?(resource['pop_id'].to_s)
                     end
                 end
+                graphs << vnfg
             end
+            graphs.each do |vnfg|
+                graphs_pops.each do |pop_id|
+                    ports = vnfg[:ports].find_all{|p| p[:pop_id] == pop_id }
+                    chain = []
+                    ports.each do |p|
+                        chain << p[:port_id]
+                    end
+                    # get credentials for each PoP
+                    pop_auth = instance['authentication'].find { |pop| pop['pop_id'] == pop_id }
+                    pop_urls = pop_auth['urls']
+                    credentials, errors = authenticate(pop_urls['keystone'], pop_auth['tenant_name'], pop_auth['username'], pop_auth['password'])
+                    logger.error errors if errors
+                    token = credentials[:token]
 
-            chains_pop.each do |chain|
-                # get credentials for each PoP
-                pop_auth = @instance['authentication'].find { |pop| pop['pop_id'] == chain[:pop_id] }
-                popUrls = pop_auth['urls']
-                tenant_token = openstackAuthentication(popUrls['keystone'], pop_auth['tenant_id'], pop_auth['username'], pop_auth['password'])
+                    # generate netfloc hot template for a chain
+                    hot_generator_message = {
+                        ports: chain,
+                        odl_username: "admin",
+                        odl_password: "admin",
+                        netfloc_ip_port: "10.30.0.61:8181"
+                    }
+                    logger.info 'Generating netfloc HOT template...'
+                    hot_template, errors = generateNetflocTemplate(hot_generator_message)
+                    logger.error 'Error generating Netfloc template.' if errors
+                    return 400, errors.to_json if errors
+                    logger.debug hot_template
+                    return 400, "error.." if hot_template.empty?
+                    logger.info 'Send Netfloc HOT to Openstack'
+                    stack_name = 'Netfloc_' + instance['id'].to_s
+                    template = { stack_name: stack_name, template: hot_template }
+                    stack, errors = sendStack(pop_urls['orch'], pop_auth[:tenant_id], template, token)
+                    logger.error 'Error sending Netfloc template to Openstack.' if errors
+                    logger.error errors if errors
+                    return 400, errors.to_json if errors
 
-                # generate netfloc hot template for a chain
-                hot_generator_message = {
-                    ports: chain[:ports],
-                    odl_username: settings.odl_username,
-                    odl_password: settings.odl_password,
-                    netfloc_ip_port: settings.netfloc
-                }
-
-                logger.info 'Generating network HOT template...'
-                hot_template, errors = generateNetflocTemplate(hot_generator_message)
-                logger.error 'Error generating Netfloc template.' if errors
-                return 400, errors.to_json if errors
-
-                logger.info 'Send Netfloc HOT to Openstack'
-                stack_name = 'Netfloc_' + @instance['id'].to_s
-                template = { stack_name: stack_name, template: hot_template }
-                stack, errors = sendStack(popUrls['orch'], pop_auth['tenant_id'], template, tenant_token)
-                logger.error 'Error sending Netfloc template to Openstack.' if errors
-                logger.error errors if errors
-                return 400, errors.to_json if errors
-
-                logger.debug stack
+                    logger.debug stack
+                end
             end
         end
 
