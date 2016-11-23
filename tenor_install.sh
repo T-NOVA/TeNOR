@@ -380,10 +380,11 @@ registerMicroservice(){
 }
 
 insertSamples(){
+  token=$(curl -XPOST localhost:4000/auth/login -H "Content-Type: application/json" --data-binary '{"username":"admin","password":"adminpass"}' | ruby -r rubygems -r json -e "puts JSON[STDIN.read]['token'];")
   echo "Inserting VNF..."
-  vnf_id=$(curl -XPOST localhost:4000/vnfs -H "Content-Type: application/json" --data-binary @vnfd-validator/assets/samples/vnfd_example.json | ruby -r rubygems -r json -e "puts JSON[STDIN.read]['vnfd']['id'];")
+  vnf_id=$(curl -XPOST localhost:4000/vnfs -H "Content-Type: application/json" -H "X-Auth-Token: $token" --data-binary @vnfd-validator/assets/samples/vnfd_example.json | ruby -r rubygems -r json -e "puts JSON[STDIN.read]['vnfd']['id'];")
   echo "Inserting NS..."
-  ns_id=$(curl -XPOST localhost:4000/network-services -H "Content-Type: application/json" --data-binary @nsd-validator/assets/samples/nsd_example.json | ruby -r rubygems -r json -e "puts JSON[STDIN.read]['nsd']['id'];")
+  ns_id=$(curl -XPOST localhost:4000/network-services -H "Content-Type: application/json" -H "X-Auth-Token: $token" --data-binary @nsd-validator/assets/samples/nsd_example.json | ruby -r rubygems -r json -e "puts JSON[STDIN.read]['nsd']['id'];")
   echo "NSD id: " $ns_id
   echo "VNFD id: " $vnf_id
 
