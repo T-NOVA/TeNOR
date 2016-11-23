@@ -61,27 +61,6 @@ module DcHelper
   #
   # @param [Symbol] format the format type, `:text` or `:html`
   # @return [String] the object converted into the expected format.
-  def getPopInfo(pop_id)
-    AuthenticationHelper.loginGK()
-    begin
-      response = RestClient.get "#{settings.gatekeeper}/admin/dc/#{pop_id}", 'X-Auth-Token' => settings.gk_token, :content_type => :json
-    rescue RestClient::ResourceNotFound
-      halt 404, "PoP not found."
-    rescue => e
-      logger.error e
-      if (defined?(e.response)).nil?
-        error = {:info => "The PoP is not registered in Gatekeeper"}
-        halt 503, "The PoP is not registered in Gatekeeper"
-      end
-    end
-
-    return response
-  end
-
-  # Get list of PoPs
-  #
-  # @param [Symbol] format the format type, `:text` or `:html`
-  # @return [String] the object converted into the expected format.
   def getPopUrls(extraInfo)
     urls = extraInfo.split(" ")
 
@@ -103,22 +82,6 @@ module DcHelper
     end
 
     return popUrls
-  end
-
-  def registerPop(pop_info)
-    AuthenticationHelper.loginGK()
-    begin
-      response = RestClient.post "#{settings.gatekeeper}/admin/dc/", pop_info.to_json, 'X-Auth-Token' => settings.gk_token, :content_type => :json
-    rescue RestClient::ResourceNotFound
-      halt 404, "PoP not found."
-    rescue => e
-      logger.error e
-      if (defined?(e.response)).nil?
-        error = {:info => "The PoP is not registered in Gatekeeper"}
-        halt 503, "The PoP is not registered in Gatekeeper"
-      end
-    end
-    return response
   end
 
 end

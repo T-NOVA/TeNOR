@@ -43,19 +43,6 @@ class ServiceConfiguration < VNFManager
         return service.to_json
     end
 
-    # @method get_modules_services_name
-    # @overload get '/modules/services/name/:name'
-    # Retrieve the token of a microservice given a name
-    get '/services/name/:name' do |name|
-        begin
-            service = Service.find_by(name: name)
-        rescue Mongoid::Errors::DocumentNotFound => e
-            logger.error 'Service not found'
-            return 404
-        end
-        service['token']
-    end
-
     # @method post_modules_services
     # @overload get '/modules/services'
     # Register a microservice
