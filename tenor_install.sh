@@ -242,7 +242,7 @@ configureFiles(){
 
   configureIps $1
 
-  printf "Removing old config files...."
+  printf "Removing old config files....\n\n"
   rm **/config/config.yml
 
   for folder in $(find . -type d  \( -name "ns*" -o -name "vnf*" -o -name "hot-generator" \) ); do
@@ -280,7 +280,7 @@ configureFiles(){
     fi
     if [ "$folder" = "./ns-manager" ]; then
       echo "Generating admin user."
-      rake db:seed
+      bundle exec rake db:seed
     fi
 
     cd ../
