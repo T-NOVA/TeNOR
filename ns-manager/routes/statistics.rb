@@ -45,6 +45,8 @@ class Statistics < TnovaManager
     # Post performance values
     post '/performance_stats' do
         body, errors = parse_json(request.body.read)
+        return 415 unless request.content_type == 'application/json'
+        
         savePerformance(body)
     end
 end
