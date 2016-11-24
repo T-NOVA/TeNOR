@@ -99,8 +99,8 @@ RSpec.describe VNFManager do
 			let(:vnf) { build(:vnf) }
 			let(:response) { post '/vnfs', vnf.marshal_dump.to_json, rack_env={'CONTENT_TYPE' => 'application/json'} }
 
-			it 'responds with a 200' do
-				expect(response.status).to eq 200
+			it 'responds with a 201' do
+				expect(response.status).to eq 201
 			end
 
 			it 'response body should contain a Hash (VNF)' do

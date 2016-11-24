@@ -73,7 +73,7 @@ class VnfCatalogue < Sinatra::Application
             halt 400, e.message
         end
 
-        halt 200, new_vnf.to_json
+        halt 201, new_vnf.to_json
     end
 
     # @method get_vnfs

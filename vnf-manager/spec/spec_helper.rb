@@ -64,7 +64,7 @@ RSpec.configure do |config|
     stub_request(:get, "localhost:4569/vnfs/test").to_return(:status => 200, :body => "{}", :headers => {})
 
     stub_request(:post, "localhost:4569/vnfs").to_return(:status => 400, :body => "Error", :headers => {})
-    stub_request(:post, "localhost:4569/vnfs").with(:body => hash_including('_id', :name)).to_return(:status => 200, :body => "{}", :headers => {})
+    stub_request(:post, "localhost:4569/vnfs").with(:body => hash_including('_id', :name)).to_return(:status => 201, :body => "{}", :headers => {})
     stub_request(:post, "localhost:4569/vnfs").with(body: /^.*world$/, headers: {"Content-Type" => "application/json"}).with(body: hash_including({data: {a: '1', b: 'five'}})).to_return(body: "abc")
   end
 

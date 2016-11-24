@@ -102,7 +102,7 @@ class Catalogue < NsCatalogue
             logger.error e
         end
 
-        return 200, new_ns.to_json
+        return 201, new_ns.to_json
     end
 
     # @method put_nss
