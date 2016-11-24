@@ -54,9 +54,8 @@ module MonitoringHelper
             logger.debug 'VNF_Instance_id: ' + vnf_instance['vnfr_id']
             begin
                 t = ch.queue(vnf_instance['vnfr_id'], exclusive: false).subscribe do |_delivery_info, _metadata, payload|
-                    logger.debug 'Receving subcription data of ' + vnf_instance['vnfr_id'].to_s
                     measurements = JSON.parse(payload)
-                    logger.debug measurements.to_json
+                    logger.debug 'Receving subcription data of ' + vnf_instance['vnfr_id'].to_s
 
                     begin
                         @queue = VnfQueue.find_or_create_by(nsi_id: nsi_id, vnfi_id: vnf_instance['vnfr_id'], parameter_id: measurements['type'])
@@ -64,7 +63,6 @@ module MonitoringHelper
                     rescue => e
                         puts e
                     end
-                    logger.debug @queue
                     begin
                         @list_vnfs_parameters = VnfQueue.where(nsi_id: nsi_id, parameter_id: measurements['type'])
                         # ns_measurement = calculate_sla(@list_vnfs_parameters, vnf_instances, parameters, measurements)
@@ -84,6 +82,8 @@ module MonitoringHelper
                 end
                 logger.debug 'Adding to queue'
                 @@testThreads << { vnfi_id: vnf_instance['vnfr_id'], queue: t }
+            rescue => e
+                puts e
             rescue Interrupt => _
                 logger.error 'THREAD INTERRUPTION ...'
                 conn.close
@@ -96,10 +96,9 @@ module MonitoringHelper
         logger.debug @list_vnfs_parameters.to_json
         params = parameters.find_all { |p| p['name'] == measurements['type'] }
         if params.empty?
-            logger.debug 'Params outside the SLA (assurance parameters field)'
             calculation = measurements['value']
         else
-            logger.info 'Params inside the SLA (checking SLA)...'
+            logger.debug 'Params (' + measurements['type'].to_s + ') inside the SLA (checking SLA)...'
             values = []
             @list_vnfs_parameters.each do |p|
                 values << p['value']
