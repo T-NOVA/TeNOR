@@ -40,7 +40,6 @@ require 'rest-client'
 Dotenv.load
 
 RSpec.configure do |config|
-  config.wait_timeout = 3 # seconds
   @OPENSTACK_HOST = ENV['OPENSTACK_HOST']
   @OPENSTACK_USER = ENV['OPENSTACK_USER']
   @OPENSTACK_PASS = ENV['OPENSTACK_PASS']

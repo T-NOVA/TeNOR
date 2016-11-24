@@ -17,6 +17,7 @@ script:
 #  - gem uninstall json -v 2.0.2
   - cd ns-manager && BUNDLE_GEMFILE=$TRAVIS_BUILD_DIR/ns-manager/Gemfile && bundle update --quiet
   - rspec
+  - rake db:seed
   - rake start &
   - cd $TRAVIS_BUILD_DIR
   - cd ns-catalogue && BUNDLE_GEMFILE=$TRAVIS_BUILD_DIR/ns-catalogue/Gemfile && bundle update --quiet

@@ -280,7 +280,7 @@ configureFiles(){
     fi
     if [ "$folder" = "./ns-manager" ]; then
       echo "Generating admin user."
-      bundle exec rake db:seed
+      rake db:seed
     fi
 
     cd ../
