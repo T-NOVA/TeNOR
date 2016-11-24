@@ -316,7 +316,6 @@ class Provisioning < VnfProvisioning
     post '/:vnfr_id/stack/:status' do
         # Parse body message
         stack_info = parse_json(request.body.read)
-        logger.debug 'Stack info: ' + stack_info.to_json
         auth_token = stack_info['vim_info']['token']
 
         begin
@@ -335,7 +334,6 @@ class Provisioning < VnfProvisioning
             # get stack resources
             resources, errors = getStackResources(vnfr.stack_url, auth_token)
             logger.error errors if errors
-            logger.info resources
             resources.each do |resource|
                 # map ports to openstack_port_id
                 unless vnfr.port_instances.detect { |port| resource['resource_name'] == port['id'] }.nil?
@@ -485,9 +483,13 @@ class Provisioning < VnfProvisioning
             Thread.new do
                 resource_stats = []
                 events, errors = getStackEvents(vnfr.stack_url, auth_token)
-                resource_stats = calculate_event_time(resources, events)
-                vnfr.update_attributes!(resource_stats: resource_stats)
+                if !events.nil?
+                    resource_stats = calculate_event_time(resources, events)
+                    logger.info resource_stats
+                    vnfr.update_attributes!(resource_stats: resource_stats)
+                end
             end
+            logger.info "Instantiation of #{vnfr.id} correct."
         else
             # If the stack has failed to create
             if params[:status] == 'create_failed'
