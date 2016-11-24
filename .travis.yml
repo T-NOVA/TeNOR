@@ -61,6 +61,5 @@ script:
   - curl localhost:4000/vnfs
   - curl localhost:4000/ns-instances
   - cd $TRAVIS_BUILD_DIR
-  #- ruby end_to_end.rb
+  - bundle update --quiet
   - rspec
-#execute end-to-end test

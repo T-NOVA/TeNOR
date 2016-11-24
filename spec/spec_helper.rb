@@ -34,7 +34,6 @@
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 ENV['RACK_ENV'] = 'test'
-require "rspec/wait"
 require 'json'
 require 'dotenv'
 require 'rest-client'
@@ -55,8 +54,7 @@ RSpec.configure do |config|
     @OPENSTACK_PASS = ENV['OPENSTACK_PASS']
     @OPENSTACK_TENANT_NAME = ENV['OPENSTACK_TENANT_NAME']
     @OPENSTACK_DNS = ENV['OPENSTACK_DNS']
-    #@TENOR_URL  = "http://10.10.1.137:4000"
-    $TENOR_URL  = "http://10.10.1.137:4000"
+    $TENOR_URL = ENV['TENOR_URL']
   end
 
   config.before(:each) do
