@@ -62,21 +62,6 @@ RSpec.describe VNFManager do
         expect(response_not_found.status).to eq 404
 			end
 		end
-
-		context 'when the service is found' do
-			let(:response_found) { get '/services/name/' + obj.name }
-			it 'response body should not be empty' do
-				expect(response_found.body).to_not be_empty
-			end
-
-			it 'response body should contain a Hash (NS)' do
-				expect(response_found.body).to be_a String
-			end
-
-			it 'responds with a 200' do
-				expect(response_found.status).to eq 200
-			end
-		end
 	end
 
 	describe 'DELETE /configs' do
