@@ -1,7 +1,7 @@
 development:
   sessions:
     default:
-      database: ns_manager
+      database: ns_manager_dev
       hosts:
       - 127.0.0.1:27017
 
