@@ -153,6 +153,12 @@ angular.module('tNovaApp')
                 scope: $scope,
             });
         };
+
+        $scope.download_key = function(data){
+            // TODO
+            console.log("Not implemented yet");
+            //$window.open("http://www.google.com", "", "width=640, height=480");
+        }
     })
     .controller('vnfMonitoringController', function ($scope, $stateParams, $filter, mDataService, $interval, tenorService, $timeout) {
         var promise, promise1, promise2;
@@ -204,6 +210,7 @@ angular.module('tNovaApp')
         }
 
         $scope.showGraphWithHistoric = function (vdu_id, type) {
+            $scope.graph_vdu = vdu_id;
             $scope.graph_name = type;
             var historicInterval = 1000; //seconds
             var realTimeInterval = 61000; //seconds

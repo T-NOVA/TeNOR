@@ -12,7 +12,6 @@
                             <th st-sort="ip" data-title="'ip'" class="col-sm-1 col-md-1 col-lg-1">IP</th>
                             <th st-sort="port" data-title=" 'port' " class="col-sm-1 col-md-1 col-lg-1 ">Port</th>
                             <th st-sort="status " data-title=" 'status' " class="col-sm-1 col-md-1 col-lg-1 ">Status</th>
-                            <th data-title=" 'action' " class="col-sm-1 col-md-1 col-lg-1 ">Actions</th>
                         </tr>
                         <tr>
                             <th colspan="2 ">
@@ -25,11 +24,7 @@
                             <td>{{row.name}}</td>
                             <td>{{row.host}}</td>
                             <td>{{row.port}}</td>
-                            <!--td>{{row.service_key}}</td-->
                             <td ng-style="{ 'color': (row.status==='up' ? 'green': 'red')} ">{{row.status}}</td>
-                            <td>
-                                <button ng-click="deleteDialog(row.id) " class="btn btn-danger btn-xs ">Delete</button>
-                            </td>
                         </tr>
                     </tbody>
                     <tfoot>

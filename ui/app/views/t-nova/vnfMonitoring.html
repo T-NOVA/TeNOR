@@ -9,7 +9,7 @@
             <div class="x_title">Instance {{instanceId}}
                 <br/>
                 <div class="panel-options">
-                    <button ng-click="removeSP()" class="btn btn-primary btn-xs"><i class="glyphicon glyphicon-refresh"></i> Generate report</button>
+                    <button ng-click="removeSP()" class="btn btn-primary btn-xs" disabled><i class="glyphicon glyphicon-refresh"></i> Generate report</button>
                     <a href="" data-rel="collapse"><i class="glyphicon glyphicon-refresh"></i></a>
                     <a href="" data-rel="reload"><i class="glyphicon glyphicon-cog"></i></a>
                 </div>
@@ -50,7 +50,7 @@
 </div>
 <div class="row" ng-if="graph_name">
     <div class="col-md-12"><div class="x_panel">
-        <div class="x_title">{{graph_name}}
+        <div class="x_title">{{graph_name}} ({{graph_vdu}})
                 <div class="panel-options">
                     <a href="" data-rel="collapse"><i class="glyphicon glyphicon-refresh"></i></a>
                     <a href="" data-rel="reload"><i class="glyphicon glyphicon-cog"></i></a>
