@@ -25,7 +25,7 @@ module InstantiationHelper
     # @param [JSON] callback_url Callback url in case of error happens
     # @return [Hash, nil] authentication
     # @return [Hash, String] if the parsed message is an invalid JSON
-    def create_authentication(instance, _nsd_id, pop_info, _callback_url)
+    def create_authentication(instance, pop_info)
         @instance = instance
 
         logger.info 'Authentication not created for this PoP. Starting creation of credentials.'
@@ -34,16 +34,16 @@ module InstantiationHelper
         pop_auth['pop_id'] = pop_info['id'].to_s
         pop_auth['is_admin'] = pop_info['is_admin']
         extra_info = pop_info['extra_info']
-        popUrls = getPopUrls(extra_info)
-        pop_auth['urls'] = popUrls
+        pop_urls = getPopUrls(extra_info)
+        pop_auth['urls'] = pop_urls
 
         # create credentials for pop_id
-        if popUrls[:keystone].nil? || popUrls[:orch].nil? # || popUrls[:tenant].nil?
+        if pop_urls[:keystone].nil? || pop_urls[:orch].nil? # || pop_urls[:tenant].nil?
             return handleError(@instance, 'Internal error: Keystone and/or openstack urls missing.')
         end
 
         token = ''
-        keystone_url = popUrls[:keystone]
+        keystone_url = pop_urls[:keystone]
         if @instance['project'].nil?
             credentials, errors = authenticate(keystone_url, pop_info['tenant_name'], pop_info['user'], pop_info['password'])
             logger.error errors if errors
@@ -64,7 +64,7 @@ module InstantiationHelper
                 pop_auth['token'] = token
             else
                 # generate credentials
-                credentials, errors = generate_credentials(@instance, keystone_url, popUrls, tenant_id, user_id, token)
+                credentials, errors = generate_credentials(@instance, keystone_url, pop_urls, tenant_id, user_id, token)
                 return 400, errors if errors
                 pop_auth = pop_auth.merge(credentials)
             end
@@ -86,7 +86,7 @@ module InstantiationHelper
         pop_id = vnf['maps_to_PoP'].gsub('/pop/', '')
         vnf_id = vnf['vnf'].delete('/')
         pop_auth = @instance['authentication'].find { |pop| pop['pop_id'] == pop_id }
-        popUrls = pop_auth['urls']
+        pop_urls = pop_auth['urls']
 
         # needs to be migrated to the VNFGFD
         sla_info = slaInfo['constituent_vnf'].find { |cvnf| cvnf['vnf_reference'] == vnf_id }
@@ -106,10 +106,10 @@ module InstantiationHelper
             vim_id: pop_id,
             auth: {
                 url: {
-                    keystone: popUrls[:keystone],
-                    orch: popUrls[:orch], # to remove
-                    heat: popUrls[:orch],
-                    compute: popUrls[:compute]
+                    keystone: pop_urls[:keystone],
+                    orch: pop_urls[:orch], # to remove
+                    heat: pop_urls[:orch],
+                    compute: pop_urls[:compute]
                 },
                 tenant_id: pop_auth['tenant_id'],
                 token: pop_auth['token'],

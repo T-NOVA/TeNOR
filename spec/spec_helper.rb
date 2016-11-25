@@ -1,5 +1,5 @@
 #
-# TeNOR - VNF Manager
+# TeNOR - NS Catalogue
 #
 # Copyright 2014-2016 i2CAT Foundation, Portugal Telecom Inovação
 #
@@ -34,38 +34,32 @@
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 ENV['RACK_ENV'] = 'test'
-
-require './main'
-require 'webmock/rspec'
+require 'json'
+require 'dotenv'
+require 'rest-client'
+Dotenv.load
 
 RSpec.configure do |config|
-  config.include Rack::Test::Methods
-  WebMock.disable_net_connect!(allow_localhost: true)
-  config.include FactoryGirl::Syntax::Methods
-  FactoryGirl.definition_file_paths = %w{./spec/factories}
-  FactoryGirl.find_definitions
+  @OPENSTACK_HOST = ENV['OPENSTACK_HOST']
+  @OPENSTACK_USER = ENV['OPENSTACK_USER']
+  @OPENSTACK_PASS = ENV['OPENSTACK_PASS']
+  @OPENSTACK_TENANT_NAME = ENV['OPENSTACK_TENANT_NAME']
+  @OPENSTACK_DNS = ENV['OPENSTACK_DNS']
 
-  Mongoid.purge!
 
   config.before do
-    begin
-      DatabaseCleaner.start
-    ensure
-      DatabaseCleaner.clean
-    end
-    #Mongoid.raise_not_found_error = false
+    @OPENSTACK_HOST = ENV['OPENSTACK_HOST']
+    @OPENSTACK_USER = ENV['OPENSTACK_USER']
+    @OPENSTACK_PASS = ENV['OPENSTACK_PASS']
+    @OPENSTACK_TENANT_NAME = ENV['OPENSTACK_TENANT_NAME']
+    @OPENSTACK_DNS = ENV['OPENSTACK_DNS']
+    $TENOR_URL = ENV['TENOR_URL']
+    u = JSON.parse(RestClient.post "#{$TENOR_URL}/auth/login", {username: "admin", password:"adminpass"}.to_json, :content_type => :json)
+		$token = u['token']
   end
 
   config.before(:each) do
-    stub_request(:get, "http://localhost:4000/configs/services/publish/vnf_manager").
-        with(:headers => {'Accept'=>'*/*; q=0.5, application/xml', 'Accept-Encoding'=>'gzip, deflate', 'Content-Type'=>'application/json', 'User-Agent'=>'Ruby'}).
-        to_return(:status => 200, :body => "", :headers => {})
-    stub_request(:get, "localhost:4569/vnfs").to_return(:status => 200, :body => "[]", :headers => {})
-    stub_request(:get, "localhost:4569/vnfs/test").to_return(:status => 200, :body => "{}", :headers => {})
 
-    stub_request(:post, "localhost:4569/vnfs").to_return(:status => 400, :body => "Error", :headers => {})
-    stub_request(:post, "localhost:4569/vnfs").with(:body => hash_including('_id', :name)).to_return(:status => 201, :body => "{}", :headers => {})
-    stub_request(:post, "localhost:4569/vnfs").with(body: /^.*world$/, headers: {"Content-Type" => "application/json"}).with(body: hash_including({data: {a: '1', b: 'five'}})).to_return(body: "abc")
   end
 
   # rspec-expectations config goes here. You can use an alternate

@@ -29,8 +29,8 @@ RSpec.describe NsCatalogue do
 		context 'given a valid NS' do
 			let(:response) { post '/', {nsd: {id: "id1", name: 'teste2', version: "2", vendor: "aasdas"}}.to_json, rack_env={'CONTENT_TYPE' => 'application/json'} }
 
-			it 'responds with a 200' do
-				expect(response.status).to eq 200
+			it 'responds with a 201' do
+				expect(response.status).to eq 201
       end
 
 			it 'response body should contain a Hash (NS)' do

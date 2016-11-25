@@ -151,7 +151,7 @@ class Provisioner < NsProvisioning
                     return if errors
                     auth = { auth: { tenant_id: credentials[:tenant_id], user_id: credentials[:user_id], token: credentials[:token], url: { keystone: popUrls[:keystone] } }, callback_url: callback_url }
                     begin
-                        response = RestClient.post settings.vnf_manager + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/destroy', auth.to_json, content_type: :json
+                        response = RestClient.post settings.vnf_manager + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/destroy', auth.to_json, content_type: :json, 'X-Auth-Token' => settings.vnf_manager_token
                     rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH
                     # halt 500, 'VNF Manager unreachable'
                     rescue RestClient::ResourceNotFound
@@ -184,7 +184,7 @@ class Provisioner < NsProvisioning
                 logger.info 'Starting VNF ' + vnf['vnfr_id'].to_s
                 event = { event: 'start' }
                 begin
-                    response = RestClient.put settings.vnf_manager + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/config', event.to_json, content_type: :json
+                    response = RestClient.put settings.vnf_manager + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/config', event.to_json, content_type: :json, 'X-Auth-Token' => settings.vnf_manager_token
                 rescue Errno::ECONNREFUSED
                     logger.error 'VNF Manager unreachable.'
                     halt 500, 'VNF Manager unreachable'
@@ -201,7 +201,7 @@ class Provisioner < NsProvisioning
                 logger.debug vnf
                 event = { event: 'stop' }
                 begin
-                    response = RestClient.put settings.vnf_manager + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/config', event.to_json, content_type: :json
+                    response = RestClient.put settings.vnf_manager + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/config', event.to_json, content_type: :json, 'X-Auth-Token' => settings.vnf_manager_token
                 rescue Errno::ECONNREFUSED
                     logger.error 'VNF Manager unreachable.'
                     halt 500, 'VNF Manager unreachable'
@@ -341,7 +341,7 @@ class Provisioner < NsProvisioning
         logger.info 'Starting monitoring workflow...'
         Thread.new do
             sleep(5)
-            monitoringData(nsd, nsr_id, instance)
+            monitoringData(nsd, instance)
         end
 
         unless settings.netfloc.nil?

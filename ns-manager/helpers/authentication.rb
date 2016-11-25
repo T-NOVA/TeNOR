@@ -17,12 +17,12 @@
 #
 # @see TnovaManager
 module AuthenticationHelper
-    
+
     def self.check_token(token)
 		begin
             token = UserToken.find_by(token: token)
         rescue Mongoid::Errors::DocumentNotFound => e
-            logger.error 'User not found.'
+            puts 'User not found.'
             return false
         end
         return true

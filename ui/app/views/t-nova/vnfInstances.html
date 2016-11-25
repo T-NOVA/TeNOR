@@ -14,6 +14,7 @@
                         <tr>
                             <th st-sort="_id" class="col-sm-1 col-md-1 col-lg-1">Id</th>
                             <th st-sort="vnfd_reference" data-title="'name'" class="col-sm-2 col-md-2 col-lg-2">VNF id</th>
+                            <th st-sort="pop" data-title="'name'" class="col-sm-2 col-md-2 col-lg-2">PoP</th>
                             <th st-sort="created_at" data-title="'Add VI'" class="col-sm-2 col-md-2 col-lg-2">Creation date</th>
                             <th st-sort="vnf_status" data-title="'Remove VI'" class="col-sm-2 col-md-2 col-lg-2">Status</th>
                             <th data-title="'actions'" class="col-sm-3 col-md-3 col-lg-3">Actions</th>
@@ -34,6 +35,7 @@
                         <tr ng-repeat="row in displayedCollection">
                             <td><a href="" ng-click="showDescriptor(row)">{{row._id}}</a></td>
                             <td>{{row.vnfd_reference}}</td>
+                            <td>{{row.vim_id}}</td>
                             <td>{{row.created_at| date:'yyyy-MM-dd HH:mm:ss'}}</td>
                             <td>
                                 <span ng-if="row.vnf_status === '1'">RUNNING</span>
@@ -43,6 +45,7 @@
                                 <button ng-click="go('/vnfMonitoring/' + row._id)" class="btn btn-success btn-xs" ng-enabled="row.vnf_status === '1'">Monitoring</button>
                                 <button ng-click="stop(row._id)" class="btn btn-danger btn-xs" ng-disabled="row.vnf_status !== 1">Stop</button>
                                 <button ng-click="delete(row._id)" class="btn btn-danger btn-xs" ng-disabled="row.vnf_status !== 1">Delete</button>
+                                <button ng-click="download_key(row)" class="btn btn-danger btn-xs">Download key</button>
                             </td>
                         </tr>
                     </tbody>

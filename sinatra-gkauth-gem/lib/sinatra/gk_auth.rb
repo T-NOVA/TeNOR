@@ -6,12 +6,11 @@ require 'jwt'
 module Sinatra
     module Gk_Auth
         module Helpers
-            puts 'Loaded 1....'
             $time = 5
             $max_retries = 150 # in seconds
             def initialize
                 sleep(2)
-                puts 'Initializing gem GK...'
+                puts 'Initializing Sinatra Auth gem ...'
                 begin
                     service_info = { name: settings.servicename, host: settings.address, port: settings.port, depends_on: settings.dependencies, secret: settings.servicename, type: settings.type}
                 rescue
@@ -29,7 +28,6 @@ module Sinatra
             end
 
             def publish_service(service_info)
-                puts 'Publishing service...'
                 begin
                     response = RestClient.post settings.manager + '/modules/services', service_info.to_json, accept: :json, content_type: :json
                 rescue => e
@@ -103,7 +101,7 @@ module Sinatra
             app.helpers Gk_Auth::Helpers
 
             app.before do
-                return if settings.environment == 'development' || request.path_info != "/services"
+                return if settings.environment == 'development' || request.path_info == "/services"
                 authorized?
             end
 

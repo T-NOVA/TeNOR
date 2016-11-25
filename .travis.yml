@@ -17,6 +17,7 @@ script:
 #  - gem uninstall json -v 2.0.2
   - cd ns-manager && BUNDLE_GEMFILE=$TRAVIS_BUILD_DIR/ns-manager/Gemfile && bundle update --quiet
   - rspec
+  - rake db:seed
   - rake start &
   - cd $TRAVIS_BUILD_DIR
   - cd ns-catalogue && BUNDLE_GEMFILE=$TRAVIS_BUILD_DIR/ns-catalogue/Gemfile && bundle update --quiet
@@ -28,11 +29,11 @@ script:
   - rake start &
   - cd $TRAVIS_BUILD_DIR
   - cd ns-provisioning && BUNDLE_GEMFILE=$TRAVIS_BUILD_DIR/ns-provisioning/Gemfile && bundle update --quiet
-  #- rspec
+  - rspec
   - rake start &
   - cd $TRAVIS_BUILD_DIR
   - cd vnf-manager && BUNDLE_GEMFILE=$TRAVIS_BUILD_DIR/vnf-manager/Gemfile && bundle update --quiet
-  #- rspec
+  - rspec
   - rake start &
   - cd $TRAVIS_BUILD_DIR
   - cd vnf-catalogue && BUNDLE_GEMFILE=$TRAVIS_BUILD_DIR/vnf-catalogue/Gemfile && bundle update --quiet
@@ -44,7 +45,7 @@ script:
   - rake start &
   - cd $TRAVIS_BUILD_DIR
   - cd vnf-provisioning && BUNDLE_GEMFILE=$TRAVIS_BUILD_DIR/vnf-provisioning/Gemfile && bundle update --quiet
-  #- rspec
+  - rspec
   - rake start &
   - cd $TRAVIS_BUILD_DIR
   - cd hot-generator && BUNDLE_GEMFILE=$TRAVIS_BUILD_DIR/hot-generator/Gemfile && bundle update --quiet
@@ -60,6 +61,5 @@ script:
   - curl localhost:4000/network-services
   - curl localhost:4000/vnfs
   - curl localhost:4000/ns-instances
-  - cd $TRAVIS_BUILD_DIR
-  - ruby end_to_end.rb
-#execute end-to-end test
+  - cd $TRAVIS_BUILD_DIR && BUNDLE_GEMFILE=$TRAVIS_BUILD_DIR/Gemfile && bundle update --quiet
+  - rspec

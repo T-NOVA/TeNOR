@@ -127,7 +127,7 @@ module ProvisioningHelper
     end
 
     def vnf_complete_parsing(vnfr_id, stack_info, scale_resources)
-        logger.debug 'Stack info: ' + stack_info.to_json
+        logger.debug 'VNF Complete parsing'
 
         begin
             vnfr = Vnfr.find(vnfr_id)
@@ -293,7 +293,7 @@ module ProvisioningHelper
     end
 
     def nsmanager_callback(ns_manager_callback, message)
-        logger.debug 'NS Manager message: ' + message.to_json
+        logger.debug 'Sending callback to NS Manager'
         begin
             response = RestClient.post ns_manager_callback.to_s, message.to_json, 'X-Auth-Token' => @client_token, :content_type => :json, :accept => :json
         rescue Errno::ECONNREFUSED
