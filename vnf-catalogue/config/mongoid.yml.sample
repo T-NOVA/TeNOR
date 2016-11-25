@@ -2,7 +2,7 @@
 development:
   sessions:
     default:
-      database: vnf_catalogue
+      database: vnf_catalogue_dev
       hosts:
       - 127.0.0.1:27017
 

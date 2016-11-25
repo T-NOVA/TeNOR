@@ -1,7 +1,8 @@
+---
 development:
   sessions:
     default:
-      database: vnf_monitoring
+      database: vnf_monitoring_dev
       hosts:
       - 127.0.0.1:27017
 

@@ -2,7 +2,7 @@
 development:
   sessions:
     default:
-      database: ns_catalogue
+      database: ns_catalogue_dev
       hosts:
       - 127.0.0.1:27017
 
