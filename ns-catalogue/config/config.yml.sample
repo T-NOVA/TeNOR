@@ -13,4 +13,5 @@ logger_host: 127.0.0.1
 logger_port: 24224
 
 nsd_validator: localhost:4015
+nsd_validator_token: 
 dependencies: [nsd_validator]

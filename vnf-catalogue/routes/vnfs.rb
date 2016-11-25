@@ -44,7 +44,7 @@ class VnfCatalogue < Sinatra::Application
         logger.debug 'Trying to validate VNFD with id: ' + vnf['vnfd']['id'].to_s
         # Validate VNFD
         begin
-            RestClient.post settings.vnfd_validator + '/vnfds', vnf['vnfd'].to_json, 'X-Auth-Token' => @client_token, :content_type => :json
+            RestClient.post settings.vnfd_validator + '/vnfds', vnf['vnfd'].to_json, :'X-Auth-Token' => settings.vnfd_validator_token, :content_type => :json
         rescue Errno::ECONNREFUSED
             halt 500, 'VNFD Validator unreachable'
         rescue RestClient::ExceptionWithResponse => e
@@ -147,7 +147,7 @@ class VnfCatalogue < Sinatra::Application
 
         # Validate VNFD
         begin
-            RestClient.post settings.vnfd_validator + '/vnfds', new_vnf['vnfd'].to_json, 'X-Auth-Token' => @client_token, :content_type => :json
+            RestClient.post settings.vnfd_validator + '/vnfds', new_vnf['vnfd'].to_json, 'X-Auth-Token' => settings.vnfd_validator_token, :content_type => :json
         rescue Errno::ECONNREFUSED
             halt 500, 'VNFD Validator unreachable'
         rescue => e

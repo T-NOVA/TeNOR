@@ -73,7 +73,7 @@ class Catalogue < NsCatalogue
 
         # Validate NSD
         begin
-            RestClient.post settings.nsd_validator + '/nsds', ns.to_json, content_type: :json
+            RestClient.post settings.nsd_validator + '/nsds', ns.to_json, content_type: :json, 'X-Auth-Token' => settings.nsd_validator_token
         rescue Errno::ECONNREFUSED
             logger.error 'NSD Validator unreachable'
             halt 500, 'NSD Validator unreachable'
@@ -130,7 +130,7 @@ class Catalogue < NsCatalogue
 
         # Validate NSD
         begin
-            RestClient.post settings.nsd_validator + '/nsds', nsd.to_json, content_type: :json
+            RestClient.post settings.nsd_validator + '/nsds', nsd.to_json, content_type: :json, 'X-Auth-Token' => settings.nsd_validator_token
         rescue => e
             logger.error e.response
             return e.response.code, e.response.body
