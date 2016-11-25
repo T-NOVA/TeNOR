@@ -24,8 +24,8 @@ module MonitoringHelper
     # @param [JSON] message the ns instance
     # @return [Hash, nil] if the parsed message is a valid JSON
     # @return [Hash, String] if the parsed message is an invalid JSON
-    def monitoringData(nsd, nsi_id, instance)
-        monitoring = { nsi_id: nsi_id }
+    def monitoringData(nsd, instance)
+        monitoring = { nsi_id: instance['id'].to_s }
 
         vnfs =  nsd['vnfds']
         monitor = nsd['monitoring_parameters']

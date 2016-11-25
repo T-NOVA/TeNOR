@@ -188,7 +188,7 @@ module NsProvisioner
                 # overcommitting: 'true'
             }
             logger.info ms
-            mapping, errors = callMapping(mapping_info, ms, nsd)
+            mapping, errors = callMapping(mapping_info, ms)
             if mapping['vnf_mapping']
                 mapping, errors = replace_pop_name_by_pop_id(mapping, pop_list)
                 return handleError(@instance, errors) if errors
@@ -215,7 +215,7 @@ module NsProvisioner
             logger.info 'Check if authentication is created for this PoP'
             authentication = @instance['authentication'].find { |auth| auth['pop_id'] == pop_id }
             next unless authentication.nil?
-            pop_auth, errors = create_authentication(@instance, nsd['id'], pop_info, callback_url)
+            pop_auth, errors = create_authentication(@instance, pop_info)
             return handleError(@instance, errors) if errors
             # @instance['authentication'] << pop_auth
             @instance.push(authentication: pop_auth)
