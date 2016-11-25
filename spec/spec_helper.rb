@@ -54,6 +54,8 @@ RSpec.configure do |config|
     @OPENSTACK_TENANT_NAME = ENV['OPENSTACK_TENANT_NAME']
     @OPENSTACK_DNS = ENV['OPENSTACK_DNS']
     $TENOR_URL = ENV['TENOR_URL']
+    u = JSON.parse(RestClient.post "#{$TENOR_URL}/auth/login", {username: "admin", password:"adminpass"}.to_json, :content_type => :json)
+		$token = u['token']
   end
 
   config.before(:each) do
