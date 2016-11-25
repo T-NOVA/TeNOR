@@ -101,9 +101,9 @@ module NsProvisioner
         @instance['authentication'].each do |pop_info|
             logger.error 'Delete users of PoP: ' + pop_info['pop_id'].to_s
 
-            pop_auth = pops_auth.find {|p| p['id'] == pop_info['pop_id'].to_s }
+            pop_auth = pops_auth.find { |p| p['id'] == pop_info['pop_id'].to_s }
             next if pop_auth.nil?
-            #return 400, "PoP not defined and the users cannot be removed." if pop_auth.nil?
+            # return 400, "PoP not defined and the users cannot be removed." if pop_auth.nil?
             popUrls = getPopUrls(pop_auth['extra_info'])
 
             auth_info = @instance['authentication'].find { |auth| auth['pop_id'] == pop_info['pop_id'] }
@@ -133,7 +133,7 @@ module NsProvisioner
             end
             logger.info 'REMOVED: User ' + auth_info['user_id'].to_s + " and tenant '" + auth_info['tenant_id'].to_s
         end
-        logger.debug "Tenants and users removed correctly."
+        logger.debug 'Tenants and users removed correctly.'
 
         message = {
             code: 200,
@@ -173,7 +173,7 @@ module NsProvisioner
             logger.info 'Deploy to PoP id: ' + pop_id.to_s
             mapping = getMappingResponse(nsd, pop_id)
         elsif !mapping_info.empty?
-            logger.info "Calling Mapping algorithm "
+            logger.info 'Calling Mapping algorithm '
             logger.info mapping_info
             if infr_repo_url.nil?
                 return handleError(@instance, 'Internal error: Infrastructure Repository not reachable.')
@@ -183,9 +183,9 @@ module NsProvisioner
                 NS_id: nsd['id'],
                 NS_sla: sla_id,
                 tenor_api: settings.manager,
-                infr_repo_api: infr_repo_url#,
-                #development: true,
-                #overcommitting: 'true'
+                infr_repo_api: infr_repo_url # ,
+                # development: true,
+                # overcommitting: 'true'
             }
             logger.info ms
             mapping, errors = callMapping(mapping_info, ms, nsd)
@@ -202,7 +202,7 @@ module NsProvisioner
         @instance.push(lifecycle_event_history: 'MAPPED FOUND')
 
         @instance['vnfrs'] = []
-        #@instance['authentication'] = []
+        # @instance['authentication'] = []
 
         @instance.update_attribute('status', 'CREATING AUTHENTICATIONS')
         # if mapping of all VNFs are in the same PoP. Create Authentication and network 1 time
@@ -217,7 +217,7 @@ module NsProvisioner
             next unless authentication.nil?
             pop_auth, errors = create_authentication(@instance, nsd['id'], pop_info, callback_url)
             return handleError(@instance, errors) if errors
-            #@instance['authentication'] << pop_auth
+            # @instance['authentication'] << pop_auth
             @instance.push(authentication: pop_auth)
         end
 
@@ -227,18 +227,21 @@ module NsProvisioner
 
         @instance.update_attribute('status', 'CREATING NETWORKS')
 
-        # generate networks in each PoP?
-        if @instance['authentication'].size > 1
-            logger.info 'More than 1 PoP is defined. WICM is required.'
-
-            # Request WICM to create a service
+        # configure wicm if it's defined
+        unless settings.wicm.nil?
+            if !customer_id.nil? && !nap_id.nil?
+                pops = []
+                @instance['authentication'].each do |pop|
+                    pops << pop['pop_id']
+                end
+            end
             wicm_message = {
                 ns_instance_id: @instance['id'].to_s,
                 client_mkt_id: customer_id,
                 nap_mkt_id: nap_id,
-                nfvi_mkt_id: '1'
+                ce_pe: pops,
+                pe_ce: [pops[0]]
             }
-
             begin
                 response = RestClient.post settings.wicm + '/vnf-connectivity', wicm_message.to_json, content_type: :json, accept: :json
             rescue Errno::ECONNREFUSED
@@ -254,16 +257,27 @@ module NsProvisioner
             end
             provider_info, error = parse_json(response)
 
-            # Request HOT Generator to build the WICM - SFC integration
-            provider_info['physical_network'] = 'sfcvlan'
-            hot_template, errors = generateWicmHotTemplate(provider_info)
-
             # for each PoP, send the template
             resource_reservation = []
             @instance['authentication'].each do |auth|
                 logger.info 'WICM in POP  ' + auth['pop_id']
                 pop_auth = @instance['authentication'].find { |pop| pop['pop_id'] == auth['pop_id'] }
                 pop_urls = pop_auth['urls']
+
+                ce_transport = provider_info['allocated']['ce_pe'].find { |p| p['nfvi_id'] == auth['pop_id'] }
+                pe_transport = provider_info['allocated']['pe_ce'].find { |p| p['nfvi_id'] == auth['pop_id'] }
+                wicm_service_request = {
+                    physical_network: "sfcvlan",
+                    allocated: {
+                        nfvi_id: "nfvi1",
+                        ns_instance_id: "service1",
+                        ce_transport: ce_transport,
+                        pe_transport: pe_transport
+                    }
+                }
+
+                # Request HOT Generator to build the WICM - SFC integration
+                hot_template, errors = generateWicmHotTemplate(provider_info)
 
                 logger.info 'Send WICM template to HEAT Orchestration'
                 stack_name = 'WICM_SFC_' + @instance['id'].to_s
@@ -276,31 +290,25 @@ module NsProvisioner
                 return handleError(@instance, errors) if errors
 
                 resource_reservation = @instance['resource_reservation']
-                resource_reservation << { wicm_stack: stack, pop_id: pop_auth['pop_id']  }
+                resource_reservation << { wicm_stack: stack, pop_id: pop_auth['pop_id'] }
                 @instance.update_attribute('resource_reservation', resource_reservation)
             end
         end
 
-        if @instance['authentication'].size == 1
-            logger.debug 'Only 1 PoP is defined'
-            # generate networks for this PoP
+        @instance['authentication'].each do |pop_auth|
+            logger.debug 'Generate networks for eah pop'
 
-            if @instance['authentication'].nil?
-                return handleError(@instance, 'Authentication not valid.')
-            end
-
-            pop_auth = @instance['authentication'][0]
             tenant_token = pop_auth['token']
-            popUrls = pop_auth['urls']
+            pop_urls = pop_auth['urls']
 
-            publicNetworkId, errors = publicNetworkId(popUrls[:neutron], tenant_token)
+            publicNetworkId, errors = publicNetworkId(pop_urls[:neutron], tenant_token)
             return handleError(@instance, errors) if errors
 
             hot_generator_message = {
                 nsr_id: @instance['id'],
                 nsd: nsd,
                 public_net_id: publicNetworkId,
-                dns_server: popUrls[:dns]
+                dns_server: pop_urls[:dns]
             }
             logger.info 'Generating network HOT template...'
             hot, errors = generateNetworkHotTemplate(sla_id, hot_generator_message)
@@ -309,21 +317,20 @@ module NsProvisioner
             logger.info 'Sending network template to HEAT Orchestration'
             stack_name = 'network_' + @instance['id'].to_s
             template = { stack_name: stack_name, template: hot }
-            stack, errors = sendStack(popUrls[:orch], pop_auth['tenant_id'], template, tenant_token)
+            stack, errors = sendStack(pop_urls[:orch], pop_auth['tenant_id'], template, tenant_token)
             return handleError(@instance, errors) if errors
 
             stack_id = stack['stack']['id']
 
             # save stack_url in reserved resurces
             logger.info 'Saving reserved stack....'
-
             @resource_reservation = @instance['resource_reservation']
             resource_reservation = []
             resource_reservation << {
                 ports: [],
                 network_stack: { id: stack_id, stack_url: stack['stack']['links'][0]['href'] },
                 public_network_id: publicNetworkId,
-                dns_server: popUrls[:dns],
+                dns_server: pop_urls[:dns],
                 pop_id: pop_auth['pop_id'],
                 routers: [],
                 networks: []
@@ -331,12 +338,12 @@ module NsProvisioner
             @instance.push(resource_reservation: resource_reservation)
 
             logger.info 'Checking network stack creation...'
-            stack_info, errors = create_stack_wait(popUrls[:orch], pop_auth['tenant_id'], stack_name, tenant_token, 'NS Network')
+            stack_info, errors = create_stack_wait(pop_urls[:orch], pop_auth['tenant_id'], stack_name, tenant_token, 'NS Network')
             return handleError(@instance, errors) if errors
 
             logger.info 'Network stack CREATE_COMPLETE. Reading network information from stack...'
             sleep(3)
-            network_resources, errors = getStackResources(popUrls[:orch], pop_auth['tenant_id'], stack_name, tenant_token)
+            network_resources, errors = getStackResources(pop_urls[:orch], pop_auth['tenant_id'], stack_name, tenant_token)
             return handleError(@instance, errors) if errors
 
             stack_networks = network_resources['resources'].find_all { |res| res['resource_type'] == 'OS::Neutron::Net' }
@@ -344,14 +351,14 @@ module NsProvisioner
 
             networks = []
             stack_networks.each do |network|
-                net, errors = getStackResource(popUrls[:orch], pop_auth['tenant_id'], stack_name, stack_id, network['resource_name'], tenant_token)
-                #networks.push(id: net['resource']['attributes']['id'], alias: net['resource']['attributes']['name'])
+                net, errors = getStackResource(pop_urls[:orch], pop_auth['tenant_id'], stack_name, stack_id, network['resource_name'], tenant_token)
+                # networks.push(id: net['resource']['attributes']['id'], alias: net['resource']['attributes']['name'])
                 networks.push(id: net['resource']['physical_resource_id'], alias: net['resource']['physical_resource_id'])
             end
             routers = []
             stack_routers.each do |router|
-                router, errors = getStackResource(popUrls[:orch], pop_auth['tenant_id'], stack_name, stack_id, router['resource_name'], tenant_token)
-                #routers.push(id: router['resource']['attributes']['id'], alias: router['resource']['attributes']['name'])
+                router, errors = getStackResource(pop_urls[:orch], pop_auth['tenant_id'], stack_name, stack_id, router['resource_name'], tenant_token)
+                # routers.push(id: router['resource']['attributes']['id'], alias: router['resource']['attributes']['name'])
                 routers.push(id: router['resource']['physical_resource_id'], alias: router['resource']['physical_resource_id'])
             end
             @instance.push(lifecycle_event_history: 'NETWORK CREATED')
@@ -368,7 +375,7 @@ module NsProvisioner
             @instance.push(resource_reservation: resource_reservation)
         end
 
-        #instantiate each VNF
+        # instantiate each VNF
         @instance.update_attribute('status', 'INSTANTIATING VNFs')
         vnfrs = []
         mapping['vnf_mapping'].each do |vnf|
