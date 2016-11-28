@@ -55,4 +55,4 @@ EXPOSE $MONGODB_PORT
 #update rake start to bundle exec rake start
 RUN sed -i 's/rake start/bundle exec rake start/g' /root/TeNOR/invoker.ini
 
-ENTRYPOINT /etc/init.d/mongod start && invoker start invoker.ini && /bin/bash
+ENTRYPOINT /etc/init.d/mongod start && cd /root/TeNOR/ns-manager/ && bundle exec rake db:seed && cd /root/TeNOR/ && invoker start invoker.ini && /bin/bash
