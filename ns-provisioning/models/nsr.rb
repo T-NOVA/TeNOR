@@ -48,10 +48,13 @@ class Nsr
   field :audit_log, type: Array
 
   #TeNOR fields
+  field :name, type: String
   field :marketplace_callback, type: String
   field :mapping_time, type: Time
   field :instantiation_start_time, type: Time
   field :instantiation_end_time, type: Time
+  field :instantiation_netfloc_end_time, type: Time
+  field :instantiation_netfloc_start_time, type: Time
   field :authentication, type: Array
 
 end

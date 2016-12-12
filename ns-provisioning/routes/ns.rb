@@ -62,6 +62,7 @@ class Provisioner < NsProvisioning
 
         instance = {
             nsd_id: nsd['id'],
+            name: nsd['name'],
             descriptor_reference: nsd['id'],
             auto_scale_policy: nsd['auto_scale_policy'],
             connection_points: nsd['connection_points'],
@@ -172,6 +173,15 @@ class Provisioner < NsProvisioning
                 logger.info 'VNFs removed correctly.'
                 error = 'Removing instance'
                 recoverState(@nsInstance, body['pop_info'], error)
+
+                if @nsInstance['marketplace_callback'].include? "/service-selection"
+                    logger.info "Sending stop to Accounting"
+    				marketplace = @nsInstance['marketplace_callback'].split("/service-selection")[0]
+    				begin
+    					RestClient.post "#{marketplace}:8000/servicestatus/#{@nsInstance['id']}/stopped/", ""
+    				rescue => e
+    				end
+                end
             end
             errback = proc do
                 logger.error 'Error with the removing process...'
@@ -298,20 +308,82 @@ class Provisioner < NsProvisioning
             end
         end
 
+        unless settings.netfloc.nil?
+            instance.update_attribute('instantiation_netfloc_start_time', DateTime.now.iso8601(3))
+            logger.info 'Create Netfloc HOT for each PoP...'
+            logger.info instance['vnffgd']['vnffgs']
+            graphs = []
+            graphs_pops = []
+            instance['vnffgd']['vnffgs'].each do |fg|
+                vnfg = {name: fg['vnffg_id'], ports: []}
+                fg['network_forwarding_path'].each do |path|
+                    path['connection_points'].each do |port|
+                        resource = instance['resource_reservation'].find { |resource| resource['ports'].find { |p| p[:ns_network] == port } }
+                        next if resource.nil?
+                        vnf_port = resource['ports'].find { |p| p[:ns_network] == port }
+                        vnfg[:ports] << { pop_id: resource['pop_id'].to_s, port_id: vnf_port[:vnf_ports][0]['physical_resource_id'] }
+                        graphs_pops.push(resource['pop_id'].to_s) unless graphs_pops.include?(resource['pop_id'].to_s)
+                    end
+                end
+                graphs << vnfg
+            end
+            logger.info "Graphs:"
+            logger.info graphs
+            chains = []
+            graphs_pops.each do |pop_id|
+                graphs.each_with_index do |vnfg|
+                    ports = vnfg[:ports].find_all{|p| p[:pop_id] == pop_id }
+                    chain = []
+                    ports.each do |p|
+                        chain << p[:port_id]
+                    end
+                    chains << chain
+                end
+                # get credentials for each PoP
+                pop_auth = instance['authentication'].find { |pop| pop['pop_id'] == pop_id }
+                pop_urls = pop_auth['urls']
+                credentials, errors = authenticate(pop_urls['keystone'], pop_auth['tenant_name'], pop_auth['username'], pop_auth['password'])
+                logger.error errors if errors
+                token = credentials[:token]
+
+                # generate netfloc hot template for a chain
+                hot_generator_message = {
+                    chains: chains,
+                    odl_username: "admin",
+                    odl_password: "admin",
+                    netfloc_ip_port: "10.30.0.61:8181"
+                }
+                logger.info 'Generating netfloc HOT template...'
+                hot_template, errors = generateNetflocTemplate(hot_generator_message)
+                logger.error 'Error generating Netfloc template.' if errors
+                return 400, errors.to_json if errors
+                logger.debug hot_template
+                return 400, "error.." if hot_template.empty?
+                logger.info 'Send Netfloc HOT to Openstack'
+                stack_name = "Netfloc_#{instance['id'].to_s}"
+                template = { stack_name: stack_name, template: hot_template }
+                stack, errors = sendStack(pop_urls['orch'], pop_auth[:tenant_id], template, token)
+                logger.error 'Error sending Netfloc template to Openstack.' if errors
+                logger.error errors if errors
+                return 400, errors.to_json if errors
+
+                stack_info, errors = create_stack_wait(pop_urls['orch'], pop_auth[:tenant_id], stack_name, token, 'NS Netfloc')
+                return handleError(instance, errors) if errors
+
+                resources = instance['resource_reservation'].find { |res| res['pop_id'] == pop_id }
+                instance.pull(resource_reservation: resources)
+                resources['netfloc_stack'] = { id: stack['stack']['id'], stack_url: stack['stack']['links'][0]['href'] }
+                instance.push(resource_reservation: resources)
+
+                logger.debug stack
+            end
+            instance.update_attribute('instantiation_netfloc_end_time', DateTime.now.iso8601(3))
+        end
+
         logger.info 'Service is ready. All VNFs are instantiated'
+        instance.update_attribute('instantiation_end_time', DateTime.now.iso8601(3))
         instance.update_attribute('status', 'INSTANTIATED')
         instance.push(lifecycle_event_history: 'INSTANTIATED')
-        instance.update_attribute('instantiation_end_time', DateTime.now.iso8601(3))
-        generateMarketplaceResponse(instance['notification'], instance)
-
-        logger.info 'Sending statistic information to NS Manager'
-        Thread.new do
-            begin
-                RestClient.post settings.manager + '/statistics/performance_stats', instance.to_json, content_type: :json
-            rescue => e
-                logger.error e
-            end
-        end
 
         logger.info 'Sending start command'
         Thread.new do
@@ -323,6 +395,16 @@ class Provisioner < NsProvisioning
             rescue => e
                 logger.error e.response
                 logger.error 'Error with the start command'
+            end
+        end
+
+        logger.info 'Sending statistic information to NS Manager'
+        Thread.new do
+            generateMarketplaceResponse(instance['notification'], instance)
+            begin
+                RestClient.post settings.manager + '/statistics/performance_stats', instance.to_json, content_type: :json
+            rescue => e
+                logger.error e
             end
         end
 
@@ -342,64 +424,6 @@ class Provisioner < NsProvisioning
         Thread.new do
             sleep(5)
             monitoringData(nsd, instance)
-        end
-
-        unless settings.netfloc.nil?
-            logger.info 'Create Netfloc HOT for each PoP...........................'
-            logger.info instance['vnffgd']['vnffgs']
-            graphs = []
-            graphs_pops = []
-            instance['vnffgd']['vnffgs'].each do |fg|
-                vnfg = {name: fg['vnffg_id'], ports: []}
-                fg['network_forwarding_path'].each do |path|
-                    path['connection_points'].each do |port|
-                        resource = instance['resource_reservation'].find { |resource| resource['ports'].find { |p| p[:ns_network] == port } }
-                        next if resource.nil?
-                        vnf_port = resource['ports'].find { |p| p[:ns_network] == port }
-                        vnfg[:ports] << { pop_id: resource['pop_id'].to_s, port_id: vnf_port[:vnf_ports][0]['physical_resource_id'] }
-                        graphs_pops.push(resource['pop_id'].to_s) unless graphs_pops.include?(resource['pop_id'].to_s)
-                    end
-                end
-                graphs << vnfg
-            end
-            graphs.each do |vnfg|
-                graphs_pops.each do |pop_id|
-                    ports = vnfg[:ports].find_all{|p| p[:pop_id] == pop_id }
-                    chain = []
-                    ports.each do |p|
-                        chain << p[:port_id]
-                    end
-                    # get credentials for each PoP
-                    pop_auth = instance['authentication'].find { |pop| pop['pop_id'] == pop_id }
-                    pop_urls = pop_auth['urls']
-                    credentials, errors = authenticate(pop_urls['keystone'], pop_auth['tenant_name'], pop_auth['username'], pop_auth['password'])
-                    logger.error errors if errors
-                    token = credentials[:token]
-
-                    # generate netfloc hot template for a chain
-                    hot_generator_message = {
-                        ports: chain,
-                        odl_username: "admin",
-                        odl_password: "admin",
-                        netfloc_ip_port: "10.30.0.61:8181"
-                    }
-                    logger.info 'Generating netfloc HOT template...'
-                    hot_template, errors = generateNetflocTemplate(hot_generator_message)
-                    logger.error 'Error generating Netfloc template.' if errors
-                    return 400, errors.to_json if errors
-                    logger.debug hot_template
-                    return 400, "error.." if hot_template.empty?
-                    logger.info 'Send Netfloc HOT to Openstack'
-                    stack_name = 'Netfloc_' + instance['id'].to_s
-                    template = { stack_name: stack_name, template: hot_template }
-                    stack, errors = sendStack(pop_urls['orch'], pop_auth[:tenant_id], template, token)
-                    logger.error 'Error sending Netfloc template to Openstack.' if errors
-                    logger.error errors if errors
-                    return 400, errors.to_json if errors
-
-                    logger.debug stack
-                end
-            end
         end
 
         return 200

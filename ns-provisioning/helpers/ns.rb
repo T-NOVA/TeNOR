@@ -88,6 +88,15 @@ module NsProvisioner
 
             tenant_token = credentials[:token]
 
+            if !resource['netfloc_stack'].nil?
+                stack_url = resource['netfloc_stack']['stack_url']
+                logger.debug 'Removing netfloc_stack stack...'
+                response, errors = delete_stack_with_wait(stack_url, tenant_token)
+                logger.error errors if errors
+                return 400, errors if errors
+                logger.debug 'Reserved netfloc stack removed correctly'
+            end
+
             stack_url = resource['network_stack']['stack_url']
             logger.debug 'Removing reserved stack...'
             response, errors = delete_stack_with_wait(stack_url, tenant_token)
@@ -106,6 +115,8 @@ module NsProvisioner
             popUrls = getPopUrls(pop_auth['extra_info'])
 
             auth_info = @instance['authentication'].find { |auth| auth['pop_id'] == pop_info['pop_id'] }
+            logger.error "PoP in auth: "
+            logger.info auth_info
             credentials, errors = authenticate(popUrls[:keystone], auth_info['tenant_name'], auth_info['username'], auth_info['password'])
             logger.error errors if errors
             @instance.update_attribute('status', 'ERROR_CREATING') if errors
@@ -270,8 +281,8 @@ module NsProvisioner
                     allocated: {
                         nfvi_id: 'nfvi1',
                         ns_instance_id: 'service1',
-                        ce_transport: ce_transport,
-                        pe_transport: pe_transport
+                        ce_transport: ce_transport['transport'],
+                        pe_transport: pe_transport['transport']
                     }
                 }
 
@@ -300,13 +311,14 @@ module NsProvisioner
             tenant_token = pop_auth['token']
             pop_urls = pop_auth['urls']
 
-            publicNetworkId, errors = publicNetworkId(pop_urls[:neutron], tenant_token)
+
+            public_network_id, errors = publicNetworkId(pop_urls[:neutron], tenant_token)
             return handleError(@instance, errors) if errors
 
             hot_generator_message = {
                 nsr_id: @instance['id'],
                 nsd: nsd,
-                public_net_id: publicNetworkId,
+                public_net_id: public_network_id,
                 dns_server: pop_urls[:dns]
             }
             logger.debug 'Generating network HOT template...'
@@ -328,11 +340,12 @@ module NsProvisioner
             resource_reservation << {
                 ports: [],
                 network_stack: { id: stack_id, stack_url: stack['stack']['links'][0]['href'] },
-                public_network_id: publicNetworkId,
+                public_network_id: public_network_id,
                 dns_server: pop_urls[:dns],
                 pop_id: pop_auth['pop_id'],
                 routers: [],
-                networks: []
+                networks: [],
+                netfloc: {}
             }
             @instance.push(resource_reservation: resource_reservation)
 
