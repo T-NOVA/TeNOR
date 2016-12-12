@@ -137,6 +137,8 @@ class Monitoring < VNFManager
     monitoring, errors = ServiceConfigurationHelper.get_module('vnf_monitoring')
     halt 500, errors if errors
 
+    path = request.fullpath
+
     # if vdui id is null, search in the vnfr the vdus ids
     if params['vduid'].nil?
       provisioner, errors = ServiceConfigurationHelper.get_module('vnf_provisioner')
@@ -150,15 +152,17 @@ class Monitoring < VNFManager
         logger.debug "This VNF instance no exists. Getting list of subscriptions in order to get the Subscription ID."
       end
       halt 404 if response.nil
+
+      vms = ""
       response['vms'].each do |vm|
         vms = "&vdus[]=" + vm[:physical_resource_id].to_s
-        request.fullpath = request.fullpath + vms
+        path = path + vms
       end
     end
 
     # Forward the request to the VNF Monitoring
     begin
-      response = RestClient.get monitoring.host + request.fullpath, 'X-Auth-Token' => monitoring.token, :content_type => :json, :accept => :json
+      response = RestClient.get monitoring.host + path, 'X-Auth-Token' => monitoring.token, :content_type => :json, :accept => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'VNF Monitoring unreachable'
     rescue => e
