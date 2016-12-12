@@ -481,6 +481,7 @@ class Provisioning < VnfProvisioning
             nsmanager_callback(stack_info['ns_manager_callback'], message)
 
             Thread.new do
+                logger.info "Saving resource creation time."
                 resource_stats = []
                 events, errors = getStackEvents(vnfr.stack_url, auth_token)
                 if !events.nil?
@@ -504,7 +505,6 @@ class Provisioning < VnfProvisioning
                     logger.error e.response
                     halt e.response.code, e.response.body
                 end
-                puts response
                 logger.error 'Response from the VIM about the error: ' + response.to_s
 
                 # Request VIM to delete the stack

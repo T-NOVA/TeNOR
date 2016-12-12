@@ -300,9 +300,9 @@ module ProvisioningHelper
             logger.error 'NS Manager callback down'
             halt 500, 'NS Manager callback down'
         rescue => e
-            puts e
+            logger.error e
             logger.error e.response
-            halt e.response.code, e.response.body
+            #halt e.response.code, e.response.body
         end
     end
 
