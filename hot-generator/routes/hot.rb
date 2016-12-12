@@ -165,8 +165,8 @@ class HotGenerator < Sinatra::Application
         provision_info = JSON.parse(request.body.read)
         # return 400, errors.to_json if errors
 
-        ports = provision_info['ports']
-        halt 400, 'Ports not found' if ports.nil?
+        chains = provision_info['chains']
+        halt 400, 'Chains not found' if chains.nil?
 
         odl_username = provision_info['odl_username']
         halt 400, 'ODL username not found' if odl_username.nil?
@@ -178,7 +178,7 @@ class HotGenerator < Sinatra::Application
         halt 400, 'Netfloc IP not found' if netfloc_ip_port.nil?
 
         # Build a HOT template
-        hot = CommonMethods.generate_netfloc_hot_template(ports, odl_username, odl_password, netfloc_ip_port)
+        hot = CommonMethods.generate_netfloc_hot_template(chains, odl_username, odl_password, netfloc_ip_port)
 
         halt 200, hot.to_json
     end

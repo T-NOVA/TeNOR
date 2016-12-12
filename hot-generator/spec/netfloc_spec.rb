@@ -36,7 +36,7 @@ RSpec.describe HotGenerator do
     end
 
     context 'given a valid NS' do
-      netfloc_request = {ports: ["08fb386a-063f-4951-9e7b-3273e990542a", "08fb386a-063f-4951-9e7b-3273e990542b"], odl_username: "odl", odl_password: "pass", netfloc_ip_port: "10.10.10.10"}
+      netfloc_request = {chains:[["08fb386a-063f-4951-9e7b-3273e990542a", "08fb386a-063f-4951-9e7b-3273e990542b"]], odl_username: "odl", odl_password: "pass", netfloc_ip_port: "10.10.10.10"}
 
       let(:response) { post '/netfloc', netfloc_request.to_json, rack_env={'CONTENT_TYPE' => 'application/json'} }
 
