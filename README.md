@@ -154,7 +154,7 @@ The UI has a default user for authentication, the credentials are (can be change
 Make a request to the following address (NS Manager):
 
 ```
-curl -XGET http://localhost:4000/
+curl -XGET http://127.0.0.1:4000/
 ```
 
 If nothing is received, make sure that the NS Manager is running.

@@ -31,8 +31,8 @@ show_menus() {
   echo "1. Install TeNOR"
   echo "2. Reconfigure configuration files"
   echo "3. Register microservices"
-  echo "4. Add new PoP (Deprecated - Please, use the User Interface at http://localhost:9000)"
-  echo "5. Remove PoP (Deprecated - Please, use the User Interface at http://localhost:9000)"
+  echo "4. Add new PoP (Deprecated - Please, use the User Interface at http://127.0.0.1:9000)"
+  echo "5. Remove PoP (Deprecated - Please, use the User Interface at http://127.0.0.1:9000)"
   echo "6. Inserting sample VNF and NS"
   echo "7. Exit"
 }
@@ -171,7 +171,7 @@ configureIps(){
   #</source>
 
   # HTTP input
-  # http://localhost:8888/<tag>?json=<json>
+  # http://127.0.0.1:8888/<tag>?json=<json>
   <source>
   @type http
   @id http_input
@@ -189,9 +189,9 @@ configureIps(){
   #</source>
 
   # Listen HTTP for monitoring
-  # http://localhost:24220/api/plugins
-  # http://localhost:24220/api/plugins?type=TYPE
-  # http://localhost:24220/api/plugins?tag=MYTAG
+  # http://127.0.0.1:24220/api/plugins
+  # http://127.0.0.1:24220/api/plugins?type=TYPE
+  # http://127.0.0.1:24220/api/plugins?tag=MYTAG
   <source>
   @type monitor_agent
   @id monitor_agent_input
@@ -295,7 +295,7 @@ configureFiles(){
 
 addNewPop(){
   echo "Adding new PoP..."
-  TENOR_HOST=localhost:4000
+  TENOR_HOST=127.0.0.1:4000
   OPENSTACK_NAME=default
   OPENSTACK_IP=localhost
   ADMIN_TENANT_NAME=admin
@@ -305,7 +305,7 @@ addNewPop(){
 
   echo -e "Please, insert the IPs and ports used requested. ${bold}You can press [ENTER] without write anything in the case of local installation.${normal}\n\n"
 
-  echo "Type the address where TeNOR is RUNNING (localhost:4000), followed by [ENTER]:"
+  echo "Type the address where TeNOR is RUNNING (127.0.0.1:4000), followed by [ENTER]:"
   read tenor_host
   if [ -z "$tenor_host" ]; then tenor_host=$TENOR_HOST; fi
 
@@ -353,7 +353,7 @@ conn_openstack() {
 
 removePop() {
   echo "Removing PoP..."
-  tenor_host=localhost:4000
+  tenor_host=127.0.0.1:4000
 
   curl -XGET http://$tenor_host/pops/dc  | ruby -r rubygems -r json -e "puts JSON[STDIN.read];"
 
@@ -380,11 +380,11 @@ registerMicroservice(){
 }
 
 insertSamples(){
-  token=$(curl -XPOST localhost:4000/auth/login -H "Content-Type: application/json" --data-binary '{"username":"admin","password":"adminpass"}' | ruby -r rubygems -r json -e "puts JSON[STDIN.read]['token'];")
+  token=$(curl -XPOST 127.0.0.1:4000/auth/login -H "Content-Type: application/json" --data-binary '{"username":"admin","password":"adminpass"}' | ruby -r rubygems -r json -e "puts JSON[STDIN.read]['token'];")
   echo "Inserting VNF..."
-  vnf_id=$(curl -XPOST localhost:4000/vnfs -H "Content-Type: application/json" -H "X-Auth-Token: $token" --data-binary @vnfd-validator/assets/samples/vnfd_example.json | ruby -r rubygems -r json -e "puts JSON[STDIN.read]['vnfd']['id'];")
+  vnf_id=$(curl -XPOST 127.0.0.1:4000/vnfs -H "Content-Type: application/json" -H "X-Auth-Token: $token" --data-binary @vnfd-validator/assets/samples/vnfd_example.json | ruby -r rubygems -r json -e "puts JSON[STDIN.read]['vnfd']['id'];")
   echo "Inserting NS..."
-  ns_id=$(curl -XPOST localhost:4000/network-services -H "Content-Type: application/json" -H "X-Auth-Token: $token" --data-binary @nsd-validator/assets/samples/nsd_example.json | ruby -r rubygems -r json -e "puts JSON[STDIN.read]['nsd']['id'];")
+  ns_id=$(curl -XPOST 127.0.0.1:4000/network-services -H "Content-Type: application/json" -H "X-Auth-Token: $token" --data-binary @nsd-validator/assets/samples/nsd_example.json | ruby -r rubygems -r json -e "puts JSON[STDIN.read]['nsd']['id'];")
   echo "NSD id: " $ns_id
   echo "VNFD id: " $vnf_id
 
