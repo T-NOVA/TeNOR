@@ -85,6 +85,8 @@ class DcController < TnovaManager
             halt 409, 'DC Duplicated. Use PUT for update.'
         # i es.update_attributes!(:host => pop_info['host'], :port => pop_info['port'], :token => @token, :depends_on => serv_reg['depends_on'])
         rescue Mongoid::Errors::DocumentNotFound => e
+            status, errors = popStatus(serv)
+            halt 400, "Incorrect credentials" if status != 200
             begin
                 dc = Dc.create!(serv)
             rescue => e
@@ -126,6 +128,16 @@ class DcController < TnovaManager
             halt 404
         end
         halt 200
+    end
+
+    get '/dc/:id/status' do |id|
+        begin
+            dc = Dc.find(id.to_i)
+        rescue Mongoid::Errors::DocumentNotFound => e
+            logger.error 'DC not found'
+            return 404
+        end
+        return popStatus(dc)
     end
 
 end
