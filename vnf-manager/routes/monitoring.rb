@@ -74,7 +74,7 @@ class Monitoring < VNFManager
   end
 
   # @method post_vnf_monitoring_id_readings
-  # @overload get '/vnf-monitoring/:vnfr_id/readings'
+  # @overload post '/vnf-monitoring/:vnfr_id/readings'
   # Recevie monitoring data
   # @param [Integer] vnfr_id the VNF Instance ID
   post '/:vnfr_id/readings' do |vnfr_id|
@@ -132,14 +132,37 @@ class Monitoring < VNFManager
   # @overload get '/vnf-monitoring/:vnfi_id/monitoring-data/'
   #	Get monitoring data
   #	@param [Integer] instance_id
-  get '/:vnfi_id/monitoring-data/' do
+  get '/:vnfi_id/monitoring-data/' do |vnfi_id|
 
     monitoring, errors = ServiceConfigurationHelper.get_module('vnf_monitoring')
     halt 500, errors if errors
 
+    path = request.fullpath
+
+    # if vdui id is null, search in the vnfr the vdus ids
+    if params['vduid'].nil?
+      provisioner, errors = ServiceConfigurationHelper.get_module('vnf_provisioner')
+      halt 500, errors if errors
+
+      begin
+        response = RestClient.get provisioner.host + "/vnf-provisioning/vnf-instances/" + vnfi_id, 'X-Auth-Token' => provisioner.token, :content_type => :json, :accept => :json
+      rescue RestClient::NotFound => e
+        puts e
+        puts e.response
+        logger.debug "This VNF instance no exists. Getting list of subscriptions in order to get the Subscription ID."
+      end
+      halt 404 if response.nil
+
+      vms = ""
+      response['vms'].each do |vm|
+        vms = "&vdus[]=" + vm[:physical_resource_id].to_s
+        path = path + vms
+      end
+    end
+
     # Forward the request to the VNF Monitoring
     begin
-      response = RestClient.get monitoring.host + request.fullpath, 'X-Auth-Token' => monitoring.token, :content_type => :json, :accept => :json
+      response = RestClient.get monitoring.host + path, 'X-Auth-Token' => monitoring.token, :content_type => :json, :accept => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'VNF Monitoring unreachable'
     rescue => e

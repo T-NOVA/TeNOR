@@ -62,6 +62,7 @@ class Provisioner < NsProvisioning
 
         instance = {
             nsd_id: nsd['id'],
+            name: nsd['name'],
             descriptor_reference: nsd['id'],
             auto_scale_policy: nsd['auto_scale_policy'],
             connection_points: nsd['connection_points'],
@@ -172,6 +173,15 @@ class Provisioner < NsProvisioning
                 logger.info 'VNFs removed correctly.'
                 error = 'Removing instance'
                 recoverState(@nsInstance, body['pop_info'], error)
+
+                if @nsInstance['marketplace_callback'].include? "/service-selection"
+                    logger.info "Sending stop to Accounting"
+    				marketplace = @nsInstance['marketplace_callback'].split("/service-selection")[0]
+    				begin
+    					RestClient.post "#{marketplace}:8000/servicestatus/#{@nsInstance['id']}/stopped/", ""
+    				rescue => e
+    				end
+                end
             end
             errback = proc do
                 logger.error 'Error with the removing process...'
@@ -298,54 +308,10 @@ class Provisioner < NsProvisioning
             end
         end
 
-        logger.info 'Service is ready. All VNFs are instantiated'
-        instance.update_attribute('status', 'INSTANTIATED')
-        instance.push(lifecycle_event_history: 'INSTANTIATED')
-        instance.update_attribute('instantiation_end_time', DateTime.now.iso8601(3))
-        generateMarketplaceResponse(instance['notification'], instance)
-
-        logger.info 'Sending statistic information to NS Manager'
-        Thread.new do
-            begin
-                RestClient.post settings.manager + '/statistics/performance_stats', instance.to_json, content_type: :json
-            rescue => e
-                logger.error e
-            end
-        end
-
-        logger.info 'Sending start command'
-        Thread.new do
-            sleep(5)
-            begin
-                RestClient.put settings.manager + '/ns-instances/' + nsr_id + '/start', {}.to_json, content_type: :json
-            rescue Errno::ECONNREFUSED
-                logger.error 'Connection refused with the NS Manager'
-            rescue => e
-                logger.error e.response
-                logger.error 'Error with the start command'
-            end
-        end
-
-        if instance['resource_reservation'].find { |resource| resource.has_key?('wicm_stack')}
-            logger.info 'Starting traffic redirection in the WICM'
-            Thread.new do
-                begin
-                    response = RestClient.put settings.wicm + '/vnf-connectivity/' + nsr_id, '', content_type: :json, accept: :json
-                rescue => e
-                    logger.error e
-                end
-                logger.info response
-            end
-        end
-
-        logger.info 'Starting monitoring workflow...'
-        Thread.new do
-            sleep(5)
-            monitoringData(nsd, instance)
-        end
-
-        unless settings.netfloc.nil?
-            logger.info 'Create Netfloc HOT for each PoP...........................'
+        #reading netfloc info from authentication
+        if settings.netfloc
+            instance.update_attribute('instantiation_netfloc_start_time', DateTime.now.iso8601(3))
+            logger.info 'Create Netfloc HOT for each PoP...'
             logger.info instance['vnffgd']['vnffgs']
             graphs = []
             graphs_pops = []
@@ -362,44 +328,114 @@ class Provisioner < NsProvisioning
                 end
                 graphs << vnfg
             end
-            graphs.each do |vnfg|
-                graphs_pops.each do |pop_id|
+            logger.info "Graphs:"
+            logger.info graphs
+            chains = []
+            graphs_pops.each do |pop_id|
+                graphs.each_with_index do |vnfg|
                     ports = vnfg[:ports].find_all{|p| p[:pop_id] == pop_id }
                     chain = []
                     ports.each do |p|
                         chain << p[:port_id]
                     end
-                    # get credentials for each PoP
-                    pop_auth = instance['authentication'].find { |pop| pop['pop_id'] == pop_id }
-                    pop_urls = pop_auth['urls']
-                    credentials, errors = authenticate(pop_urls['keystone'], pop_auth['tenant_name'], pop_auth['username'], pop_auth['password'])
-                    logger.error errors if errors
-                    token = credentials[:token]
+                    chains << chain
+                end
+                # get credentials for each PoP
+                pop_auth = instance['authentication'].find { |pop| pop['pop_id'] == pop_id }
+                pop_info = pop_auth['urls']
+                logger.debug pop_info['netfloc_ip']
+                logger.debug pop_info['netfloc_user']
+                logger.debug pop_info['netfloc_pass']
+                logger.error "ERROR READING NETFLOC IP" if pop_info['wicm_ip'].nil?
+                next if pop_info['netfloc_ip'].nil?
+                credentials, errors = authenticate(pop_info['keystone'], pop_auth['tenant_name'], pop_auth['username'], pop_auth['password'])
+                logger.error errors if errors
+                token = credentials[:token]
 
-                    # generate netfloc hot template for a chain
-                    hot_generator_message = {
-                        ports: chain,
-                        odl_username: "admin",
-                        odl_password: "admin",
-                        netfloc_ip_port: "10.30.0.61:8181"
-                    }
-                    logger.info 'Generating netfloc HOT template...'
-                    hot_template, errors = generateNetflocTemplate(hot_generator_message)
-                    logger.error 'Error generating Netfloc template.' if errors
-                    return 400, errors.to_json if errors
-                    logger.debug hot_template
-                    return 400, "error.." if hot_template.empty?
-                    logger.info 'Send Netfloc HOT to Openstack'
-                    stack_name = 'Netfloc_' + instance['id'].to_s
-                    template = { stack_name: stack_name, template: hot_template }
-                    stack, errors = sendStack(pop_urls['orch'], pop_auth[:tenant_id], template, token)
-                    logger.error 'Error sending Netfloc template to Openstack.' if errors
-                    logger.error errors if errors
-                    return 400, errors.to_json if errors
+                # generate netfloc hot template for a chain
+                hot_generator_message = {
+                    chains: chains,
+                    odl_username: pop_info['netfloc_user'],
+                    odl_password: pop_info['netfloc_pass'],
+                    netfloc_ip_port: pop_info['netfloc_ip']#"10.30.0.61:8181"
+                }
+                logger.info 'Generating netfloc HOT template...'
+                hot_template, errors = generateNetflocTemplate(hot_generator_message)
+                logger.error 'Error generating Netfloc template.' if errors
+                return 400, errors.to_json if errors
+                logger.debug hot_template
+                return 400, "error.." if hot_template.empty?
+                logger.info 'Send Netfloc HOT to Openstack'
+                stack_name = "Netfloc_#{instance['id'].to_s}"
+                template = { stack_name: stack_name, template: hot_template }
+                stack, errors = sendStack(pop_info['orch'], pop_auth[:tenant_id], template, token)
+                logger.error 'Error sending Netfloc template to Openstack.' if errors
+                logger.error errors if errors
+                return 400, errors.to_json if errors
 
-                    logger.debug stack
+                stack_info, errors = create_stack_wait(pop_info['orch'], pop_auth[:tenant_id], stack_name, token, 'NS Netfloc')
+                return handleError(instance, errors) if errors
+
+                resources = instance['resource_reservation'].find { |res| res['pop_id'] == pop_id }
+                instance.pull(resource_reservation: resources)
+                resources['netfloc_stack'] = { id: stack['stack']['id'], stack_url: stack['stack']['links'][0]['href'] }
+                instance.push(resource_reservation: resources)
+
+                logger.debug stack
+            end
+            instance.update_attribute('instantiation_netfloc_end_time', DateTime.now.iso8601(3))
+        end
+
+        logger.info 'Service is ready. All VNFs are instantiated'
+        instance.update_attribute('instantiation_end_time', DateTime.now.iso8601(3))
+        instance.update_attribute('status', 'INSTANTIATED')
+        instance.push(lifecycle_event_history: 'INSTANTIATED')
+
+        logger.info 'Sending start command'
+        Thread.new do
+            sleep(5)
+            begin
+                RestClient.put settings.manager + '/ns-instances/' + nsr_id + '/start', {}.to_json, content_type: :json
+            rescue Errno::ECONNREFUSED
+                logger.error 'Connection refused with the NS Manager'
+            rescue => e
+                logger.error e.response
+                logger.error 'Error with the start command'
+            end
+        end
+
+        logger.info 'Sending statistic information to NS Manager'
+        Thread.new do
+            generateMarketplaceResponse(instance['notification'], instance)
+            begin
+                RestClient.post settings.manager + '/statistics/performance_stats', instance.to_json, content_type: :json
+            rescue => e
+                logger.error e
+            end
+        end
+
+        if instance['resource_reservation'].find { |resource| resource.has_key?('wicm_stack')}
+            logger.info 'Starting traffic redirection in the WICM'
+            Thread.new do
+                instance['authentication'].each do |pop_auth|
+                    pop_info = pop_auth['urls']
+                    logger.debug pop_info['wicm_ip']
+                    logger.error "ERROR READING WICM IP" if pop_info['wicm_ip'].nil?
+                    next if pop_info['wicm_ip'].nil?
+                    begin
+                        response = RestClient.put pop_info['wicm_ip'] + '/vnf-connectivity/' + nsr_id, '', content_type: :json, accept: :json
+                    rescue => e
+                        logger.error e
+                    end
+                    logger.info response
                 end
             end
+        end
+
+        logger.info 'Starting monitoring workflow...'
+        Thread.new do
+            sleep(5)
+            monitoringData(nsd, instance)
         end
 
         return 200

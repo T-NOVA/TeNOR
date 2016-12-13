@@ -1,0 +1,10 @@
+{
+  "stack": {
+    "id": "Id",
+    "links": [
+      {
+        "href": "href_link"
+      }
+    ]
+  }
+}

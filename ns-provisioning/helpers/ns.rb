@@ -73,9 +73,8 @@ module NsProvisioner
         ns_id = @instance['nsd_id']
 
         # reserved_resources for the instance
-        logger.info 'Removing reserved resources...'
+        logger.debug 'Removing reserved resources...'
         @instance['resource_reservation'].each do |resource|
-            logger.info resource
             break if resource['pop_id'].nil?
 
             auth_info = @instance['authentication'].find { |auth| auth['pop_id'] == resource['pop_id'] }
@@ -89,25 +88,36 @@ module NsProvisioner
 
             tenant_token = credentials[:token]
 
+            if !resource['netfloc_stack'].nil?
+                stack_url = resource['netfloc_stack']['stack_url']
+                logger.debug 'Removing netfloc_stack stack...'
+                response, errors = delete_stack_with_wait(stack_url, tenant_token)
+                logger.error errors if errors
+                return 400, errors if errors
+                logger.debug 'Reserved netfloc stack removed correctly'
+            end
+
             stack_url = resource['network_stack']['stack_url']
             logger.debug 'Removing reserved stack...'
             response, errors = delete_stack_with_wait(stack_url, tenant_token)
             logger.error errors if errors
             return 400, errors if errors
-            logger.info 'Reserved stack removed correctly'
+            logger.debug 'Reserved stack removed correctly'
         end
 
         logger.info 'Removing users and tenants...'
         @instance['authentication'].each do |pop_info|
-            logger.error 'Delete users of PoP: ' + pop_info['pop_id'].to_s
+            logger.debug 'Delete users of PoP: ' + pop_info['pop_id'].to_s
 
             pop_auth = pops_auth.find { |p| p['id'] == pop_info['pop_id'].to_s }
             next if pop_auth.nil?
             # return 400, "PoP not defined and the users cannot be removed." if pop_auth.nil?
-            popUrls = getPopUrls(pop_auth['extra_info'])
+            pop_info = getPopUrls(pop_auth['extra_info'])
 
             auth_info = @instance['authentication'].find { |auth| auth['pop_id'] == pop_info['pop_id'] }
-            credentials, errors = authenticate(popUrls[:keystone], auth_info['tenant_name'], auth_info['username'], auth_info['password'])
+            logger.error "PoP in auth: "
+            logger.info auth_info
+            credentials, errors = authenticate(pop_info[:keystone], auth_info['tenant_name'], auth_info['username'], auth_info['password'])
             logger.error errors if errors
             @instance.update_attribute('status', 'ERROR_CREATING') if errors
             @instance.push(audit_log: errors) if errors
@@ -115,23 +125,23 @@ module NsProvisioner
             token = credentials[:token]
 
             unless pop_info['security_group_id'].nil?
-                #      deleteSecurityGroup(popUrls[:compute], vnf_info['tenant_id'], vnf_info['security_group_id'], tenant_token)
+                #      deleteSecurityGroup(pop_info[:compute], vnf_info['tenant_id'], vnf_info['security_group_id'], tenant_token)
             end
 
-            unless settings.default_tenant && !popUrls[:is_admin]
-                logger.info 'Removing user stack....'
+            unless settings.default_tenant && !pop_info[:is_admin]
+                logger.debug 'Removing user stack....'
                 stack_url = auth_info['stack_url']
                 if !auth_info['stack_url'].nil?
                     response, errors = delete_stack_with_wait(auth_info['stack_url'], token)
                     logger.error errors if errors
                     return 400, errors if errors
-                    logger.info 'User and tenant removed correctly.'
+                    logger.debug 'User and tenant removed correctly.'
                 else
-                    logger.info 'No user and tenant to remove.'
+                    logger.debug 'No user and tenant to remove.'
                 end
 
             end
-            logger.info 'REMOVED: User ' + auth_info['user_id'].to_s + " and tenant '" + auth_info['tenant_id'].to_s
+            logger.debug 'REMOVED: User ' + auth_info['user_id'].to_s + " and tenant '" + auth_info['tenant_id'].to_s
         end
         logger.debug 'Tenants and users removed correctly.'
 
@@ -227,35 +237,35 @@ module NsProvisioner
 
         @instance.update_attribute('status', 'CREATING NETWORKS')
 
-        # configure wicm if it's defined
-        unless settings.wicm.nil?
-            if !customer_id.nil? && !nap_id.nil?
-                pops = []
-                @instance['authentication'].each do |pop|
-                    pops << pop['pop_id']
-                end
+        # configure wicm if has defined the ip, the customers and naps id
+        if !settings.wicm.nil? && !customer_id.nil? && !nap_id.nil?
+            pops = []
+            @instance['authentication'].each do |pop|
+                pops << pop['pop_id']
             end
+
             wicm_message = {
-                ns_instance_id: @instance['id'].to_s,
-                client_mkt_id: customer_id,
-                nap_mkt_id: nap_id,
-                ce_pe: pops,
-                pe_ce: [pops[0]]
+                service: {
+                    ns_instance_id: @instance['id'].to_s,
+                    client_mkt_id: customer_id,
+                    nap_mkt_id: nap_id,
+                    ce_pe: pops,
+                    pe_ce: [pops[0]]
+                }
             }
             begin
                 response = RestClient.post settings.wicm + '/vnf-connectivity', wicm_message.to_json, content_type: :json, accept: :json
             rescue Errno::ECONNREFUSED
                 error = { 'info' => 'WICM unreachable.' }
-                recoverState(@instance, error)
-                return
+                return handleError(@instance, error)
             rescue => e
                 logger.error e
                 logger.error e.response
                 error = { 'info' => 'Error with the WICM module.' }
-                recoverState(@instance, error)
-                return
+                return handleError(@instance, error)
             end
             provider_info, error = parse_json(response)
+            return handleError(@instance, errors) if errors
 
             # for each PoP, send the template
             resource_reservation = []
@@ -267,12 +277,12 @@ module NsProvisioner
                 ce_transport = provider_info['allocated']['ce_pe'].find { |p| p['nfvi_id'] == auth['pop_id'] }
                 pe_transport = provider_info['allocated']['pe_ce'].find { |p| p['nfvi_id'] == auth['pop_id'] }
                 wicm_service_request = {
-                    physical_network: "sfcvlan",
+                    physical_network: 'sfcvlan',
                     allocated: {
-                        nfvi_id: "nfvi1",
-                        ns_instance_id: "service1",
-                        ce_transport: ce_transport,
-                        pe_transport: pe_transport
+                        nfvi_id: 'nfvi1',
+                        ns_instance_id: 'service1',
+                        ce_transport: ce_transport['transport'],
+                        pe_transport: pe_transport['transport']
                     }
                 }
 
@@ -301,20 +311,21 @@ module NsProvisioner
             tenant_token = pop_auth['token']
             pop_urls = pop_auth['urls']
 
-            publicNetworkId, errors = publicNetworkId(pop_urls[:neutron], tenant_token)
+
+            public_network_id, errors = publicNetworkId(pop_urls[:neutron], tenant_token)
             return handleError(@instance, errors) if errors
 
             hot_generator_message = {
                 nsr_id: @instance['id'],
                 nsd: nsd,
-                public_net_id: publicNetworkId,
+                public_net_id: public_network_id,
                 dns_server: pop_urls[:dns]
             }
-            logger.info 'Generating network HOT template...'
+            logger.debug 'Generating network HOT template...'
             hot, errors = generateNetworkHotTemplate(sla_id, hot_generator_message)
             return handleError(@instance, errors) if errors
 
-            logger.info 'Sending network template to HEAT Orchestration'
+            logger.debug 'Sending network template to HEAT Orchestration'
             stack_name = 'network_' + @instance['id'].to_s
             template = { stack_name: stack_name, template: hot }
             stack, errors = sendStack(pop_urls[:orch], pop_auth['tenant_id'], template, tenant_token)
@@ -323,25 +334,26 @@ module NsProvisioner
             stack_id = stack['stack']['id']
 
             # save stack_url in reserved resurces
-            logger.info 'Saving reserved stack....'
+            logger.debug 'Saving reserved stack....'
             @resource_reservation = @instance['resource_reservation']
             resource_reservation = []
             resource_reservation << {
                 ports: [],
                 network_stack: { id: stack_id, stack_url: stack['stack']['links'][0]['href'] },
-                public_network_id: publicNetworkId,
+                public_network_id: public_network_id,
                 dns_server: pop_urls[:dns],
                 pop_id: pop_auth['pop_id'],
                 routers: [],
-                networks: []
+                networks: [],
+                netfloc: {}
             }
             @instance.push(resource_reservation: resource_reservation)
 
-            logger.info 'Checking network stack creation...'
+            logger.debug 'Checking network stack creation...'
             stack_info, errors = create_stack_wait(pop_urls[:orch], pop_auth['tenant_id'], stack_name, tenant_token, 'NS Network')
             return handleError(@instance, errors) if errors
 
-            logger.info 'Network stack CREATE_COMPLETE. Reading network information from stack...'
+            logger.debug 'Network stack CREATE_COMPLETE. Reading network information from stack...'
             sleep(3)
             network_resources, errors = getStackResources(pop_urls[:orch], pop_auth['tenant_id'], stack_name, tenant_token)
             return handleError(@instance, errors) if errors

@@ -75,19 +75,20 @@ class VNFMonitoring < Sinatra::Application
 
     delete '/vnf-monitoring/subscription/:vnfr_id' do |vnfr_id|
         begin
-            mon_data = MonitoringMetric.find_by(:vnfr_id => vnfr_id)
+            monitoring_metrics = MonitoringMetric.where(:vnfr_id => vnfr_id)
         rescue Mongoid::Errors::DocumentNotFound => e
             logger.error "Monitoring Metric no exists."
             halt 400, 'Sla no exists'
         end
-
-        begin
-            response = RestClient.delete settings.vim_monitoring + '/api/subscriptions/' + mon_data['subscription_id'], accept: :json
-        rescue => e
-            puts e
-            halt 400, 'VIM Monitoring Module not available'
+        monitoring_metrics.each do |mon_metrics|
+            begin
+                response = RestClient.delete settings.vim_monitoring + '/api/subscriptions/' + mon_metrics['subscription_id'], accept: :json
+            rescue => e
+                puts e
+                halt 400, 'VIM Monitoring Module not available'
+            end
+            mon_metrics.destroy
         end
-        mon_data.destroy
         destroy_monitoring_data(vnfr_id)
         halt 200
     end
@@ -116,11 +117,13 @@ class VNFMonitoring < Sinatra::Application
                 }
                 metrics.push(metric)
 
+                q = ch.queue('vnf_repository')
+                q.publish(metric.to_json, persistent: true)
+
+                #only push to Manager the assurance metrics?
                 q = ch.queue(params['vnfr_id'])
                 q.publish(metric.to_json, persistent: true)
 
-                q = ch.queue('vnf_repository')
-                q.publish(metric.to_json, persistent: true)
             end
 =begin
             begin

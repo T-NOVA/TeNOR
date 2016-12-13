@@ -27,6 +27,7 @@ class VnfdToHot
         @type = ''
         @vnfr_id = ''
         @public_network_id = public_network_id
+        @vnfd_name = ''
     end
 
     # Converts VNFD to HOT
@@ -40,10 +41,11 @@ class VnfdToHot
         # Parse needed outputs
         parse_outputs(vnfd['vnf_lifecycle_events'].find { |lifecycle| lifecycle['flavor_id_ref'] == tnova_flavour }['events'])
 
+        @vnfd_name = vnfd['name']
         @type = vnfd['type']
         @vnfr_id = vnfr_id
 
-        key = create_key_pair(SecureRandom.urlsafe_base64(9))
+        key = { get_resource: create_key_pair(SecureRandom.urlsafe_base64(9)) }
         router_id = routers_id[0]['id']
 
         # Get T-NOVA deployment flavour
@@ -70,6 +72,7 @@ class VnfdToHot
         deployment_information['vdu_reference'].each do |vdu_ref|
             # Get VDU for deployment
             vdu = vnfd['vdu'].detect { |vdu| vdu['id'] == vdu_ref }
+            raise CustomException::NoVDUError, "VDU in the reference not found" if vdu.nil?
 
             image_name = if vdu['vm_image_format'] == 'openstack_id'
                              vdu['vm_image']
@@ -405,7 +408,8 @@ class VnfdToHot
                 image,
                 ports,
                 add_wait_condition(vdu),
-                get_resource: key_name
+                @vnfd_name.to_s + "_" + vdu['id'],
+                key_name
             )
         else
             @hot.resources_list << Server.new(
@@ -414,7 +418,8 @@ class VnfdToHot
                 image,
                 ports,
                 add_wait_condition(vdu),
-                get_resource: key_name
+                @vnfd_name.to_s + "_" + vdu['id'],
+                key_name
             )
             @hot.outputs_list << Output.new("#{vdu['id']}#id", "#{vdu['id']} ID", get_resource: vdu['id'])
         end
@@ -430,7 +435,7 @@ class VnfdToHot
         wc_handle_name = get_resource_name
 
         if vdu['wc_notify']
-            if @type != 'vSA'
+            if @type != 'vSA' && @type != 'vTC'
                 @hot.resources_list << WaitConditionHandle.new(wc_handle_name)
                 @hot.resources_list << WaitCondition.new(get_resource_name, wc_handle_name, 2000)
             end
@@ -456,7 +461,7 @@ class VnfdToHot
         # if vdu['wc_notify']
         shell = '#!/bin/bash'
         shell = '#!/bin/tcsh' if @type == 'vSA'
-        if @type != 'vSA'
+        if @type != 'vSA' && @type != 'vTC'
             bootstrap_script = vdu.key?('bootstrap_script') ? vdu['bootstrap_script'] : shell
             {
                 str_replace: {

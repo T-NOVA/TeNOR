@@ -24,4 +24,6 @@ class CustomException
 	class InvalidTemplateFileFormat < StandardError; end
 
 	class NoFlavorError < StandardError; end
+
+	class NoVDUError < StandardError; end
 end

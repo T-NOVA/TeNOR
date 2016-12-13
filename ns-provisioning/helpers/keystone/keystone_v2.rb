@@ -84,7 +84,7 @@ module Authenticationv2Helper
             logger.error e
             error = { 'info' => 'Error creating the Openstack credentials.' }
             logger.error error
-            recoverState(@instance, error)
+            recoverState(@instance, pop_auth, error)
             return 400, error
         end
         pop_auth
@@ -98,6 +98,7 @@ module Authenticationv2Helper
         rescue => e
             logger.error e
             logger.error e.response.body
+            return 400, e.response.body
         end
 
         authentication, errors = parse_json(response)
@@ -114,7 +115,7 @@ module Authenticationv2Helper
         rescue => e
             logger.error e
             logger.error e.response.body
-            return 400, e
+            return 400, e.response.body
         end
 
         authentication, errors = parse_json(response)
@@ -131,6 +132,7 @@ module Authenticationv2Helper
         rescue => e
             logger.error e
             logger.error e.response.body
+            return 400, e.response.body
         end
 
         authentication, errors = parse_json(response)

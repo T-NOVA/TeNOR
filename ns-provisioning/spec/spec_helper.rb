@@ -60,7 +60,9 @@ RSpec.configure do |config|
         stub_request(:post, 'http://vimurl:35357/v2.0/tokens').to_return(status: 200, body: File.read(File.join('spec', 'fixtures', 'authentication.json')))
         #hot generator
         stub_request(:post, 'localhost:4570/netfloc').to_return(status: 200, body: File.read(File.join('spec', 'fixtures', 'netfloc_response.json')))
-        stub_request(:post, 'http://vimurl:8004/v1/16b6c1cdb8604e3a84569e40edfce83a/stacks').to_return(status: 200, body: "{}")
+        stub_request(:post, 'http://vimurl:8004/v1/16b6c1cdb8604e3a84569e40edfce83a/stacks').to_return(status: 200, body: File.read(File.join('spec', 'fixtures', 'stack_response.json')))
+        stub_request(:get, 'http://vimurl:8004/v1/16b6c1cdb8604e3a84569e40edfce83a/stacks/Netfloc_1').to_return(status: 200, body: File.read(File.join('spec', 'fixtures', 'netfloc_stack_response.json')))
+        stub_request(:get, 'http://vimurl:8004/v1/16b6c1cdb8604e3a84569e40edfce83a/stacks/Netfloc_2').to_return(status: 200, body: File.read(File.join('spec', 'fixtures', 'netfloc_stack_response.json')))
 
         #vnf manager
         stub_request(:post, 'http://localhost:4567/vnf-instances/scaling/13/scale_out').to_return(status: 200, body: File.read(File.join('spec', 'fixtures', 'authentication.json')))
