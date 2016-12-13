@@ -22,7 +22,10 @@ FactoryGirl.define do
                                 "keystone" => "http://vimurl:35357/v2.0",
                                 "orch" => "http://vimurl:8004/v1",
                                 "compute" => "http://vimurl:8774/v2.1",
-                                "neutron" => "http://vimurl:9696/v2.0"
+                                "neutron" => "http://vimurl:9696/v2.0",
+                                "netfloc_ip" => "netfloc_ip",
+                                "netfloc_user" => "netfloc_user",
+                                "netfloc_pass" => "netfloc_pass"
                             },
                             "username" => "tenor_user",
                             "tenant_name" => "tenor_tenant",

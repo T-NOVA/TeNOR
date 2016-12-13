@@ -23,11 +23,11 @@ ns_monitoring_token:
 vnf_manager: localhost:4567
 vnf_manager_token:
 hot_generator: localhost:4571
-hot_generator_token: 
-wicm:
+hot_generator_token:
+wicm: false
 mapping:
 infr_repository:
-netfloc:
+netfloc: false
 
 dependencies: [ns_monitoring, vnf_manager, wicm, mapping, hot_generator, infr_repository, netfloc]
 

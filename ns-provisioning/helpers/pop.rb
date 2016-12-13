@@ -17,7 +17,8 @@
 #
 # @see NsProvisioner
 module PopHelper
-    
+
+    # DEPREACTED
     # Returns the list of URLs of the PoPs
     #
     # @param [JSON] message some JSON message

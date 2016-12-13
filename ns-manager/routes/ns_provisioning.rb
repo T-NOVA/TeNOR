@@ -190,7 +190,6 @@ class NsProvisioner < TnovaManager
     provisioner, errors = ServiceConfigurationHelper.get_module('ns_provisioner')
     halt 500, errors if errors
 
-	logger.info "Get NS instance"
     begin
       response = RestClient.get provisioner.host + '/ns-instances/' + params[:nsr_id].to_s, 'X-Auth-Token' => provisioner.token, :content_type => :json
     rescue Errno::ECONNREFUSED
@@ -228,12 +227,11 @@ class NsProvisioner < TnovaManager
   # @overload delete "/ns-instances/:nsr_id"
   # Delete a ns-instance
   # @param [string] nsr_id Instance id
-  delete '/:nsr_id' do
-    logger.info "Delete executed.... " + params[:nsr_id].to_s
+  delete '/:nsr_id' do |nsr_id|
+    logger.info "Delete executed.... " + nsr_id.to_s
     provisioner, errors = ServiceConfigurationHelper.get_module('ns_provisioner')
     halt 500, errors if errors
 
-    logger.info "Get NS instance"
     begin
       response = RestClient.get provisioner.host + request.fullpath.to_s, 'X-Auth-Token' => provisioner.token, :content_type => :json
     rescue Errno::ECONNREFUSED
@@ -271,7 +269,7 @@ class NsProvisioner < TnovaManager
   # @overload post "/ns-instances/:nsr_id/instantiate"
   # Callback response of instantiation request. This method is called by the VNFManager.
   # @param [string] nsr_id Instance id
-  post '/:nsr_id/instantiate' do
+  post '/:nsr_id/instantiate' do |nsr_id|
 
     callback_response, errors = parse_json(request.body.read)
 
@@ -279,20 +277,20 @@ class NsProvisioner < TnovaManager
     halt 500, errors if errors
 
     begin
-      response = RestClient.get provisioner.host + '/ns-instances/' + params['nsr_id'], 'X-Auth-Token' => provisioner.token, :content_type => :json
+      response = RestClient.get provisioner.host + '/ns-instances/' + nsr_id, 'X-Auth-Token' => provisioner.token, :content_type => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Provisioning unreachable'
     rescue => e
       logger.error e.response
       halt e.response.code, e.response.body
     end
-    ns_instance, error = parse_json(response)
+    nsr, error = parse_json(response)
 
     catalogue, errors = ServiceConfigurationHelper.get_module('ns_catalogue')
     halt 500, errors if errors
 
     begin
-      response = RestClient.get catalogue.host + '/network-services/' + ns_instance['nsd_id'], 'X-Auth-Token' => catalogue.token, :content_type => :json
+      response = RestClient.get catalogue.host + '/network-services/' + nsr['nsd_id'], 'X-Auth-Token' => catalogue.token, :content_type => :json
     rescue Errno::ECONNREFUSED
       halt 500, 'NS Provisioning unreachable'
     rescue => e

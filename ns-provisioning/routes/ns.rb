@@ -308,7 +308,8 @@ class Provisioner < NsProvisioning
             end
         end
 
-        unless settings.netfloc.nil?
+        #reading netfloc info from authentication
+        if settings.netfloc
             instance.update_attribute('instantiation_netfloc_start_time', DateTime.now.iso8601(3))
             logger.info 'Create Netfloc HOT for each PoP...'
             logger.info instance['vnffgd']['vnffgs']
@@ -341,17 +342,22 @@ class Provisioner < NsProvisioning
                 end
                 # get credentials for each PoP
                 pop_auth = instance['authentication'].find { |pop| pop['pop_id'] == pop_id }
-                pop_urls = pop_auth['urls']
-                credentials, errors = authenticate(pop_urls['keystone'], pop_auth['tenant_name'], pop_auth['username'], pop_auth['password'])
+                pop_info = pop_auth['urls']
+                logger.debug pop_info['netfloc_ip']
+                logger.debug pop_info['netfloc_user']
+                logger.debug pop_info['netfloc_pass']
+                logger.error "ERROR READING NETFLOC IP" if pop_info['wicm_ip'].nil?
+                next if pop_info['netfloc_ip'].nil?
+                credentials, errors = authenticate(pop_info['keystone'], pop_auth['tenant_name'], pop_auth['username'], pop_auth['password'])
                 logger.error errors if errors
                 token = credentials[:token]
 
                 # generate netfloc hot template for a chain
                 hot_generator_message = {
                     chains: chains,
-                    odl_username: "admin",
-                    odl_password: "admin",
-                    netfloc_ip_port: "10.30.0.61:8181"
+                    odl_username: pop_info['netfloc_user'],
+                    odl_password: pop_info['netfloc_pass'],
+                    netfloc_ip_port: pop_info['netfloc_ip']#"10.30.0.61:8181"
                 }
                 logger.info 'Generating netfloc HOT template...'
                 hot_template, errors = generateNetflocTemplate(hot_generator_message)
@@ -362,12 +368,12 @@ class Provisioner < NsProvisioning
                 logger.info 'Send Netfloc HOT to Openstack'
                 stack_name = "Netfloc_#{instance['id'].to_s}"
                 template = { stack_name: stack_name, template: hot_template }
-                stack, errors = sendStack(pop_urls['orch'], pop_auth[:tenant_id], template, token)
+                stack, errors = sendStack(pop_info['orch'], pop_auth[:tenant_id], template, token)
                 logger.error 'Error sending Netfloc template to Openstack.' if errors
                 logger.error errors if errors
                 return 400, errors.to_json if errors
 
-                stack_info, errors = create_stack_wait(pop_urls['orch'], pop_auth[:tenant_id], stack_name, token, 'NS Netfloc')
+                stack_info, errors = create_stack_wait(pop_info['orch'], pop_auth[:tenant_id], stack_name, token, 'NS Netfloc')
                 return handleError(instance, errors) if errors
 
                 resources = instance['resource_reservation'].find { |res| res['pop_id'] == pop_id }
@@ -411,12 +417,18 @@ class Provisioner < NsProvisioning
         if instance['resource_reservation'].find { |resource| resource.has_key?('wicm_stack')}
             logger.info 'Starting traffic redirection in the WICM'
             Thread.new do
-                begin
-                    response = RestClient.put settings.wicm + '/vnf-connectivity/' + nsr_id, '', content_type: :json, accept: :json
-                rescue => e
-                    logger.error e
+                instance['authentication'].each do |pop_auth|
+                    pop_info = pop_auth['urls']
+                    logger.debug pop_info['wicm_ip']
+                    logger.error "ERROR READING WICM IP" if pop_info['wicm_ip'].nil?
+                    next if pop_info['wicm_ip'].nil?
+                    begin
+                        response = RestClient.put pop_info['wicm_ip'] + '/vnf-connectivity/' + nsr_id, '', content_type: :json, accept: :json
+                    rescue => e
+                        logger.error e
+                    end
+                    logger.info response
                 end
-                logger.info response
             end
         end
 

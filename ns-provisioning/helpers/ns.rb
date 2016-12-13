@@ -112,12 +112,12 @@ module NsProvisioner
             pop_auth = pops_auth.find { |p| p['id'] == pop_info['pop_id'].to_s }
             next if pop_auth.nil?
             # return 400, "PoP not defined and the users cannot be removed." if pop_auth.nil?
-            popUrls = getPopUrls(pop_auth['extra_info'])
+            pop_info = getPopUrls(pop_auth['extra_info'])
 
             auth_info = @instance['authentication'].find { |auth| auth['pop_id'] == pop_info['pop_id'] }
             logger.error "PoP in auth: "
             logger.info auth_info
-            credentials, errors = authenticate(popUrls[:keystone], auth_info['tenant_name'], auth_info['username'], auth_info['password'])
+            credentials, errors = authenticate(pop_info[:keystone], auth_info['tenant_name'], auth_info['username'], auth_info['password'])
             logger.error errors if errors
             @instance.update_attribute('status', 'ERROR_CREATING') if errors
             @instance.push(audit_log: errors) if errors
@@ -125,10 +125,10 @@ module NsProvisioner
             token = credentials[:token]
 
             unless pop_info['security_group_id'].nil?
-                #      deleteSecurityGroup(popUrls[:compute], vnf_info['tenant_id'], vnf_info['security_group_id'], tenant_token)
+                #      deleteSecurityGroup(pop_info[:compute], vnf_info['tenant_id'], vnf_info['security_group_id'], tenant_token)
             end
 
-            unless settings.default_tenant && !popUrls[:is_admin]
+            unless settings.default_tenant && !pop_info[:is_admin]
                 logger.debug 'Removing user stack....'
                 stack_url = auth_info['stack_url']
                 if !auth_info['stack_url'].nil?
