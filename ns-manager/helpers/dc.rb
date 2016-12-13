@@ -47,39 +47,9 @@ module DcHelper
         dcs_tokens = []
         dcs = Dc.all
         dcs.each do |dc|
-            puts dc.inspect
             dcs_tokens << { id: dc.id, token: 'token' }
         end
-        puts dcs_tokens
         halt 200, dcs_tokens.to_json
-    end
-
-    # DEPRECATED
-    # Get list of PoPs
-    #
-    # @param [Symbol] format the format type, `:text` or `:html`
-    # @return [String] the object converted into the expected format.
-    def getPopUrls(extraInfo)
-        urls = extraInfo.split(' ')
-
-        popUrls = {}
-
-        for item in urls
-            key = item.split('=')[0]
-            if key == 'keystone-endpoint'
-                popUrls[:keystone] = item.split('=')[1]
-            elsif key == 'neutron-endpoint'
-                popUrls[:neutron] = item.split('=')[1]
-            elsif key == 'compute-endpoint'
-                popUrls[:compute] = item.split('=')[1]
-            elsif key == 'orch-endpoint'
-                popUrls[:orch] = item.split('=')[1]
-            elsif key == 'tenant-name'
-                popUrls[:tenantname] = item.split('=')[1]
-            end
-        end
-
-        popUrls
     end
 
     # Returns an object with the properties of a PoP
