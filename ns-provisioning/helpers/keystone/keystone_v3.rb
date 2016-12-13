@@ -105,7 +105,7 @@ module Authenticationv3Helper
 
         auth['token']['id'] = response.headers[:x_subject_token]
         auth
-      end
+    end
 
     def authentication_v3_ids(keystoneUrl, tenant_id, user_id, password)
         auth = { auth: { tenantId: tenant_id, passwordCredentials: { userId: user_id, password: password } } }
