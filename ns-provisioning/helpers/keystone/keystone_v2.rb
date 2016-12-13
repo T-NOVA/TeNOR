@@ -122,7 +122,7 @@ module Authenticationv2Helper
         return 400, errors if errors
 
         authentication
-      end
+    end
 
     def authentication_v2_ids(keystoneUrl, tenant_id, user_id, password)
         auth = { auth: { tenantId: tenant_id, passwordCredentials: { userId: user_id, password: password } } }
