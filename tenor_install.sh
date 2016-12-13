@@ -338,7 +338,7 @@ addNewPop(){
   if [ -z "$openstack_dns" ]; then openstack_dns=$OPENSTACK_DNS; fi
 
   response=$(curl -XPOST http://$tenor_host/pops/dc -H "Content-Type: application/json" \
-  -d '{"msg": "PoP Testbed", "dcname":"'$openstack_name'", "isAdmin": "'$admin_user_type'" "adminid":"'$keystoneUser'","password":"'$keystonePass'", "extrainfo":"pop-ip='$openstack_ip' tenant-name='$admin_tenant_name' keystone-endpoint=http://'$openstack_ip':35357/v2.0 orch-endpoint=http://'$openstack_ip':8004/v1 compute-endpoint=http://'$openstack_ip':8774/v2.1 neutron-endpoint=http://'$openstack_ip':9696/v2.0 dns='$openstack_dns'"}')
+  -d '{"msg": "PoP Testbed", "host": "'$openstack_ip'", "name":"'$openstack_name'", "isAdmin": "'$admin_user_type'" "user":"'$keystoneUser'","password":"'$keystonePass'", "tenant_name": "'$admin_tenant_name'", "extrainfo":"keystone=http://'$openstack_ip':35357/v2.0 heat=http://'$openstack_ip':8004/v1 compute=http://'$openstack_ip':8774/v2.1 neutron=http://'$openstack_ip':9696/v2.0 dns='$openstack_dns'"}')
 
   echo -e "\n\n"
   echo $response

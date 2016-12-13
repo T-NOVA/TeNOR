@@ -368,12 +368,12 @@ class Provisioner < NsProvisioning
                 logger.info 'Send Netfloc HOT to Openstack'
                 stack_name = "Netfloc_#{instance['id'].to_s}"
                 template = { stack_name: stack_name, template: hot_template }
-                stack, errors = sendStack(pop_info['orch'], pop_auth[:tenant_id], template, token)
+                stack, errors = sendStack(pop_info['heat'], pop_auth[:tenant_id], template, token)
                 logger.error 'Error sending Netfloc template to Openstack.' if errors
                 logger.error errors if errors
                 return 400, errors.to_json if errors
 
-                stack_info, errors = create_stack_wait(pop_info['orch'], pop_auth[:tenant_id], stack_name, token, 'NS Netfloc')
+                stack_info, errors = create_stack_wait(pop_info['heat'], pop_auth[:tenant_id], stack_name, token, 'NS Netfloc')
                 return handleError(instance, errors) if errors
 
                 resources = instance['resource_reservation'].find { |res| res['pop_id'] == pop_id }
