@@ -123,7 +123,7 @@ angular.module('tNovaApp')
                 "tenant_name": obj.tenantName,
                 "is_admin": obj.isAdmin,
                 "description": obj.msg,
-                "extra_info": "keystone-endpoint=http://" + obj.keystone_api + " orch-endpoint=http://" + obj.heat_api + " compute-endpoint=http://" + obj.compute_api + " neutron-endpoint=http://" + obj.neutron_api + " dns=" + obj.dns + " netfloc_ip=" + obj.netfloc_ip + " netfloc_user=" + obj.netfloc_user + " netfloc_pass=" + obj.netfloc_pass + " wicm_ip=" + obj.wicm_ip
+                "extra_info": "keystone=http://" + obj.keystone_api + " heat=http://" + obj.heat_api + " compute=http://" + obj.compute_api + " neutron=http://" + obj.neutron_api + " dns=" + obj.dns + " netfloc_ip=" + obj.netfloc_ip + " netfloc_user=" + obj.netfloc_user + " netfloc_pass=" + obj.netfloc_pass + " wicm_ip=" + obj.wicm_ip
             };
             console.log(pop);
             tenorService.post('pops/dc', pop).then(function (d) {

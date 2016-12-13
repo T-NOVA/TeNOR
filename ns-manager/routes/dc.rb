@@ -130,6 +130,9 @@ class DcController < TnovaManager
         halt 200
     end
 
+    # @method get_pops_dc_id_status
+    # @overload get '/pops/dc/:id/status'
+    # Get status of a DC and check the authentication
     get '/dc/:id/status' do |id|
         begin
             dc = Dc.find(id.to_i)

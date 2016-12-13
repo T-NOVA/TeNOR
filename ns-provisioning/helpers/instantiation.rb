@@ -38,7 +38,7 @@ module InstantiationHelper
         pop_auth['urls'] = pop_urls
 
         # create credentials for pop_id
-        if pop_urls[:keystone].nil? || pop_urls[:orch].nil? # || pop_urls[:tenant].nil?
+        if pop_urls[:keystone].nil? || pop_urls[:heat].nil? # || pop_urls[:tenant].nil?
             return handleError(@instance, 'Internal error: Keystone and/or openstack urls missing.')
         end
 
@@ -107,8 +107,7 @@ module InstantiationHelper
             auth: {
                 url: {
                     keystone: pop_urls[:keystone],
-                    orch: pop_urls[:orch], # to remove
-                    heat: pop_urls[:orch],
+                    heat: pop_urls[:heat],
                     compute: pop_urls[:compute]
                 },
                 tenant_id: pop_auth['tenant_id'],

@@ -26,5 +26,5 @@ group :doc do
 end
 
 # Gatekeeper auth gem
-gem 'sinatra-gkauth', '~>0.4.0', path: '../sinatra-gkauth-gem'
-gem 'fluent-logger-sinatra', '~>0.2.0', path: '../fluent-logger-sinatra'
+gem 'sinatra-gkauth', '~>0.4.0', path: '../gems/sinatra-gkauth-gem'
+gem 'fluent-logger-sinatra', '~>0.2.0', path: '../gems/fluent-logger-sinatra'

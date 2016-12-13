@@ -458,25 +458,25 @@ class VnfdToHot
             wc_notify += "\nwc_notify --data-binary '{\"status\": \"SUCCESS\"}'\n"
         end
 
-        # if vdu['wc_notify']
-        shell = '#!/bin/bash'
-        shell = '#!/bin/tcsh' if @type == 'vSA'
-        if @type != 'vSA' && @type != 'vTC'
-            bootstrap_script = vdu.key?('bootstrap_script') ? vdu['bootstrap_script'] : shell
-            {
-                str_replace: {
-                    params: {
-                        wc_notify: {
-                            get_attr: [wc_handle_name, 'curl_cli']
-                        }
-                    },
-                    template: bootstrap_script + wc_notify
+        if vdu['wc_notify']
+            shell = '#!/bin/bash'
+            shell = '#!/bin/tcsh' if @type == 'vSA'
+            if @type != 'vSA' && @type != 'vTC'
+                bootstrap_script = vdu.key?('bootstrap_script') ? vdu['bootstrap_script'] : shell
+                {
+                    str_replace: {
+                        params: {
+                            wc_notify: {
+                                get_attr: [wc_handle_name, 'curl_cli']
+                            }
+                        },
+                        template: bootstrap_script + wc_notify
+                    }
                 }
-            }
-        else
-            bootstrap_script = '#!/bin/bash' + wc_notify
+            else
+                bootstrap_script = '#!/bin/bash' + wc_notify
+            end
         end
-        # end
     end
 
     def add_wait_condition2(vdu, hot)

@@ -27,5 +27,5 @@ gem 'mongoid', '~>4.0' # MongoDB driver
 gem 'mongoid-pagination', '~>0.2' # Pagination library
 
 # Gatekeeper auth gem
-gem 'sinatra-gkauth', '~>0.4.0', path: '../sinatra-gkauth-gem'
-gem 'fluent-logger-sinatra', '~>0.2.0', path: '../fluent-logger-sinatra'
+gem 'sinatra-gkauth', '~>0.4.0', path: '../gems/sinatra-gkauth-gem'
+gem 'fluent-logger-sinatra', '~>0.2.0', path: '../gems/fluent-logger-sinatra'
