@@ -24,7 +24,7 @@ module PopHelper
     # @param [JSON] message some JSON message
     # @return [Hash, nil] if the parsed message is a valid JSON
     # @return [Hash, String] if the parsed message is an invalid JSON
-    def getPopUrls(extraInfo)
+    def getPopUrls_deprecated(extraInfo)
         urls = extraInfo.split(' ')
 
         popUrls = {}
