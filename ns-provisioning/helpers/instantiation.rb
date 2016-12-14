@@ -34,7 +34,7 @@ module InstantiationHelper
         pop_auth['pop_id'] = pop_info['id'].to_s
         pop_auth['is_admin'] = pop_info['is_admin']
         extra_info = pop_info['extra_info']
-        pop_urls = getPopUrls(extra_info)
+        pop_urls = getPoPExtraInfo(extra_info)
         pop_auth['urls'] = pop_urls
 
         # create credentials for pop_id
