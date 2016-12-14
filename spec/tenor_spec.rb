@@ -53,7 +53,7 @@ RSpec.describe "Tenor" do
 				      tenant_name: @OPENSTACK_TENANT_NAME,
 				      is_admin: is_admin,
 				      description: "",
-				      extra_info: "keystone=http://#{host}:35357/#{keystone_version} orch=http://#{host}:8004/v1 compute=http://#{host}:8774/v2.1 neutron=http://#{host}:9696/v2.0 dns=#{dns}"
+				      extra_info: "keystone=http://#{host}:35357/#{keystone_version} heat=http://#{host}:8004/v1 compute=http://#{host}:8774/v2.1 neutron=http://#{host}:9696/v2.0 dns=#{dns}"
 				  }
 					response = RestClient.post $TENOR_URL.to_s + '/pops/dc', pop.to_json, :content_type => :json, :'X-Auth-Token' => $token
 					expect(response.code).to eq 201
