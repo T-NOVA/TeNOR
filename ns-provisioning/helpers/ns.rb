@@ -112,7 +112,7 @@ module NsProvisioner
             pop_auth = pops_auth.find { |p| p['id'] == pop_info['pop_id'].to_s }
             next if pop_auth.nil?
             # return 400, "PoP not defined and the users cannot be removed." if pop_auth.nil?
-            pop_info = getPopUrls(pop_auth['extra_info'])
+            pop_info = getPoPExtraInfo(pop_auth['extra_info'])
 
             auth_info = @instance['authentication'].find { |auth| auth['pop_id'] == pop_info['pop_id'] }
             logger.error "PoP in auth: "
