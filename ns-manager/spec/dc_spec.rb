@@ -27,7 +27,8 @@ RSpec.describe TnovaManager do
 		end
 
 		context 'given a valid DC' do
-			let(:response) { post '/dc', {name: "name", host: "host", user: "user", password: "", tenant_name: "tenan", extra_info: "extra..."}.to_json, rack_env={'CONTENT_TYPE' => 'application/json'} }
+			host = "openstack_ip"
+			let(:response) { post '/dc', {name: "name", host: "openstack_ip", user: "user", password: "", tenant_name: "tenan", extra_info: "keystone=http://#{host}:35357/v2.0 orch=http://#{host}:8004/v1 compute=http://#{host}:8774/v2.1 neutron=http://#{host}:9696/v2.0 dns=dns"}.to_json, rack_env={'CONTENT_TYPE' => 'application/json'} }
 
 			it 'responds with a 201' do
 				expect(response.status).to eq 201

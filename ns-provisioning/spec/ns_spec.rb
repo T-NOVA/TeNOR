@@ -23,11 +23,11 @@ RSpec.describe NsProvisioning do
     end
 
     before do
-        begin
-            DatabaseCleaner.start
-        ensure
-            DatabaseCleaner.clean
-        end
+#        begin
+#            DatabaseCleaner.start
+#        ensure
+#            DatabaseCleaner.clean
+#        end
     end
 
     describe 'GET /ns-instances' do
@@ -173,6 +173,21 @@ RSpec.describe NsProvisioning do
 				expect(response_found.status).to eq 200
 			end
 		end
-
 	end
+
+    describe 'POST /ns-instances/nsr_id/instantiate' do
+        let(:nsr) { create :nsr_example }
+        context 'when the nsr is found' do
+            let(:response_found) { post '/' + nsr._id.to_s + '/instantiate', File.read(File.expand_path('../fixtures/instantiated_info.json', __FILE__)), 'CONTENT_TYPE' => 'application/json'}
+
+			it 'responds with an empty body' do
+				expect(response_found.body).to be_empty
+			end
+
+			it 'responds with a 200' do
+				expect(response_found.status).to eq 200
+			end
+		end
+
+    end
 end

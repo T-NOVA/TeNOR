@@ -1,3 +1,11 @@
+## 0.11.0
+- Finished some missing tests.
+- Netfloc support finished.
+- Monitoring/SLA updates.
+- Added Netfloc and WICM in PoP add modal.
+- Updated some docs.
+- Fix hot generator when cloud init is disabled.
+
 ## 0.10.0
 - Included Compute api v2
 - Provisioning fixes. Handling errors when Auth and flavor errors occurs.

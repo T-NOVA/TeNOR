@@ -19,12 +19,15 @@ default_user_password: secretsecret
 default_tenant_name: tenor_tenant
 
 ns_monitoring: localhost:4014
+ns_monitoring_token:
 vnf_manager: localhost:4567
+vnf_manager_token:
 hot_generator: localhost:4571
-wicm: 
-mapping: 
-infr_repository: 
-netfloc: 
+hot_generator_token:
+wicm: false
+mapping:
+infr_repository:
+netfloc: false
 
 dependencies: [ns_monitoring, vnf_manager, wicm, mapping, hot_generator, infr_repository, netfloc]
 

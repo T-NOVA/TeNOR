@@ -22,7 +22,7 @@ module MappingHelper
     # @param [JSON] Microservice information
     # @return [Hash, nil] if the parsed message is a valid JSON
     # @return [Hash, String] if the parsed message is an invalid JSON
-    def callMapping(mapping_host, ms, _nsd)
+    def callMapping(mapping_host, ms)
         begin
             response = RestClient.post mapping_host, ms.to_json, content_type: :json
             # response = RestClient.post settings.mapping + '/mapper', ms.to_json, content_type: :json

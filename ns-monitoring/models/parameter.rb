@@ -13,5 +13,5 @@ end
 
 class Parameter < ActiveRecord::Base
   belongs_to :sla
-#  has_many :violations
+  has_many :violations
 end

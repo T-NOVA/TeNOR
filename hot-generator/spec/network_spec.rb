@@ -36,7 +36,7 @@ RSpec.describe HotGenerator do
       end
 
       it 'response body should be equal' do
-        valid_response = '{"heat_template_version":"2015-04-30","description":"PXaaS 333","parameters":{},"resources":{"56df37d5e4b01f97669827ad_0":{"type":"OS::Neutron::Router","properties":{"external_gateway_info":{"network":"network_id"},"name":"Tenor_nsr_id"}}},"outputs":{}}'
+        valid_response = '{"heat_template_version":"2014-10-16","description":"PXaaS 333","parameters":{},"resources":{"56df37d5e4b01f97669827ad_0":{"type":"OS::Neutron::Router","properties":{"external_gateway_info":{"network":"network_id"},"name":"Tenor_nsr_id"}}},"outputs":{}}'
         expect(JSON.parse response.body).to eq(JSON.parse valid_response)
       end
     end

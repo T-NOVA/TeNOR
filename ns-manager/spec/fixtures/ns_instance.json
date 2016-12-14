@@ -1,0 +1,151 @@
+{
+    "audit_log": [],
+    "auto_scale_policy": {
+        "criteria": [],
+        "GOLD": [
+            {
+                "criteria": [
+                    {
+                        "assurance_parameter_id": "ap0"
+                    }
+                ],
+                "actions": [
+                    {
+                        "type": "Scale Out"
+                    }
+                ]
+            },
+            {
+                "criteria": [
+                    {
+                        "assurance_parameter_id": "ap1"
+                    }
+                ],
+                "actions": [
+                    {
+                        "type": "Scale In"
+                    }
+                ]
+            }
+        ]
+    },
+    "connection_points": [],
+    "created_at": "2016-11-11T13:58:49.195+00:00",
+    "descriptor_reference": "58248076e4b0094ef1f54ed6",
+    "instantiation_end_time": null,
+    "instantiation_start_time": "2016-11-11T13:59:05.245+00:00",
+    "lifecycle_event": null,
+    "lifecycle_event_history": [
+        "INIT",
+        "MAPPED FOUND",
+        "NETWORK CREATED",
+        "INSTANTIATING 2704 VNF"
+    ],
+    "lifecycle_events": {
+        "start": [
+            {
+                "vnf_id": "2704",
+                "vnf_event": "start",
+                "event_rel_id": "rel_le0",
+                "event_id": "le0",
+                "sla_ref_id": "sla0"
+            }
+        ],
+        "stop": [],
+        "scale_out": [],
+        "scale_in": []
+    },
+    "mapping_time": "2016-11-11T13:58:49.199+00:00",
+    "marketplace_callback": "https://httpbin.org/post",
+    "monitoring_parameters": [
+        {
+            "desc": "Availability",
+            "metric": "availability",
+            "unit": "%"
+        },
+        {
+            "desc": "End-to-End Bandwidth",
+            "metric": "end-to-end bandwidth",
+            "unit": "Mbps"
+        }
+    ],
+    "notification": "https://httpbin.org/post",
+    "nsd_id": "58248076e4b0094ef1f54ed6",
+    "pnfr": null,
+    "resource_reservation": [
+        {
+            "ports": [],
+            "network_stack": {
+                "id": "19377c68-f332-4663-ba72-b4a0da1fec8d",
+                "stack_url": "http://10.10.1.2:8004/v1/16b6c1cdb8604e3a84569e40edfce83a/stacks/network_5825ce99c098a434c100000c/19377c68-f332-4663-ba72-b4a0da1fec8d"
+            },
+            "public_network_id": "121ad8e8-a656-4baf-a306-9b88db8de2a8",
+            "dns_server": [
+                "10.30.0.11"
+            ],
+            "pop_id": "3",
+            "routers": [
+                {
+                    "id": "e317d66a-2ca1-4681-8d6f-54988845e4eb",
+                    "alias": "Tenor_5825ce99c098a434c100000c"
+                }
+            ],
+            "networks": [
+                {
+                    "id": "1b3e8482-133a-46cb-bb9f-110a93122ecb",
+                    "alias": "EXT101116"
+                }
+            ]
+        }
+    ],
+    "runtime_policy_info": [],
+    "service_deployment_flavour": "GOLD",
+    "status": "INSTANTIATING VNFs",
+    "updated_at": "2016-11-11T13:59:05.245+00:00",
+    "vendor": "3",
+    "version": "1",
+    "vlr": [
+        {
+            "id": "1b3e8482-133a-46cb-bb9f-110a93122ecb",
+            "alias": "EXT101116"
+        }
+    ],
+    "vnf_depedency": [],
+    "vnf_dependency": null,
+    "vnffgd": {
+        "vnffgs": [
+            {
+                "vnffg_id": "vnffg0",
+                "number_of_endpoints": 1,
+                "number_of_virtual_links": 1,
+                "dependent_virtual_links": [
+                    "vld0"
+                ],
+                "network_forwarding_path": [
+                    {
+                        "nfp_id": "nfp0",
+                        "graph": [
+                            "vld0"
+                        ],
+                        "connection_points": [
+                            "ns_ext_EXT101116",
+                            "VNF#2704:ext_MNG1011"
+                        ],
+                        "constituent_vnfs": [
+                            {
+                                "vnf_ref_id": "2704",
+                                "vnf_flavor_key_ref": "gold"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "vnffgr": null,
+    "vnfrs": [],
+    "id": "5825ce99c098a434c100000c",
+    "$$hashKey": "object:20343",
+    "mapping_total_time": 4,
+    "instantiation_total_time": null
+}

@@ -22,7 +22,7 @@ class ServiceConfiguration < TnovaManager
     # Retrieve the microservices list
     get '/services' do
         begin
-            return 200, Service.all.to_json
+            return 200, Service.all.to_json(:except => :token)
         rescue => e
             logger.error e
             logger.error 'Error Establishing a Database Connection'
@@ -37,23 +37,10 @@ class ServiceConfiguration < TnovaManager
         begin
             service = Service.find(id)
         rescue Mongoid::Errors::DocumentNotFound => e
-            logger.error 'DC not found'
+            logger.error 'Service not found'
             return 404
         end
-        service.to_json
-    end
-
-    # @method get_modules_services_name
-    # @overload get '/modules/services/:name'
-    # Retrieve the token of a microservice given a name
-    get '/services/name/:name' do |name|
-        begin
-            service = Service.find_by(name: name)
-        rescue Mongoid::Errors::DocumentNotFound => e
-            logger.error 'DC not found'
-            return 404
-        end
-        service['token']
+        service.to_json(:except => :token)
     end
 
     # @method get_modules_services_type
@@ -63,10 +50,10 @@ class ServiceConfiguration < TnovaManager
         begin
             services = Service.where(:type => type)
         rescue Mongoid::Errors::DocumentNotFound => e
-            logger.error 'DC not found'
+            logger.error 'Service not found'
             return 404
         end
-        services.to_json
+        services.to_json(:except => :token)
     end
 
     # @method post_modules_services
@@ -133,12 +120,12 @@ class ServiceConfiguration < TnovaManager
     put '/services' do
     end
 
-    # @method delete_modules_services_name
-    # @overload delete '/modules/services/:name'
+    # @method delete_modules_services_id
+    # @overload delete '/modules/services/:id'
     # Remove a microservice
-    delete '/services/:name' do |name|
+    delete '/services/:id' do |id|
         begin
-           Service.find_by(name: name).destroy
+           Service.find(id).destroy
        rescue Mongoid::Errors::DocumentNotFound => e
            halt 404
        end

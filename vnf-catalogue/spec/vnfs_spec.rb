@@ -74,8 +74,8 @@ RSpec.describe VnfCatalogue do
 		context 'given a valid VNF' do
 			let(:response) { post '/vnfs', {id: 1, name: 'teste', vnfd:{id: 11, vendor: 'ptin'}}.to_json, rack_env={'CONTENT_TYPE' => 'application/json'} }
 
-			it 'responds with a 200' do
-				expect(response.status).to eq 200
+			it 'responds with a 201' do
+				expect(response.status).to eq 201
 			end
 
 			it 'response body should contain a Hash (VNF)' do

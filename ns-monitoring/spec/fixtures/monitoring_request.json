@@ -1,0 +1,42 @@
+{
+  "nsi_id": "id",
+  "parameters": [
+    {
+      "uid": 1,
+      "name": "cpu_util",
+      "formula": "MAX(VNF:2910.cpu_util)",
+      "value": "GT(60)",
+      "violations": [
+        {
+          "breaches_count": 1,
+          "interval": 60
+        }
+      ]
+    },
+      {
+        "uid": 2,
+        "name": "cpu_util",
+        "formula": "MIN(VNF:2910.cpu_util)",
+        "value": "LT(18)",
+        "violations": [
+          {
+            "breaches_count": 1,
+            "interval": 60
+          }
+        ]
+      }
+  ],
+  "vnf_instances": [
+    {
+      "id": "id",
+      "parameters": [
+        {
+          "id": 1,
+          "name": "cpu_uti",
+          "unit": "%"
+        }
+      ],
+      "vnfr_id": "vnfr_id"
+    }
+  ]
+}

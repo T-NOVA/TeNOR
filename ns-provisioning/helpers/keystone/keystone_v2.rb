@@ -29,7 +29,7 @@ module Authenticationv2Helper
                 pop_auth['password'] = 'secretsecret'
 
                 if pop_auth['tenant_id'].nil? && pop_auth['user_id'].nil?
-                    stack_url, tenant_id, user_id = create_user_and_project(popUrls[:orch], @instance['id'], pop_auth['tenant_name'], pop_auth['username'], pop_auth['password'], tenant_id, token)
+                    stack_url, tenant_id, user_id = create_user_and_project(popUrls[:heat], @instance['id'], pop_auth['tenant_name'], pop_auth['username'], pop_auth['password'], tenant_id, token)
                     pop_auth['tenant_id'] = tenant_id
                     pop_auth['user_id'] = user_id
                 else
@@ -47,7 +47,7 @@ module Authenticationv2Helper
                 pop_auth['tenant_name'] = 'tenor_tenant_' + @instance['id'].to_s
                 pop_auth['username'] = 'user_' + @instance['id'].to_s
                 pop_auth['password'] = 'secretsecret'
-                stack_url, tenant_id, user_id = create_user_and_project(popUrls[:orch], @instance['id'], 'tenor_tenant_' + @instance['id'].to_s, 'user_' + @instance['id'].to_s, 'secretsecret', tenant_id, token)
+                stack_url, tenant_id, user_id = create_user_and_project(popUrls[:heat], @instance['id'], 'tenor_tenant_' + @instance['id'].to_s, 'user_' + @instance['id'].to_s, 'secretsecret', tenant_id, token)
                 pop_auth['tenant_id'] = tenant_id
                 pop_auth['user_id'] = user_id
                 pop_auth['stack_url'] = stack_url
@@ -84,7 +84,7 @@ module Authenticationv2Helper
             logger.error e
             error = { 'info' => 'Error creating the Openstack credentials.' }
             logger.error error
-            recoverState(@instance, error)
+            recoverState(@instance, pop_auth, error)
             return 400, error
         end
         pop_auth
@@ -98,6 +98,7 @@ module Authenticationv2Helper
         rescue => e
             logger.error e
             logger.error e.response.body
+            return 400, e.response.body
         end
 
         authentication, errors = parse_json(response)
@@ -114,14 +115,14 @@ module Authenticationv2Helper
         rescue => e
             logger.error e
             logger.error e.response.body
-            return 400, e
+            return 400, e.response.body
         end
 
         authentication, errors = parse_json(response)
         return 400, errors if errors
 
         authentication
-      end
+    end
 
     def authentication_v2_ids(keystoneUrl, tenant_id, user_id, password)
         auth = { auth: { tenantId: tenant_id, passwordCredentials: { userId: user_id, password: password } } }
@@ -131,6 +132,7 @@ module Authenticationv2Helper
         rescue => e
             logger.error e
             logger.error e.response.body
+            return 400, e.response.body
         end
 
         authentication, errors = parse_json(response)

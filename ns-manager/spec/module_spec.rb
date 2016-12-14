@@ -111,39 +111,6 @@ RSpec.describe TnovaManager do
 		end
 	end
 
-	describe 'GET /modules/services/name/:name' do
-		let(:obj) { create :service }
-
-		context 'when the Service name is not found' do
-
-			let(:response_not_found) { get '/services/name/' + 'aaa' }
-
-			it 'responds with an empty body' do
-				expect(response_not_found.body).to be_empty
-			end
-
-			it 'responds with 404' do
-        expect(response_not_found.status).to eq 404
-			end
-		end
-
-		context 'when the Service is found' do
-      let(:response_found) { get '/services/name/' + obj.name }
-
-			it 'response body should not be empty' do
-				expect(response_found.body).to_not be_empty
-			end
-
-			it 'response body should contain a String (Token)' do
-				expect(response_found.body).to be_a String
-			end
-
-			it 'responds with a 200' do
-				expect(response_found.status).to eq 200
-			end
-		end
-	end
-
 	describe 'DELETE /modules/services/:id' do
 		let(:obj) { create :service }
 
@@ -160,7 +127,7 @@ RSpec.describe TnovaManager do
 		end
 
 		context 'when the Services is found' do
-			let(:response_found) { delete '/services/' + obj.name }
+			let(:response_found) { delete '/services/' + obj.id }
 
 			it 'responds with an empty body' do
 				expect(response_found.body).to be_empty

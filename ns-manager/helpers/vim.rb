@@ -18,7 +18,42 @@
 # @see TnovaManager
 module VimHelper
 
-  def authentication_v2(pop_info, extrainfo)
+  def authentication_v2(keystone_url, tenant_name, user, password)
+        auth = { auth: { tenantName: tenant_name, passwordCredentials: { username: user, password: password } } }
+
+        begin
+            response = RestClient.post keystone_url + '/tokens', auth.to_json, content_type: :json
+        rescue => e
+            logger.error e
+            logger.error e.response.body
+            return 400, e.response.body
+        end
+
+        authentication, errors = parse_json(response)
+        return 400, errors if errors
+
+        authentication
+      end
+
+    def authentication_v3(keystone_url, tenant_name, user, password)
+        auth = { auth: { identity: { methods: ['password'], password: { user:{ name: user, domain: { "name": tenant_name }, password: password} } } } }
+
+        begin
+            response = RestClient.post keystone_url + '/auth/tokens', auth.to_json, content_type: :json
+        rescue => e
+            logger.error e
+            logger.error e.response.body
+            return 400, e.response.body
+        end
+
+        auth, errors = parse_json(response)
+        return 400, errors if errors
+
+        auth['token']['id'] = response.headers[:x_subject_token]
+        auth
+      end
+
+  def authentication_v2_old(pop_info, extrainfo)
 
         auth = { auth: { tenantName: extrainfo[:tenantname], passwordCredentials: { username: pop_info['adminid'], password: pop_info['password'] } } }
         begin
@@ -37,7 +72,7 @@ module VimHelper
         return parse_json(response)
   end
 
-  def authentication_v3(pop_info, extrainfo)
+  def authentication_v3_old(pop_info, extrainfo)
 
     auth = {
       auth: {

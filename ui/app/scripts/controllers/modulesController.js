@@ -4,7 +4,7 @@ angular.module('tNovaApp')
     .controller('modulesController', function ($scope, $filter, tenorService, $interval, $modal) {
 
         $scope.types_internal_modules = ["", "manager"];
-        $scope.types_external_modules = ["mapping", "infr_repo", "mapi", "vim_monitoring"];
+        $scope.types_external_modules = ["mapping", "infr_repo", "mapi", "vim_monitoring", "wicm"];
         $scope.types_modules = $scope.types_internal_modules.concat($scope.types_external_modules)
         $scope.externalModulesCollection = [];
 
@@ -35,13 +35,13 @@ angular.module('tNovaApp')
             $scope.itemToDeleteId = id;
             $modal({
                 title: "Are you sure you want to delete this item?",
-                template: "partials/t-nova/modals/delete.html",
+                template: "views/t-nova/modals/delete.html",
                 show: true,
                 scope: $scope,
             });
         };
-        $scope.deleteItem = function (id) {
-            tenorService.delete("modules/services?name=" + id).then(function (data) {});
+        $scope.deleteItem = function (name) {
+            tenorService.delete("modules/services/" + id).then(function (data) {});
             this.$hide();
         };
 

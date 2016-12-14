@@ -4,6 +4,7 @@ declare tenor_ip
 declare mongo_ip
 declare cassandra_address
 declare logger_address
+declare tenor_env
 bold=$(tput bold)
 normal=$(tput sgr0)
 
@@ -30,8 +31,8 @@ show_menus() {
   echo "1. Install TeNOR"
   echo "2. Reconfigure configuration files"
   echo "3. Register microservices"
-  echo "4. Add new PoP (Deprecated - Please, use the User Interface at http://localhost:9000)"
-  echo "5. Remove PoP (Deprecated - Please, use the User Interface at http://localhost:9000)"
+  echo "4. Add new PoP (Deprecated - Please, use the User Interface at http://127.0.0.1:9000)"
+  echo "5. Remove PoP (Deprecated - Please, use the User Interface at http://127.0.0.1:9000)"
   echo "6. Inserting sample VNF and NS"
   echo "7. Exit"
 }
@@ -170,7 +171,7 @@ configureIps(){
   #</source>
 
   # HTTP input
-  # http://localhost:8888/<tag>?json=<json>
+  # http://127.0.0.1:8888/<tag>?json=<json>
   <source>
   @type http
   @id http_input
@@ -188,9 +189,9 @@ configureIps(){
   #</source>
 
   # Listen HTTP for monitoring
-  # http://localhost:24220/api/plugins
-  # http://localhost:24220/api/plugins?type=TYPE
-  # http://localhost:24220/api/plugins?tag=MYTAG
+  # http://127.0.0.1:24220/api/plugins
+  # http://127.0.0.1:24220/api/plugins?type=TYPE
+  # http://127.0.0.1:24220/api/plugins?tag=MYTAG
   <source>
   @type monitor_agent
   @id monitor_agent_input
@@ -241,7 +242,7 @@ configureFiles(){
 
   configureIps $1
 
-  printf "Removing old config files...."
+  printf "Removing old config files....\n\n"
   rm **/config/config.yml
 
   for folder in $(find . -type d  \( -name "ns*" -o -name "vnf*" -o -name "hot-generator" \) ); do
@@ -258,6 +259,7 @@ configureFiles(){
       cp config/database.yml.sample config/database.yml
     fi
 
+    sed -i -e 's/\(environment:\).*/\1 '$tenor_env'/' config/config.yml
     sed -i -e 's/\(logger_host:\).*/\1 '$logger_host'/' config/config.yml
     sed -i -e 's/\(logger_port:\).*/\1 '$logger_port'/' config/config.yml
     for i in "${tenor_ns_url[@]}"; do
@@ -293,7 +295,7 @@ configureFiles(){
 
 addNewPop(){
   echo "Adding new PoP..."
-  TENOR_HOST=localhost:4000
+  TENOR_HOST=127.0.0.1:4000
   OPENSTACK_NAME=default
   OPENSTACK_IP=localhost
   ADMIN_TENANT_NAME=admin
@@ -303,7 +305,7 @@ addNewPop(){
 
   echo -e "Please, insert the IPs and ports used requested. ${bold}You can press [ENTER] without write anything in the case of local installation.${normal}\n\n"
 
-  echo "Type the address where TeNOR is RUNNING (localhost:4000), followed by [ENTER]:"
+  echo "Type the address where TeNOR is RUNNING (127.0.0.1:4000), followed by [ENTER]:"
   read tenor_host
   if [ -z "$tenor_host" ]; then tenor_host=$TENOR_HOST; fi
 
@@ -336,7 +338,7 @@ addNewPop(){
   if [ -z "$openstack_dns" ]; then openstack_dns=$OPENSTACK_DNS; fi
 
   response=$(curl -XPOST http://$tenor_host/pops/dc -H "Content-Type: application/json" \
-  -d '{"msg": "PoP Testbed", "dcname":"'$openstack_name'", "isAdmin": "'$admin_user_type'" "adminid":"'$keystoneUser'","password":"'$keystonePass'", "extrainfo":"pop-ip='$openstack_ip' tenant-name='$admin_tenant_name' keystone-endpoint=http://'$openstack_ip':35357/v2.0 orch-endpoint=http://'$openstack_ip':8004/v1 compute-endpoint=http://'$openstack_ip':8774/v2.1 neutron-endpoint=http://'$openstack_ip':9696/v2.0 dns='$openstack_dns'"}')
+  -d '{"msg": "PoP Testbed", "host": "'$openstack_ip'", "name":"'$openstack_name'", "isAdmin": "'$admin_user_type'" "user":"'$keystoneUser'","password":"'$keystonePass'", "tenant_name": "'$admin_tenant_name'", "extrainfo":"keystone=http://'$openstack_ip':35357/v2.0 heat=http://'$openstack_ip':8004/v1 compute=http://'$openstack_ip':8774/v2.1 neutron=http://'$openstack_ip':9696/v2.0 dns='$openstack_dns'"}')
 
   echo -e "\n\n"
   echo $response
@@ -351,7 +353,7 @@ conn_openstack() {
 
 removePop() {
   echo "Removing PoP..."
-  tenor_host=localhost:4000
+  tenor_host=127.0.0.1:4000
 
   curl -XGET http://$tenor_host/pops/dc  | ruby -r rubygems -r json -e "puts JSON[STDIN.read];"
 
@@ -378,10 +380,11 @@ registerMicroservice(){
 }
 
 insertSamples(){
+  token=$(curl -XPOST 127.0.0.1:4000/auth/login -H "Content-Type: application/json" --data-binary '{"username":"admin","password":"adminpass"}' | ruby -r rubygems -r json -e "puts JSON[STDIN.read]['token'];")
   echo "Inserting VNF..."
-  vnf_id=$(curl -XPOST localhost:4000/vnfs -H "Content-Type: application/json" --data-binary @vnfd-validator/assets/samples/vnfd_example.json | ruby -r rubygems -r json -e "puts JSON[STDIN.read]['vnfd']['id'];")
+  vnf_id=$(curl -XPOST 127.0.0.1:4000/vnfs -H "Content-Type: application/json" -H "X-Auth-Token: $token" --data-binary @vnfd-validator/assets/samples/vnfd_example.json | ruby -r rubygems -r json -e "puts JSON[STDIN.read]['vnfd']['id'];")
   echo "Inserting NS..."
-  ns_id=$(curl -XPOST localhost:4000/network-services -H "Content-Type: application/json" --data-binary @nsd-validator/assets/samples/nsd_example.json | ruby -r rubygems -r json -e "puts JSON[STDIN.read]['nsd']['id'];")
+  ns_id=$(curl -XPOST 127.0.0.1:4000/network-services -H "Content-Type: application/json" -H "X-Auth-Token: $token" --data-binary @nsd-validator/assets/samples/nsd_example.json | ruby -r rubygems -r json -e "puts JSON[STDIN.read]['nsd']['id'];")
   echo "NSD id: " $ns_id
   echo "VNFD id: " $vnf_id
 

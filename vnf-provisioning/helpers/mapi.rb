@@ -22,7 +22,6 @@ module MapiHelper
 
         # Send the VNFR to the mAPI
         mapi_request = { id: vnfr.id.to_s, vnfd: { vnf_lifecycle_events: vnfr.lifecycle_info } }
-        logger.debug 'mAPI request: ' + mapi_request.to_json
         begin
             response = RestClient.post "#{settings.mapi}/vnf_api/", mapi_request.to_json, content_type: :json, accept: :json
         rescue Errno::ECONNREFUSED
@@ -35,10 +34,9 @@ module MapiHelper
             logger.error e
             message = { status: 'mAPI_error', vnfd_id: vnfr.vnfd_reference, vnfr_id: vnfr.id }
             logger.error message
-            logger.info 'mAPI is not reachable'
+            logger.info 'Error registring the request to mAPI.'
         end
-        logger.info 'Recevied response??'
-        logger.info response
+        return
     end
 
     def sendCommandToMAPI(vnfr_id, mapi_request)
@@ -56,7 +54,7 @@ module MapiHelper
             logger.error e.response
             return e.response.code, e.response.body
         end
-        response
+        return
     end
 
     def sendDeleteCommandToMAPI(vnfr_id)

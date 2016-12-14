@@ -23,7 +23,7 @@ class DcController < TnovaManager
     #  Returns a DCs
     get '/dc' do
         begin
-            return 200, Dc.all.to_json
+            return 200, Dc.all.to_json(:except => :password)
         rescue => e
             logger.error e
             logger.error 'Error Establishing a Database Connection'
@@ -41,7 +41,7 @@ class DcController < TnovaManager
             logger.error 'DC not found'
             return 404
         end
-        return dc.to_json
+        return dc.to_json(:except => :password)
     end
 
     # @method get_pops_dc
@@ -61,7 +61,7 @@ class DcController < TnovaManager
             logger.error 'DC not found'
             return 404
         end
-        return dc.to_json
+        return dc.to_json(:except => :password)
     end
 
     # @method post_pops_dc
@@ -85,6 +85,8 @@ class DcController < TnovaManager
             halt 409, 'DC Duplicated. Use PUT for update.'
         # i es.update_attributes!(:host => pop_info['host'], :port => pop_info['port'], :token => @token, :depends_on => serv_reg['depends_on'])
         rescue Mongoid::Errors::DocumentNotFound => e
+            status, errors = popStatus(serv)
+            halt 400, "Incorrect credentials" if status != 200
             begin
                 dc = Dc.create!(serv)
             rescue => e
@@ -126,6 +128,19 @@ class DcController < TnovaManager
             halt 404
         end
         halt 200
+    end
+
+    # @method get_pops_dc_id_status
+    # @overload get '/pops/dc/:id/status'
+    # Get status of a DC and check the authentication
+    get '/dc/:id/status' do |id|
+        begin
+            dc = Dc.find(id.to_i)
+        rescue Mongoid::Errors::DocumentNotFound => e
+            logger.error 'DC not found'
+            return 404
+        end
+        return popStatus(dc)
     end
 
 end

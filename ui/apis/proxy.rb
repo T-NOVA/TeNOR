@@ -9,7 +9,7 @@ class App::Proxy < Sinatra::Base
     host = request.env["HTTP_X_HOST"]
 
     begin
-      response = RestClient.get host + "/" + params[:splat][0] + "?" + request.env['QUERY_STRING'], :accept => request.env["HTTP_ACCEPT"]
+      response = RestClient.get host + "/" + params[:splat][0] + "?" + request.env['QUERY_STRING'], :accept => request.env["HTTP_ACCEPT"], :'X-Auth-Token' => request.env["HTTP_X_AUTH_TOKEN"]
     rescue Errno::ECONNREFUSED
       halt 500, "Errno::ECONNREFUSED"
     rescue => e
@@ -45,7 +45,7 @@ class App::Proxy < Sinatra::Base
     body = request.body.read
 
     begin
-      response = RestClient.put host + "/" + params[:splat][0], body, :content_type => :json
+      response = RestClient.put host + "/" + params[:splat][0], body, :content_type => :json, :'X-Auth-Token' => request.env["HTTP_X_AUTH_TOKEN"]
     rescue Errno::ECONNREFUSED
       halt 500, "Errno::ECONNREFUSED"
     rescue => e
@@ -61,7 +61,7 @@ class App::Proxy < Sinatra::Base
     host = request.env["HTTP_X_HOST"]
 
     begin
-      response = RestClient.delete host + "/" + params[:splat][0], :content_type => :json
+      response = RestClient.delete host + "/" + params[:splat][0], :content_type => :json, :'X-Auth-Token' => request.env["HTTP_X_AUTH_TOKEN"]
     rescue Errno::ECONNREFUSED
       halt 500, "Errno::ECONNREFUSED"
     rescue => e

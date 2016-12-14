@@ -18,6 +18,12 @@ angular.module('tNovaApp')
         $scope.compute_version = "v2.1"
         $scope.neutron_version = "v2.0"
 
+        $scope.netfloc_ip = ""
+        $scope.netfloc_user = "admin"
+        $scope.netfloc_pass = ""
+
+        $scope.wicm_ip = ""
+
         $scope.openstack_ip = "";
         $scope.infr_repo_url = undefined
 
@@ -117,7 +123,7 @@ angular.module('tNovaApp')
                 "tenant_name": obj.tenantName,
                 "is_admin": obj.isAdmin,
                 "description": obj.msg,
-                "extra_info": "keystone-endpoint=http://" + obj.keystone_api + " orch-endpoint=http://" + obj.heat_api + " compute-endpoint=http://" + obj.compute_api + " neutron-endpoint=http://" + obj.neutron_api + " dns=" + obj.dns
+                "extra_info": "keystone=http://" + obj.keystone_api + " heat=http://" + obj.heat_api + " compute=http://" + obj.compute_api + " neutron=http://" + obj.neutron_api + " dns=" + obj.dns + " netfloc_ip=" + obj.netfloc_ip + " netfloc_user=" + obj.netfloc_user + " netfloc_pass=" + obj.netfloc_pass + " wicm_ip=" + obj.wicm_ip
             };
             console.log(pop);
             tenorService.post('pops/dc', pop).then(function (d) {
@@ -220,7 +226,11 @@ angular.module('tNovaApp')
                 heat_api: openstack_ip + ":" + heat_port + "/" + $scope.heat_version,
                 compute_api: openstack_ip + ":" + compute_port + "/" + $scope.compute_version,
                 neutron_api: openstack_ip + ":" + neutron_port + "/" + $scope.neutron_version,
-                dns: $scope.dc_default.dns
+                dns: $scope.dc_default.dns,
+                netfloc_ip : $scope.netfloc_ip,
+                netfloc_user:$scope.netfloc_user,
+                netfloc_pass: $scope.netfloc_pass,
+                wicm_ip: $scope.wicm_ip
             }
         };
     });

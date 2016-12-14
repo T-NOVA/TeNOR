@@ -1,7 +1,8 @@
+---
 development:
   sessions:
     default:
-      database: ns_provisioning
+      database: ns_provisioning_dev
       hosts:
       - 127.0.0.1:27017
 

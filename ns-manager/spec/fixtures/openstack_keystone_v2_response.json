@@ -1,0 +1,13 @@
+{
+  "access": {
+    "token":{
+      "tenant":{
+        "id": "id"
+      },
+      "id": "token_id"
+    },
+    "user": {
+      "id": "user_id"
+    }
+  }
+}

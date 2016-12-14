@@ -2,6 +2,7 @@
 
 TeNOR is the NFV Orchestrator platform developed by the [T-NOVA](http://www.t-nova.eu) project, responsible for managing the entire NFV lifecycle service.
 
+[![GitHub release](https://img.shields.io/github/release/T-NOVA/TeNOR.svg)]()
 [![Build Status](https://travis-ci.org/T-NOVA/TeNOR.svg?branch=master)](https://travis-ci.org/T-NOVA/TeNOR) [![License](https://img.shields.io/badge/License-Apache%202.0-yellowgreen.svg)](https://opensource.org/licenses/Apache-2.0)
 
 ## Prerequisites
@@ -9,7 +10,7 @@ TeNOR is the NFV Orchestrator platform developed by the [T-NOVA](http://www.t-no
 - Bundler (installation provided in dependencies/install_dependencies.sh)
 - MongoDB (installation provided in dependencies/install_dependencies.sh)
 - Openstack Juno version or higher
-- Enable Keystone and Nova_Flavors in Openstack Heat resources ([How to do it](#enable_heat_resources))
+- Enable Keystone and Nova_Flavors in Openstack Heat resources ([How to do it](#enable-heat-resources))
 
 ## Optional Requirements
 - Service Mapping (https://github.com/T-NOVA/TeNOR/tree/master/service-mapper). Used when more than 1 PoP is available. Requires the Infrastructure Repository.
@@ -17,9 +18,9 @@ TeNOR is the NFV Orchestrator platform developed by the [T-NOVA](http://www.t-no
 - Middleware API (https://github.com/T-NOVA/mAPI) (required for start/stop the Lifecycle events inside the VNFS)
 - VIM Monitoring (https://github.com/T-NOVA/vim-monitoring). Used for receive the monitoring from each VNF.
 - Netfloc (https://github.com/T-NOVA/netfloc). Used for the VNFFG. Requires ODL.
-- WICM (https://github.com/T-NOVA/WICM).
-- Apache Cassandra (optional, used for monitoring) (installation provided in dependencies/install_cassandra.sh)
-- RabbitMq (optional, used for monitoring) (installation provided in dependencies/install_dependencies.sh)
+- WICM (https://github.com/T-NOVA/WICM). Responsible for redirecting traffic from a client into a or several NFVI-PoP(s)
+- Apache Cassandra (used for monitoring) (installation provided in dependencies/install_cassandra.sh)
+- RabbitMq (used for monitoring) (installation provided in dependencies/install_dependencies.sh)
 
 #Getting started
 
@@ -128,7 +129,7 @@ The content of the loadModules.sh is a set of CuRL request to the NS Manager ins
 
 ## Loading NFVI-PoP information in TeNOR
 
-The PoP information is saved in the Authentication module. First of all, TeNOR recevies the registration requests and validates the authentication. If it works, TeNOR saves the PoP. The PoP can be inserted in two manners:
+The NFVI-PoP information is saved in the Authentication module. First of all, TeNOR recevies the registration requests and validates the authentication. If it works, TeNOR saves the NFVI-PoP. The NFVI-PoP can be inserted in two manners:
 
  - Using the TeNOR User Interface:
  `Configuration -> PoPs`
@@ -153,7 +154,7 @@ The UI has a default user for authentication, the credentials are (can be change
 Make a request to the following address (NS Manager):
 
 ```
-curl -XGET http://localhost:4000/
+curl -XGET http://127.0.0.1:4000/
 ```
 
 If nothing is received, make sure that the NS Manager is running.
@@ -209,13 +210,13 @@ The provided examples are:
 
 You can test it using the same commands shown before but chaning the file.
 
-### End-to-end tests
-We provide a script that executes an End-to-End test. You only need the PoP credentials before to execute the script. So, please modify the file ` env_end_to_end.sh ` with the correct values and execute the script: ` . ./env_end_to_end.sh `
+### Tests
+Each module has their own unit tests. Inside each folder execute the following command in order to run the tests:
+` rspec `
 
-Then, you can execute the script with the following command:
-` ruby end_to_end.rb `
+Furhtermore, an integration tests is provided in the root folder that executes and end-to-end tests testing all the functionalities of TeNOR. In the root folder configure the file ` .env ` with a valid Openstack credentials and then execute ` rspec `.
 
-The following items will be created: a set of PoPs with different configurations, a sample NSD/VNFD and the instantiation for each PoP. After the execution, the created components will be removed automatically.
+A sample NSDs will be created and instantiated into the Openstack PoP defined in the ` .env ` file.  After the execution, the test will remove the created components automatically.
 
 ## Logs
 TeNOR uses Fluentd in order to store the logs in a MongoDB. The UI inlcudes a view that allows to browser through the logs based on the date, severity and module.

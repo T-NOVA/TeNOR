@@ -52,6 +52,25 @@ RSpec.configure do |config|
 
   config.before(:each) do
 
+    #catalogues
+    stub_request(:get, 'http://localhost:4011/network-services').to_return(status: 200, body: File.read(File.join('spec', 'fixtures', 'ns_catalogue.json')))
+    stub_request(:get, 'http://localhost:4011/network-services/5829ac034431124ef1f54ed7').to_return(status: 200, body: File.read(File.join('spec', 'fixtures', 'nsd_5829ac034431124ef1f54ed7.json')))
+    stub_request(:get, 'http://localhost:4567/vnfs').to_return(status: 200, body: File.read(File.join('spec', 'fixtures', 'vnf_catalogue.json')))
+    stub_request(:get, 'http://localhost:4567/vnfs/5829ac034431124ef1f54ed7').to_return(status: 200, body: File.read(File.join('spec', 'fixtures', 'vnfd_2544.json')))
+
+    #scaling stub
+    stub_request(:get, 'http://localhost:4012/ns-instances/5825ce99c098a434c100000c').to_return(status: 200, body: File.read(File.join('spec', 'fixtures', 'ns_instance.json')))
+    stub_request(:post, 'http://localhost:4012/ns-instances/scaling/5825ce99c098a434c100000c/scale_out').to_return(status: 200, body: "")
+    stub_request(:post, 'http://localhost:4012/ns-instances/scaling/5825ce99c098a434c100000c/scale_in').to_return(status: 200, body: "")
+
+    #monitoring
+    stub_request(:get, 'http://localhost:4014/ns-monitoring/id/monitoring-data/?instance_type=ns').to_return(status: 200, body: File.read(File.join('spec', 'fixtures', 'ns_catalogue.json')))
+    stub_request(:get, 'http://localhost:4567/vnf-monitoring/id/monitoring-data/?instance_type=vnf').to_return(status: 200, body: File.read(File.join('spec', 'fixtures', 'ns_catalogue.json')))
+
+    #openstack keystone
+    stub_request(:post, 'http://openstack_ip:35357/v2.0/tokens').to_return(status: 200, body: File.read(File.join('spec', 'fixtures', 'openstack_keystone_v2_response.json')))
+    stub_request(:get, 'http://openstack_ip:35357/v2.0').to_return(status: 200, body: {}.to_json)
+
   end
 
   # rspec-expectations config goes here. You can use an alternate

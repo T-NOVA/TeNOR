@@ -37,7 +37,7 @@ class Nsr
   field :vnfrs, type: Array
   field :lifecycle_event, type: Hash
   field :vnf_dependency, type: Array
-  field :vnffgr, type: Array
+  field :vnffgd, type: Hash
   field :pnfr, type: Array
   field :descriptor_reference, type: String
   field :resource_reservation, type: Array
@@ -48,10 +48,13 @@ class Nsr
   field :audit_log, type: Array
 
   #TeNOR fields
+  field :name, type: String
   field :marketplace_callback, type: String
   field :mapping_time, type: Time
   field :instantiation_start_time, type: Time
   field :instantiation_end_time, type: Time
+  field :instantiation_netfloc_end_time, type: Time
+  field :instantiation_netfloc_start_time, type: Time
   field :authentication, type: Array
 
 end

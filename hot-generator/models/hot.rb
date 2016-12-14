@@ -22,7 +22,7 @@ class Hot
   #
   # @param [String] description the description of Hot object
   def initialize(description)
-    @version = '2015-04-30'
+    @version = '2014-10-16' #'2015-04-30'
     @description = description
     @resources_list = []
     @outputs_list = []

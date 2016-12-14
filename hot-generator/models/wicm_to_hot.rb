@@ -41,10 +41,10 @@ class WicmToHot
     2.times {networks_name << create_network}
 
     # Create the subnets for all networks
-    networks_name.each_with_index {|name, index| create_subnet(name, 250 + index, '8.8.8.8')}
-  
+    networks_name.each_with_index {|name, index| create_subnet(name, 250 + index, ['8.8.8.8'])}
+
     # Create the Service Function Forwarder machine
-    create_server('image_name', create_flavor, create_ports(networks_name))
+    #create_server('image_name', create_flavor, create_ports(networks_name))
 
     #puts @hot.to_yaml
 
