@@ -155,7 +155,7 @@ class Monitoring < VNFManager
 
       vms = ""
       response['vms'].each do |vm|
-        vms = "&vdus[]=" + vm[:physical_resource_id].to_s
+        vms = "&vdus[]=" + vm['physical_resource_id'].to_s
         path = path + vms
       end
     end
