@@ -68,6 +68,7 @@ module HotHelper
     def delete_stack_with_wait(stack_url, auth_token)
         status = 'DELETING'
         count = 0
+        counter_progress = 0
         code = deleteStack(stack_url, auth_token)
         if code == 404
             status = 'DELETE_COMPLETE'
@@ -99,6 +100,12 @@ module HotHelper
             end
             break if status == 'DELETE_COMPLETE'
             count += 1
+
+            if status == 'DELETE_IN_PROGRESS'
+                count = 19 if count > 20
+                counter_progress += 1
+                count = 21 if counter_progress > 20
+            end
 
             if count > 20
                 logger.error 'Stack can not be removed'

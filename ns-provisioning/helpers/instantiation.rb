@@ -39,6 +39,8 @@ module InstantiationHelper
 
         # create credentials for pop_id
         if pop_urls[:keystone].nil? || pop_urls[:heat].nil? # || pop_urls[:tenant].nil?
+            logger.error pop_urls[:keystone]
+            logger.error pop_urls[:heat]
             return handleError(@instance, 'Internal error: Keystone and/or openstack urls missing.')
         end
 
