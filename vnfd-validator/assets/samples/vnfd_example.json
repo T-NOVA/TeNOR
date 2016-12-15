@@ -114,7 +114,7 @@
     "version": "1",
     "vnf_lifecycle_events": [
       {
-        "authentication_username": "vagrant",
+        "authentication_username": "ubuntu",
         "driver": "ssh",
         "authentication_type": "PubKeyAuthentication",
         "authentication": "",
@@ -122,17 +122,17 @@
         "flavor_id_ref": "flavor0",
         "events": {
           "start": {
-            "command": "/home/vagrant/scripts/start",
+            "command": "/home/ubuntu/scripts/start",
             "template_file": "{\"controller\":\"get_attr[vdu0,CPfs0h,PublicIp]\"}",
             "template_file_format": "JSON"
           },
           "stop": {
-            "command": "/home/vagrant/scripts/stop",
+            "command": "/home/ubuntu/scripts/stop",
             "template_file": "{}",
             "template_file_format": "JSON"
           }
         },
-        "vnf_container": "/home/vagrant/container/"
+        "vnf_container": "/home/ubuntu/container/"
       }
     ],
     "billing_model": {
