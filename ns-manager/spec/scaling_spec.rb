@@ -60,8 +60,8 @@ RSpec.describe TnovaManager do
 				expect(response.status).to eq 200
       end
 
-			it 'response body should be empty' do
-				expect(response.body).to be_empty
+			it 'response body should be a string' do
+				expect(response.body).to be_a String
 			end
 		end
 	end
@@ -86,8 +86,8 @@ RSpec.describe TnovaManager do
 				expect(response.status).to eq 200
       end
 
-			it 'response body should be empty' do
-				expect(response.body).to be_empty
+			it 'response body should be a string' do
+				expect(response.body).to be_a String
 			end
 		end
 
@@ -98,8 +98,8 @@ RSpec.describe TnovaManager do
 				expect(response.status).to eq 200
       end
 
-			it 'response body should be empty' do
-				expect(response.body).to be_empty
+			it 'response body should be a string' do
+				expect(response.body).to be_a String
 			end
 		end
 	end
