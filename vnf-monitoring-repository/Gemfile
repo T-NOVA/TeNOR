@@ -16,7 +16,7 @@ group :doc do
 	gem 'yard'
 end
 
-gem 'cassandra-cql', '~>1.2.2'
+gem 'cassandra-driver', '~>3.1.0'
 
 gem 'sinatra-gkauth', '~>0.4.0', path: '../gems/sinatra-gkauth-gem'
 gem 'fluent-logger-sinatra', '~>0.2.0', path: '../gems/fluent-logger-sinatra'
