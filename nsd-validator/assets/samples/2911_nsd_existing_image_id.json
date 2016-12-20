@@ -152,7 +152,7 @@
             "vnf_reference": "2911"
           }
         ],
-        "sla_key": "basic"
+        "sla_key": "Basic"
       }
     ],
     "auto_scale_policy": {
