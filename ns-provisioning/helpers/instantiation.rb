@@ -38,12 +38,14 @@ module InstantiationHelper
         pop_auth['urls'] = pop_urls
 
         # create credentials for pop_id
-        if pop_urls[:keystone].nil? || pop_urls[:heat].nil? # || pop_urls[:tenant].nil?
+        if pop_urls['keystone'].nil? || pop_urls['heat'].nil?
+            logger.error pop_urls['keystone']
+            logger.error pop_urls['heat']
             return handleError(@instance, 'Internal error: Keystone and/or openstack urls missing.')
         end
 
         token = ''
-        keystone_url = pop_urls[:keystone]
+        keystone_url = pop_urls['keystone']
         if @instance['project'].nil?
             credentials, errors = authenticate(keystone_url, pop_info['tenant_name'], pop_info['user'], pop_info['password'])
             logger.error errors if errors
@@ -64,7 +66,7 @@ module InstantiationHelper
                 pop_auth['token'] = token
             else
                 # generate credentials
-                credentials, errors = generate_credentials(@instance, keystone_url, pop_urls, tenant_id, user_id, token)
+                credentials, errors = generate_credentials(@instance, pop_urls, tenant_id, user_id, token)
                 return 400, errors if errors
                 pop_auth = pop_auth.merge(credentials)
             end
@@ -106,9 +108,9 @@ module InstantiationHelper
             vim_id: pop_id,
             auth: {
                 url: {
-                    keystone: pop_urls[:keystone],
-                    heat: pop_urls[:heat],
-                    compute: pop_urls[:compute]
+                    keystone: pop_urls['keystone'],
+                    heat: pop_urls['heat'],
+                    compute: pop_urls['compute']
                 },
                 tenant_id: pop_auth['tenant_id'],
                 token: pop_auth['token'],

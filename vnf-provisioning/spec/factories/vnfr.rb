@@ -5,13 +5,13 @@ FactoryGirl.define do
 		scale_resources []
 		stack_url "http://localhost/stackurl"
 		deployment_flavour "gold"
+        vms []
         lifecycle_info {{
         "authentication_username"=> "italtel",
         "driver"=> "ssh",
         "authentication_type"=> "PubKeyAuthentication",
         "authentication"=> "",
         "authentication_port"=> 22,
-        "flavor_id_ref"=> "flavor0",
         "events"=> {
             "start"=> {
                 "command"=> "/vTU/bin/vTUstart",

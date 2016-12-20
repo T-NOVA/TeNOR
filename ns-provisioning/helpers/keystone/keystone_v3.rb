@@ -17,25 +17,25 @@
 #
 # @see NSProvisioner
 module Authenticationv3Helper
-    def generate_v3_credentials(instance, popUrls, tenant_id, user_id, token)
+    def generate_v3_credentials(instance, pop_urls, tenant_id, user_id, token)
         @instance = instance
 		pop_auth = {}
         begin
             if settings.default_tenant
                 pop_auth['username'] = settings.default_user_name
                 pop_auth['tenant_name'] = settings.default_tenant_name
-                pop_auth['tenant_id'] = getTenantId(popUrls[:keystone], pop_auth['tenant_name'], token)
-                pop_auth['user_id'] = getUserId(popUrls[:keystone], pop_auth['username'], token)
+                pop_auth['tenant_id'] = getTenantId(pop_urls['keystone'], pop_auth['tenant_name'], token)
+                pop_auth['user_id'] = getUserId(pop_urls['keystone'], pop_auth['username'], token)
                 pop_auth['password'] = 'secretsecret'
 
                 if pop_auth['tenant_id'].nil? && pop_auth['user_id'].nil?
-                    stack_url, tenant_id, user_id = create_user_and_project(popUrls[:heat], @instance['id'], pop_auth['tenant_name'], pop_auth['username'], pop_auth['password'], tenant_id, token)
+                    stack_url, tenant_id, user_id = create_user_and_project(pop_urls['heat'], @instance['id'], pop_auth['tenant_name'], pop_auth['username'], pop_auth['password'], tenant_id, token)
                     pop_auth['tenant_id'] = tenant_id
                     pop_auth['user_id'] = user_id
                 else
-                    pop_auth['tenant_id'] = createTenant(popUrls[:keystone], pop_auth['tenant_name'], token) if pop_auth['tenant_id'].nil?
+                    pop_auth['tenant_id'] = createTenant(pop_urls['keystone'], pop_auth['tenant_name'], token) if pop_auth['tenant_id'].nil?
                     if pop_auth['user_id'].nil?
-                        pop_auth['user_id'] = createUser(popUrls[:keystone], pop_auth['tenant_id'], pop_auth['username'], pop_auth['password'], tenant_id, token)
+                        pop_auth['user_id'] = createUser(pop_urls['keystone'], pop_auth['tenant_id'], pop_auth['username'], pop_auth['password'], tenant_id, token)
                     else
                         unless settings.default_user_password.nil?
                             pop_auth['password'] = settings.default_user_password
@@ -47,7 +47,7 @@ module Authenticationv3Helper
 				pop_auth['tenant_name'] = 'tenor_tenant_' + @instance['id'].to_s
                 pop_auth['username'] = 'user_' + @instance['id'].to_s
                 pop_auth['password'] = 'secretsecret'
-                stack_url,tenant_id, user_id = create_user_and_project(popUrls[:heat], @instance['id'], 'tenor_tenant_' + @instance['id'].to_s, 'user_' + @instance['id'].to_s, 'secretsecret', tenant_id, token)
+                stack_url,tenant_id, user_id = create_user_and_project(pop_urls['heat'], @instance['id'], 'tenor_tenant_' + @instance['id'].to_s, 'user_' + @instance['id'].to_s, 'secretsecret', tenant_id, token)
                 pop_auth['tenant_id'] = tenant_id
                 pop_auth['user_id'] = user_id
                 pop_auth['stack_url'] = stack_url
@@ -62,10 +62,10 @@ module Authenticationv3Helper
             end
 
             logger.info 'Created user with admin role.'
-            putRoleAdmin(popUrls[:keystone], pop_auth['tenant_id'], pop_auth['user_id'], token)
+            putRoleAdmin(pop_urls['keystone'], pop_auth['tenant_id'], pop_auth['user_id'], token)
 
             logger.info 'Authentication using new user credentials.'
-            pop_auth['token'] = authentication_v3_ids(popUrls[:keystone], pop_auth['tenant_id'], pop_auth['username'], pop_auth['password'])
+            pop_auth['token'] = authentication_v3_ids(pop_urls['keystone'], pop_auth['tenant_id'], pop_auth['username'], pop_auth['password'])
             if pop_auth['token'].nil?
                 error = 'Authentication failed.'
                 logger.error error
@@ -75,7 +75,7 @@ module Authenticationv3Helper
             end
 
             logger.info 'Configuring Security Groups'
-            pop_auth['security_group_id'] = configureSecurityGroups(popUrls[:compute], pop_auth['tenant_id'], pop_auth['token'])
+            pop_auth['security_group_id'] = configureSecurityGroups(pop_urls['compute'], pop_auth['tenant_id'], pop_auth['token'])
 
             logger.info 'Tenant id: ' + pop_auth['tenant_id']
             logger.info 'Username: ' + pop_auth['username']

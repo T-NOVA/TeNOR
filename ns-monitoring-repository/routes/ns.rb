@@ -22,17 +22,17 @@ class NsMonitoringRepository < Sinatra::Application
     #	Returns all monitored data
     get '/ns-monitoring/:instance_id/monitoring-data/' do
         t = []
-
+        @db = settings.db
         if params[:metric] && params[:start] && !params[:end]
-            @db.execute("SELECT metricName, date, unit, value FROM nsmonitoring WHERE instanceid='#{params[:instance_id]}' AND metricname='#{params[:metric]}' AND date >= #{params[:start]} ORDER BY metricname DESC LIMIT 2000").fetch { |row| t.push(row.to_hash) }
+            @db.execute("SELECT metricName, date, unit, value FROM nsmonitoring WHERE instanceid='#{params[:instance_id]}' AND metricname='#{params[:metric]}' AND date >= #{params[:start]} ORDER BY metricname DESC LIMIT 2000").each { |row| t.push(row.to_hash) }
         elsif params[:metric] && params[:start] && params[:end]
-            @db.execute("SELECT metricName, date, unit, value FROM nsmonitoring WHERE instanceid='#{params[:instance_id]}' AND metricname='#{params[:metric]}' AND date >= #{params[:start]} AND date <= #{params[:end]} LIMIT 2000").fetch { |row| t.push(row.to_hash) }
+            @db.execute("SELECT metricName, date, unit, value FROM nsmonitoring WHERE instanceid='#{params[:instance_id]}' AND metricname='#{params[:metric]}' AND date >= #{params[:start]} AND date <= #{params[:end]} LIMIT 2000").each { |row| t.push(row.to_hash) }
         elsif params[:metric] && params[:end]
-            @db.execute("SELECT metricName, date, unit, value FROM nsmonitoring WHERE instanceid='#{params[:instance_id]}' AND metricname='#{params[:metric]}' AND date <= #{params[:end]} ORDER BY metricname DESC LIMIT 2000").fetch { |row| t.push(row.to_hash) }
+            @db.execute("SELECT metricName, date, unit, value FROM nsmonitoring WHERE instanceid='#{params[:instance_id]}' AND metricname='#{params[:metric]}' AND date <= #{params[:end]} ORDER BY metricname DESC LIMIT 2000").each { |row| t.push(row.to_hash) }
         elsif params[:metric] && !params[:start]
-            @db.execute("SELECT metricName, date, unit, value FROM nsmonitoring WHERE instanceid='#{params[:instance_id]}' AND metricname='#{params[:metric]}' LIMIT 2000").fetch { |row| t.push(row.to_hash) }
+            @db.execute("SELECT metricName, date, unit, value FROM nsmonitoring WHERE instanceid='#{params[:instance_id]}' AND metricname='#{params[:metric]}' LIMIT 2000").each { |row| t.push(row.to_hash) }
         else
-            @db.execute("SELECT metricName, date, unit, value FROM nsmonitoring WHERE instanceid='#{params[:instance_id]}' LIMIT 2000").fetch { |row| t.push(row.to_hash) }
+            @db.execute("SELECT metricName, date, unit, value FROM nsmonitoring WHERE instanceid='#{params[:instance_id]}' LIMIT 2000").each { |row| t.push(row.to_hash) }
         end
         return t.to_json
     end
@@ -42,7 +42,8 @@ class NsMonitoringRepository < Sinatra::Application
     # Returns last 100 values
     get '/ns-monitoring/:instance_id/monitoring-data/last100/' do
         t = []
-        @db.execute("SELECT metricName, date, unit, value FROM nsmonitoring WHERE instanceid='#{params[:instance_id]}' AND metricname='#{params[:metric]}' ORDER BY metricname DESC LIMIT 100").fetch { |row| t.push(row.to_hash) }
+        @db = settings.db
+        @db.execute("SELECT metricName, date, unit, value FROM nsmonitoring WHERE instanceid='#{params[:instance_id]}' AND metricname='#{params[:metric]}' ORDER BY metricname DESC LIMIT 100").each { |row| t.push(row.to_hash) }
         return t.to_json
     end
 

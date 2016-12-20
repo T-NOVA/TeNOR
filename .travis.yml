@@ -57,9 +57,5 @@ script:
   - curl localhost:4000/
   - curl localhost:4000/network-services
   - curl localhost:4569/vnfs
-  - ./tenor_install.sh 6
-  - curl localhost:4000/network-services
-  - curl localhost:4000/vnfs
-  - curl localhost:4000/ns-instances
   - cd $TRAVIS_BUILD_DIR && BUNDLE_GEMFILE=$TRAVIS_BUILD_DIR/Gemfile && bundle update --quiet
   - rspec

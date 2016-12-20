@@ -1,15 +1,15 @@
 {
   "nsd": {
-    "id": "578e2db5e4b0356a4eb0d2b2",
-    "name": "NSD_with_scaling",
+    "id": "578e2db5e4b0356a4eb0d2b1",
+    "name": "Basic_NSD_example",
     "vendor": "1",
     "version": "1",
     "provider": "i2CAT",
-    "description": "NSD with scaling",
+    "description": "Basic NSD example",
     "provider_id": "1",
     "descriptor_version": "1",
     "vnfds": [
-      "2913"
+      "2910"
     ],
     "vnffgd": {
       "vnffgs": [
@@ -18,21 +18,21 @@
           "number_of_endpoints": 1,
           "number_of_virtual_links": 1,
           "dependent_virtual_links": [
-            "vld1"
+            "vld0"
           ],
           "network_forwarding_path": [
             {
               "nfp_id": "nfp0",
               "graph": [
-                "vld1"
+                "vld0"
               ],
               "connection_points": [
                 "ns_ext_data_in",
-                "VNF#2913:ext_data"
+                "VNF#2910:ext_data"
               ],
               "constituent_vnfs": [
                 {
-                  "vnf_ref_id": "2913",
+                  "vnf_ref_id": "2910",
                   "vnf_flavor_key_ref": "gold"
                 }
               ]
@@ -44,7 +44,7 @@
     "lifecycle_events": {
       "start": [
         {
-          "vnf_id": "2913",
+          "vnf_id": "2910",
           "vnf_event": "start",
           "event_rel_id": "rel_le0",
           "event_id": "le0",
@@ -76,16 +76,16 @@
       "virtual_links": [
         {
           "vld_id": "vld0",
-          "alias": "management",
-          "root_requirements": "Unlimited",
-          "leaf_requirement": "Unlimited",
+          "alias": "mngt",
+          "root_requirements": "10Gbps",
+          "leaf_requirement": "10Gbps",
           "qos": {
             "average": "",
             "peak": "",
             "burst": ""
           },
           "connections": [
-            "VNF#2913:ext_management"
+            "VNF#2910:ext_management"
           ],
           "connectivity_type": "E-LINE",
           "external_access": true,
@@ -103,11 +103,11 @@
             "burst": ""
           },
           "connections": [
-            "VNF#2913:ext_data"
+            "VNF#2910:ext_data"
           ],
           "connectivity_type": "E-LINE",
           "external_access": true,
-          "merge": true,
+          "merge": false,
           "sla_ref_id": "sla0"
         }
       ]
@@ -117,7 +117,7 @@
         "id": "sla0",
         "assurance_parameters": [
           {
-            "formula": "MAX(VNF:2913.cpu_util)",
+            "formula": "MAX(VNF:2910.cpu_util)",
             "id": "cpu_util",
             "name": "cpu_util",
             "penalty": {
@@ -149,7 +149,7 @@
             "number_of_instances": 1,
             "redundancy_model": "Active",
             "vnf_flavour_id_reference": "gold",
-            "vnf_reference": "2913"
+            "vnf_reference": "2910"
           }
         ],
         "sla_key": "Basic"

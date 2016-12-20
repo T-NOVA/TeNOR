@@ -44,7 +44,7 @@ class NsProvisioner < TnovaManager
       halt e.response.code, e.response.body
     end
 
-    logger.info "INSTANTIATION INFO: " + instantiation_info.to_s
+    logger.info "Instantiating a new service: " + instantiation_info.to_s
 
     pop_list = []
     mapping_info = {}
@@ -93,7 +93,7 @@ class NsProvisioner < TnovaManager
       logger.error e.response
       halt e.response.code, e.response.body
     end
-    logger.info "Instantiation correct."
+    logger.info "Instantiation in process..."
     updateStatistics('ns_instantiated_requests')
     return response.code, response.body
   end

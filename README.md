@@ -204,9 +204,11 @@ In order to test TeNOR functionality, you can deploy a dummy NSD/VNFD located in
 We provide several examples with different functionalities. The VNFD_validator contains the VNFD examples and the NSD_validator folders the associtated NSDs.
 
 The provided examples are:
+- vnfd-validator/assets/samples/2910_vnfd_example.json -> Basic VNFD using a clean Ubuntu Cloud Image.
 - vnfd-validator/assets/samples/2911_vnfd_existing_image_id.json -> You can reuse an image already loaded in Openstack. Modify the IMAGE_ID field.
 - vnfd-validator/assets/samples/2912_vnfd_existing_network_id.json -> You can reuse a network already created in Openstack. Modify the NETWORK_ID field.
 - vnfd-validator/assets/samples/2913_vnfd_scaling.json -> You can see how scale out/in works with this example.
+- vnfd-validator/assets/samples/2914_vnfd_two_vdus.json -> This VDU contains two VDUs (instances).
 
 You can test it using the same commands shown before but chaning the file.
 

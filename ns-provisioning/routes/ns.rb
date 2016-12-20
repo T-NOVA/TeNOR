@@ -165,6 +165,11 @@ class Provisioner < NsProvisioning
                         puts 'Probably an error with mAPI'
                         puts e
                         logger.error e
+                        if e.code == 500
+                            logger.error "Error removing VNFR. NSR is not removed."
+                            @nsInstance.update_attribute('status', 'ERROR_DELETING')
+                            raise 'VNFR not deleted'
+                        end
                         logger.error e.response
                         # halt e.response.code, e.response.body
                     end

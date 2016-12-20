@@ -75,19 +75,27 @@
                             </td>
                         </tr>
                         <tr>
-                            <td>NS Scaling requests</td>
-                            <td>{{summaryData.ns_scaling_requests}}</td>
+                            <td>NS Scaling out requests</td>
+                            <td>{{summaryData.ns_scaling_out_requests}}</td>
                             <td>
-                                <button ng-click="reset('ns_scaling_requests')" class="btn btn-danger btn-xs">Reset</button>
-                                <button template="{{tooltipUrl}}" class="btn btn-info btn-xs" data-trigger="click" data-title="{{ns_scaling_requests.title}}" bs-tooltip>Information</button>
+                                <button ng-click="reset('ns_scaling_out_requests')" class="btn btn-danger btn-xs">Reset</button>
+                                <button template="{{tooltipUrl}}" class="btn btn-info btn-xs" data-trigger="click" data-title="{{ns_scaling_out_requests.title}}" bs-tooltip>Information</button>
                             </td>
                         </tr>
                         <tr>
-                            <td>NS Scaling actions</td>
-                            <td>{{summaryData.ns_scaling_actions}}</td>
+                            <td>NS Scaling in actions</td>
+                            <td>{{summaryData.ns_scaling_in_requests}}</td>
                             <td>
-                                <button ng-click="reset('ns_scaling_actions')" class="btn btn-danger btn-xs">Reset</button>
-                                <button template="{{tooltipUrl}}" class="btn btn-info btn-xs" data-trigger="click" data-title="{{ns_scaling_actions.title}}" bs-tooltip>Information</button>
+                                <button ng-click="reset('ns_scaling_in_requests')" class="btn btn-danger btn-xs">Reset</button>
+                                <button template="{{tooltipUrl}}" class="btn btn-info btn-xs" data-trigger="click" data-title="{{ns_scaling_in_requests.title}}" bs-tooltip>Information</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>NS Auto scaling requests</td>
+                            <td>{{summaryData.auto_scaling_request_executed}}</td>
+                            <td>
+                                <button ng-click="reset('auto_scaling_request_executed')" class="btn btn-danger btn-xs">Reset</button>
+                                <button template="{{tooltipUrl}}" class="btn btn-info btn-xs" data-trigger="click" data-title="{{auto_scaling_request_executed.title}}" bs-tooltip>Information</button>
                             </td>
                         </tr>
                         <tr>

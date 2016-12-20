@@ -42,13 +42,13 @@ module AuthenticationHelper
         { tenant_id: tenant_id, user_id: user_id, token: token }
     end
 
-    def generate_credentials(instance, keystone_url, popUrls, tenant_id, user_id, token)
-        keystone_version = URI(keystone_url).path.split('/').last
+    def generate_credentials(instance, pop_urls, tenant_id, user_id, token)
+        keystone_version = URI(pop_urls['keystone']).path.split('/').last
         if keystone_version == 'v2.0'
-            credentials, errors = generate_v2_credentials(instance, popUrls, tenant_id, user_id, token)
+            credentials, errors = generate_v2_credentials(instance, pop_urls, tenant_id, user_id, token)
             return 400, errors if errors
         elsif keystone_version == 'v3'
-            credentials, errors = generate_v3_credentials(instance, popUrls, tenant_id, user_id, token)
+            credentials, errors = generate_v3_credentials(instance, pop_urls, tenant_id, user_id, token)
             return 400, errors if errors
         end
         credentials

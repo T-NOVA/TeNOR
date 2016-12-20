@@ -23,6 +23,9 @@ angular.module('tNovaApp')
         $scope.summaryData.vnf_created_requests = 0;
         $scope.summaryData.ns_scaling_requests = 0;
         $scope.summaryData.ns_scaling_actions = 0;
+        $scope.summaryData.ns_scaling_out_requests = 0;
+        $scope.summaryData.ns_scaling_in_requests = 0;
+        $scope.summaryData.auto_scaling_request_executed = 0;
         $scope.summaryData.SLA_breaches = 0;
         $scope.summaryData.SM_request = 0;
         $scope.summaryData.SM_rate = 0;
@@ -60,6 +63,15 @@ angular.module('tNovaApp')
         };
         $scope.vnf_created = {
             "title": "Measures the number of create VNF requests received from the NF Store."
+        };
+        $scope.ns_scaling_out_requests = {
+            "title": "Provides information on the number of manually triggered NS Scaling out requests have been received."
+        };
+        $scope.ns_scaling_in_requests = {
+            "title": "Provides information on the number of manually triggered NS Scaling in requests have been received."
+        };
+        $scope.auto_scaling_request_executed = {
+            "title": "Provides information on the number of auto Scaling requests have been received."
         };
         $scope.ns_scaling_requests = {
             "title": "Provides information on the number of manually triggered NS Scaling requests have been received."
