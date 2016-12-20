@@ -135,7 +135,7 @@ class HotGenerator < Sinatra::Application
         halt 400, 'Networks ID not found' if networks_id.nil?
 
         security_group_id = provision_info['security_group_id']
-        halt 400, 'Security group ID not found' if security_group_id.nil?
+        #halt 400, 'Security group ID not found' if security_group_id.nil?
 
         vdus_deployed_info = provision_info['vdus_deployed_info']
         halt 400, 'VDUs info not found' if vdus_deployed_info.nil?
