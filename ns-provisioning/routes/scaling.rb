@@ -37,10 +37,10 @@ class Scaling < NsProvisioning
             pop_auth = instance['authentication'].find { |pop| pop['pop_id'] == vnf['pop_id'] }
             pop_urls = pop_auth['urls']
 
-            credentials, errors = authenticate(pop_urls[:keystone], pop_auth['tenant_name'], pop_auth['username'], pop_auth['password'])
+            credentials, errors = authenticate(pop_urls['keystone'], pop_auth['tenant_name'], pop_auth['username'], pop_auth['password'])
             logger.error errors if errors
             return if errors
-            scale = { auth: { tenant_id: credentials[:tenant_id], user_id: credentials[:user_id], token: credentials[:token], url: { keystone: pop_urls[:keystone], heat: pop_urls[:heat] } }}
+            scale = { auth: { tenant_id: credentials[:tenant_id], user_id: credentials[:user_id], token: credentials[:token], url: { keystone: pop_urls['keystone'], heat: pop_urls['heat'] } }}
 
             begin
                 response = RestClient.post settings.vnf_manager + '/vnf-instances/scaling/' + vnf['vnfr_id'] + '/scale_out', scale.to_json, content_type: :json
@@ -73,10 +73,10 @@ class Scaling < NsProvisioning
             pop_auth = instance['authentication'].find { |pop| pop['pop_id'] == vnf['pop_id'] }
             pop_urls = pop_auth['urls']
 
-            credentials, errors = authenticate(pop_urls[:keystone], pop_auth['tenant_name'], pop_auth['username'], pop_auth['password'])
+            credentials, errors = authenticate(pop_urls['keystone'], pop_auth['tenant_name'], pop_auth['username'], pop_auth['password'])
             logger.error errors if errors
             return if errors
-            scale = { auth: { tenant_id: credentials[:tenant_id], user_id: credentials[:user_id], token: credentials[:token], url: { keystone: pop_urls[:keystone], heat: pop_urls[:heat] } }}
+            scale = { auth: { tenant_id: credentials[:tenant_id], user_id: credentials[:user_id], token: credentials[:token], url: { keystone: pop_urls['keystone'], heat: pop_urls['heat'] } }}
 
             begin
                 response = RestClient.post settings.vnf_manager + '/vnf-instances/scaling/' + vnf['vnfr_id'] + '/scale_in', scale.to_json, content_type: :json
