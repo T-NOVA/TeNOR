@@ -169,7 +169,9 @@
       }
     ],
     "auto_scale_policy": {
+      "criteria": [
 
+      ]
     },
     "connection_points": [
 
@@ -177,6 +179,5 @@
     "vnf_dependency": [
 
     ]
-
   }
 }
