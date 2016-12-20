@@ -1,3 +1,9 @@
+## 0.11.1
+- Fix NS Provisioning Hash.
+- Updated Descriptor Samples.
+- Updated Cassandra Driver to official.
+- Fix deletion.
+
 ## 0.11.0
 - Finished some missing tests.
 - Netfloc support finished.
