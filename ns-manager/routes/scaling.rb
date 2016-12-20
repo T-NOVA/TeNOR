@@ -39,6 +39,8 @@ class NsScaling< TnovaManager
     end
     logger.info response.code
 
+    updateStatistics('ns_scaling_out_requests')
+
     return response.code, response.body
   end
 
@@ -63,6 +65,8 @@ class NsScaling< TnovaManager
     end
     logger.info response.code
 
+    updateStatistics('ns_scaling_in_requests')
+
     return response.code, response.body
   end
 
@@ -77,6 +81,8 @@ class NsScaling< TnovaManager
 
     provisioner, errors = ServiceConfigurationHelper.get_module('ns_provisioner')
     halt 500, errors if errors
+
+    updateStatistics('SLA_breaches')
 
     # Validate JSON format
     auto_scale_info = JSON.parse(request.body.read)
@@ -120,6 +126,8 @@ class NsScaling< TnovaManager
       logger.error e.response
       halt e.response.code, e.response.body
     end
+
+    updateStatistics('auto_scaling_request_executed')
 
     logger.error "AutoScaling executed."
     return response.code, response.body

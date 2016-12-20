@@ -140,18 +140,18 @@ class Monitoring < VNFManager
     path = request.fullpath
 
     # if vdui id is null, search in the vnfr the vdus ids
-    if params['vduid'].nil?
+    if params['vdu_id'].nil?
       provisioner, errors = ServiceConfigurationHelper.get_module('vnf_provisioner')
       halt 500, errors if errors
 
       begin
-        response = RestClient.get provisioner.host + "/vnf-provisioning/vnf-instances/" + vnfi_id, 'X-Auth-Token' => provisioner.token, :content_type => :json, :accept => :json
+        response = JSON.parse RestClient.get provisioner.host + "/vnf-provisioning/vnf-instances/" + vnfi_id, 'X-Auth-Token' => provisioner.token, :content_type => :json, :accept => :json
       rescue RestClient::NotFound => e
         puts e
         puts e.response
         logger.debug "This VNF instance no exists. Getting list of subscriptions in order to get the Subscription ID."
       end
-      halt 404 if response.nil
+      halt 404 if response.nil?
 
       vms = ""
       response['vms'].each do |vm|

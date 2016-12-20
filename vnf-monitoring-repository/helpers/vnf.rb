@@ -42,11 +42,14 @@ module VnfMonitoringHelper
     return parsed_message, nil
   end
 
-  def self.save_monitoring(instance_id, json)
+  def self.save_monitoring(json)
     @db = Sinatra::Application.settings.db
-    json.each do |item|
-      @db.execute("INSERT INTO vnfmonitoring (instanceid, vduid, date, metricname, unit, value) VALUES ('#{instance_id.to_s}', '#{item['vdu_id'].to_s}', #{item['timestamp']}, '#{item['type']}', '#{item['unit']}', '#{item['value']}' )")
+    batch = @db.batch do |b|
+      json.each do |item|
+        b.add("INSERT INTO vnfmonitoring (instanceid, vduid, date, metricname, unit, value) VALUES ('#{item['instance_id'].to_s}', '#{item['vdu_id'].to_s}', #{item['timestamp']}, '#{item['type']}', '#{item['unit']}', '#{item['value']}' )")
+      end
     end
+    @db.execute(batch, consistency: :all)
   end
 
   def self.delete_monitoring(instance_id)
@@ -60,9 +63,9 @@ module VnfMonitoringHelper
       ch = @channel
       puts " [*] Waiting for logs."
       t = ch.queue("vnf_repository", :exclusive => false).subscribe do |delivery_info, metadata, payload|
+        puts "Received logs of #{json[0]['instance_id']}"
         json = JSON.parse(payload)
-        array = [json]
-        VnfMonitoringHelper.save_monitoring(json['instance_id'], array)
+        VnfMonitoringHelper.save_monitoring(json)
       end
     }
   end

@@ -21,7 +21,7 @@ env = ENV['RACK_ENV'] ||= 'development'
 require 'sinatra'
 require 'sinatra/config_file'
 require 'yaml'
-require 'cassandra-cql'
+require 'cassandra'
 
 # Require the bundler gem and then call Bundler.require to load in all gems listed in Gemfile.
 require 'bundler'
@@ -43,17 +43,14 @@ configure do
 
     cassandra_config_file = File.join(BASEDIR, 'config', 'database.yml')
     cassandra_config = YAML.load_file(cassandra_config_file)[env]
-    @db = CassandraCQL::Database.new("#{cassandra_config['host']}:9160", username: cassandra_config['username'], password: cassandra_config['password'])
-    @db.execute("USE #{cassandra_config['keyspace']}")
+    cluster = Cassandra.cluster(
+            hosts: [cassandra_config['host']]
+          )
+    @db = cluster.connect(cassandra_config['keyspace'])
     set :db, @db
 end
 
 before do
-    cassandra_config_file = File.join(BASEDIR, 'config', 'database.yml')
-    cassandra_config = YAML.load_file(cassandra_config_file)[env]
-    @db = CassandraCQL::Database.new("#{cassandra_config['host']}:9160", username: cassandra_config['username'], password: cassandra_config['password'])
-    @db.execute("USE #{cassandra_config['keyspace']}")
-
     # env['rack.logger'] = logger
 end
 

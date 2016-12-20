@@ -49,4 +49,23 @@ module UtilsHelper
     @instance.push(resource_reservation: resource_reservation)
     return object
   end
+
+  # Returns an object with the properties of a PoP
+    # @param [string] The extra information in string
+    # @return [Hash] The PoP information in hash format
+    def getPoPExtraInfo(extraInfo)
+        pop_extra_info = {}
+        pop_extra_info['dns'] = []
+        items = extraInfo.split(' ')
+        for item in items
+          key = item.split('=')[0]
+          value = item.split('=')[1]
+          if key == 'dns'
+              pop_extra_info[key] << value unless value.nil?
+          else
+              pop_extra_info[key] = value
+          end
+        end
+        pop_extra_info
+    end
 end

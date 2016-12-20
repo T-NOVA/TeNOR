@@ -78,6 +78,7 @@ module NsProvisioner
             break if resource['pop_id'].nil?
 
             auth_info = @instance['authentication'].find { |auth| auth['pop_id'] == resource['pop_id'] }
+            puts auth_info['urls']
             keystone_url = auth_info['urls'][:keystone]
 
             credentials, errors = authenticate(keystone_url, auth_info['tenant_name'], auth_info['username'], auth_info['password'])
@@ -292,11 +293,11 @@ module NsProvisioner
                 logger.info 'Send WICM template to HEAT Orchestration'
                 stack_name = 'WICM_SFC_' + @instance['id'].to_s
                 template = { stack_name: stack_name, template: hot_template }
-                stack, errors = sendStack(pop_urls[:heat], vnf_info['tenant_id'], template, tenant_token)
+                stack, errors = sendStack(pop_urls['heat'], vnf_info['tenant_id'], template, tenant_token)
                 return handleError(@instance, errors) if errors
 
                 # Wait for the WICM - SFC provisioning to finish
-                stack_info, errors = create_stack_wait(pop_urls[:heat], vnf_info['tenant_id'], stack_name, tenant_token, 'NS WICM')
+                stack_info, errors = create_stack_wait(pop_urls['heat'], vnf_info['tenant_id'], stack_name, tenant_token, 'NS WICM')
                 return handleError(@instance, errors) if errors
 
                 resource_reservation = @instance['resource_reservation']
@@ -312,14 +313,14 @@ module NsProvisioner
             pop_urls = pop_auth['urls']
 
 
-            public_network_id, errors = publicNetworkId(pop_urls[:neutron], tenant_token)
+            public_network_id, errors = publicNetworkId(pop_urls['neutron'], tenant_token)
             return handleError(@instance, errors) if errors
 
             hot_generator_message = {
                 nsr_id: @instance['id'],
                 nsd: nsd,
                 public_net_id: public_network_id,
-                dns_server: pop_urls[:dns]
+                dns_server: pop_urls['dns']
             }
             logger.debug 'Generating network HOT template...'
             hot, errors = generateNetworkHotTemplate(sla_id, hot_generator_message)
@@ -328,7 +329,7 @@ module NsProvisioner
             logger.debug 'Sending network template to HEAT Orchestration'
             stack_name = 'network_' + @instance['id'].to_s
             template = { stack_name: stack_name, template: hot }
-            stack, errors = sendStack(pop_urls[:heat], pop_auth['tenant_id'], template, tenant_token)
+            stack, errors = sendStack(pop_urls['heat'], pop_auth['tenant_id'], template, tenant_token)
             return handleError(@instance, errors) if errors
 
             stack_id = stack['stack']['id']
@@ -341,7 +342,7 @@ module NsProvisioner
                 ports: [],
                 network_stack: { id: stack_id, stack_url: stack['stack']['links'][0]['href'] },
                 public_network_id: public_network_id,
-                dns_server: pop_urls[:dns],
+                dns_server: pop_urls['dns'],
                 pop_id: pop_auth['pop_id'],
                 routers: [],
                 networks: [],
@@ -350,12 +351,12 @@ module NsProvisioner
             @instance.push(resource_reservation: resource_reservation)
 
             logger.debug 'Checking network stack creation...'
-            stack_info, errors = create_stack_wait(pop_urls[:heat], pop_auth['tenant_id'], stack_name, tenant_token, 'NS Network')
+            stack_info, errors = create_stack_wait(pop_urls['heat'], pop_auth['tenant_id'], stack_name, tenant_token, 'NS Network')
             return handleError(@instance, errors) if errors
 
             logger.debug 'Network stack CREATE_COMPLETE. Reading network information from stack...'
             sleep(3)
-            network_resources, errors = getStackResources(pop_urls[:heat], pop_auth['tenant_id'], stack_name, tenant_token)
+            network_resources, errors = getStackResources(pop_urls['heat'], pop_auth['tenant_id'], stack_name, tenant_token)
             return handleError(@instance, errors) if errors
 
             stack_networks = network_resources['resources'].find_all { |res| res['resource_type'] == 'OS::Neutron::Net' }
@@ -363,13 +364,13 @@ module NsProvisioner
 
             networks = []
             stack_networks.each do |network|
-                net, errors = getStackResource(pop_urls[:heat], pop_auth['tenant_id'], stack_name, stack_id, network['resource_name'], tenant_token)
+                net, errors = getStackResource(pop_urls['heat'], pop_auth['tenant_id'], stack_name, stack_id, network['resource_name'], tenant_token)
                 # networks.push(id: net['resource']['attributes']['id'], alias: net['resource']['attributes']['name'])
                 networks.push(id: net['resource']['physical_resource_id'], alias: net['resource']['physical_resource_id'])
             end
             routers = []
             stack_routers.each do |router|
-                router, errors = getStackResource(pop_urls[:heat], pop_auth['tenant_id'], stack_name, stack_id, router['resource_name'], tenant_token)
+                router, errors = getStackResource(pop_urls['heat'], pop_auth['tenant_id'], stack_name, stack_id, router['resource_name'], tenant_token)
                 # routers.push(id: router['resource']['attributes']['id'], alias: router['resource']['attributes']['name'])
                 routers.push(id: router['resource']['physical_resource_id'], alias: router['resource']['physical_resource_id'])
             end

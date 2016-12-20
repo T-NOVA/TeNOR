@@ -48,7 +48,6 @@ class NsProvisioning < Sinatra::Application
     helpers NsProvisioner
     helpers MappingHelper
     helpers MonitoringHelper
-    helpers PopHelper
     helpers UtilsHelper
     helpers VimHelper
     helpers UtilsHelper

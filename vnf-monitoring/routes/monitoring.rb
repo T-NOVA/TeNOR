@@ -117,14 +117,13 @@ class VNFMonitoring < Sinatra::Application
                 }
                 metrics.push(metric)
 
-                q = ch.queue('vnf_repository')
-                q.publish(metric.to_json, persistent: true)
-
                 #only push to Manager the assurance metrics?
                 q = ch.queue(params['vnfr_id'])
                 q.publish(metric.to_json, persistent: true)
 
             end
+            q = ch.queue('vnf_repository')
+            q.publish(metrics.to_json, persistent: true)
 =begin
             begin
                 respone = RestClient.post settings.manager + '/vnf-monitoring/' + vnfr_id, metrics.to_json, content_type: :json, accept: :json

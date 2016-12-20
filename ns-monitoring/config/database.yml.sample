@@ -1,11 +1,11 @@
 development:
   adapter: sqlite3
-  database: db/tnova_orchestrator_dev.sqlite3
+  database: db/tenor_dev.sqlite3
 
 production:
   adapter: sqlite3
-  database: db/tnova_orchestrator_dev.sqlite3
+  database: db/tenor.sqlite3
 
 test:
   adapter: sqlite3
-  database: db/tnova_orchestrator_dev.sqlite3
+  database: db/tenor_test.sqlite3

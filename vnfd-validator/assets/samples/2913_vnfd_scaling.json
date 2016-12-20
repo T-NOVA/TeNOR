@@ -1,10 +1,10 @@
 {
-  "name": "VNF_existing_image_id",
+  "name": "VNF_scaling",
   "vnfd": {
-    "id": 2911,
-    "name": "VNF_existing_image_id",
+    "id": 2913,
+    "name": "VNF_scaling",
     "type": "vPXAAS",
-    "description": "Test VNF example with Existing Image ID",
+    "description": "Test VNF example scaling",
     "descriptor_version": "1",
     "version": "1",
     "provider": "i2CAT",
@@ -14,9 +14,6 @@
       {
         "id": "vdu0",
         "alias": "test",
-        "vm_image": "-------------------- INSERT THE IMAGE ID --------------------",
-        "vm_image_md5": "bcfeb21476221db5ec2269369e27fed5",
-        "vm_image_format": "openstack_id",
         "controller": true,
         "bootstrap_script": "#!/usr/bin/env bash\necho 'echo this is a initial script'",
         "resource_requirements": {
@@ -59,6 +56,9 @@
           
         ],
         "wc_notify": true,
+        "vm_image": "http://cloud-images.ubuntu.com/xenial/current/xenial-server-cloudimg-amd64-disk1.img",
+        "vm_image_md5": "2937c1a2a6c723b4c3a8b29b9258b124",
+        "vm_image_format": "qcow2",
         "connection_points": [
           {
             "vlink_ref": "vl0",
@@ -74,7 +74,7 @@
         ],
         "scale_in_out": {
           "minimum": 1,
-          "maximum": 1
+          "maximum": 2
         }
       }
     ],
@@ -125,12 +125,17 @@
         "events": {
           "start": {
             "command": "/home/ubuntu/scripts/start",
-            "template_file": "{\"controller\":\"get_attr[vdu0,CPfs0h,PublicIp]\"}",
+            "template_file": "{\"controller\":\"get_attr[vdu0,CPfs0h,PublicIp]\", \"vdu0Ips\":\"get_attr[CPng8r,fixed_ips,0,ip_address]\"}",
             "template_file_format": "JSON"
           },
           "stop": {
             "command": "/home/ubuntu/scripts/stop",
             "template_file": "{}",
+            "template_file_format": "JSON"
+          },
+          "scaling_out": {
+            "command": "/home/ubuntu/scripts/scaling_out",
+            "template_file": "{\"controller\":\"get_attr[vdu0,CPfs0h,PublicIp]\", \"vdu0\":\"get_attr[vdu0,vdus]\", \"vdu0Ips\":\"get_attr[CPng8r,fixed_ips,0,ip_address]\"}",
             "template_file_format": "JSON"
           }
         },
