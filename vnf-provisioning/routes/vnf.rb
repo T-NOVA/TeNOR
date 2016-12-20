@@ -135,6 +135,7 @@ class Provisioning < VnfProvisioning
                 end
                 halt 400, 'Error getting flavors for vdu ' + vdu['id'].to_s if errors
                 flavors << { id: vdu['id'], flavour_id: flavour_id }
+                vnfr.push(vms: { id: vdu['id'], flavour_id: flavour_id })
             end
             hot_generator_message['flavours'] = flavors
         end
@@ -329,7 +330,7 @@ class Provisioning < VnfProvisioning
         if params[:status] == 'create_complete'
             logger.info 'Create complete'
 
-            vms = []
+            vms = vnfr.vms
             vms_id = {}
             # get stack resources
             resources, errors = getStackResources(vnfr.stack_url, auth_token)

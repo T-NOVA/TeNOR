@@ -78,13 +78,15 @@ class Scaling < VnfProvisioning
         }
         # vnfd, tnova_flavour, networks_id, security_group_id, vdus_deployed_info
         begin
-            hot = parse_json(RestClient.post(settings.hot_generator + '/scale/' + vnf_flavour, hot_generator_message.to_json, content_type: :json, accept: :json))
+            hot, errors = parse_json(RestClient.post(settings.hot_generator + '/scale/' + vnf_flavour, hot_generator_message.to_json, content_type: :json, accept: :json))
         rescue Errno::ECONNREFUSED
             halt 500, 'HOT Generator unreachable'
         rescue => e
             logger.error e.response
             halt e.response.code, e.response.body
         end
+        logger.error errors if errors
+        halt 400, errors if errors
 
         logger.debug 'HEAT template generated'
 
@@ -134,25 +136,27 @@ class Scaling < VnfProvisioning
         logger.debug 'Using scaling-in saved events...'
 
         scaling_in_events = {}
-        logger.debug vnfr['lifecycle_events_values'][event]
-        vnfr['lifecycle_events_values'][event].each do |param, value|
-            scaling_in_events[param] = value
+
+        if !vnfr['lifecycle_events_values'][event].nil?
+            logger.debug vnfr['lifecycle_events_values'][event]
+            vnfr['lifecycle_events_values'][event].each do |param, value|
+                scaling_in_events[param] = value
+            end
+
+            # Build mAPI request
+            mapi_request = {
+                event: event,
+                vnf_controller: vnfr['vnf_addresses']['controller'],
+                parameters: scaling_in_events
+            }
+            logger.debug 'mAPI request: ' + mapi_request.to_json
+
+            # Send request to the mAPI
+            response, errors = sendCommandToMAPI(vnfr_id, mapi_request)
+            # wait 60 seconds?
+            logger.info 'Waiting 60 seconds...'
+            sleep(60)
         end
-
-        # Build mAPI request
-        mapi_request = {
-            event: event,
-            vnf_controller: vnfr['vnf_addresses']['controller'],
-            parameters: scaling_in_events
-        }
-        logger.debug 'mAPI request: ' + mapi_request.to_json
-
-        # Send request to the mAPI
-        response, errors = sendCommandToMAPI(vnfr_id, mapi_request)
-
-        # wait 60 seconds?
-        logger.info 'Waiting 60 seconds...'
-        sleep(60)
 
         vim_info = scale_info['auth']
         vim_info['keystone'] = vim_info['url']['keystone']
@@ -166,7 +170,7 @@ class Scaling < VnfProvisioning
         logger.info 'Scale in correct'
 
         # Update the VNFR event history
-        vnfr.push(lifecycle_event_history: "Executed a #{mapi_request[:event]}")
+        vnfr.push(lifecycle_event_history: "Executed a #{event}")
         halt 200, 'Scale in done.'
     end
 
