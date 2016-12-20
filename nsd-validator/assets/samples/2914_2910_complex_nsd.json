@@ -1,0 +1,182 @@
+{
+  "nsd": {
+    "id": "5829ac034431124ef1f54ed7",
+    "name": "Complex_NSD_with_two_vnfs",
+    "vendor": "1",
+    "version": "1",
+    "provider": "i2CAT",
+    "description": "NSD with two VNFs",
+    "provider_id": "3",
+    "descriptor_version": "1",
+    "vnfds": [
+      "2910",
+      "2914"
+    ],
+    "vnffgd": {
+      "vnffgs": [
+        {
+          "vnffg_id": "vnffg0",
+          "number_of_endpoints": 1,
+          "number_of_virtual_links": 1,
+          "dependent_virtual_links": [
+            "vld0"
+          ],
+          "network_forwarding_path": [
+            {
+              "nfp_id": "nfp0",
+              "graph": [
+                "vld0"
+              ],
+              "connection_points": [
+                "ns_ext_mngt",
+                "VNF#2910:ext_management"
+              ],
+              "constituent_vnfs": [
+                {
+                  "vnf_ref_id": "2910",
+                  "vnf_flavor_key_ref": "gold"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "lifecycle_events": {
+      "start": [
+        {
+          "vnf_id": "2910",
+          "vnf_event": "start",
+          "event_rel_id": "rel_le0",
+          "event_id": "le0",
+          "sla_ref_id": "sla0"
+        },
+        {
+          "vnf_id": "2914",
+          "vnf_event": "start",
+          "event_rel_id": "rel_le0",
+          "event_id": "le0",
+          "sla_ref_id": "sla0"
+        }
+      ],
+      "stop": [
+
+      ],
+      "scale_out": [
+
+      ],
+      "scale_in": [
+
+      ]
+    },
+    "vnf_depedency": [
+
+    ],
+    "monitoring_parameters": [
+      {
+        "desc": "Availability",
+        "metric": "availability",
+        "unit": "%"
+      }
+    ],
+    "vld": {
+      "number_of_endpoints": 0,
+      "virtual_links": [
+        {
+          "vld_id": "vld0",
+          "alias": "mngt",
+          "root_requirements": "10Gbps",
+          "leaf_requirement": "10Gbps",
+          "qos": {
+            "average": "",
+            "peak": "",
+            "burst": ""
+          },
+          "connections": [
+            "VNF#2910:ext_management",
+            "VNF#2913:ext_management"
+          ],
+          "connectivity_type": "E-LINE",
+          "external_access": true,
+          "merge": false,
+          "sla_ref_id": "sla0"
+        },
+        {
+          "vld_id": "vld1",
+          "alias": "data",
+          "root_requirements": "10Gbps",
+          "leaf_requirement": "10Gbps",
+          "qos": {
+            "average": "",
+            "peak": "",
+            "burst": ""
+          },
+          "connections": [
+            "VNF#2910:ext_management"
+          ],
+          "connectivity_type": "E-LINE",
+          "external_access": true,
+          "merge": false,
+          "sla_ref_id": "sla0"
+        }
+      ]
+    },
+    "sla": [
+      {
+        "id": "sla0",
+        "assurance_parameters": [
+          {
+            "formula": "MAX(VNF:2910.cpu_util)",
+            "id": "cpu_util",
+            "name": "cpu_util",
+            "penalty": {
+              "value": 0
+            },
+            "unit": "%",
+            "value": "GT(60)",
+            "violations": [
+              {
+                "breaches_count": 2,
+                "interval": 60
+              }
+            ],
+            "uid": "ap0"
+          }
+        ],
+        "billing": {
+          "model": "PAYG",
+          "price": {
+            "price_per_period": 180,
+            "setup": 15,
+            "unit": "EUR"
+          }
+        },
+        "constituent_vnf": [
+          {
+            "number_of_instances": 1,
+            "redundancy_model": "Active",
+            "vnf_flavour_id_reference": "gold",
+            "vnf_reference": "2910"
+          },
+          {
+            "number_of_instances": 1,
+            "redundancy_model": "Active",
+            "vnf_flavour_id_reference": "gold",
+            "vnf_reference": "2914"
+          }
+        ],
+        "sla_key": "Basic"
+      }
+    ],
+    "auto_scale_policy": {
+
+    },
+    "connection_points": [
+
+    ],
+    "vnf_dependency": [
+
+    ]
+
+  }
+}
