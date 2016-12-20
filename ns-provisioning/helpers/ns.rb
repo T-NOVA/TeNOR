@@ -181,11 +181,10 @@ module NsProvisioner
 
         if pop_list.size == 1 && mapping_info.empty?
             pop_id = pop_list[0]['id']
-            logger.info 'Deploy to PoP id: ' + pop_id.to_s
+            logger.debug "Deploy #{@instance['id'].to_s} to PoP id: #{pop_id.to_s}"
             mapping = getMappingResponse(nsd, pop_id)
         elsif !mapping_info.empty?
-            logger.info 'Calling Mapping algorithm '
-            logger.info mapping_info
+            logger.info 'Calling Mapping algorithm ' + mapping_info.to_s
             if infr_repo_url.nil?
                 return handleError(@instance, 'Internal error: Infrastructure Repository not reachable.')
             end

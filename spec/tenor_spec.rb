@@ -129,6 +129,7 @@ RSpec.describe "Tenor" do
 						instance = {"ns_id": nsd_id, "callbackUrl":"https://httpbin.org/post", "pop_id": pop_id, "flavour":"Basic"}
 						response = RestClient.post "#{$TENOR_URL.to_s}/ns-instances", instance.to_json, :content_type => :json, :'X-Auth-Token' => $token
 						instance = JSON.parse response.body
+						puts instance['id']
 						@instances << {:id => instance['id'], :status => "INIT"}
 						expect(response.code).to eq 201
 						expect(JSON.parse response.body).to be_an Hash
@@ -138,7 +139,7 @@ RSpec.describe "Tenor" do
 		end
 	end
 
-	describe 'Get Network services instances status' do
+	describe 'GET Network services instances status' do
 		context '' do
 			it 'iterating over the created instances' do
 				puts "Please wait until the instances are created..."
@@ -159,8 +160,9 @@ RSpec.describe "Tenor" do
 				        end
 				      elsif status == 'ERROR_CREATING'
 				      end
+							sleep(2)
 						end
-						sleep(20)
+						sleep(30)
 				    counter +=1
 					end
 				end
@@ -177,8 +179,9 @@ RSpec.describe "Tenor" do
 		end
 	end
 
-	describe 'DELETE PoPs ' do
+	describe 'DELETE PoPs' do
 		it "removing created pops" do
+			sleep(20)
 			@pops.each do |pop|
 				response = RestClient.delete $TENOR_URL.to_s + '/pops/dc/' + pop.to_s, :'X-Auth-Token' => $token
 				expect(response.code).to eq 200
@@ -186,14 +189,14 @@ RSpec.describe "Tenor" do
 		end
 	end
 
-	describe 'DELETE Descriptors ' do
-		it "removing created descriptors" do
+	describe 'DELETE Descriptors' do
+		it "removing created NSD descriptors" do
 			@nsds.each do |nsd|
 				response = RestClient.delete $TENOR_URL.to_s + '/network-services/' + nsd.to_s, :'X-Auth-Token' => $token
 				expect(response.code).to eq 200
 			end
 		end
-		it "writes the message one letter at a time" do
+		it "removing created VNFD descriptors" do
 			@vnfds.each do |vnfd|
 				response = RestClient.delete $TENOR_URL.to_s + '/vnfs/' + vnfd.to_s, :'X-Auth-Token' => $token
 				expect(response.code).to eq 200
