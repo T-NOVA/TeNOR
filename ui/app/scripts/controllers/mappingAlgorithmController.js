@@ -100,10 +100,11 @@ angular.module('tNovaApp')
                     $scope.data.items.forEach(function (entry) {
                         avg = avg + entry.y;
                         if (averageValues === 3) {
-                            var scatterData = {};
-                            scatterData.x = entry.x;
-                            scatterData.y = avg / 4;
-                            scatterData.group = 1;
+                            var scatterData = {
+                                x: entry.x,
+                                y: avg / 4,
+                                group: 1
+                            };
                             averageValues = 0;
                             avg = 0;
                             $scope.data.items.add(scatterData);
@@ -115,55 +116,6 @@ angular.module('tNovaApp')
                 }
             }
         });
-
-        //            $scope.scatterData = $scope.scatterData.sort(function(a, b){ return a.x > b.x;});
-        /*$scope.monitoringData = [
-            {
-                x: new Date("2015", "01", "11", "14", "50", "55"),
-                y: 14,
-                group: 0
-            },
-            {
-                x: new Date("2015", "01", "12", "14", "50", "55"),
-                y: 25,
-                group: 0
-            },
-            {
-                x: new Date("2015", "01", "16", "14", "50", "55"),
-                y: 30,
-                group: 0
-            },
-            {
-                x: new Date("2015", "01", "11", "14", "50", "55"),
-                y: 12,
-                group: 1
-            },
-            {
-                x: new Date("2015", "01", "12", "14", "50", "55"),
-                y: 15,
-                group: 1
-            },
-            {
-                x: new Date("2015", "01", "16", "14", "50", "55"),
-                y: 12,
-                group: 1
-            },
-            {
-                x: new Date("2015", "01", "11", "14", "50", "55"),
-                y: 2,
-                group: 2
-            },
-            {
-                x: new Date("2015", "01", "12", "14", "50", "55"),
-                y: 13,
-                group: 2
-            },
-            {
-                x: new Date("2015", "01", "16", "14", "50", "55"),
-                y: 18,
-                group: 2
-            }
-            ];*/
 
         $scope.chart_options = {};
         $scope.chart_options.data = [];
