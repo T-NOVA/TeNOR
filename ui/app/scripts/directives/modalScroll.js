@@ -42,4 +42,21 @@ angular.module('tNovaApp')
                 });
             }
         }
-    });
+    }).directive('dynamicHeight', function () {
+    return {
+        restrict: 'A',
+        link: function (scope, elm, attrs) {
+            var parent = elm.parent();
+
+            scope.$watch(function () {
+                return {
+                    height: parent.prop('offsetHeight'),
+                    width: parent.prop('offsetWidth')
+                };
+            }, function (size) {
+                console.log(size);
+                if (size.height > 390) elm.parent().css('height', 400);
+            }, true);
+        }
+    };
+});;

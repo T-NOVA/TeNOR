@@ -141,71 +141,78 @@ angular.module('tNovaApp')
                 }
             }
         };
-    })
-    /*
-        .directive('barsChart', function ($parse, $window) {
-            return {
-                restrict: 'EA',
-                link: function (scope, elem, attrs) {
-                    var DELAY = 2000; // delay in ms to add new data points
+    }).directive('streamChartThreshold', function ($parse, $window) {
+        return {
+            restrict: 'EA',
+            transclude: false,
+            scope: {
+                data: '=',
+                options: '=',
+                events: '='
+            },
+            link: function (scope, element, attr) {
 
-                    var exp = $parse(attrs.chartData);
+                // Create the chart
+                var graph = null;
 
-                    var monitoredDataToPlot = exp(scope);
+                scope.$watch('data', function () {
+                    console.log(scope.data);
+                    // Sanity check
+                    if (scope.data == null) {
+                        return;
+                    }
 
-                    // create a graph2d with an (currently empty) dataset
-                    var container = document.getElementById('visualization');
-                    var groups = new vis.DataSet();
-                    groups.add({
-                        id: 0,
-                        content: "Received"
-                    });
-                    groups.add({
-                        id: 1,
-                        content: "Mapped"
-                    });
-                    groups.add({
-                        id: 2,
-                        content: "Rejected"
-                    });
-
-                    var options = {
-                        legend: {
-                            left: {
-                                position: "top-left"
-                            }
-                        },
-                        style: 'bar',
-                        barChart: {
-                            width: 50,
-                            align: 'center',
-                            handleOverlap: "sideBySide"
-                        }, // align: left, center, right
-                        drawPoints: true,
+                    // If we've actually changed the data set, then recreate the graph
+                    // We can always update the data by adding more data to the existing data set
+                    if (graph != null) {
+                        graph.destroy();
+                    }
+                    console.log(scope.options);
+                    console.log(scope.data.items);/*
+                    scope.options = {
+                        legend: true,
+                        max: '2020-12-31',
+                        min: '2016-01-01',
+                        start: vis.moment().add(-30, 'hours'), // changed so its faster
+                        end: vis.moment(),
                         dataAxis: {
-                            title: {
-                                left: {
-                                    text: "Number of requests (#)"
-                                }
-                            },
                             customRange: {
-                                left: {
-                                    min: -5,
-                                    max: 30
-                                },
-                                right: {
-                                    min: -5
+                                left: {},
+                                showMinorLabels: true
+                            },
+                            left: {
+                                format: function (value) {
+                                    return '' + value.toPrecision();
                                 }
                             }
                         },
-                        orientation: 'top',
-                        start: '2015-02-05',
-                        end: '2015-02-20'
-                    };
-                    var graph2d = new vis.Graph2d(container, monitoredDataToPlot, groups, options);
-                }
+                        drawPoints: {
+                            style: 'circle' // square, circle
+                        },
+                        shaded: {
+                            orientation: 'bottom' // top, bottom
+                        }
+                    }*/
+                        // Create the graph2d object
+                    graph = new vis.Graph2d(element[0], scope.data.items, scope.data.groups, scope.options);
+
+                    // onLoad callback
+                    if (scope.events != null && scope.events.onload != null &&
+                        angular.isFunction(scope.events.onload)) {
+                        scope.events.onload(graph);
+                    }
+                });
+
+                scope.$watchCollection('options', function (options) {
+                    console.log(options);
+                    if (graph == null) {
+                        return;
+                    }
+                    graph.setOptions(options);
+                });
             }
-        })*/
+        };
+    })
     .directive('barsChart', function ($parse, $window) {
         return {
             restrict: 'EA',
