@@ -98,8 +98,8 @@ module Authenticationv2Helper
             response = RestClient.post keystoneUrl + '/tokens', auth.to_json, content_type: :json
         rescue => e
             logger.error e
-            logger.error e.response.body
-            return 400, e.response.body
+            logger.error e.response if !e.response.nil?
+            return 400, e
         end
 
         authentication, errors = parse_json(response)
@@ -115,8 +115,8 @@ module Authenticationv2Helper
             response = RestClient.post keystoneUrl + '/tokens', auth.to_json, content_type: :json
         rescue => e
             logger.error e
-            logger.error e.response.body
-            return 400, e.response.body
+            logger.error e.response if !e.response.nil?
+            return 400, e
         end
 
         authentication, errors = parse_json(response)

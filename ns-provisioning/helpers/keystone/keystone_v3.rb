@@ -18,6 +18,7 @@
 # @see NSProvisioner
 module Authenticationv3Helper
     def generate_v3_credentials(instance, pop_urls, tenant_id, user_id, token)
+        logger.info "Generating v2 credentials..."
         @instance = instance
 		pop_auth = {}
         begin
@@ -47,7 +48,7 @@ module Authenticationv3Helper
 				pop_auth['tenant_name'] = 'tenor_tenant_' + @instance['id'].to_s
                 pop_auth['username'] = 'user_' + @instance['id'].to_s
                 pop_auth['password'] = 'secretsecret'
-                stack_url,tenant_id, user_id = create_user_and_project(pop_urls['heat'], @instance['id'], 'tenor_tenant_' + @instance['id'].to_s, 'user_' + @instance['id'].to_s, 'secretsecret', tenant_id, token)
+                stack_url, tenant_id, user_id = create_user_and_project(pop_urls['heat'], @instance['id'], 'tenor_tenant_' + @instance['id'].to_s, 'user_' + @instance['id'].to_s, 'secretsecret', tenant_id, token)
                 pop_auth['tenant_id'] = tenant_id
                 pop_auth['user_id'] = user_id
                 pop_auth['stack_url'] = stack_url
@@ -56,7 +57,7 @@ module Authenticationv3Helper
             if pop_auth['tenant_id'].nil? || pop_auth['user_id'].nil?
                 error = 'Tenant or user not created.'
                 logger.error error
-                @instance.push(audit_log: errors)
+                @instance.push(audit_log: error)
                 @instance.update_attribute('status', 'ERROR_CREATING')
                 return 400, error.to_json
             end
@@ -65,8 +66,9 @@ module Authenticationv3Helper
             putRoleAdmin(pop_urls['keystone'], pop_auth['tenant_id'], pop_auth['user_id'], token)
 
             logger.info 'Authentication using new user credentials.'
-            pop_auth['token'] = authentication_v3_ids(pop_urls['keystone'], pop_auth['tenant_id'], pop_auth['username'], pop_auth['password'])
-            if pop_auth['token'].nil?
+            pop_auth['token'], errors = authentication_v3_ids(pop_urls['keystone'], pop_auth['tenant_id'], pop_auth['username'], pop_auth['password'])
+            if errors || pop_auth['token'].nil?
+                logger.error errors if errors
                 error = 'Authentication failed.'
                 logger.error error
                 @instance.push(audit_log: errors) if errors
