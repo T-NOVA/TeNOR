@@ -40,4 +40,47 @@
 </div-->
 
 <div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="x_panel">
+            <div class="x_title">
+                <h4>Instances  <small></small></h4>
+                <div class="panel-body">
+                    <table st-table="pCollection" st-safe-src="performance_stats" class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th data-title=" 'id' " class="col-sm-2 col-md-2 col-lg-2">Instance id</th>
+                                <th data-title=" 'created_at' " class="col-sm-2 col-md-2 col-lg-2">Created at</th>
+                                <th data-title=" 'mapping' " class="col-sm-1 col-md-1 col-lg-1">Mapping (ms)</th>
+                                <th data-title=" 'Instantiation' " class="col-sm-1 col-md-1 col-lg-1">Instantiation (s)</th>
+                                <th data-title=" 'Total' " class="col-sm-1 col-md-1 col-lg1">Total (s)</th>
+                            </tr>
+                            <tr>
+                                <th colspan="1">
+                                    <input st-search="instance_id" class="form-control" placeholder="id search ..." type="text" />
+                                </th>
+                                <th colspan="4">
+                                    <input st-search="severity" class="form-control" placeholder="global search ..." type="text" />
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="row in pCollection">
+                                <td>{{row.instance_id}}</td>
+                                <td>{{row.created_at | parseInt | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+                                <td>{{row.mapping}}</td>
+                                <td>{{row.instantiation/1000}}</td>
+                                <td>{{row.total/1000}}</td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td class="text-center" st-pagination="" st-items-by-page="20" colspan="5">
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

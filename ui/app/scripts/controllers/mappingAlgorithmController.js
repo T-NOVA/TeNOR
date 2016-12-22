@@ -65,6 +65,7 @@ angular.module('tNovaApp')
         var mappings = 0;
         $loading.start('scatter');
         tenorService.get("statistics/performance_stats").then(function (data) {
+            $scope.performance_stats = data;
             instances = data;
             var d;
             var k = 0;
