@@ -27,7 +27,7 @@ class VnfProvisioner< TnovaManager
 
     begin
       response = RestClient.get manager.host + request.fullpath, 'X-Auth-Token' => manager.token, :content_type => :json
-    rescue Errno::ECONNREFUSED
+    rescue Errno::ECONNREFUSED, Errno::ECONNRESET
       halt 500, 'VNF Manager unreachable'
     rescue => e
       logger.error e.response
@@ -48,7 +48,7 @@ class VnfProvisioner< TnovaManager
 
     begin
       response = RestClient.get manager.host + request.fullpath, 'X-Auth-Token' => manager.token, :content_type => :json
-    rescue Errno::ECONNREFUSED
+    rescue Errno::ECONNREFUSED, Errno::ECONNRESET
       halt 500, 'VNF Manager unreachable'
     rescue => e
       logger.error e.response

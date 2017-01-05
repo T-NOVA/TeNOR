@@ -26,7 +26,7 @@ class VNFCatalogue < TnovaManager
 
         begin
             response = RestClient.get catalogue.host + request.fullpath, 'X-Auth-Token' => catalogue.token, :content_type => :json
-        rescue Errno::ECONNREFUSED
+        rescue Errno::ECONNREFUSED, Errno::ECONNRESET
             halt 500, 'VNF Manager unreachable'
         rescue => e
             logger.error e.response
@@ -45,7 +45,7 @@ class VNFCatalogue < TnovaManager
 
         begin
             response = RestClient.get catalogue.host + request.fullpath, 'X-Auth-Token' => catalogue.token, :content_type => :json
-        rescue Errno::ECONNREFUSED
+        rescue Errno::ECONNREFUSED, Errno::ECONNRESET
             halt 500, 'VNF Manager unreachable'
         rescue => e
             logger.error e.response
@@ -67,7 +67,7 @@ class VNFCatalogue < TnovaManager
 
         begin
             response = RestClient.post catalogue.host + request.fullpath, request.body.read, 'X-Auth-Token' => catalogue.token, :content_type => :json
-        rescue Errno::ECONNREFUSED
+        rescue Errno::ECONNREFUSED, Errno::ECONNRESET
             halt 500, 'VNF Manager unreachable'
         rescue => e
             logger.error e.response
@@ -91,7 +91,7 @@ class VNFCatalogue < TnovaManager
 
         begin
             response = RestClient.put catalogue.host + request.fullpath, request.body.read, 'X-Auth-Token' => catalogue.token, :content_type => :json
-        rescue Errno::ECONNREFUSED
+        rescue Errno::ECONNREFUSED, Errno::ECONNRESET
             halt 500, 'VNF Manager unreachable'
         rescue => e
             logger.error e.response
@@ -119,7 +119,7 @@ class VNFCatalogue < TnovaManager
             unless nss.empty?
                 halt 400, nss.size.to_s + ' Network Services are using this VNF.'
             end
-        rescue Errno::ECONNREFUSED
+        rescue Errno::ECONNREFUSED, Errno::ECONNRESET
             halt 500, 'NS Catalogue unreachable'
         rescue => e
             logger.error e.response
@@ -129,7 +129,7 @@ class VNFCatalogue < TnovaManager
 
         begin
             response = RestClient.delete vnf_catalogue.host + request.fullpath, 'X-Auth-Token' => vnf_catalogue.token, :content_type => :json
-        rescue Errno::ECONNREFUSED
+        rescue Errno::ECONNREFUSED, Errno::ECONNRESET
             halt 500, 'NS Catalogue unreachable'
         rescue => e
             logger.error e.response

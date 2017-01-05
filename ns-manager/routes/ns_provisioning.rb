@@ -93,7 +93,7 @@ class NsProvisioner < TnovaManager
       logger.error e.response
       halt e.response.code, e.response.body
     end
-    logger.info "Instantiation in process..."
+    logger.debug "Instantiation in process..."
     updateStatistics('ns_instantiated_requests')
     return response.code, response.body
   end
@@ -228,7 +228,7 @@ class NsProvisioner < TnovaManager
   # Delete a ns-instance
   # @param [string] nsr_id Instance id
   delete '/:nsr_id' do |nsr_id|
-    logger.info "Delete executed.... " + nsr_id.to_s
+    logger.info "Delete executed for NSR: #{nsr_id.to_s}"
     provisioner, errors = ServiceConfigurationHelper.get_module('ns_provisioner')
     halt 500, errors if errors
 

@@ -75,7 +75,7 @@ class NsScaling< TnovaManager
   # Autoscalin
   # @param [string] nsr_id NS instance id
   post '/:nsr_id/auto_scale' do |nsr_id|
-    logger.info "Request for AUTO SCALE"
+    logger.debug "Request for AUTO SCALE"
 
     return 415 unless request.content_type == 'application/json'
 
@@ -98,7 +98,7 @@ class NsScaling< TnovaManager
       halt e.response.code, e.response.body
     end
 
-    logger.info "Breach of parameter: " + auto_scale_info['parameter_id'].to_s
+    logger.debug "Breach of parameter: " + auto_scale_info['parameter_id'].to_s
 
     flavour = nsr['service_deployment_flavour']
     halt 500, "Flavour not found for autoscale." if flavour.nil?
@@ -116,7 +116,7 @@ class NsScaling< TnovaManager
       halt 400, "No event defined for this scale request."
     end
 
-    logger.info "Executing a #{event}"
+    logger.info "Breach detected in #{nsr_id}. Executing a #{event}"
 
     begin
       response = RestClient.post provisioner.host + "/ns-instances/scaling/#{nsr_id}/#{event}", "", 'X-Auth-Token' => provisioner.token, :content_type => :json
@@ -129,7 +129,7 @@ class NsScaling< TnovaManager
 
     updateStatistics('auto_scaling_request_executed')
 
-    logger.error "AutoScaling executed."
+    logger.debug "AutoScaling executed."
     return response.code, response.body
   end
 
