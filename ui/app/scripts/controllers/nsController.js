@@ -144,10 +144,6 @@ angular.module('tNovaApp')
             tenorService.get("pops/dc").then(function (d) {
                 $scope.registeredDcList = d;
             });
-        }
-
-        $scope.terminate = function (id) {
-            console.log("Terminate Network Service");
         };
 
         $scope.go = function (hash) {
@@ -417,8 +413,5 @@ angular.module('tNovaApp')
             if (promise2) {
                 $interval.cancel(promise2);
             }
-            /*if (promise_table) {
-                $interval.cancel(promise_table);
-            }*/
         });
     });

@@ -54,7 +54,6 @@ angular.module('tNovaApp')
                     width: parent.prop('offsetWidth')
                 };
             }, function (size) {
-                console.log(size);
                 if (size.height > 390) elm.parent().css('height', 400);
             }, true);
         }

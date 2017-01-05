@@ -83,9 +83,7 @@ angular.module('tNovaApp')
             //fd.append('file', files[0]);
             //var obj = JSON.parse(files);
             var obj = files;
-            console.log(obj);
             tenorService.post('vnfs', obj).then(function (data) {
-                console.log(data);
                 $scope.restartServiceList(1);
             });
             this.$hide();
@@ -144,7 +142,6 @@ angular.module('tNovaApp')
         $scope.showDescriptor = function (data) {
             $scope.d = data;
             $scope.jsonObj = JSON.stringify(data, undefined, 4);
-            console.log(data);
             $modal({
                 title: "VNF Instance Descriptor - " + data._id,
                 content: JSON.stringify(data, undefined, 4),
@@ -170,7 +167,6 @@ angular.module('tNovaApp')
 
                 tenorService.get("vnfs/" + $scope.instance.vnfd_reference).then(function (vnfd) {
                     $scope.tableData = [];
-                    console.log(vnfd);
                     vnfd.vnfd.vdu.forEach(function (vdu) {
                         vdu.monitoring_parameters.forEach(function (m) {
                             $scope.tableData.push({
@@ -196,8 +192,6 @@ angular.module('tNovaApp')
         $scope.oldType = "";
         $scope.reloadGraph = function (vdu_id, type) {
             //vdu_id to vdu_openstack_id
-            console.log(vdu_id);
-            console.log($scope.instance);
             vdu_id = $scope.instance.vms_id[vdu_id];
             $interval.cancel(promise1);
             $interval.cancel(promise2);
@@ -262,9 +256,6 @@ angular.module('tNovaApp')
             }
             if (promise2) {
                 $interval.cancel(promise2);
-            }
-            if (promise_table) {
-                $interval.cancel(promise_table);
             }
         });
     });

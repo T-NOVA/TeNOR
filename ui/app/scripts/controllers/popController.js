@@ -62,7 +62,6 @@ angular.module('tNovaApp')
                             var exist = _.some($scope.registeredDcList, function (c) {
                                 return _data.attributes['occi.epa.popuuid'] !== c;
                             });
-                            console.log(exist);
                             if (!exist) {
                                 $scope.availableDcList.push(_data.attributes);
                             }
