@@ -72,7 +72,7 @@ class NsScaling< TnovaManager
 
   # @method post_ns_instances_auto_scale
   # @overload post "/ns-instances/scaling/:nsr_id/auto_scale"
-  # Autoscalin
+  # Autoscaling a Network service given a SLA breach in the monitoring
   # @param [string] nsr_id NS instance id
   post '/:nsr_id/auto_scale' do |nsr_id|
     logger.debug "Request for AUTO SCALE"

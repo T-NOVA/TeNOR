@@ -59,66 +59,82 @@
 
       <iframe id="search_frame" src="file_list.html"></iframe>
 
-      <div id="content"><div id='filecontents'><h1>T-NOVA WP3</h1>
+      <div id="content"><div id='filecontents'>
+<h1 id="label-T-NOVA+WP3">T-NOVA WP3</h1>
 
-<h2>Orchestrator NS Manager</h2>
+<h2 id="label-Orchestrator+NS+Manager">Orchestrator NS Manager</h2>
 
-<h3>Requirements</h3>
+<h3 id="label-Requirements">Requirements</h3>
 
 <p>This code has been run on Ruby 2.1.</p>
 
-<h3>Gems used</h3>
+<h3 id="label-Gems+used">Gems used</h3>
+<ul><li>
+<p><a href="http://www.sinatrarb.com/">Sinatra</a> - Ruby framework</p>
+</li><li>
+<p><a href="https://github.com/macournoyer/thin/">Thin</a> - Web server</p>
+</li><li>
+<p><a href="https://github.com/flori/json">json</a> - JSON specification</p>
+</li><li>
+<p><a href="https://github.com/sinatra/sinatra-contrib">sinatra-contrib</a> -
+Sinatra extensions</p>
+</li><li>
+<p><a href="https://github.com/sparklemotion/nokogiri">Nokogiri</a> - XML
+parser</p>
+</li><li>
+<p><a href="https://github.com/ruby-json-schema/json-schema">JSON-schema</a> -
+JSON schema validator</p>
+</li><li>
+<p><a href="https://github.com/rest-client/rest-client">Rest-client</a> - HTTP
+and REST client</p>
+</li><li>
+<p><a href="https://github.com/lsegal/yard">Yard</a> - Documentation generator
+tool</p>
+</li><li>
+<p><a href="https://github.com/alexch/rerun">rerun</a> - Restarts the app when
+a file changes (used in development environment)</p>
+</li></ul>
 
-<ul>
-<li><a href="http://www.sinatrarb.com/">Sinatra</a> - Ruby framework</li>
-<li><a href="https://github.com/macournoyer/thin/">Thin</a> - Web server</li>
-<li><a href="https://github.com/flori/json">json</a> - JSON specification</li>
-<li><a href="https://github.com/sinatra/sinatra-contrib">sinatra-contrib</a> - Sinatra extensions</li>
-<li><a href="https://github.com/sparklemotion/nokogiri">Nokogiri</a> - XML parser</li>
-<li><a href="https://github.com/ruby-json-schema/json-schema">JSON-schema</a> - JSON schema validator</li>
-<li><a href="https://github.com/rest-client/rest-client">Rest-client</a> - HTTP and REST client</li>
-<li><a href="https://github.com/lsegal/yard">Yard</a> - Documentation generator tool</li>
-<li><a href="https://github.com/alexch/rerun">rerun</a> - Restarts the app when a file changes (used in development environment)</li>
-</ul>
-
-<h3>Installation</h3>
+<h3 id="label-Installation">Installation</h3>
 
 <p>After you cloned the source from the repository, you can run</p>
 
-<pre class="code sh"><code class="sh">bundle install
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_bundle'>bundle</span> <span class='id identifier rubyid_install'>install</span>
 </code></pre>
 
 <p>Which will install all the gems.</p>
 
-<h3>Tests</h3>
+<h3 id="label-Tests">Tests</h3>
 
-<p>For tests execute  </p>
+<p>For tests execute</p>
 
-<pre class="code sh"><code class="sh">rspec
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_rspec'>rspec</span>
 </code></pre>
 
-<h3>API Documentation</h3>
+<h3 id="label-API+Documentation">API Documentation</h3>
 
 <p>The API is documented with yardoc and can be built with a rake task:</p>
 
-<pre class="code sh"><code class="sh">rake yard
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_rake'>rake</span> <span class='id identifier rubyid_yard'>yard</span>
 </code></pre>
 
-<p>from here you can use the yard server to browse the docs from the source root:</p>
+<p>from here you can use the yard server to browse the docs from the source
+root:</p>
 
-<pre class="code sh"><code class="sh">yard server
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_yard'>yard</span> <span class='id identifier rubyid_server'>server</span>
 </code></pre>
 
-<p>and they can be viewed from <a href="http://localhost:8808/">http://localhost:8808/</a></p>
+<p>and they can be viewed from <a
+href="http://localhost:8808">localhost:8808</a>/</p>
 
-<h3>Run Server</h3>
+<h3 id="label-Run+Server">Run Server</h3>
 
 <p>The following shows how to start the API server:</p>
 
-<pre class="code sh"><code class="sh">rake start
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_rake'>rake</span> <span class='id identifier rubyid_start'>start</span>
 </code></pre>
 
-<h3>Register a service:</h3>
+<h3 id="label-Register+a+service-3A">Register a service:</h3>
 
 <p>POST &#39;/registerService&#39; with the following content:</p>
 
@@ -131,7 +147,7 @@
 </div></div>
 
       <div id="footer">
-  Generated on Tue Dec 13 15:12:45 2016 by
+  Generated on Fri Jan 13 15:06:41 2017 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.5 (ruby-2.3.0).
 </div>
