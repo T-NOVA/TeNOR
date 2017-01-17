@@ -99,7 +99,7 @@ a {
     fill: #00f201;
     fill-opacity: 0;
     stroke-width: 2px;
-    stroke: #029200;
+    stroke: #ff0000;
 }
 .panel-heading.panel-header-error {
     background-color: #f2dede;
@@ -123,4 +123,7 @@ a {
       height: 65px;
     }
   }
+}
+.vis.timeline .currenttime{
+    background-color: #000000;
 }
