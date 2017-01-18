@@ -20,10 +20,7 @@ module MonitoringHelper
     # Prepare the monitoring data and sends to the NS Monitoring
     #
     # @param [JSON] message the NSD
-    # @param [JSON] message the NSR id
     # @param [JSON] message the ns instance
-    # @return [Hash, nil] if the parsed message is a valid JSON
-    # @return [Hash, String] if the parsed message is an invalid JSON
     def monitoringData(nsd, instance)
         monitoring = { nsi_id: instance['id'].to_s }
 
@@ -51,18 +48,13 @@ module MonitoringHelper
         end
         monitoring[:vnf_instances] = vnf_instances
 
-        # puts JSON.pretty_generate(monitoring)
-
         begin
             response = RestClient.post settings.ns_monitoring + '/ns-monitoring/monitoring-parameters', monitoring.to_json, content_type: :json
         rescue Errno::ECONNREFUSED
-            puts 'NS Monitoring unreachable'
-        #      halt 500, 'NS Monitoring unreachable'
+            logger.error 'NS Monitoring unreachable'
         rescue => e
             logger.error e
             # halt e.response.code, e.response.body
         end
-
-        # return monitoring
     end
 end

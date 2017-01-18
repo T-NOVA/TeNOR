@@ -50,7 +50,6 @@ class NsProvisioning < Sinatra::Application
     helpers MonitoringHelper
     helpers UtilsHelper
     helpers VimHelper
-    helpers UtilsHelper
     helpers HotHelper
     helpers InstantiationHelper
     helpers AuthenticationHelper
