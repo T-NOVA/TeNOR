@@ -156,7 +156,6 @@ angular.module('tNovaApp')
                 var graph = null;
 
                 scope.$watch('data', function () {
-                    console.log(scope.data);
                     // Sanity check
                     if (scope.data == null) {
                         return;
@@ -167,32 +166,6 @@ angular.module('tNovaApp')
                     if (graph != null) {
                         graph.destroy();
                     }
-                    console.log(scope.options);
-                    console.log(scope.data.items);/*
-                    scope.options = {
-                        legend: true,
-                        max: '2020-12-31',
-                        min: '2016-01-01',
-                        start: vis.moment().add(-30, 'hours'), // changed so its faster
-                        end: vis.moment(),
-                        dataAxis: {
-                            customRange: {
-                                left: {},
-                                showMinorLabels: true
-                            },
-                            left: {
-                                format: function (value) {
-                                    return '' + value.toPrecision();
-                                }
-                            }
-                        },
-                        drawPoints: {
-                            style: 'circle' // square, circle
-                        },
-                        shaded: {
-                            orientation: 'bottom' // top, bottom
-                        }
-                    }*/
                         // Create the graph2d object
                     graph = new vis.Graph2d(element[0], scope.data.items, scope.data.groups, scope.options);
 
@@ -310,12 +283,8 @@ angular.module('tNovaApp')
                 events: '='
             },
             link: function (scope, element, attr) {
-
-                // Create the chart
                 var graph = null;
-
                 scope.$watch('data', function () {
-                    console.log(scope.data);
                     // Sanity check
                     if (scope.data == null) {
                         return;
@@ -326,7 +295,6 @@ angular.module('tNovaApp')
                     if (graph != null) {
                         graph.destroy();
                     }
-                    console.log(scope.options)
                         // Create the graph2d object
                     graph = new vis.Graph2d(element[0], scope.data.items, scope.data.groups, scope.options);
 

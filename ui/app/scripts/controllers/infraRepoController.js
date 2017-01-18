@@ -399,7 +399,7 @@ angular.module('tNovaApp')
             $modal({
                 title: "Attributes",
                 content: "",
-                template: "views/t-nova/modals/descriptors.html",
+                templateUrl: "views/t-nova/modals/descriptors.html",
                 show: true,
                 scope: $scope,
             });
@@ -500,7 +500,7 @@ angular.module('tNovaApp')
             $modal({
                 title: "Attributes",
                 content: "",
-                template: "partials/t-nova/modals/descriptors.html",
+                templateUrl: "partials/t-nova/modals/descriptors.html",
                 show: true,
                 scope: $scope,
             });

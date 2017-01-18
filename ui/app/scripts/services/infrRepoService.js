@@ -10,7 +10,6 @@ services
                         "X-host": infr_repo_url
                     }
                 }).then(function (response) {
-                    console.log(response);
                     return response.data;
                 }, function (response) {});
                 return promise;

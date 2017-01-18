@@ -91,7 +91,6 @@ angular.module('tNovaApp')
                 }
             }).then(
                 function (response) {
-                    console.log(response);
                     deferred.resolve(true);
                 },
                 function (response) {

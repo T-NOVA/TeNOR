@@ -39,7 +39,7 @@ angular.module('tNovaApp')
             $scope.itemToDeleteId = id;
             $modal({
                 title: "Are you sure you want to delete this item?",
-                template: "views/t-nova/modals/delete.html",
+                templateUrl: "views/t-nova/modals/delete.html",
                 show: true,
                 scope: $scope,
             });
@@ -56,7 +56,7 @@ angular.module('tNovaApp')
             $modal({
                 title: "Virtual Network Function Descriptor - " + data.name,
                 content: JSON.stringify(data, undefined, 4),
-                template: "views/t-nova/modals/descriptors.html",
+                templateUrl: "views/t-nova/modals/descriptors.html",
                 show: true,
                 scope: $scope,
             });
@@ -71,7 +71,7 @@ angular.module('tNovaApp')
         $scope.uploadDialog = function(){
             $modal({
                 title: "Upload a VNFD",
-                template: "views/t-nova/modals/upload.html",
+                templateUrl: "views/t-nova/modals/upload.html",
                 show: true,
                 scope: $scope,
             });
@@ -145,7 +145,7 @@ angular.module('tNovaApp')
             $modal({
                 title: "VNF Instance Descriptor - " + data._id,
                 content: JSON.stringify(data, undefined, 4),
-                template: "views/t-nova/modals/info/vnfInstance.html",
+                templateUrl: "views/t-nova/modals/info/vnfInstance.html",
                 show: true,
                 scope: $scope,
             });
