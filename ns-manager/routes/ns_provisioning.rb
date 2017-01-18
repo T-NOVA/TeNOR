@@ -48,7 +48,7 @@ class NsProvisioner < TnovaManager
 
     pop_list = []
     mapping_info = {}
-    if instantiation_info['pop_id'].nil?
+    if instantiation_info['pop_id'].nil? && instantiation_info['vnf_pop'].nil?
       available_pops = getDcs()
       if available_pops.empty?
         halt 400, "No PoPs registereds."
@@ -67,6 +67,10 @@ class NsProvisioner < TnovaManager
         #deploy to the unic PoP
         pop_list << getDc(available_pops[0]['id'])
       end
+    elsif !instantiation_info['vnf_pop'].nil?
+      instantiation_info['vnf_pop'].each_pair do |key, value|
+        pop_list << getDc(value)
+      end
     else
       #deploying the Instance into the requested PoP
       pop_list << getDc(instantiation_info['pop_id'])
@@ -83,7 +87,8 @@ class NsProvisioner < TnovaManager
         :flavour => instantiation_info['flavour'],
         :pop_list => pop_list,
         :mapping => mapping_info,
-        :infr_repo_url => infr_repo_url
+        :infr_repo_url => infr_repo_url,
+        :vnf_mapping => instantiation_info['vnf_pop']
       }
     begin
       response = RestClient.post provisioner.host + request.fullpath, provisioning.to_json, 'X-Auth-Token' => provisioner.token, :content_type => :json

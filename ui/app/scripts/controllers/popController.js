@@ -23,13 +23,13 @@ angular.module('tNovaApp')
         $scope.netfloc_pass = ""
 
         $scope.wicm_ip = ""
+        $scope.wicm_id = ""
 
         $scope.openstack_ip = "";
         $scope.infr_repo_url = undefined
 
         tenorService.get("modules/services/type/infr_repo").then(function (data) {
             if (data === undefined) return;
-            console.log(data);
             if (data.length > 0){
                 $scope.infr_repo_url = data[0].host + ":" + data[0].port;
             }
@@ -38,15 +38,7 @@ angular.module('tNovaApp')
 
         $scope.refreshPoPList = function () {
             tenorService.get('pops/dc').then(function (d) {
-                console.log(d);
                 $scope.registeredDcList = d;
-                /*_.map(d.dclist, function (row, index) {
-                    $scope.registeredDcList.push({
-                        id: d.dcid[index],
-                        name: row
-                    })
-                });*/
-                console.log($scope.registeredDcList);
                 if ($scope.infr_repo_url == undefined){
                     return;
                 }
@@ -74,9 +66,6 @@ angular.module('tNovaApp')
 
         $scope.addDialog = function (infr_repo_pop) {
             $scope.object = $scope.defaultPoP;
-            console.log($scope.object);
-
-            console.log(infr_repo_pop);
             if (infr_repo_pop !== undefined){
                 $scope.object.id = infr_repo_pop['occi.epa.popuuid'];
                 $scope.object.msg = infr_repo_pop['occi.epa.pop.name'];
@@ -85,11 +74,7 @@ angular.module('tNovaApp')
                 $scope.object.id = "Pop_identification";
                 $scope.object.msg = "Pop_description";
             };
-            /*if (id === "") {
-                $scope.emptyId = true;
-            }*/
 
-            //$scope.object.id = id;
             $scope.dc_default = $scope.defaultPoP;
             $scope.openstack_ip = "";
             $scope.dc_default = {
@@ -107,7 +92,7 @@ angular.module('tNovaApp')
             };
             $modal({
                 title: "Registring DC - " + $scope.object.id,
-                template: "views/t-nova/modals/addPop.html",
+                templateUrl: "views/t-nova/modals/addPop.html",
                 show: true,
                 scope: $scope,
             });
@@ -122,11 +107,9 @@ angular.module('tNovaApp')
                 "tenant_name": obj.tenantName,
                 "is_admin": obj.isAdmin,
                 "description": obj.msg,
-                "extra_info": "keystone=http://" + obj.keystone_api + " heat=http://" + obj.heat_api + " compute=http://" + obj.compute_api + " neutron=http://" + obj.neutron_api + " dns=" + obj.dns + " netfloc_ip=" + obj.netfloc_ip + " netfloc_user=" + obj.netfloc_user + " netfloc_pass=" + obj.netfloc_pass + " wicm_ip=" + obj.wicm_ip
+                "extra_info": "keystone=http://" + obj.keystone_api + " heat=http://" + obj.heat_api + " compute=http://" + obj.compute_api + " neutron=http://" + obj.neutron_api + " dns=" + obj.dns + " netfloc_ip=" + obj.netfloc_ip + " netfloc_user=" + obj.netfloc_user + " netfloc_pass=" + obj.netfloc_pass + " wicm_ip=" + obj.wicm_ip+ " wicm_id=" + obj.wicm_id
             };
-            console.log(pop);
             tenorService.post('pops/dc', pop).then(function (d) {
-                console.log(d);
                 $scope.defaultPoP = {};
                 $alert({
                     title: "Success: ",
@@ -162,7 +145,7 @@ angular.module('tNovaApp')
             $scope.jsonObj = JSON.stringify(pop_info, undefined, 4);
             $modal({
                 title: "Pop - " + pop_info['id'] + " - " + pop_info['name'],
-                template: "views/t-nova/modals/info/showPop.html",
+                templateUrl: "views/t-nova/modals/info/showPop.html",
                 show: true,
                 scope: $scope,
             });
@@ -172,7 +155,7 @@ angular.module('tNovaApp')
             $scope.obj.data = pop_info;
             $modal({
                 title: "Pop - " + pop_info['id'] + " - " + pop_info['name'],
-                template: "views/t-nova/modals/editPop.html",
+                templateUrl: "views/t-nova/modals/editPop.html",
                 show: true,
                 scope: $scope,
             });
@@ -190,7 +173,7 @@ angular.module('tNovaApp')
             $scope.itemToDeleteId = id;
             $modal({
                 title: "Are you sure you want to delete this item?",
-                template: "views/t-nova/modals/delete.html",
+                templateUrl: "views/t-nova/modals/delete.html",
                 show: true,
                 scope: $scope,
             });
@@ -198,13 +181,12 @@ angular.module('tNovaApp')
 
         $scope.deleteItem = function (popId) {
             tenorService.delete('pops/dc/' + popId).then(function (data) {
-                console.log(data);
                 $scope.refreshPoPList();
             });
             this.$hide();
         };
 
-    }).controller('PoPModalController', function ($scope, $window, $interval, $modal, $alert, tenorService, AuthService, infrRepoService) {
+    }).controller('PoPModalController', function ($scope, $window, $interval, $modal, $alert, genericService) {
         $scope.updateOpenstackIP = function () {
             var openstack_ip = $scope.openstack_ip;
 
@@ -229,7 +211,14 @@ angular.module('tNovaApp')
                 netfloc_ip : $scope.netfloc_ip,
                 netfloc_user:$scope.netfloc_user,
                 netfloc_pass: $scope.netfloc_pass,
-                wicm_ip: $scope.wicm_ip
+                wicm_ip: $scope.wicm_ip,
+                wicm_id: $scope.wicm_id
             }
+        };
+
+        $scope.get_nfvi_from_wicm = function(ip){
+            genericService.get(ip, 'nfvi').then(function (data) {
+                $scope.nfvis = data.nfvis;
+            });
         };
     });

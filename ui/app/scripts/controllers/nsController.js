@@ -44,7 +44,7 @@ angular.module('tNovaApp')
             $scope.itemToDeleteId = id;
             $modal({
                 title: "Are you sure you want to delete this item?",
-                template: "views/t-nova/modals/delete.html",
+                templateUrl: "views/t-nova/modals/delete.html",
                 show: true,
                 scope: $scope,
             });
@@ -61,7 +61,7 @@ angular.module('tNovaApp')
             $modal({
                 title: "Network Service Descriptor - " + data.id,
                 content: JSON.stringify(data, undefined, 4),
-                template: "views/t-nova/modals/descriptors.html",
+                templateUrl: "views/t-nova/modals/descriptors.html",
                 show: true,
                 scope: $scope,
             });
@@ -81,9 +81,10 @@ angular.module('tNovaApp')
             $scope.object.ns_id = nsd.id;
             $scope.object.callbackUrl = "https://httpbin.org/post";
             $scope.object.pop_id = null;
+            //$scope.object.flavour = nsd.sla[0].sla_key;
             $modal({
                 title: "Instantiation - " + nsd.id,
-                template: "views/t-nova/modals/nsInstantiation.html",
+                templateUrl: "views/t-nova/modals/nsInstantiation.html",
                 show: true,
                 scope: $scope,
             });
@@ -103,6 +104,8 @@ angular.module('tNovaApp')
                 } else { //use selected PoP
                     if (instance.pop_id == null) {
                         error = "PoP not selected."
+                    } else if (true) {
+                        console.log(instance.vnf_pop);
                     }
                     delete instance["mapping_id"];
                 }
@@ -153,7 +156,7 @@ angular.module('tNovaApp')
         $scope.uploadDialog = function(){
             $modal({
                 title: "Upload a NSD",
-                template: "views/t-nova/modals/upload.html",
+                templateUrl: "views/t-nova/modals/upload.html",
                 show: true,
                 scope: $scope,
             });
@@ -221,7 +224,7 @@ angular.module('tNovaApp')
             $scope.itemToDeleteId = id;
             $modal({
                 title: "Are you sure you want to delete this item?",
-                template: "views/t-nova/modals/delete.html",
+                templateUrl: "views/t-nova/modals/delete.html",
                 show: true,
                 scope: $scope,
             });
@@ -248,8 +251,7 @@ angular.module('tNovaApp')
             $modal({
                 title: "Network Service Instance Descriptor - " + data.id,
                 content: JSON.stringify(data, undefined, 4),
-                //template: "views/t-nova/modals/descriptors.html",
-                template: "views/t-nova/modals/info/nsInstance.html",
+                templateUrl: "views/t-nova/modals/info/nsInstance.html",
                 show: true,
                 scope: $scope,
             });

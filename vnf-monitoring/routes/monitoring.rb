@@ -75,12 +75,12 @@ class VNFMonitoring < Sinatra::Application
 
     delete '/vnf-monitoring/subscription/:vnfr_id' do |vnfr_id|
         begin
-            monitoring_metrics = MonitoringMetric.to_json.where(:vnfr_id => vnfr_id)
+            monitoring_metrics = MonitoringMetric.where(:vnfr_id => vnfr_id)
         rescue Mongoid::Errors::DocumentNotFound => e
             logger.error "Monitoring Metric no exists."
             halt 400, 'Sla no exists'
         end
-        logger.debug "Remove subcription #{monitoring_metrics.to_json }"
+        logger.debug "Remove subcription #{monitoring_metrics.to_json}"
         monitoring_metrics.each do |mon_metrics|
             begin
                 response = RestClient.delete settings.vim_monitoring + '/api/subscriptions/' + mon_metrics['subscription_id'], accept: :json
