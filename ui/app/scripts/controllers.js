@@ -5,7 +5,6 @@ angular.module('tNovaApp.controllers', [])
 .controller('RootCtrl', function ($scope, $rootScope, Fullscreen) {
         // controls sidebar expand/close
         $rootScope.sidebarCollapse = false;
-        console.log("Start sidebard");
         $scope.toggleSidebar = function () {
             $rootScope.sidebarCollapse = !$rootScope.sidebarCollapse;
         };

@@ -21,7 +21,7 @@ module StatisticsHelper
 
   # Update specific statistic
   #
-  # @param [Symbol] format the format type, `:text` or `:html`
+  # @param [string] name etric Name
   # @return [String] the object converted into the expected format.
   def updateStatistics(name)
     begin
@@ -36,7 +36,7 @@ module StatisticsHelper
 
   # Get list of PoPs
   #
-  # @param [Symbol] format the format type, `:text` or `:html`
+  # @param [Hash] instance
   # @return [String] the object converted into the expected format.
   def savePerformance(instance)
 

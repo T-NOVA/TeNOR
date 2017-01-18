@@ -4,7 +4,7 @@
     <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>
-  Class: NsMonitoring
+  Class: Monitoring
   
     &mdash; Documentation by YARD 0.9.5
   
@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="css/common.css" type="text/css" charset="utf-8" />
 
 <script type="text/javascript" charset="utf-8">
-  pathId = "NsMonitoring";
+  pathId = "Monitoring";
   relpath = '';
 </script>
 
@@ -36,10 +36,10 @@
       <div id="header">
         <div id="menu">
   
-    <a href="_index.html">Index (N)</a> &raquo;
+    <a href="_index.html">Index (M)</a> &raquo;
     
     
-    <span class="title">NsMonitoring</span>
+    <span class="title">Monitoring</span>
   
 </div>
 
@@ -61,7 +61,7 @@
 
       <iframe id="search_frame" src="class_list.html"></iframe>
 
-      <div id="content"><h1>Class: NsMonitoring
+      <div id="content"><h1>Class: Monitoring
   
   
   
@@ -80,7 +80,7 @@
           
             <li class="next"><span class='object_link'><a href="TnovaManager.html" title="TnovaManager (class)">TnovaManager</a></span></li>
           
-            <li class="next">NsMonitoring</li>
+            <li class="next">Monitoring</li>
           
         </ul>
         <a href="#" class="inheritanceTree">show all</a>
@@ -242,6 +242,22 @@ under the License.</p>
   
     <li>
       
+        <span class='name'>instance_id</span>
+      
+      
+        <span class='type'>(<tt>string</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>NS/VNF Instance id</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
         <span class='name'>instance_type</span>
       
       
@@ -249,16 +265,10 @@ under the License.</p>
       
       
       
-    </li>
-  
-    <li>
-      
-        <span class='name'>instance_id</span>
-      
-      
-        <span class='type'>(<tt>string</tt>)</span>
-      
-      
+        &mdash;
+        <div class='inline'>
+<p>NS or VNF</p>
+</div>
       
     </li>
   
@@ -271,6 +281,43 @@ under the License.</p>
       
       
       
+        &mdash;
+        <div class='inline'>
+<p>Name of the metric (freemem, httpnum…)</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>start</span>
+      
+      
+        <span class='type'>(<tt>string</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Start time from request data</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>end</span>
+      
+      
+        <span class='type'>(<tt>string</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>End time until request data</p>
+</div>
+      
     </li>
   
 </ul>
@@ -282,8 +329,6 @@ under the License.</p>
       <pre class="lines">
 
 
-26
-27
 28
 29
 30
@@ -304,10 +349,12 @@ under the License.</p>
 45
 46
 47
-48</pre>
+48
+49
+50</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'routes/monitoring.rb', line 26</span>
+      <pre class="code"><span class="info file"># File 'routes/monitoring.rb', line 28</span>
 
 <span class='id identifier rubyid_get'>get</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/:instance_id/monitoring-data/</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_instance_id'>instance_id</span><span class='op'>|</span>
     <span class='kw'>if</span> <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>instance_type</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>ns</span><span class='tstring_end'>&#39;</span></span>
@@ -362,7 +409,7 @@ under the License.</p>
   
     <li>
       
-        <span class='name'>Instance</span>
+        <span class='name'>instance_id</span>
       
       
         <span class='type'>(<tt>string</tt>)</span>
@@ -371,7 +418,7 @@ under the License.</p>
       
         &mdash;
         <div class='inline'>
-<p>id</p>
+<p>NS/VNF Instance id</p>
 </div>
       
     </li>
@@ -385,8 +432,6 @@ under the License.</p>
       <pre class="lines">
 
 
-54
-55
 56
 57
 58
@@ -406,10 +451,12 @@ under the License.</p>
 72
 73
 74
-75</pre>
+75
+76
+77</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'routes/monitoring.rb', line 54</span>
+      <pre class="code"><span class="info file"># File 'routes/monitoring.rb', line 56</span>
 
 <span class='id identifier rubyid_get'>get</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/:instance_id/monitoring-data/last100/</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_instance_id'>instance_id</span><span class='op'>|</span>
     <span class='kw'>if</span> <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>instance_type</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>ns</span><span class='tstring_end'>&#39;</span></span>
@@ -443,7 +490,7 @@ under the License.</p>
 </div>
 
       <div id="footer">
-  Generated on Tue Dec 13 15:12:47 2016 by
+  Generated on Fri Jan 13 15:06:42 2017 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.5 (ruby-2.3.0).
 </div>

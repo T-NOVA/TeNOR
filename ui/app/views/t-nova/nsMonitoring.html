@@ -6,50 +6,45 @@
 <div class="row">
     <div class="col-md-12">
         <div class="x_panel">
-            <div class="x_title">Instance {{instanceId}}</div>
+            <div class="x_title">Instance {{instance.id}}
+				<br/>
                 <div class="panel-options">
-                    <button ng-click="removeSP()" class="btn btn-primary btn-xs"><i class="glyphicon glyphicon-refresh"></i> Generate report</button>
+                    <button ng-click="generate_report()" class="btn btn-primary btn-xs" disabled><i class="glyphicon glyphicon-refresh"></i> Generate report</button>
                     <a href="" data-rel="collapse"><i class="glyphicon glyphicon-refresh"></i></a>
                     <a href="" data-rel="reload"><i class="glyphicon glyphicon-cog"></i></a>
                 </div>
             </div>
-            <div class="panel-body" style="overflow:auto; height: 400px;">
-                <table ng-table="tableParams" class="table ng-table-responsive">
-                    <tr ng-repeat="row in tableData">
-                        <td data-title="'Statistic'" class="col-sm-2 col-md-2 col-lg-2">{{row.type}}</td>
-                        <td data-title="'Current value'" class="col-sm-2 col-md-2 col-lg-2">{{row.valueType}}</td>
-                        <td data-title="'Action'" class="col-sm-2 col-md-2 col-lg-2">
-                            <button ng-click="reloadGraph(row.valueType)" class="btn btn-primary btn-xs">Show graph</button>
-                        </td>
-                    </tr>
+            <div class="panel-body" style="overflow:auto;">
+                <table st-table="displayedtableData" st-safe-src="tableData" class="table table-striped" dynamic-height>
+                    <thead>
+                        <tr>
+                            <th st-sort="id" class="col-sm-1 col-md-1 col-lg-1">Id</th>
+                            <th data-title="'name'" class="col-sm-2 col-md-2 col-lg-2">Name</th>
+                            <th data-title="'name'" class="col-sm-1 col-md-1 col-lg-1">Formula</th>
+                            <th data-title="'name'" class="col-sm-1 col-md-1 col-lg-1">Threshold</th>
+                            <th data-title="'actions'" class="col-sm-3 col-md-3 col-lg-3">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="row in displayedtableData">
+                            <td data-title="'Statistic'" class="col-sm-2 col-md-2 col-lg-2">{{row.type}}</td>
+                            <td data-title="'Current value'" class="col-sm-2 col-md-2 col-lg-2">{{row.valueType}}</td>
+                            <td data-title="'Formula'" class="col-sm-2 col-md-2 col-lg-2">{{row.formula}}</td>
+                            <td data-title="'Threshold'" class="col-sm-2 col-md-2 col-lg-2">{{row.threshold}}</td>
+                            <td data-title="'Action'" class="col-sm-2 col-md-2 col-lg-2">
+                                <button ng-click="reloadGraph(row.valueType, row.threshold)" class="btn btn-primary btn-xs">Show graph</button>
+                            </td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
         </div>
     </div>
-    <!--div class="col-md-4">
-        <div class="content-box-large">
-            <div class="panel-heading">
-                <div class="panel-title">Infrastructure as a Service KPIs</div>
-            </div>
-            <div class="panel-body">
-                <div style="float:left; text-align: center; font-size: 15px;">
-                    CPU Use
-                    <br/>
-                    <div class="chart" easypiechart options="options" percent="cpu_percent"><span class="percent" ng-bind="cpu_percent"></span></div>
-                </div>
-                <div style="float:left; text-align: center; font-size: 15px;">
-                    Memory use
-                    <br/>
-                    <div class="chart" easypiechart options="options" percent="mem_percent"><span class="percent" ng-bind="mem_percent"></span></div>
-                </div>
-            </div>
-        </div>
-    </div-->
 </div>
 <div class="row" ng-if="graph_name">
     <div class="col-md-12">
         <div class="x_panel">
-            <div class="x_title">{{graph_name}}</div>
+            <div class="x_title">{{graph_name}}
                 <div class="panel-options">
                     <a href="" data-rel="collapse"><i class="glyphicon glyphicon-refresh"></i></a>
                     <a href="" data-rel="reload"><i class="glyphicon glyphicon-cog"></i></a>
@@ -57,7 +52,7 @@
             </div>
             <div id="graphChart" class="panel-body">
                 <div id="visualization"></div>
-                <div stream-chart chart-data="monitoringData"></div>
+                <stream-chart-threshold data="data" options="options"></stream-chart-threshold>
             </div>
         </div>
     </div>

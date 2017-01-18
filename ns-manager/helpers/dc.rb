@@ -63,7 +63,7 @@ module DcHelper
         end
         pop_extra_info
     end
-
+    
     # Return the status of a PoP
     def popStatus(pop_info)
         keystone_url = getPoPExtraInfo(pop_info[:extra_info])['keystone']

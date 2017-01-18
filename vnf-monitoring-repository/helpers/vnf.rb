@@ -63,8 +63,8 @@ module VnfMonitoringHelper
       ch = @channel
       puts " [*] Waiting for logs."
       t = ch.queue("vnf_repository", :exclusive => false).subscribe do |delivery_info, metadata, payload|
-        puts "Received logs of #{json[0]['instance_id']}"
         json = JSON.parse(payload)
+        puts "Received logs of #{json[0]['instance_id']}"
         VnfMonitoringHelper.save_monitoring(json)
       end
     }

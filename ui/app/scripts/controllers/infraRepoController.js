@@ -19,6 +19,7 @@ angular.module('tNovaApp')
             console.log(data);
             $scope.infr_repo_url = data[0].host + ":" + data[0].port;
             console.log($scope.infr_repo_url);
+            $scope.getTypes();
             $scope.getPops();
         });
 
@@ -133,7 +134,7 @@ angular.module('tNovaApp')
                     if (elType === 'floatingip') continue;
                     if (elType === 'pu') continue;
                     url = 'pop/' + $scope.infrModel[popId]['occi.epa.popuuid'] + '/' + elType + '/';
-                    infrRepoService.get($scope.infr_repo_url, url).get(url).then(function (_data) {
+                    infrRepoService.get($scope.infr_repo_url, url).then(function (_data) {
                         if (_data.length === 0)
                             $scope.dataCollection = [];
                         var j = 0;
@@ -274,8 +275,6 @@ angular.module('tNovaApp')
             });
         };
 
-        $scope.getTypes();
-
         $scope.virtualType = ['stack', 'vm', 'port', 'net', 'volume', 'snapshot', 'floatingip', 'router', 'controller', 'hypervisor', 'cinder'];
         $scope.physicalType = ['machine', 'bridge', 'pcidev', 'osdev', 'socket', 'cache', 'core', 'core', 'pu'];
 
@@ -400,7 +399,7 @@ angular.module('tNovaApp')
             $modal({
                 title: "Attributes",
                 content: "",
-                template: "views/t-nova/modals/descriptors.html",
+                templateUrl: "views/t-nova/modals/descriptors.html",
                 show: true,
                 scope: $scope,
             });
@@ -501,7 +500,7 @@ angular.module('tNovaApp')
             $modal({
                 title: "Attributes",
                 content: "",
-                template: "partials/t-nova/modals/descriptors.html",
+                templateUrl: "partials/t-nova/modals/descriptors.html",
                 show: true,
                 scope: $scope,
             });

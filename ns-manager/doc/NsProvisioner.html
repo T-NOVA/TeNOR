@@ -385,11 +385,6 @@ under the License.</p>
       <pre class="lines">
 
 
-230
-231
-232
-233
-234
 235
 236
 237
@@ -421,13 +416,18 @@ under the License.</p>
 263
 264
 265
-266</pre>
+266
+267
+268
+269
+270
+271</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'routes/ns_provisioning.rb', line 230</span>
+      <pre class="code"><span class="info file"># File 'routes/ns_provisioning.rb', line 235</span>
 
 <span class='id identifier rubyid_delete'>delete</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/:nsr_id</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_nsr_id'>nsr_id</span><span class='op'>|</span>
-  <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Delete executed.... </span><span class='tstring_end'>&quot;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_nsr_id'>nsr_id</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
+  <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Delete executed for NSR: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_nsr_id'>nsr_id</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
   <span class='id identifier rubyid_provisioner'>provisioner</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='op'>=</span> <span class='const'>ServiceConfigurationHelper</span><span class='period'>.</span><span class='id identifier rubyid_get_module'>get_module</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>ns_provisioner</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
   <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='kw'>if</span> <span class='id identifier rubyid_errors'>errors</span>
 
@@ -516,11 +516,6 @@ under the License.</p>
       <pre class="lines">
 
 
-148
-149
-150
-151
-152
 153
 154
 155
@@ -530,10 +525,15 @@ under the License.</p>
 159
 160
 161
-162</pre>
+162
+163
+164
+165
+166
+167</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'routes/ns_provisioning.rb', line 148</span>
+      <pre class="code"><span class="info file"># File 'routes/ns_provisioning.rb', line 153</span>
 
 <span class='id identifier rubyid_get'>get</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/:nsr_id/status</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>do</span>
   <span class='id identifier rubyid_provisioner'>provisioner</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='op'>=</span> <span class='const'>ServiceConfigurationHelper</span><span class='period'>.</span><span class='id identifier rubyid_get_module'>get_module</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>ns_provisioner</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
@@ -583,11 +583,6 @@ under the License.</p>
       <pre class="lines">
 
 
-167
-168
-169
-170
-171
 172
 173
 174
@@ -597,10 +592,15 @@ under the License.</p>
 178
 179
 180
-181</pre>
+181
+182
+183
+184
+185
+186</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'routes/ns_provisioning.rb', line 167</span>
+      <pre class="code"><span class="info file"># File 'routes/ns_provisioning.rb', line 172</span>
 
 <span class='id identifier rubyid_get'>get</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>do</span>
   <span class='id identifier rubyid_provisioner'>provisioner</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='op'>=</span> <span class='const'>ServiceConfigurationHelper</span><span class='period'>.</span><span class='id identifier rubyid_get_module'>get_module</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>ns_provisioner</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
@@ -670,11 +670,6 @@ under the License.</p>
       <pre class="lines">
 
 
-105
-106
-107
-108
-109
 110
 111
 112
@@ -684,10 +679,15 @@ under the License.</p>
 116
 117
 118
-119</pre>
+119
+120
+121
+122
+123
+124</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'routes/ns_provisioning.rb', line 105</span>
+      <pre class="code"><span class="info file"># File 'routes/ns_provisioning.rb', line 110</span>
 
 <span class='id identifier rubyid_get'>get</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/:nsr_id</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>do</span>
   <span class='id identifier rubyid_provisioner'>provisioner</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='op'>=</span> <span class='const'>ServiceConfigurationHelper</span><span class='period'>.</span><span class='id identifier rubyid_get_module'>get_module</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>ns_provisioner</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
@@ -812,7 +812,12 @@ under the License.</p>
 96
 97
 98
-99</pre>
+99
+100
+101
+102
+103
+104</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'routes/ns_provisioning.rb', line 24</span>
@@ -840,11 +845,11 @@ under the License.</p>
     <span class='id identifier rubyid_halt'>halt</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
   <span class='kw'>end</span>
 
-  <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>INSTANTIATION INFO: </span><span class='tstring_end'>&quot;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_instantiation_info'>instantiation_info</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
+  <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Instantiating a new service: </span><span class='tstring_end'>&quot;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_instantiation_info'>instantiation_info</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
 
   <span class='id identifier rubyid_pop_list'>pop_list</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
   <span class='id identifier rubyid_mapping_info'>mapping_info</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
-  <span class='kw'>if</span> <span class='id identifier rubyid_instantiation_info'>instantiation_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>pop_id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+  <span class='kw'>if</span> <span class='id identifier rubyid_instantiation_info'>instantiation_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>pop_id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_instantiation_info'>instantiation_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>vnf_pop</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
     <span class='id identifier rubyid_available_pops'>available_pops</span> <span class='op'>=</span> <span class='id identifier rubyid_getDcs'>getDcs</span><span class='lparen'>(</span><span class='rparen'>)</span>
     <span class='kw'>if</span> <span class='id identifier rubyid_available_pops'>available_pops</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
       <span class='id identifier rubyid_halt'>halt</span> <span class='int'>400</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>No PoPs registereds.</span><span class='tstring_end'>&quot;</span></span>
@@ -863,6 +868,10 @@ under the License.</p>
       <span class='comment'>#deploy to the unic PoP
 </span>      <span class='id identifier rubyid_pop_list'>pop_list</span> <span class='op'>&lt;&lt;</span> <span class='id identifier rubyid_getDc'>getDc</span><span class='lparen'>(</span><span class='id identifier rubyid_available_pops'>available_pops</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='rparen'>)</span>
     <span class='kw'>end</span>
+  <span class='kw'>elsif</span> <span class='op'>!</span><span class='id identifier rubyid_instantiation_info'>instantiation_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>vnf_pop</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+    <span class='id identifier rubyid_instantiation_info'>instantiation_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>vnf_pop</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_each_pair'>each_pair</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_key'>key</span><span class='comma'>,</span> <span class='id identifier rubyid_value'>value</span><span class='op'>|</span>
+      <span class='id identifier rubyid_pop_list'>pop_list</span> <span class='op'>&lt;&lt;</span> <span class='id identifier rubyid_getDc'>getDc</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span>
+    <span class='kw'>end</span>
   <span class='kw'>else</span>
     <span class='comment'>#deploying the Instance into the requested PoP
 </span>    <span class='id identifier rubyid_pop_list'>pop_list</span> <span class='op'>&lt;&lt;</span> <span class='id identifier rubyid_getDc'>getDc</span><span class='lparen'>(</span><span class='id identifier rubyid_instantiation_info'>instantiation_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>pop_id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='rparen'>)</span>
@@ -879,7 +888,8 @@ under the License.</p>
       <span class='symbol'>:flavour</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_instantiation_info'>instantiation_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>flavour</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='comma'>,</span>
       <span class='symbol'>:pop_list</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_pop_list'>pop_list</span><span class='comma'>,</span>
       <span class='symbol'>:mapping</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_mapping_info'>mapping_info</span><span class='comma'>,</span>
-      <span class='symbol'>:infr_repo_url</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_infr_repo_url'>infr_repo_url</span>
+      <span class='symbol'>:infr_repo_url</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_infr_repo_url'>infr_repo_url</span><span class='comma'>,</span>
+      <span class='symbol'>:vnf_mapping</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_instantiation_info'>instantiation_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>vnf_pop</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
     <span class='rbrace'>}</span>
   <span class='kw'>begin</span>
     <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_post'>post</span> <span class='id identifier rubyid_provisioner'>provisioner</span><span class='period'>.</span><span class='id identifier rubyid_host'>host</span> <span class='op'>+</span> <span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_fullpath'>fullpath</span><span class='comma'>,</span> <span class='id identifier rubyid_provisioning'>provisioning</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>X-Auth-Token</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_provisioner'>provisioner</span><span class='period'>.</span><span class='id identifier rubyid_token'>token</span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span>
@@ -889,7 +899,7 @@ under the License.</p>
     <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span>
     <span class='id identifier rubyid_halt'>halt</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
   <span class='kw'>end</span>
-  <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Instantiation correct.</span><span class='tstring_end'>&quot;</span></span>
+  <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_debug'>debug</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Instantiation in process...</span><span class='tstring_end'>&quot;</span></span>
   <span class='id identifier rubyid_updateStatistics'>updateStatistics</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>ns_instantiated_requests</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
 <span class='kw'>end</span></pre>
@@ -947,11 +957,6 @@ VNFManager.</p>
       <pre class="lines">
 
 
-272
-273
-274
-275
-276
 277
 278
 279
@@ -995,10 +1000,15 @@ VNFManager.</p>
 317
 318
 319
-320</pre>
+320
+321
+322
+323
+324
+325</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'routes/ns_provisioning.rb', line 272</span>
+      <pre class="code"><span class="info file"># File 'routes/ns_provisioning.rb', line 277</span>
 
 <span class='id identifier rubyid_post'>post</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/:nsr_id/instantiate</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_nsr_id'>nsr_id</span><span class='op'>|</span>
 
@@ -1118,11 +1128,6 @@ VNFManager.</p>
       <pre class="lines">
 
 
-125
-126
-127
-128
-129
 130
 131
 132
@@ -1135,10 +1140,15 @@ VNFManager.</p>
 139
 140
 141
-142</pre>
+142
+143
+144
+145
+146
+147</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'routes/ns_provisioning.rb', line 125</span>
+      <pre class="code"><span class="info file"># File 'routes/ns_provisioning.rb', line 130</span>
 
 <span class='id identifier rubyid_put'>put</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/:nsr_id</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>do</span>
   <span class='id identifier rubyid_provisioner'>provisioner</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='op'>=</span> <span class='const'>ServiceConfigurationHelper</span><span class='period'>.</span><span class='id identifier rubyid_get_module'>get_module</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>ns_provisioner</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
@@ -1168,7 +1178,7 @@ VNFManager.</p>
 </div>
 
       <div id="footer">
-  Generated on Tue Dec 13 15:12:48 2016 by
+  Generated on Fri Jan 13 15:06:43 2017 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.5 (ruby-2.3.0).
 </div>
