@@ -71,12 +71,12 @@
   <dl>
     <dt>Inherits:</dt>
     <dd>
-      <span class="inheritName">Sinatra::Application</span>
+      <span class="inheritName">TnovaManager</span>
       
         <ul class="fullTree">
           <li>Object</li>
           
-            <li class="next">Sinatra::Application</li>
+            <li class="next">TnovaManager</li>
           
             <li class="next">Statistics</li>
           
@@ -154,7 +154,7 @@ under the License.</p>
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#get_performance_stats-instance_method" title="#get (instance method)">#<strong>get</strong>(&quot;/performance-stats&quot;)  &#x21d2; Object </a>
+      <a href="#get_performance_stats-instance_method" title="#get (instance method)">#<strong>get</strong>(&quot;/performance_stats&quot;)  &#x21d2; Object </a>
     
 
     
@@ -202,7 +202,7 @@ under the License.</p>
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#post_performance_stats-instance_method" title="#get (instance method)">#<strong>get</strong>(&quot;/performance-stats&quot;)  &#x21d2; Object </a>
+      <a href="#post_performance_stats-instance_method" title="#post (instance method)">#<strong>post</strong>(&quot;/performance_stats&quot;)  &#x21d2; Object </a>
     
 
     
@@ -260,7 +260,7 @@ under the License.</p>
       <div class="method_details first">
   <h3 class="signature first" id="get_performance_stats-instance_method">
   
-    #<strong>get</strong>(&quot;/performance-stats&quot;)  &#x21d2; <tt>Object</tt> 
+    #<strong>get</strong>(&quot;/performance_stats&quot;)  &#x21d2; <tt>Object</tt> 
   
 
   
@@ -285,15 +285,15 @@ under the License.</p>
       <pre class="lines">
 
 
+39
 40
-41
-42</pre>
+41</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'ns-manager/routes/statistics.rb', line 40</span>
+      <pre class="code"><span class="info file"># File 'ns-manager/routes/statistics.rb', line 39</span>
 
-<span class='id identifier rubyid_get'>get</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/performance-stats</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>do</span>
-  <span class='kw'>return</span> <span class='const'>PerformanceStatisticModel</span><span class='period'>.</span><span class='id identifier rubyid_all'>all</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span>
+<span class='id identifier rubyid_get'>get</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/performance_stats</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>do</span>
+    <span class='kw'>return</span> <span class='const'>PerformanceStatisticModel</span><span class='period'>.</span><span class='id identifier rubyid_all'>all</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -343,15 +343,15 @@ under the License.</p>
       <pre class="lines">
 
 
+24
 25
-26
-27</pre>
+26</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'ns-manager/routes/statistics.rb', line 25</span>
+      <pre class="code"><span class="info file"># File 'ns-manager/routes/statistics.rb', line 24</span>
 
-<span class='id identifier rubyid_get'>get</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/statistics</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>do</span>
-  <span class='kw'>return</span> <span class='const'>StatisticModel</span><span class='period'>.</span><span class='id identifier rubyid_all'>all</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span>
+<span class='id identifier rubyid_get'>get</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/generic</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>do</span>
+    <span class='kw'>return</span> <span class='const'>StatisticModel</span><span class='period'>.</span><span class='id identifier rubyid_all'>all</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -361,7 +361,7 @@ under the License.</p>
       <div class="method_details ">
   <h3 class="signature " id="post_performance_stats-instance_method">
   
-    #<strong>get</strong>(&quot;/performance-stats&quot;)  &#x21d2; <tt>Object</tt> 
+    #<strong>post</strong>(&quot;/performance_stats&quot;)  &#x21d2; <tt>Object</tt> 
   
 
   
@@ -386,17 +386,21 @@ under the License.</p>
       <pre class="lines">
 
 
+46
 47
 48
 49
-50</pre>
+50
+51</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'ns-manager/routes/statistics.rb', line 47</span>
+      <pre class="code"><span class="info file"># File 'ns-manager/routes/statistics.rb', line 46</span>
 
-<span class='id identifier rubyid_post'>post</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/performance-stats</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>do</span>
-  <span class='id identifier rubyid_body'>body</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='op'>=</span> <span class='id identifier rubyid_parse_json'>parse_json</span><span class='lparen'>(</span><span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_savePerformance'>savePerformance</span><span class='lparen'>(</span><span class='id identifier rubyid_body'>body</span><span class='rparen'>)</span>
+<span class='id identifier rubyid_post'>post</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/performance_stats</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>do</span>
+    <span class='id identifier rubyid_body'>body</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='op'>=</span> <span class='id identifier rubyid_parse_json'>parse_json</span><span class='lparen'>(</span><span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span><span class='rparen'>)</span>
+    <span class='kw'>return</span> <span class='int'>415</span> <span class='kw'>unless</span> <span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_content_type'>content_type</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>application/json</span><span class='tstring_end'>&#39;</span></span>
+
+    <span class='id identifier rubyid_savePerformance'>savePerformance</span><span class='lparen'>(</span><span class='id identifier rubyid_body'>body</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -451,15 +455,15 @@ under the License.</p>
       <pre class="lines">
 
 
+32
 33
-34
-35</pre>
+34</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'ns-manager/routes/statistics.rb', line 33</span>
+      <pre class="code"><span class="info file"># File 'ns-manager/routes/statistics.rb', line 32</span>
 
-<span class='id identifier rubyid_post'>post</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/statistics/:metric</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>do</span>
-  <span class='id identifier rubyid_updateStatistics'>updateStatistics</span><span class='lparen'>(</span><span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>metric</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='rparen'>)</span>
+<span class='id identifier rubyid_post'>post</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/generic/:metric</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_metric'>metric</span><span class='op'>|</span>
+    <span class='id identifier rubyid_updateStatistics'>updateStatistics</span><span class='lparen'>(</span><span class='id identifier rubyid_metric'>metric</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -471,7 +475,7 @@ under the License.</p>
 </div>
 
       <div id="footer">
-  Generated on Mon Oct 10 16:31:09 2016 by
+  Generated on Mon Jan 23 14:50:45 2017 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.5 (ruby-2.3.0).
 </div>

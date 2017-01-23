@@ -329,6 +329,26 @@ under the License.</p>
       <pre class="lines">
 
 
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
 128
 129
 130
@@ -341,79 +361,43 @@ under the License.</p>
 137
 138
 139
-140
-141
-142
-143
-144
-145
-146
-147
-148
-149
-150
-151
-152
-153
-154
-155
-156
-157
-158
-159
-160
-161
-162
-163
-164
-165
-166
-167
-168</pre>
+140</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'ns-manager/routes/vnfs.rb', line 128</span>
+      <pre class="code"><span class="info file"># File 'ns-manager/routes/vnfs.rb', line 108</span>
 
-<span class='id identifier rubyid_delete'>delete</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/:vnf_id</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>do</span>
+<span class='id identifier rubyid_delete'>delete</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/:vnf_id</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_vnf_id'>vnf_id</span><span class='op'>|</span>
+    <span class='comment'># check if some NSD is using it
+</span>    <span class='id identifier rubyid_ns_catalogue'>ns_catalogue</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='op'>=</span> <span class='const'>ServiceConfigurationHelper</span><span class='period'>.</span><span class='id identifier rubyid_get_module'>get_module</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>ns_catalogue</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='kw'>if</span> <span class='id identifier rubyid_errors'>errors</span>
 
-  <span class='comment'>#check if some NSD is using it
-</span>  <span class='kw'>begin</span>
-    <span class='ivar'>@service</span> <span class='op'>=</span> <span class='const'>ServiceModel</span><span class='period'>.</span><span class='id identifier rubyid_find_by'>find_by</span><span class='lparen'>(</span><span class='label'>name:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>ns_catalogue</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-  <span class='kw'>rescue</span> <span class='const'>Mongoid</span><span class='op'>::</span><span class='const'>Errors</span><span class='op'>::</span><span class='const'>DocumentNotFound</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
-    <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='lbrace'>{</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Content-Type</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>text/plain</span><span class='tstring_end'>&quot;</span></span><span class='rbrace'>}</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>NS Catalogue Microservice unrechable.</span><span class='tstring_end'>&quot;</span></span>
-  <span class='kw'>end</span>
+    <span class='id identifier rubyid_vnf_catalogue'>vnf_catalogue</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='op'>=</span> <span class='const'>ServiceConfigurationHelper</span><span class='period'>.</span><span class='id identifier rubyid_get_module'>get_module</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>vnf_manager</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='kw'>if</span> <span class='id identifier rubyid_errors'>errors</span>
 
-  <span class='kw'>begin</span>
-    <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span> <span class='ivar'>@service</span><span class='period'>.</span><span class='id identifier rubyid_host'>host</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>:</span><span class='tstring_end'>&quot;</span></span> <span class='op'>+</span> <span class='ivar'>@service</span><span class='period'>.</span><span class='id identifier rubyid_port'>port</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/network-services/vnf/</span><span class='tstring_end'>&#39;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:vnf_id</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>X-Auth-Token</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='ivar'>@client_token</span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span>
-    <span class='id identifier rubyid_nss'>nss</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='op'>=</span> <span class='id identifier rubyid_parse_json'>parse_json</span><span class='lparen'>(</span><span class='id identifier rubyid_response'>response</span><span class='rparen'>)</span>
-    <span class='kw'>if</span> <span class='id identifier rubyid_nss'>nss</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span> <span class='op'>&gt;</span> <span class='int'>0</span>
-      <span class='id identifier rubyid_halt'>halt</span> <span class='int'>400</span><span class='comma'>,</span> <span class='id identifier rubyid_nss'>nss</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'> Network Services are using this VNF.</span><span class='tstring_end'>&#39;</span></span>
+    <span class='kw'>begin</span>
+        <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span> <span class='id identifier rubyid_ns_catalogue'>ns_catalogue</span><span class='period'>.</span><span class='id identifier rubyid_host'>host</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/network-services/vnf/</span><span class='tstring_end'>&#39;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_vnf_id'>vnf_id</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>X-Auth-Token</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_ns_catalogue'>ns_catalogue</span><span class='period'>.</span><span class='id identifier rubyid_token'>token</span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span>
+        <span class='id identifier rubyid_nss'>nss</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='op'>=</span> <span class='id identifier rubyid_parse_json'>parse_json</span><span class='lparen'>(</span><span class='id identifier rubyid_response'>response</span><span class='rparen'>)</span>
+        <span class='kw'>unless</span> <span class='id identifier rubyid_nss'>nss</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+            <span class='id identifier rubyid_halt'>halt</span> <span class='int'>400</span><span class='comma'>,</span> <span class='id identifier rubyid_nss'>nss</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'> Network Services are using this VNF.</span><span class='tstring_end'>&#39;</span></span>
+        <span class='kw'>end</span>
+    <span class='kw'>rescue</span> <span class='const'>Errno</span><span class='op'>::</span><span class='const'>ECONNREFUSED</span><span class='comma'>,</span> <span class='const'>Errno</span><span class='op'>::</span><span class='const'>ECONNRESET</span>
+        <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>NS Catalogue unreachable</span><span class='tstring_end'>&#39;</span></span>
+    <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+        <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span>
+        <span class='comment'># halt e.response.code, e.response.body
+</span>        <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>No network services using this VNF.</span><span class='tstring_end'>&#39;</span></span>
     <span class='kw'>end</span>
-  <span class='kw'>rescue</span> <span class='const'>Errno</span><span class='op'>::</span><span class='const'>ECONNREFUSED</span>
-    <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>NS Catalogue unreachable</span><span class='tstring_end'>&#39;</span></span>
-  <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
-    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span>
-    <span class='comment'>#halt e.response.code, e.response.body
-</span>    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Any network service is using this VNF.</span><span class='tstring_end'>&quot;</span></span>
-  <span class='kw'>end</span>
 
-  <span class='kw'>begin</span>
-    <span class='ivar'>@service</span> <span class='op'>=</span> <span class='const'>ServiceModel</span><span class='period'>.</span><span class='id identifier rubyid_find_by'>find_by</span><span class='lparen'>(</span><span class='label'>name:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>vnf_manager</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-  <span class='kw'>rescue</span> <span class='const'>Mongoid</span><span class='op'>::</span><span class='const'>Errors</span><span class='op'>::</span><span class='const'>DocumentNotFound</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
-    <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='lbrace'>{</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Content-Type</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>text/plain</span><span class='tstring_end'>&quot;</span></span><span class='rbrace'>}</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>VNF Manager Microservice unrechable.</span><span class='tstring_end'>&quot;</span></span>
-  <span class='kw'>end</span>
+    <span class='kw'>begin</span>
+        <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_delete'>delete</span> <span class='id identifier rubyid_vnf_catalogue'>vnf_catalogue</span><span class='period'>.</span><span class='id identifier rubyid_host'>host</span> <span class='op'>+</span> <span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_fullpath'>fullpath</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>X-Auth-Token</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_vnf_catalogue'>vnf_catalogue</span><span class='period'>.</span><span class='id identifier rubyid_token'>token</span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span>
+    <span class='kw'>rescue</span> <span class='const'>Errno</span><span class='op'>::</span><span class='const'>ECONNREFUSED</span><span class='comma'>,</span> <span class='const'>Errno</span><span class='op'>::</span><span class='const'>ECONNRESET</span>
+        <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>NS Catalogue unreachable</span><span class='tstring_end'>&#39;</span></span>
+    <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+        <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span>
+        <span class='id identifier rubyid_halt'>halt</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
+    <span class='kw'>end</span>
 
-  <span class='kw'>begin</span>
-    <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_delete'>delete</span> <span class='ivar'>@service</span><span class='period'>.</span><span class='id identifier rubyid_host'>host</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>:</span><span class='tstring_end'>&quot;</span></span> <span class='op'>+</span> <span class='ivar'>@service</span><span class='period'>.</span><span class='id identifier rubyid_port'>port</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span> <span class='op'>+</span> <span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_fullpath'>fullpath</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>X-Auth-Token</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='ivar'>@client_token</span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span>
-  <span class='kw'>rescue</span> <span class='const'>Errno</span><span class='op'>::</span><span class='const'>ECONNREFUSED</span>
-    <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>NS Catalogue unreachable</span><span class='tstring_end'>&#39;</span></span>
-  <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
-    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span>
-    <span class='id identifier rubyid_halt'>halt</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
-  <span class='kw'>end</span>
-
-  <span class='kw'>return</span> <span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
-
+    <span class='kw'>return</span> <span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -448,6 +432,7 @@ under the License.</p>
       <pre class="lines">
 
 
+23
 24
 25
 26
@@ -460,35 +445,24 @@ under the License.</p>
 33
 34
 35
-36
-37
-38
-39
-40
-41
-42</pre>
+36</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'ns-manager/routes/vnfs.rb', line 24</span>
+      <pre class="code"><span class="info file"># File 'ns-manager/routes/vnfs.rb', line 23</span>
 
 <span class='id identifier rubyid_get'>get</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>do</span>
-  <span class='kw'>begin</span>
-    <span class='ivar'>@service</span> <span class='op'>=</span> <span class='const'>ServiceModel</span><span class='period'>.</span><span class='id identifier rubyid_find_by'>find_by</span><span class='lparen'>(</span><span class='label'>name:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>vnf_manager</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-  <span class='kw'>rescue</span> <span class='const'>Mongoid</span><span class='op'>::</span><span class='const'>Errors</span><span class='op'>::</span><span class='const'>DocumentNotFound</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
-    <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='lbrace'>{</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Content-Type</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>text/plain</span><span class='tstring_end'>&quot;</span></span><span class='rbrace'>}</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Microservice unrechable.</span><span class='tstring_end'>&quot;</span></span>
-  <span class='kw'>end</span>
+    <span class='id identifier rubyid_catalogue'>catalogue</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='op'>=</span> <span class='const'>ServiceConfigurationHelper</span><span class='period'>.</span><span class='id identifier rubyid_get_module'>get_module</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>vnf_manager</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='kw'>if</span> <span class='id identifier rubyid_errors'>errors</span>
 
-  <span class='kw'>begin</span>
-    <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span> <span class='ivar'>@service</span><span class='period'>.</span><span class='id identifier rubyid_host'>host</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>:</span><span class='tstring_end'>&quot;</span></span> <span class='op'>+</span> <span class='ivar'>@service</span><span class='period'>.</span><span class='id identifier rubyid_port'>port</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span> <span class='op'>+</span> <span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_fullpath'>fullpath</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>X-Auth-Token</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='ivar'>@client_token</span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span>
-  <span class='kw'>rescue</span> <span class='const'>Errno</span><span class='op'>::</span><span class='const'>ECONNREFUSED</span>
-    <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>VNF Manager unreachable</span><span class='tstring_end'>&#39;</span></span>
-  <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
-    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span>
-    <span class='id identifier rubyid_halt'>halt</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
-  <span class='kw'>end</span>
-
-  <span class='kw'>return</span> <span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
-
+    <span class='kw'>begin</span>
+        <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span> <span class='id identifier rubyid_catalogue'>catalogue</span><span class='period'>.</span><span class='id identifier rubyid_host'>host</span> <span class='op'>+</span> <span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_fullpath'>fullpath</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>X-Auth-Token</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_catalogue'>catalogue</span><span class='period'>.</span><span class='id identifier rubyid_token'>token</span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span>
+    <span class='kw'>rescue</span> <span class='const'>Errno</span><span class='op'>::</span><span class='const'>ECONNREFUSED</span><span class='comma'>,</span> <span class='const'>Errno</span><span class='op'>::</span><span class='const'>ECONNRESET</span>
+        <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>VNF Manager unreachable</span><span class='tstring_end'>&#39;</span></span>
+    <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+        <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span>
+        <span class='id identifier rubyid_halt'>halt</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
+    <span class='kw'>end</span>
+    <span class='kw'>return</span> <span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -543,6 +517,12 @@ under the License.</p>
       <pre class="lines">
 
 
+42
+43
+44
+45
+46
+47
 48
 49
 50
@@ -551,39 +531,25 @@ under the License.</p>
 53
 54
 55
-56
-57
-58
-59
-60
-61
-62
-63
-64
-65
-66</pre>
+56</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'ns-manager/routes/vnfs.rb', line 48</span>
+      <pre class="code"><span class="info file"># File 'ns-manager/routes/vnfs.rb', line 42</span>
 
 <span class='id identifier rubyid_get'>get</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/:vnf_id</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>do</span>
-  <span class='kw'>begin</span>
-    <span class='ivar'>@service</span> <span class='op'>=</span> <span class='const'>ServiceModel</span><span class='period'>.</span><span class='id identifier rubyid_find_by'>find_by</span><span class='lparen'>(</span><span class='label'>name:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>vnf_manager</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-  <span class='kw'>rescue</span> <span class='const'>Mongoid</span><span class='op'>::</span><span class='const'>Errors</span><span class='op'>::</span><span class='const'>DocumentNotFound</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
-    <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='lbrace'>{</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Content-Type</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>text/plain</span><span class='tstring_end'>&quot;</span></span><span class='rbrace'>}</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Microservice unrechable.</span><span class='tstring_end'>&quot;</span></span>
-  <span class='kw'>end</span>
+    <span class='id identifier rubyid_catalogue'>catalogue</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='op'>=</span> <span class='const'>ServiceConfigurationHelper</span><span class='period'>.</span><span class='id identifier rubyid_get_module'>get_module</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>vnf_manager</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='kw'>if</span> <span class='id identifier rubyid_errors'>errors</span>
 
-  <span class='kw'>begin</span>
-    <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span> <span class='ivar'>@service</span><span class='period'>.</span><span class='id identifier rubyid_host'>host</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>:</span><span class='tstring_end'>&quot;</span></span> <span class='op'>+</span> <span class='ivar'>@service</span><span class='period'>.</span><span class='id identifier rubyid_port'>port</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span> <span class='op'>+</span> <span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_fullpath'>fullpath</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>X-Auth-Token</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='ivar'>@client_token</span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span>
-  <span class='kw'>rescue</span> <span class='const'>Errno</span><span class='op'>::</span><span class='const'>ECONNREFUSED</span>
-    <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>VNF Manager unreachable</span><span class='tstring_end'>&#39;</span></span>
-  <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
-    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span>
-    <span class='id identifier rubyid_halt'>halt</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
-  <span class='kw'>end</span>
+    <span class='kw'>begin</span>
+        <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span> <span class='id identifier rubyid_catalogue'>catalogue</span><span class='period'>.</span><span class='id identifier rubyid_host'>host</span> <span class='op'>+</span> <span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_fullpath'>fullpath</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>X-Auth-Token</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_catalogue'>catalogue</span><span class='period'>.</span><span class='id identifier rubyid_token'>token</span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span>
+    <span class='kw'>rescue</span> <span class='const'>Errno</span><span class='op'>::</span><span class='const'>ECONNREFUSED</span><span class='comma'>,</span> <span class='const'>Errno</span><span class='op'>::</span><span class='const'>ECONNRESET</span>
+        <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>VNF Manager unreachable</span><span class='tstring_end'>&#39;</span></span>
+    <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+        <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span>
+        <span class='id identifier rubyid_halt'>halt</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
+    <span class='kw'>end</span>
 
-  <span class='kw'>return</span> <span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
-
+    <span class='kw'>return</span> <span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -618,6 +584,16 @@ under the License.</p>
       <pre class="lines">
 
 
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
 71
 72
 73
@@ -626,49 +602,29 @@ under the License.</p>
 76
 77
 78
-79
-80
-81
-82
-83
-84
-85
-86
-87
-88
-89
-90
-91
-92
-93
-94</pre>
+79</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'ns-manager/routes/vnfs.rb', line 71</span>
+      <pre class="code"><span class="info file"># File 'ns-manager/routes/vnfs.rb', line 61</span>
 
 <span class='id identifier rubyid_post'>post</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>do</span>
+    <span class='comment'># Return if content-type is invalid
+</span>    <span class='kw'>return</span> <span class='int'>415</span> <span class='kw'>unless</span> <span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_content_type'>content_type</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>application/json</span><span class='tstring_end'>&#39;</span></span>
 
-  <span class='comment'># Return if content-type is invalid
-</span>  <span class='kw'>return</span> <span class='int'>415</span> <span class='kw'>unless</span> <span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_content_type'>content_type</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>application/json</span><span class='tstring_end'>&#39;</span></span>
+    <span class='id identifier rubyid_catalogue'>catalogue</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='op'>=</span> <span class='const'>ServiceConfigurationHelper</span><span class='period'>.</span><span class='id identifier rubyid_get_module'>get_module</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>vnf_manager</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='kw'>if</span> <span class='id identifier rubyid_errors'>errors</span>
 
-  <span class='kw'>begin</span>
-    <span class='ivar'>@service</span> <span class='op'>=</span> <span class='const'>ServiceModel</span><span class='period'>.</span><span class='id identifier rubyid_find_by'>find_by</span><span class='lparen'>(</span><span class='label'>name:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>vnf_manager</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-  <span class='kw'>rescue</span> <span class='const'>Mongoid</span><span class='op'>::</span><span class='const'>Errors</span><span class='op'>::</span><span class='const'>DocumentNotFound</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
-    <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='lbrace'>{</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Content-Type</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>text/plain</span><span class='tstring_end'>&quot;</span></span><span class='rbrace'>}</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Microservice unrechable.</span><span class='tstring_end'>&quot;</span></span>
-  <span class='kw'>end</span>
+    <span class='kw'>begin</span>
+        <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_post'>post</span> <span class='id identifier rubyid_catalogue'>catalogue</span><span class='period'>.</span><span class='id identifier rubyid_host'>host</span> <span class='op'>+</span> <span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_fullpath'>fullpath</span><span class='comma'>,</span> <span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>X-Auth-Token</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_catalogue'>catalogue</span><span class='period'>.</span><span class='id identifier rubyid_token'>token</span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span>
+    <span class='kw'>rescue</span> <span class='const'>Errno</span><span class='op'>::</span><span class='const'>ECONNREFUSED</span><span class='comma'>,</span> <span class='const'>Errno</span><span class='op'>::</span><span class='const'>ECONNRESET</span>
+        <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>VNF Manager unreachable</span><span class='tstring_end'>&#39;</span></span>
+    <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+        <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span>
+        <span class='id identifier rubyid_halt'>halt</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
+    <span class='kw'>end</span>
 
-  <span class='kw'>begin</span>
-    <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_post'>post</span> <span class='ivar'>@service</span><span class='period'>.</span><span class='id identifier rubyid_host'>host</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>:</span><span class='tstring_end'>&quot;</span></span> <span class='op'>+</span> <span class='ivar'>@service</span><span class='period'>.</span><span class='id identifier rubyid_port'>port</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span> <span class='op'>+</span> <span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_fullpath'>fullpath</span><span class='comma'>,</span> <span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>X-Auth-Token</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='ivar'>@client_token</span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span>
-  <span class='kw'>rescue</span> <span class='const'>Errno</span><span class='op'>::</span><span class='const'>ECONNREFUSED</span>
-    <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>VNF Manager unreachable</span><span class='tstring_end'>&#39;</span></span>
-  <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
-    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span>
-    <span class='id identifier rubyid_halt'>halt</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
-  <span class='kw'>end</span>
-
-  <span class='comment'>#updateStatistics(&#39;vnfs_created_requests&#39;)
-</span>  <span class='kw'>return</span> <span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
-
+    <span class='comment'># updateStatistics(&#39;vnfs_created_requests&#39;)
+</span>    <span class='kw'>return</span> <span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -723,55 +679,45 @@ under the License.</p>
       <pre class="lines">
 
 
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
 100
 101
-102
-103
-104
-105
-106
-107
-108
-109
-110
-111
-112
-113
-114
-115
-116
-117
-118
-119
-120
-121
-122</pre>
+102</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'ns-manager/routes/vnfs.rb', line 100</span>
+      <pre class="code"><span class="info file"># File 'ns-manager/routes/vnfs.rb', line 85</span>
 
 <span class='id identifier rubyid_put'>put</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/:vnf_id</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>do</span>
+    <span class='comment'># Return if content-type is invalid
+</span>    <span class='kw'>return</span> <span class='int'>415</span> <span class='kw'>unless</span> <span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_content_type'>content_type</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>application/json</span><span class='tstring_end'>&#39;</span></span>
 
-  <span class='comment'># Return if content-type is invalid
-</span>  <span class='kw'>return</span> <span class='int'>415</span> <span class='kw'>unless</span> <span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_content_type'>content_type</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>application/json</span><span class='tstring_end'>&#39;</span></span>
+    <span class='id identifier rubyid_catalogue'>catalogue</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='op'>=</span> <span class='const'>ServiceConfigurationHelper</span><span class='period'>.</span><span class='id identifier rubyid_get_module'>get_module</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>vnf_manager</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='kw'>if</span> <span class='id identifier rubyid_errors'>errors</span>
 
-  <span class='kw'>begin</span>
-    <span class='ivar'>@service</span> <span class='op'>=</span> <span class='const'>ServiceModel</span><span class='period'>.</span><span class='id identifier rubyid_find_by'>find_by</span><span class='lparen'>(</span><span class='label'>name:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>vnf_manager</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-  <span class='kw'>rescue</span> <span class='const'>Mongoid</span><span class='op'>::</span><span class='const'>Errors</span><span class='op'>::</span><span class='const'>DocumentNotFound</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
-    <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='lbrace'>{</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Content-Type</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>text/plain</span><span class='tstring_end'>&quot;</span></span><span class='rbrace'>}</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Microservice unrechable.</span><span class='tstring_end'>&quot;</span></span>
-  <span class='kw'>end</span>
+    <span class='kw'>begin</span>
+        <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_put'>put</span> <span class='id identifier rubyid_catalogue'>catalogue</span><span class='period'>.</span><span class='id identifier rubyid_host'>host</span> <span class='op'>+</span> <span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_fullpath'>fullpath</span><span class='comma'>,</span> <span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>X-Auth-Token</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_catalogue'>catalogue</span><span class='period'>.</span><span class='id identifier rubyid_token'>token</span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span>
+    <span class='kw'>rescue</span> <span class='const'>Errno</span><span class='op'>::</span><span class='const'>ECONNREFUSED</span><span class='comma'>,</span> <span class='const'>Errno</span><span class='op'>::</span><span class='const'>ECONNRESET</span>
+        <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>VNF Manager unreachable</span><span class='tstring_end'>&#39;</span></span>
+    <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+        <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span>
+        <span class='id identifier rubyid_halt'>halt</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
+    <span class='kw'>end</span>
 
-  <span class='kw'>begin</span>
-    <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_put'>put</span> <span class='ivar'>@service</span><span class='period'>.</span><span class='id identifier rubyid_host'>host</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>:</span><span class='tstring_end'>&quot;</span></span> <span class='op'>+</span> <span class='ivar'>@service</span><span class='period'>.</span><span class='id identifier rubyid_port'>port</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span> <span class='op'>+</span> <span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_fullpath'>fullpath</span><span class='comma'>,</span> <span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>X-Auth-Token</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='ivar'>@client_token</span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span>
-  <span class='kw'>rescue</span> <span class='const'>Errno</span><span class='op'>::</span><span class='const'>ECONNREFUSED</span>
-    <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>VNF Manager unreachable</span><span class='tstring_end'>&#39;</span></span>
-  <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
-    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span>
-    <span class='id identifier rubyid_halt'>halt</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
-  <span class='kw'>end</span>
-
-  <span class='kw'>return</span> <span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
-
+    <span class='kw'>return</span> <span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -783,7 +729,7 @@ under the License.</p>
 </div>
 
       <div id="footer">
-  Generated on Mon Oct 10 16:31:09 2016 by
+  Generated on Mon Jan 23 14:50:45 2017 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.5 (ruby-2.3.0).
 </div>

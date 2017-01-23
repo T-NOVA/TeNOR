@@ -71,12 +71,12 @@
   <dl>
     <dt>Inherits:</dt>
     <dd>
-      <span class="inheritName">VNFManager</span>
+      <span class="inheritName">TnovaManager</span>
       
         <ul class="fullTree">
           <li>Object</li>
           
-            <li class="next">VNFManager</li>
+            <li class="next">TnovaManager</li>
           
             <li class="next">Monitoring</li>
           
@@ -98,7 +98,7 @@
   
   <dl>
     <dt>Defined in:</dt>
-    <dd>vnf-manager/routes/monitoring.rb</dd>
+    <dd>ns-manager/routes/monitoring.rb</dd>
   </dl>
   
 </div>
@@ -106,7 +106,7 @@
 <h2>Overview</h2><div class="docstring">
   <div class="discussion">
     
-<p>TeNOR - VNF Manager</p>
+<p>TeNOR - NS Manager</p>
 
 <p>Copyright 2014-2016 i2CAT Foundation, Portugal Telecom Inovação</p>
 
@@ -132,7 +132,7 @@ under the License.</p>
   <p class="tag_title">See Also:</p>
   <ul class="see">
     
-      <li>VNFManager</li>
+      <li>TnovaManager</li>
     
   </ul>
 
@@ -154,7 +154,7 @@ under the License.</p>
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#get_monitoring_data-instance_method" title="#get (instance method)">#<strong>get</strong>(&#39;/vnf-monitoring/: vnfi_id/monitoring-data/&#39;)  &#x21d2; Object </a>
+      <a href="#get_instances_monitoring_data-instance_method" title="#get (instance method)">#<strong>get</strong>(&#39;/instances/: instance_id/monitoring-data/&#39;)  &#x21d2; Object </a>
     
 
     
@@ -169,7 +169,7 @@ under the License.</p>
 
   
     <span class="summary_desc"><div class='inline'>
-<p>Get monitoring data.</p>
+<p>Get monitoring data given instance type and/or metrics.</p>
 </div></span>
   
 </li>
@@ -178,7 +178,7 @@ under the License.</p>
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#get_monitoring_data_100-instance_method" title="#delete (instance method)">#<strong>delete</strong>(&#39;/vnf-monitoring/: vnfi_id/monitoring-data/last100&#39;)  &#x21d2; Object </a>
+      <a href="#get_monitoring_data_last100-instance_method" title="#get (instance method)">#<strong>get</strong>(&#39;/instances/: instance_id/monitoring-data/last100&#39;)  &#x21d2; Object </a>
     
 
     
@@ -193,55 +193,7 @@ under the License.</p>
 
   
     <span class="summary_desc"><div class='inline'>
-<p>Get monitoring data, last 100 values.</p>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#post_vnf_monitoring_id_parameters-instance_method" title="#get (instance method)">#<strong>get</strong>(&#39;/vnf-monitoring/: vnfi_id/monitoring-parameters&#39;)  &#x21d2; Object </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'>
-<p>Send monitoring info to VNF Monitoring.</p>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#post_vnf_monitoring_id_readings-instance_method" title="#get (instance method)">#<strong>get</strong>(&#39;/vnf-monitoring/: vnfi_id/readings&#39;)  &#x21d2; Object </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'>
-<p>Recevie monitoring data.</p>
+<p>Get last 100 values.</p>
 </div></span>
   
 </li>
@@ -258,9 +210,9 @@ under the License.</p>
 
     
       <div class="method_details first">
-  <h3 class="signature first" id="get_monitoring_data-instance_method">
+  <h3 class="signature first" id="get_instances_monitoring_data-instance_method">
   
-    #<strong>get</strong>(&#39;/vnf-monitoring/: vnfi_id/monitoring-data/&#39;)  &#x21d2; <tt>Object</tt> 
+    #<strong>get</strong>(&#39;/instances/: instance_id/monitoring-data/&#39;)  &#x21d2; <tt>Object</tt> 
   
 
   
@@ -269,7 +221,7 @@ under the License.</p>
 </h3><div class="docstring">
   <div class="discussion">
     
-<p>Get monitoring data</p>
+<p>Get monitoring data given instance type and/or metrics</p>
 
 
   </div>
@@ -285,183 +237,82 @@ under the License.</p>
         <span class='name'>instance_id</span>
       
       
-        <span class='type'>(<tt>Integer</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-98
-99
-100
-101
-102
-103
-104
-105
-106
-107
-108
-109
-110</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'vnf-manager/routes/monitoring.rb', line 98</span>
-
-<span class='id identifier rubyid_get'>get</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/:vnfi_id/monitoring-data/</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>do</span>
-  <span class='comment'># Forward the request to the VNF Monitoring
-</span>  <span class='kw'>begin</span>
-    <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_settings'>settings</span><span class='period'>.</span><span class='id identifier rubyid_vnf_monitoring'>vnf_monitoring</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_fullpath'>fullpath</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>X-Auth-Token</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='ivar'>@client_token</span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span><span class='comma'>,</span> <span class='symbol'>:accept</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span>
-  <span class='kw'>rescue</span> <span class='const'>Errno</span><span class='op'>::</span><span class='const'>ECONNREFUSED</span>
-    <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>VNF Monitoring unreachable</span><span class='tstring_end'>&#39;</span></span>
-  <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
-    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span>
-    <span class='id identifier rubyid_halt'>halt</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
-  <span class='kw'>end</span>
-
-  <span class='id identifier rubyid_halt'>halt</span> <span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="get_monitoring_data_100-instance_method">
-  
-    #<strong>delete</strong>(&#39;/vnf-monitoring/: vnfi_id/monitoring-data/last100&#39;)  &#x21d2; <tt>Object</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    
-<p>Get monitoring data, last 100 values</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-  
-<p class="tag_title">Parameters:</p>
-<ul class="param">
-  
-    <li>
-      
-        <span class='name'>instance_id</span>
-      
-      
-        <span class='type'>(<tt>Integer</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-116
-117
-118
-119
-120
-121
-122
-123
-124
-125
-126
-127</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'vnf-manager/routes/monitoring.rb', line 116</span>
-
-<span class='id identifier rubyid_get'>get</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/:vnfi_id/monitoring-data/last100/</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>do</span>
-  <span class='kw'>begin</span>
-    <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_settings'>settings</span><span class='period'>.</span><span class='id identifier rubyid_vnf_monitoring'>vnf_monitoring</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_fullpath'>fullpath</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>X-Auth-Token</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='ivar'>@client_token</span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span><span class='comma'>,</span> <span class='symbol'>:accept</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span>
-  <span class='kw'>rescue</span> <span class='const'>Errno</span><span class='op'>::</span><span class='const'>ECONNREFUSED</span>
-    <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>VNF Monitoring unreachable</span><span class='tstring_end'>&#39;</span></span>
-  <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
-    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span>
-    <span class='id identifier rubyid_halt'>halt</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
-  <span class='kw'>end</span>
-
-  <span class='id identifier rubyid_halt'>halt</span> <span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="post_vnf_monitoring_id_parameters-instance_method">
-  
-    #<strong>get</strong>(&#39;/vnf-monitoring/: vnfi_id/monitoring-parameters&#39;)  &#x21d2; <tt>Object</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    
-<p>Send monitoring info to VNF Monitoring</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-  <div class="docstring">
-  <div class="discussion">
-    
-<p>Send monitoring info to VNF Monitoring</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  <p class="tag_title">Parameters:</p>
-<ul class="param">
-  
-    <li>
-      
-        <span class='name'>vnfi_id</span>
-      
-      
-        <span class='type'>(<tt>Integer</tt>)</span>
+        <span class='type'>(<tt>string</tt>)</span>
       
       
       
         &mdash;
         <div class='inline'>
-<p>the VNF Instance ID</p>
+<p>NS/VNF Instance id</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>instance_type</span>
+      
+      
+        <span class='type'>(<tt>string</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>NS or VNF</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>metric</span>
+      
+      
+        <span class='type'>(<tt>string</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Name of the metric (freemem, httpnum…)</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>start</span>
+      
+      
+        <span class='type'>(<tt>string</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Start time from request data</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>end</span>
+      
+      
+        <span class='type'>(<tt>string</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>End time until request data</p>
 </div>
       
     </li>
   
 </ul>
-
-
-</div>
 
 
 </div><table class="source_code">
@@ -470,8 +321,6 @@ under the License.</p>
       <pre class="lines">
 
 
-26
-27
 28
 29
 30
@@ -494,69 +343,33 @@ under the License.</p>
 47
 48
 49
-50
-51
-52
-53
-54
-55
-56
-57
-58
-59
-60
-61
-62
-63
-64
-65
-66
-67</pre>
+50</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'vnf-manager/routes/monitoring.rb', line 26</span>
+      <pre class="code"><span class="info file"># File 'ns-manager/routes/monitoring.rb', line 28</span>
 
-<span class='id identifier rubyid_post'>post</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/:vnfr_id/monitoring-parameters</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>do</span>
-  <span class='comment'># Return if content-type is invalid
-</span>  <span class='id identifier rubyid_halt'>halt</span> <span class='int'>415</span> <span class='kw'>unless</span> <span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_content_type'>content_type</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>application/json</span><span class='tstring_end'>&#39;</span></span>
+<span class='id identifier rubyid_get'>get</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/:instance_id/monitoring-data/</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_instance_id'>instance_id</span><span class='op'>|</span>
+    <span class='kw'>if</span> <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>instance_type</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>ns</span><span class='tstring_end'>&#39;</span></span>
+        <span class='id identifier rubyid_monitoring'>monitoring</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='op'>=</span> <span class='const'>ServiceConfigurationHelper</span><span class='period'>.</span><span class='id identifier rubyid_get_module'>get_module</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>ns_monitoring</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+        <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='kw'>if</span> <span class='id identifier rubyid_errors'>errors</span>
+        <span class='id identifier rubyid_composedUrl'>composedUrl</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/ns-monitoring/</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_instance_id'>instance_id</span><span class='embexpr_end'>}</span><span class='tstring_content'>/monitoring-data/?</span><span class='tstring_end'>&quot;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_env'>env</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>QUERY_STRING</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+    <span class='kw'>elsif</span> <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>instance_type</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>vnf</span><span class='tstring_end'>&#39;</span></span>
+        <span class='id identifier rubyid_monitoring'>monitoring</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='op'>=</span> <span class='const'>ServiceConfigurationHelper</span><span class='period'>.</span><span class='id identifier rubyid_get_module'>get_module</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>vnf_manager</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+        <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='kw'>if</span> <span class='id identifier rubyid_errors'>errors</span>
+        <span class='id identifier rubyid_composedUrl'>composedUrl</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/vnf-monitoring/</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_instance_id'>instance_id</span><span class='embexpr_end'>}</span><span class='tstring_content'>/monitoring-data/?</span><span class='tstring_end'>&quot;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_env'>env</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>QUERY_STRING</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+    <span class='kw'>end</span>
 
-  <span class='comment'># Validate JSON format
-</span>  <span class='id identifier rubyid_monitoring_info'>monitoring_info</span> <span class='op'>=</span> <span class='id identifier rubyid_parse_json'>parse_json</span><span class='lparen'>(</span><span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_vnfr_id'>vnfr_id</span> <span class='op'>=</span> <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>vnfr_id</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+    <span class='kw'>begin</span>
+        <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span> <span class='id identifier rubyid_monitoring'>monitoring</span><span class='period'>.</span><span class='id identifier rubyid_host'>host</span> <span class='op'>+</span> <span class='id identifier rubyid_composedUrl'>composedUrl</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>X-Auth-Token</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_monitoring'>monitoring</span><span class='period'>.</span><span class='id identifier rubyid_token'>token</span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span>
+    <span class='kw'>rescue</span> <span class='const'>Errno</span><span class='op'>::</span><span class='const'>ECONNREFUSED</span>
+        <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>NS Monitoring unreachable</span><span class='tstring_end'>&#39;</span></span>
+    <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+        <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span>
+        <span class='comment'># halt e.response.code, e.response.body
+</span>    <span class='kw'>end</span>
 
-  <span class='comment'>#vnfr_id = monitoring_info[&#39;vnfr_id&#39;]
-</span>
-  <span class='kw'>begin</span>
-    <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span> <span class='id identifier rubyid_settings'>settings</span><span class='period'>.</span><span class='id identifier rubyid_vnf_provisioning'>vnf_provisioning</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/vnf-provisioning/vnf-instances/</span><span class='tstring_end'>&quot;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_vnfr_id'>vnfr_id</span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span><span class='comma'>,</span> <span class='symbol'>:accept</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span>
-  <span class='kw'>rescue</span>
-    <span class='id identifier rubyid_halt'>halt</span> <span class='int'>400</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>VIM Monitoring Module not available</span><span class='tstring_end'>&quot;</span></span>
-  <span class='kw'>end</span>
-  <span class='id identifier rubyid_vnfr'>vnfr</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='op'>=</span> <span class='id identifier rubyid_parse_json'>parse_json</span><span class='lparen'>(</span><span class='id identifier rubyid_response'>response</span><span class='rparen'>)</span>
-  <span class='kw'>return</span> <span class='int'>400</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span> <span class='kw'>if</span> <span class='id identifier rubyid_errors'>errors</span>
-
-  <span class='kw'>begin</span>
-    <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span> <span class='id identifier rubyid_settings'>settings</span><span class='period'>.</span><span class='id identifier rubyid_vnf_catalogue'>vnf_catalogue</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/vnfs/</span><span class='tstring_end'>&quot;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_vnfr'>vnfr</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>vnfd_reference</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span><span class='comma'>,</span> <span class='symbol'>:accept</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span>
-  <span class='kw'>rescue</span>
-    <span class='id identifier rubyid_halt'>halt</span> <span class='int'>400</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>VNF Catalogue not available</span><span class='tstring_end'>&quot;</span></span>
-  <span class='kw'>end</span>
-  <span class='id identifier rubyid_vnfd'>vnfd</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='op'>=</span> <span class='id identifier rubyid_parse_json'>parse_json</span><span class='lparen'>(</span><span class='id identifier rubyid_response'>response</span><span class='rparen'>)</span>
-  <span class='kw'>return</span> <span class='int'>400</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span> <span class='kw'>if</span> <span class='id identifier rubyid_errors'>errors</span>
-
-  <span class='id identifier rubyid_monitoring_info'>monitoring_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>vnfr</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_vnfr'>vnfr</span>
-  <span class='id identifier rubyid_monitoring_info'>monitoring_info</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>vnfd</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_vnfd'>vnfd</span>
-  <span class='id identifier rubyid_puts'>puts</span> <span class='id identifier rubyid_monitoring_info'>monitoring_info</span>
-
-  <span class='comment'># Forward the request to the VNF Monitoring
-</span>  <span class='kw'>begin</span>
-    <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_post'>post</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_settings'>settings</span><span class='period'>.</span><span class='id identifier rubyid_vnf_monitoring'>vnf_monitoring</span><span class='embexpr_end'>}</span><span class='tstring_content'>/vnf-monitoring/</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:vnfr_id</span><span class='rbracket'>]</span><span class='embexpr_end'>}</span><span class='tstring_content'>/monitoring-parameters</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_monitoring_info'>monitoring_info</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>X-Auth-Token</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='ivar'>@client_token</span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span><span class='comma'>,</span> <span class='symbol'>:accept</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span>
-  <span class='kw'>rescue</span> <span class='const'>Errno</span><span class='op'>::</span><span class='const'>ECONNREFUSED</span>
-    <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>VNF Monitoring unreachable</span><span class='tstring_end'>&#39;</span></span>
-  <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
-    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span>
-    <span class='id identifier rubyid_halt'>halt</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
-  <span class='kw'>end</span>
-
-  <span class='id identifier rubyid_halt'>halt</span> <span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
+    <span class='kw'>return</span> <span class='int'>200</span> <span class='kw'>if</span> <span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+    <span class='kw'>return</span> <span class='int'>200</span><span class='comma'>,</span> <span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -564,9 +377,9 @@ under the License.</p>
 </div>
     
       <div class="method_details ">
-  <h3 class="signature " id="post_vnf_monitoring_id_readings-instance_method">
+  <h3 class="signature " id="get_monitoring_data_last100-instance_method">
   
-    #<strong>get</strong>(&#39;/vnf-monitoring/: vnfi_id/readings&#39;)  &#x21d2; <tt>Object</tt> 
+    #<strong>get</strong>(&#39;/instances/: instance_id/monitoring-data/last100&#39;)  &#x21d2; <tt>Object</tt> 
   
 
   
@@ -575,7 +388,7 @@ under the License.</p>
 </h3><div class="docstring">
   <div class="discussion">
     
-<p>Recevie monitoring data</p>
+<p>Get last 100 values</p>
 
 
   </div>
@@ -588,16 +401,16 @@ under the License.</p>
   
     <li>
       
-        <span class='name'>vnfi_id</span>
+        <span class='name'>instance_id</span>
       
       
-        <span class='type'>(<tt>Integer</tt>)</span>
+        <span class='type'>(<tt>string</tt>)</span>
       
       
       
         &mdash;
         <div class='inline'>
-<p>the VNF Instance ID</p>
+<p>NS/VNF Instance id</p>
 </div>
       
     </li>
@@ -611,49 +424,53 @@ under the License.</p>
       <pre class="lines">
 
 
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
 73
 74
 75
 76
-77
-78
-79
-80
-81
-82
-83
-84
-85
-86
-87
-88
-89
-90
-91
-92</pre>
+77</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'vnf-manager/routes/monitoring.rb', line 73</span>
+      <pre class="code"><span class="info file"># File 'ns-manager/routes/monitoring.rb', line 56</span>
 
-<span class='id identifier rubyid_post'>post</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/:vnfi_id/readings</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>do</span>
-  <span class='comment'># Return if content-type is invalid
-</span>  <span class='id identifier rubyid_halt'>halt</span> <span class='int'>415</span> <span class='kw'>unless</span> <span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_content_type'>content_type</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>application/json</span><span class='tstring_end'>&#39;</span></span>
+<span class='id identifier rubyid_get'>get</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/:instance_id/monitoring-data/last100/</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_instance_id'>instance_id</span><span class='op'>|</span>
+    <span class='kw'>if</span> <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>instance_type</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>ns</span><span class='tstring_end'>&#39;</span></span>
+        <span class='id identifier rubyid_monitoring'>monitoring</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='op'>=</span> <span class='const'>ServiceConfigurationHelper</span><span class='period'>.</span><span class='id identifier rubyid_get_module'>get_module</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>ns_monitoring</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+        <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='kw'>if</span> <span class='id identifier rubyid_errors'>errors</span>
+        <span class='id identifier rubyid_composedUrl'>composedUrl</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/ns-monitoring/</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_instance_id'>instance_id</span><span class='embexpr_end'>}</span><span class='tstring_content'>/monitoring-data/last100/?</span><span class='tstring_end'>&quot;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_env'>env</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>QUERY_STRING</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+    <span class='kw'>elsif</span> <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>instance_type</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>vnf</span><span class='tstring_end'>&#39;</span></span>
+        <span class='id identifier rubyid_monitoring'>monitoring</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='op'>=</span> <span class='const'>ServiceConfigurationHelper</span><span class='period'>.</span><span class='id identifier rubyid_get_module'>get_module</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>vnf_manager</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+        <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='id identifier rubyid_errors'>errors</span> <span class='kw'>if</span> <span class='id identifier rubyid_errors'>errors</span>
+        <span class='id identifier rubyid_composedUrl'>composedUrl</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/vnf-monitoring/</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_instance_id'>instance_id</span><span class='embexpr_end'>}</span><span class='tstring_content'>/monitoring-data/last100/?</span><span class='tstring_end'>&quot;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_env'>env</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>QUERY_STRING</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+    <span class='kw'>end</span>
 
-  <span class='comment'># Validate JSON format
-</span>  <span class='id identifier rubyid_monitoring_info'>monitoring_info</span> <span class='op'>=</span> <span class='id identifier rubyid_parse_json'>parse_json</span><span class='lparen'>(</span><span class='id identifier rubyid_request'>request</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span><span class='rparen'>)</span>
+    <span class='kw'>begin</span>
+        <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span> <span class='id identifier rubyid_monitoring'>monitoring</span><span class='period'>.</span><span class='id identifier rubyid_host'>host</span> <span class='op'>+</span> <span class='id identifier rubyid_composedUrl'>composedUrl</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>X-Auth-Token</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_monitoring'>monitoring</span><span class='period'>.</span><span class='id identifier rubyid_token'>token</span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span>
+    <span class='kw'>rescue</span> <span class='const'>Errno</span><span class='op'>::</span><span class='const'>ECONNREFUSED</span>
+        <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>NS Monitoring unreachable</span><span class='tstring_end'>&#39;</span></span>
+    <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+        <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span>
+        <span class='id identifier rubyid_halt'>halt</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
+    <span class='kw'>end</span>
 
-  <span class='comment'># Forward the request to the VNF Monitoring
-</span>  <span class='kw'>begin</span>
-    <span class='comment'>#vnf-monitoring/:vnfi_id/readings
-</span>    <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>RestClient</span><span class='period'>.</span><span class='id identifier rubyid_post'>post</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_settings'>settings</span><span class='period'>.</span><span class='id identifier rubyid_vnf_monitoring'>vnf_monitoring</span><span class='embexpr_end'>}</span><span class='tstring_content'>/vnf-monitoring/</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:vnfi_id</span><span class='rbracket'>]</span><span class='embexpr_end'>}</span><span class='tstring_content'>/readings</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_monitoring_info'>monitoring_info</span><span class='period'>.</span><span class='id identifier rubyid_to_json'>to_json</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>X-Auth-Token</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='ivar'>@client_token</span><span class='comma'>,</span> <span class='symbol'>:content_type</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span><span class='comma'>,</span> <span class='symbol'>:accept</span> <span class='op'>=&gt;</span> <span class='symbol'>:json</span>
-  <span class='kw'>rescue</span> <span class='const'>Errno</span><span class='op'>::</span><span class='const'>ECONNREFUSED</span>
-    <span class='id identifier rubyid_halt'>halt</span> <span class='int'>500</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>VNF Monitoring unreachable</span><span class='tstring_end'>&#39;</span></span>
-  <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
-    <span class='id identifier rubyid_logger'>logger</span><span class='period'>.</span><span class='id identifier rubyid_error'>error</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span>
-    <span class='id identifier rubyid_halt'>halt</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
-  <span class='kw'>end</span>
-
-  <span class='id identifier rubyid_halt'>halt</span> <span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
+    <span class='kw'>return</span> <span class='id identifier rubyid_response'>response</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -665,7 +482,7 @@ under the License.</p>
 </div>
 
       <div id="footer">
-  Generated on Mon Oct 10 15:35:52 2016 by
+  Generated on Mon Jan 23 14:50:45 2017 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.5 (ruby-2.3.0).
 </div>
