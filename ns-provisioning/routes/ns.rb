@@ -83,8 +83,7 @@ class Provisioner < NsProvisioning
             lifecycle_event_history: ['INIT'],
             audit_log: [],
             marketplace_callback: instantiation_info['callback_url'],
-            authentication: [],
-            cooldown: DateTime.now.iso8601(3)
+            authentication: []
         }
 
         @instance = Nsr.new(instance)
@@ -106,7 +105,7 @@ class Provisioner < NsProvisioning
     end
 
     # @method get_ns_instance_status
-    # @overload get '/ns-instances/:nsr_id/status'
+    # @overload gett '/ns-instances/:nsr_id/status'
     # Get instance status
     # @param [JSON]
     get '/:nsr_id/status' do
@@ -123,23 +122,24 @@ class Provisioner < NsProvisioning
     # @overload post '/ns-instances/:nsr_id/status'
     # Update instance status
     # @param [JSON]
-    put '/:nsr_id/:status' do
+    put '/:id/:status' do
         body, errors = parse_json(request.body.read)
 
         begin
-            @nsInstance = Nsr.find(params['nsr_id'])
+            @nsInstance = Nsr.find(params['id'])
         rescue Mongoid::Errors::DocumentNotFound => e
             halt 404
         end
 
-        logger.info "Executed #{params['status']} in NSR #{params['nsr_id']}"
         if params[:status] === 'terminate'
+            logger.info 'Starting thread for removing VNF and NS instances.'
             @nsInstance.update_attribute('status', 'DELETING')
             Thread.abort_on_exception = false
             Thread.new do
                 # operation = proc {
                 @nsInstance['vnfrs'].each do |vnf|
-                    logger.info 'Terminate VNF ' + vnf['vnfr_id'].to_s + " in Pop_id: " + vnf['pop_id'].to_s
+                    logger.info 'Terminate VNF ' + vnf['vnfr_id'].to_s
+                    logger.info 'Pop_id: ' + vnf['pop_id'].to_s
                     raise 'VNF not defined' if vnf['pop_id'].nil?
 
                     pop_auth = @nsInstance['authentication'].find { |pop| pop['pop_id'] == vnf['pop_id'] }
@@ -154,14 +154,16 @@ class Provisioner < NsProvisioning
                     begin
                         response = RestClient.post settings.vnf_manager + '/vnf-provisioning/vnf-instances/' + vnf['vnfr_id'] + '/destroy', auth.to_json, content_type: :json, 'X-Auth-Token' => settings.vnf_manager_token
                     rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH
-                        # halt 500, 'VNF Manager unreachable'
+                    # halt 500, 'VNF Manager unreachable'
                     rescue RestClient::ResourceNotFound
+                        puts 'Already removed from the VIM.'
                         logger.error 'Already removed from the VIM.'
                     rescue RestClient::ServerBrokeConnection
                         logger.error 'VNF Manager brokes the connection due timeout.'
                         return
                     rescue => e
-                        logger.error 'Probably an error with mAPI'
+                        puts 'Probably an error with mAPI'
+                        puts e
                         logger.error e
                         if e.code == 500
                             logger.error "Error removing VNFR. NSR is not removed."
@@ -174,15 +176,17 @@ class Provisioner < NsProvisioning
                 end
 
                 logger.info 'VNFs removed correctly.'
+                error = 'Removing instance'
+                recoverState(@nsInstance, body['pop_info'], error)
+
                 if @nsInstance['marketplace_callback'].include? "/service-selection"
-                    logger.info "Sending stop command to Accounting"
+                    logger.info "Sending stop to Accounting"
     				marketplace = @nsInstance['marketplace_callback'].split("/service-selection")[0]
     				begin
-    					RestClient.post "#{marketplace}:8000/servicestatus/#{params['nsr_id']}/stopped/", ""
+    					RestClient.post "#{marketplace}:8000/servicestatus/#{@nsInstance['id']}/stopped/", ""
     				rescue => e
     				end
                 end
-                recoverState(@nsInstance, body['pop_info'], 'Removing NSR...')
             end
             errback = proc do
                 logger.error 'Error with the removing process...'
@@ -266,7 +270,7 @@ class Provisioner < NsProvisioning
             return 200
         end
 
-        logger.info "#{nsr_id}: #{callback_response['vnfd_id'].to_s} INSTANTIATED"
+        logger.info callback_response['vnfd_id'].to_s + ' INSTANTIATED'
         instance.push(lifecycle_event_history: 'VNF ' + callback_response['vnfd_id'].to_s + ' INSTANTIATED')
         vnfr = instance['vnfrs'].find { |vnf_info| vnf_info['vnfd_id'] == callback_response['vnfd_id'] }
         instance.pull(vnfrs: vnfr)
@@ -313,6 +317,7 @@ class Provisioner < NsProvisioning
         if settings.netfloc
             instance.update_attribute('instantiation_netfloc_start_time', DateTime.now.iso8601(3))
             logger.info 'Create Netfloc HOT for each PoP...'
+            logger.info instance['vnffgd']['vnffgs']
             graphs = []
             graphs_pops = []
             instance['vnffgd']['vnffgs'].each do |fg|
@@ -343,7 +348,9 @@ class Provisioner < NsProvisioning
                 # get credentials for each PoP
                 pop_auth = instance['authentication'].find { |pop| pop['pop_id'] == pop_id }
                 pop_info = pop_auth['urls']
-                logger.debug "#{pop_info['netfloc_ip']} - #{pop_info['netfloc_user']} - #{pop_info['netfloc_pass']}"
+                logger.debug pop_info['netfloc_ip']
+                logger.debug pop_info['netfloc_user']
+                logger.debug pop_info['netfloc_pass']
                 logger.error "ERROR READING NETFLOC IP" if pop_info['wicm_ip'].nil?
                 next if pop_info['netfloc_ip'].nil?
                 credentials, errors = authenticate(pop_info['keystone'], pop_auth['tenant_name'], pop_auth['username'], pop_auth['password'])

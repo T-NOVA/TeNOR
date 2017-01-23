@@ -48,7 +48,7 @@ class NsProvisioner < TnovaManager
 
     pop_list = []
     mapping_info = {}
-    if instantiation_info['pop_id'].nil? && instantiation_info['vnf_pop'].nil?
+    if instantiation_info['pop_id'].nil?
       available_pops = getDcs()
       if available_pops.empty?
         halt 400, "No PoPs registereds."
@@ -67,10 +67,6 @@ class NsProvisioner < TnovaManager
         #deploy to the unic PoP
         pop_list << getDc(available_pops[0]['id'])
       end
-    elsif !instantiation_info['vnf_pop'].nil?
-      instantiation_info['vnf_pop'].each_pair do |key, value|
-        pop_list << getDc(value)
-      end
     else
       #deploying the Instance into the requested PoP
       pop_list << getDc(instantiation_info['pop_id'])
@@ -87,8 +83,7 @@ class NsProvisioner < TnovaManager
         :flavour => instantiation_info['flavour'],
         :pop_list => pop_list,
         :mapping => mapping_info,
-        :infr_repo_url => infr_repo_url,
-        :vnf_mapping => instantiation_info['vnf_pop']
+        :infr_repo_url => infr_repo_url
       }
     begin
       response = RestClient.post provisioner.host + request.fullpath, provisioning.to_json, 'X-Auth-Token' => provisioner.token, :content_type => :json
@@ -98,7 +93,7 @@ class NsProvisioner < TnovaManager
       logger.error e.response
       halt e.response.code, e.response.body
     end
-    logger.debug "Instantiation in process..."
+    logger.info "Instantiation in process..."
     updateStatistics('ns_instantiated_requests')
     return response.code, response.body
   end
@@ -233,7 +228,7 @@ class NsProvisioner < TnovaManager
   # Delete a ns-instance
   # @param [string] nsr_id Instance id
   delete '/:nsr_id' do |nsr_id|
-    logger.info "Delete executed for NSR: #{nsr_id.to_s}"
+    logger.info "Delete executed.... " + nsr_id.to_s
     provisioner, errors = ServiceConfigurationHelper.get_module('ns_provisioner')
     halt 500, errors if errors
 

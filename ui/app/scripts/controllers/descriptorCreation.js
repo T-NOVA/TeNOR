@@ -11,8 +11,12 @@ angular.module('tNovaApp')
 
         $scope.selectedIcons = [];
         $scope.nsds = [];
+        //$scope.multiplePanels.activePanels = [2];
+
+        // $scope.flavours
 
         $scope.getFlavours = function (vnfd) {
+            //console.log($scope.nsd.sla[0].constituent_vnfs);
             if (vnfd == undefined) return;
             return $scope.vnfs.filter(function (d) {
                 return d.vnfd.id === vnfd;

@@ -44,7 +44,7 @@ angular.module('tNovaApp')
             $scope.itemToDeleteId = id;
             $modal({
                 title: "Are you sure you want to delete this item?",
-                templateUrl: "views/t-nova/modals/delete.html",
+                template: "views/t-nova/modals/delete.html",
                 show: true,
                 scope: $scope,
             });
@@ -61,7 +61,7 @@ angular.module('tNovaApp')
             $modal({
                 title: "Network Service Descriptor - " + data.id,
                 content: JSON.stringify(data, undefined, 4),
-                templateUrl: "views/t-nova/modals/descriptors.html",
+                template: "views/t-nova/modals/descriptors.html",
                 show: true,
                 scope: $scope,
             });
@@ -81,10 +81,9 @@ angular.module('tNovaApp')
             $scope.object.ns_id = nsd.id;
             $scope.object.callbackUrl = "https://httpbin.org/post";
             $scope.object.pop_id = null;
-            //$scope.object.flavour = nsd.sla[0].sla_key;
             $modal({
                 title: "Instantiation - " + nsd.id,
-                templateUrl: "views/t-nova/modals/nsInstantiation.html",
+                template: "views/t-nova/modals/nsInstantiation.html",
                 show: true,
                 scope: $scope,
             });
@@ -104,8 +103,6 @@ angular.module('tNovaApp')
                 } else { //use selected PoP
                     if (instance.pop_id == null) {
                         error = "PoP not selected."
-                    } else if (true) {
-                        console.log(instance.vnf_pop);
                     }
                     delete instance["mapping_id"];
                 }
@@ -147,6 +144,10 @@ angular.module('tNovaApp')
             tenorService.get("pops/dc").then(function (d) {
                 $scope.registeredDcList = d;
             });
+        }
+
+        $scope.terminate = function (id) {
+            console.log("Terminate Network Service");
         };
 
         $scope.go = function (hash) {
@@ -156,7 +157,7 @@ angular.module('tNovaApp')
         $scope.uploadDialog = function(){
             $modal({
                 title: "Upload a NSD",
-                templateUrl: "views/t-nova/modals/upload.html",
+                template: "views/t-nova/modals/upload.html",
                 show: true,
                 scope: $scope,
             });
@@ -224,7 +225,7 @@ angular.module('tNovaApp')
             $scope.itemToDeleteId = id;
             $modal({
                 title: "Are you sure you want to delete this item?",
-                templateUrl: "views/t-nova/modals/delete.html",
+                template: "views/t-nova/modals/delete.html",
                 show: true,
                 scope: $scope,
             });
@@ -251,7 +252,8 @@ angular.module('tNovaApp')
             $modal({
                 title: "Network Service Instance Descriptor - " + data.id,
                 content: JSON.stringify(data, undefined, 4),
-                templateUrl: "views/t-nova/modals/info/nsInstance.html",
+                //template: "views/t-nova/modals/descriptors.html",
+                template: "views/t-nova/modals/info/nsInstance.html",
                 show: true,
                 scope: $scope,
             });
@@ -275,7 +277,9 @@ angular.module('tNovaApp')
         $scope.instanceId = $stateParams.id;
         if ($stateParams.id) {
             tenorService.get("ns-instances/" + $stateParams.id).then(function (instance) {
+                $scope.instanceId = instance.id;
                 $scope.instance = instance;
+
                 tenorService.get("network-services/" + $scope.instance.nsd_id).then(function (nsd) {
                     $scope.tableData = [];
                     console.log(nsd);
@@ -289,9 +293,7 @@ angular.module('tNovaApp')
                         sla.assurance_parameters.forEach(function (m) {
                             $scope.tableData.push({
                                 type: m.name,
-                                valueType: m.name,
-                                threshold: m.value,
-                                formula: m.formula
+                                valueType: m.name
                             });
                         })
                     });
@@ -300,28 +302,7 @@ angular.module('tNovaApp')
         };
 
         $scope.oldType = "";
-        $scope.options = {
-            legend: true,
-            max: '2020-12-31',
-            min: '2016-01-01',
-            start: vis.moment().add(-30, 'hours'), // changed so its faster
-            end: vis.moment(),
-            sort: true,
-            sampling: false,
-            dataAxis: {
-                customRange: {
-                    left: {},
-                    showMinorLabels: true
-                },
-                left: {
-                    format: function (value) {
-                        return '' + value.toPrecision();
-                    }
-                }
-            },
-            defaultGroup: 'Scatterplot'
-        };
-        $scope.reloadGraph = function (type, threshold) {
+        $scope.reloadGraph = function (type) {
             $interval.cancel(promise1);
             $interval.cancel(promise2);
             $scope.monitoringData.clear();
@@ -329,41 +310,6 @@ angular.module('tNovaApp')
             if ($scope.oldType !== type) {
                 $scope.oldType = type;
             }
-            var groups = new vis.DataSet();
-            var items = [];
-            groups.add({
-                id: 0,
-                content: type,
-                options: {
-                    className: "custom-line-style",
-                    drawPoints: {
-                        style: 'circle' // square, circle
-                    }
-                }
-            });
-            groups.add({
-                id: 1,
-                content: "Threshold",
-                className: "custom-line-style",
-                options: {
-                    drawPoints: false
-                }
-            });
-            $scope.data = {
-                items: new vis.DataSet(items),
-                groups: groups
-            };
-            $scope.data.items.add({
-                x: '2016-01-01',
-                y: parseFloat(threshold.split("(")[1].split(")")[0]),
-                group: 1
-            });
-            $scope.data.items.add({
-                x: '2020-12-31',
-                y: parseFloat(threshold.split("(")[1].split(")")[0]),
-                group: 1
-            });
-
             $scope.showGraphWithHistoric(type);
         }
 
@@ -384,9 +330,8 @@ angular.module('tNovaApp')
                     _.each(data, function (t) {
                         t['x'] = t.date * 1000;
                         t['y'] = parseFloat(t.value);
-                        t['group'] = 0;
                     });
-                    $scope.data.items.add(data);
+                    $scope.monitoringData.add(data);
                     lastEndDate = data[data.length - 1].date - 1;
                 });
             }, historicInterval);
@@ -397,9 +342,8 @@ angular.module('tNovaApp')
                     _.each(data, function (t) {
                         t['x'] = t.date * 1000;
                         t['y'] = parseFloat(t.value);
-                        t['group'] = 0;
                     });
-                    $scope.data.items.add(data);
+                    $scope.monitoringData.add(data);
                     lastStartDate = data[data.length - 1].date;
                 });
             }, realTimeInterval);
@@ -415,5 +359,8 @@ angular.module('tNovaApp')
             if (promise2) {
                 $interval.cancel(promise2);
             }
+            /*if (promise_table) {
+                $interval.cancel(promise_table);
+            }*/
         });
     });

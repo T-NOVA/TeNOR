@@ -139,7 +139,7 @@ class Provisioning < VNFManager
         # halt 500, errors if errors
         unless errors
             begin
-                response = RestClient.delete monitoring.host + "/vnf-monitoring/subscription/#{vnfr_id}", 'X-Auth-Token' => monitoring.token, :content_type => :json, :accept => :json
+                response = RestClient.delete monitoring.host + "/vnf-monitoring/subcription/#{vnfr_id}", 'X-Auth-Token' => monitoring.token, :content_type => :json, :accept => :json
             rescue Errno::ECONNREFUSED
             # halt 500, 'VNF Monitoring unreachable'
             rescue => e

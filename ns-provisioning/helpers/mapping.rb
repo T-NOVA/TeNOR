@@ -76,23 +76,4 @@ module MappingHelper
         end
         mapping
     end
-
-    def getMappingResponseWithPops(mapping)
-        vnf_mapping = []
-        mapping.each_pair do |vnf_id, pop_id|
-            vnf_mapping << { 'maps_to_PoP' => "/pop/#{pop_id}", 'vnf' => '/' + vnf_id.to_s }
-        end
-
-        mapping = {
-            'links_mapping' =>
-            [
-                {
-                    'vld_id' => 'vld1',
-                    'maps_to_link' => '/pop/link/85b0bc34-dff0-4399-8435-4fb2ed65790a'
-                }
-            ],
-            'vnf_mapping' => vnf_mapping
-        }
-        mapping
-    end
 end

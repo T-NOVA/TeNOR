@@ -43,7 +43,7 @@ class VNFMonitoring < Sinatra::Application
             end
 
             logger.info "Creating subscription message for VDU: #{vdu['id']}"
-            callbackUrl = settings.manager + "/vnf-monitoring/#{vnfr_id}/readings"
+            callbackUrl = settings.vnf_manager + "/vnf-monitoring/#{vnfr_id}/readings"
             url = 'http://' + callbackUrl unless callbackUrl.include? 'http://'
             subscribe = {
                 types: types,
@@ -80,7 +80,6 @@ class VNFMonitoring < Sinatra::Application
             logger.error "Monitoring Metric no exists."
             halt 400, 'Sla no exists'
         end
-        logger.debug "Remove subcription #{monitoring_metrics.to_json}"
         monitoring_metrics.each do |mon_metrics|
             begin
                 response = RestClient.delete settings.vim_monitoring + '/api/subscriptions/' + mon_metrics['subscription_id'], accept: :json

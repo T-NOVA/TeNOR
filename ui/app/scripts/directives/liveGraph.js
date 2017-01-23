@@ -141,51 +141,71 @@ angular.module('tNovaApp')
                 }
             }
         };
-    }).directive('streamChartThreshold', function ($parse, $window) {
-        return {
-            restrict: 'EA',
-            transclude: false,
-            scope: {
-                data: '=',
-                options: '=',
-                events: '='
-            },
-            link: function (scope, element, attr) {
-
-                // Create the chart
-                var graph = null;
-
-                scope.$watch('data', function () {
-                    // Sanity check
-                    if (scope.data == null) {
-                        return;
-                    }
-
-                    // If we've actually changed the data set, then recreate the graph
-                    // We can always update the data by adding more data to the existing data set
-                    if (graph != null) {
-                        graph.destroy();
-                    }
-                        // Create the graph2d object
-                    graph = new vis.Graph2d(element[0], scope.data.items, scope.data.groups, scope.options);
-
-                    // onLoad callback
-                    if (scope.events != null && scope.events.onload != null &&
-                        angular.isFunction(scope.events.onload)) {
-                        scope.events.onload(graph);
-                    }
-                });
-
-                scope.$watchCollection('options', function (options) {
-                    console.log(options);
-                    if (graph == null) {
-                        return;
-                    }
-                    graph.setOptions(options);
-                });
-            }
-        };
     })
+    /*
+        .directive('barsChart', function ($parse, $window) {
+            return {
+                restrict: 'EA',
+                link: function (scope, elem, attrs) {
+                    var DELAY = 2000; // delay in ms to add new data points
+
+                    var exp = $parse(attrs.chartData);
+
+                    var monitoredDataToPlot = exp(scope);
+
+                    // create a graph2d with an (currently empty) dataset
+                    var container = document.getElementById('visualization');
+                    var groups = new vis.DataSet();
+                    groups.add({
+                        id: 0,
+                        content: "Received"
+                    });
+                    groups.add({
+                        id: 1,
+                        content: "Mapped"
+                    });
+                    groups.add({
+                        id: 2,
+                        content: "Rejected"
+                    });
+
+                    var options = {
+                        legend: {
+                            left: {
+                                position: "top-left"
+                            }
+                        },
+                        style: 'bar',
+                        barChart: {
+                            width: 50,
+                            align: 'center',
+                            handleOverlap: "sideBySide"
+                        }, // align: left, center, right
+                        drawPoints: true,
+                        dataAxis: {
+                            title: {
+                                left: {
+                                    text: "Number of requests (#)"
+                                }
+                            },
+                            customRange: {
+                                left: {
+                                    min: -5,
+                                    max: 30
+                                },
+                                right: {
+                                    min: -5
+                                }
+                            }
+                        },
+                        orientation: 'top',
+                        start: '2015-02-05',
+                        end: '2015-02-20'
+                    };
+                    var graph2d = new vis.Graph2d(container, monitoredDataToPlot, groups, options);
+                }
+            }
+        })*/
     .directive('barsChart', function ($parse, $window) {
         return {
             restrict: 'EA',
@@ -283,8 +303,12 @@ angular.module('tNovaApp')
                 events: '='
             },
             link: function (scope, element, attr) {
+
+                // Create the chart
                 var graph = null;
+
                 scope.$watch('data', function () {
+                    console.log(scope.data);
                     // Sanity check
                     if (scope.data == null) {
                         return;
@@ -295,6 +319,7 @@ angular.module('tNovaApp')
                     if (graph != null) {
                         graph.destroy();
                     }
+                    console.log(scope.options)
                         // Create the graph2d object
                     graph = new vis.Graph2d(element[0], scope.data.items, scope.data.groups, scope.options);
 

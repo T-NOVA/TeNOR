@@ -38,6 +38,55 @@ angular.module('tNovaApp')
                 }
             }).then(
                 function (response) {
+                    console.log(response);
+                    deferred.resolve(response.data);
+                },
+                function (response) {
+                    console.log(response);
+                    deferred.reject(response.data);
+                }
+            );
+            return deferred.promise;
+        };
+
+        var loginGK = function (user_id, password) {
+            var url = 'rest/gk/api/token/';
+            var deferred = $q.defer();
+
+            $http.post(url, '', {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Auth-Password': password,
+                    'X-Auth-Uid': user_id,
+                    "X-host": BACKEND
+                }
+            }).then(
+                function (response) {
+                    console.log(response);
+                    //$window.localStorage.userId = userId;
+                    deferred.resolve(response.data);
+                },
+                function (response) {
+                    console.log(response);
+                    deferred.reject(response.data);
+                }
+            );
+            return deferred.promise;
+        };
+
+        var profileGK = function (user_id, token) {
+            var url = 'rest/gk/api/admin/user/' + user_id;
+            var deferred = $q.defer();
+
+            $http.get(url, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Auth-Token': token,
+                    'X-host': BACKEND
+                }
+            }).then(
+                function (response) {
+                    console.log(response);
                     deferred.resolve(response.data);
                 },
                 function (response) {

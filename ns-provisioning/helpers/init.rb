@@ -15,12 +15,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require_relative 'utils'
 require_relative 'ns'
 require_relative 'vim'
 require_relative 'monitoring'
 require_relative 'mapping'
 require_relative 'hot'
+require_relative 'utils'
 require_relative 'instantiation'
 require_relative 'keystone/authentication'
 require_relative 'keystone/keystone_v2'

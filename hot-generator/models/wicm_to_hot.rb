@@ -41,7 +41,7 @@ class WicmToHot
     2.times {networks_name << create_network}
 
     # Create the subnets for all networks
-    networks_name.each_with_index {|name, index| create_subnet(name, rand(256).to_s + '.' + rand(256).to_s + '.' + rand(256).to_s + '.0/24', ['8.8.8.8'])}
+    networks_name.each_with_index {|name, index| create_subnet(name, 250 + index, ['8.8.8.8'])}
 
     # Create the Service Function Forwarder machine
     #create_server('image_name', create_flavor, create_ports(networks_name))
@@ -116,9 +116,9 @@ class WicmToHot
   # @param [String] network_name the network name
   # @param [String] cidr the CIDR for the network
   # @return [String] the name of the created subnet
-  def create_subnet(network_name, cidr, dns_server)
+  def create_subnet(network_name, index, dns_server)
     name = get_resource_name
-    @hot.resources_list << Subnet.new(name, {get_resource: network_name}, [dns_server], cidr)
+    @hot.resources_list << Subnet.new(name, {get_resource: network_name}, dns_server, index)
     name
   end
 

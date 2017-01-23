@@ -22,22 +22,17 @@ class VnfMonitoringRepository < Sinatra::Application
   # @overload get '/vnf-monitoring/:instance_id/monitoring-data/'
   #	Returns all monitored data
   get '/vnf-monitoring/:instance_id/monitoring-data/' do
-    instance_id = params[:instance_id].to_s
-    vdu_id = params[:vdu_id].to_s
-    metric = params[:metric].to_s
-    start = params[:start]
-    endTime = params[:end]
     t = []
     @db = settings.db
-    if vdu_id && metric && start && !endTime
-      @db.execute("SELECT * FROM vnfmonitoring WHERE instanceid='#{instance_id}' AND vduid='#{vdu_id}' AND metricname='#{metric}' AND date >= #{start} ORDER BY metricname DESC LIMIT 2000").each { |row| t.push(row.to_hash) }
-    elsif vdu_id && metric && start && endTime
-      @db.execute("SELECT * FROM vnfmonitoring WHERE instanceid='#{instance_id}' AND vduid='#{vdu_id}' AND metricname='#{metric}' AND date >= #{start} AND date <= #{endTime} LIMIT 2000").each { |row| t.push(row.to_hash) }
-    elsif vdu_id && metric && endTime
-      @db.execute("SELECT * FROM vnfmonitoring WHERE instanceid='#{instance_id}' AND vduid='#{vdu_id}' AND metricname='#{metric}' AND date <= #{endTime} ORDER BY metricname DESC LIMIT 2000").each { |row| t.push(row.to_hash) }
-    elsif vdu_id && metric && !start
-      @db.execute("SELECT * FROM vnfmonitoring WHERE instanceid='#{instance_id}' AND vduid='#{vdu_id}' AND metricname='#{metric}' LIMIT 2000").each { |row| t.push(row.to_hash) }
-    elsif !vdu_id
+    if params[:vdu_id] && params[:metric] && params[:start] && !params[:end]
+      @db.execute("SELECT vduid, metricName, date, unit, value FROM vnfmonitoring WHERE instanceid='#{params[:instance_id].to_s}' AND vduid='#{params[:vdu_id].to_s}' AND metricname='#{params[:metric].to_s}' AND date >= #{params[:start]} ORDER BY metricname DESC LIMIT 2000").each { |row| t.push(row.to_hash) }
+    elsif params[:vdu_id] &&params[:metric] && params[:start] && params[:end]
+      @db.execute("SELECT vduid, metricName, date, unit, value FROM vnfmonitoring WHERE instanceid='#{params[:instance_id].to_s}' AND vduid='#{params[:vdu_id].to_s}' AND metricname='#{params[:metric].to_s}' AND date >= #{params[:start]} AND date <= #{params[:end]} LIMIT 2000").each { |row| t.push(row.to_hash) }
+    elsif params[:vdu_id] &&params[:metric] && params[:end]
+      @db.execute("SELECT vduid, metricName, date, unit, value FROM vnfmonitoring WHERE instanceid='#{params[:instance_id].to_s}' AND vduid='#{params[:vdu_id].to_s}' AND metricname='#{params[:metric].to_s}' AND date <= #{params[:end]} ORDER BY metricname DESC LIMIT 2000").each { |row| t.push(row.to_hash) }
+    elsif params[:vdu_id] &&params[:metric] && !params[:start]
+      @db.execute("SELECT vduid, metricName, date, unit, value FROM vnfmonitoring WHERE instanceid='#{params[:instance_id].to_s}' AND vduid='#{params[:vdu_id].to_s}' AND metricname='#{params[:metric].to_s}' LIMIT 2000").each { |row| t.push(row.to_hash) }
+    elsif !params[:vdu_id]
       contains = "("
       params[:vdus].each do |vdu|
         contains = contains + "'#{vdu.to_s}', "
@@ -45,16 +40,16 @@ class VnfMonitoringRepository < Sinatra::Application
       contains = contains[0...-2]
       contains = contains + ")"
 
-      if metric && start && !endTime
-        @db.execute("SELECT * FROM vnfmonitoring WHERE instanceid='#{instance_id}' AND metricname='#{metric}' AND vduid IN #{contains} AND date >= #{start} ORDER BY metricname DESC LIMIT 2000").each { |row| t.push(row.to_hash) }
-      elsif metric && start && endTime
-        @db.execute("SELECT * FROM vnfmonitoring WHERE instanceid='#{instance_id}' AND metricname='#{metric}' AND vduid IN #{contains} AND date >= #{start} AND date <= #{endTime} LIMIT 2000").each { |row| t.push(row.to_hash) }
-      elsif metric && endTime
-        @db.execute("SELECT * FROM vnfmonitoring WHERE instanceid='#{instance_id}' AND metricname='#{metric}' AND vduid IN #{contains} AND date <= #{endTime} ORDER BY metricname DESC LIMIT 2000").each { |row| t.push(row.to_hash) }
-      elsif metric && !start
-        @db.execute("SELECT * FROM vnfmonitoring WHERE instanceid='#{instance_id}' AND metricname='#{metric}' LIMIT 2000").each { |row| t.push(row.to_hash) }
+      if params[:metric] && params[:start] && !params[:end]
+        @db.execute("SELECT vduid, metricName, date, unit, value FROM vnfmonitoring WHERE instanceid='#{params[:instance_id].to_s}' AND metricname='#{params[:metric].to_s}' AND vduid IN #{contains} AND date >= #{params[:start]} ORDER BY metricname DESC LIMIT 2000").each { |row| t.push(row.to_hash) }
+      elsif params[:metric] && params[:start] && params[:end]
+        @db.execute("SELECT vduid, metricName, date, unit, value FROM vnfmonitoring WHERE instanceid='#{params[:instance_id].to_s}' AND metricname='#{params[:metric].to_s}' AND vduid IN #{contains} AND date >= #{params[:start]} AND date <= #{params[:end]} LIMIT 2000").each { |row| t.push(row.to_hash) }
+      elsif params[:metric] && params[:end]
+        @db.execute("SELECT vduid, metricName, date, unit, value FROM vnfmonitoring WHERE instanceid='#{params[:instance_id].to_s}' AND metricname='#{params[:metric].to_s}' AND vduid IN #{contains} AND date <= #{params[:end]} ORDER BY metricname DESC LIMIT 2000").each { |row| t.push(row.to_hash) }
+      elsif params[:metric] && !params[:start]
+        @db.execute("SELECT vduid, metricName, date, unit, value FROM vnfmonitoring WHERE instanceid='#{params[:instance_id].to_s}' AND metricname='#{params[:metric].to_s}' LIMIT 2000").each { |row| t.push(row.to_hash) }
       else
-        @db.execute("SELECT * FROM vnfmonitoring WHERE instanceid='#{instance_id}' LIMIT 2000").each { |row| t.push(row.to_hash) }
+        @db.execute("SELECT vduid, metricName, date, unit, value FROM vnfmonitoring WHERE instanceid='#{params[:instance_id].to_s}' LIMIT 2000").each { |row| t.push(row.to_hash) }
       end
     end
     return t.to_json
@@ -66,7 +61,7 @@ class VnfMonitoringRepository < Sinatra::Application
   get '/vnf-monitoring/:instance_id/monitoring-data/last100/' do
     t = []
     @db = settings.db
-    @db.execute("SELECT * FROM vnfmonitoring WHERE instanceid='#{params[:instance_id].to_s}' AND metricname='#{params[:metric].to_s}' ORDER BY metricname DESC LIMIT 100").each { |row| t.push(row.to_hash) }
+    @db.execute("SELECT vduid, metricName, date, unit, value FROM vnfmonitoring WHERE instanceid='#{params[:instance_id].to_s}' AND metricname='#{params[:metric].to_s}' ORDER BY metricname DESC LIMIT 100").each { |row| t.push(row.to_hash) }
     return t.to_json
   end
 

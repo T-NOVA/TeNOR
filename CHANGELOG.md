@@ -1,14 +1,3 @@
-## 0.12.0
-- NS provisioning: fix unreachable openstack when login.
-- UI: Improved Monitoring scroll metrics. Included threshold in NS monitoring graph.
-- UI: included statistics table.
-- Handle Errno::ECONNRESET in NS Manager when calling VNF Manager.
-- Improved logs.
-- UI: Select specific PoP for each VNF for deploy.
-- NS Manager/Provisioning supports placement for VNF.
-- Refactor NS/VNF Monitoring Repositories.
-- Refactor Provisioning.
-
 ## 0.11.1
 - Fix NS Provisioning Hash.
 - Updated Descriptor Samples.

@@ -54,8 +54,7 @@ module AuthenticationHelper
         credentials
     end
 
-    def create_user_and_project(heat_api, _instance, project_name, username, password, tenant_id, token)
-        @instance = _instance
+    def create_user_and_project(heat_api, _instance_id, project_name, username, password, tenant_id, token)
         generated_credentials = {}
         generated_credentials['password'] = password
         generated_credentials['tenant_name'] = project_name

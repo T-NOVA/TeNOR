@@ -35,7 +35,7 @@ angular.module('tNovaApp')
             $scope.itemToDeleteId = id;
             $modal({
                 title: "Are you sure you want to delete this item?",
-                templateUrl: "views/t-nova/modals/delete.html",
+                template: "views/t-nova/modals/delete.html",
                 show: true,
                 scope: $scope,
             });

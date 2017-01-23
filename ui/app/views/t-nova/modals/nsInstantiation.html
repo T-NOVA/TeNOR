@@ -32,36 +32,18 @@
                         <label for="select_pop" class="col-sm-2 control-label">Select PoP</label>
                         <div class="col-sm-10">
                             <label>
-                                <input type="radio" class="radio" value="1" ng-model="object.select_pop" />
-                            </label>
-                            <div class="row" ng-if="object.select_pop == 1">
-                                <div class="col-sm-3">
-                                    <label for="select_pop" class="control-label">All VNFs</label>
-                                </div>
-                                <div class="col-sm-7">
-                                    <label>
-                                        <input type="radio" class="radio" value="0" ng-model="object.select_pop_vnfs" />
-                                    </label>
-                                        <button ng-if="object.select_pop_vnfs == 0" type="button" class="btn btn-default" ng-model="object.pop_id" data-html="1" bs-options="dc.id as dc.name for dc in registeredDcList" bs-select bs-disabled>
-                                      Action <span class="caret"></span></button>
-                                </div>
-                            </div>
-                            <div class="row" ng-if="object.select_pop == 1">
-                                <div class="col-sm-3">
-                                    <label for="select_pop" class="control-label">Choose VNFs</label>
-                                </div>
-                                <div class="col-sm-7">
-                                    <label>
-                                            <input type="radio" class="radio" value="1" ng-model="object.select_pop_vnfs" />
-                                        </label>
-                                    <ul ng-if="object.select_pop_vnfs == 1">
-                                        <li ng-repeat="vnfd in nsd.vnfds">
-                                            {{vnfd}} -> <button type="button" class="btn btn-default" ng-model="object.vnf_pop[vnfd]" data-html="1" bs-options="dc.id as dc.name for dc in registeredDcList" bs-select bs-disabled>
-                                    Action <span class="caret"></span></button>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
+                              <input type="radio" class="radio" value="1" ng-model="object.select_pop" />
+                          </label>
+                          <button ng-if="object.select_pop == 1" type="button" class="btn btn-default" ng-model="object.pop_id" data-html="1" bs-options="dc.id as dc.name for dc in registeredDcList" bs-select bs-disabled>
+                              Action <span class="caret"></span>
+                          </button>
+                          <!--ul ng-if="object.select_pop == 1">
+                              <li ng-repeat="vnfd in nsd.vnfds">
+                                  {{vnfd}} <button type="button" class="btn btn-default" ng-model="object.pop_id_[vnfd]" data-html="1" bs-options="dc.id as dc.name for dc in registeredDcList" bs-select bs-disabled>
+                                    Action <span class="caret"></span>
+                                </button>
+                              </li>
+                          </ul-->
                         </div>
                     </div>
                     <div class="form-group">

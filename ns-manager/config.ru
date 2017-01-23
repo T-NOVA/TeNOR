@@ -12,6 +12,6 @@ map('/ns-instances/scaling') { run NsScaling }
 map('/vnf-provisioning') { run VnfProvisioner }
 map('/vnfs') { run VNFCatalogue }
 map('/accounting') { run AccountingController }
-map('/instances') { run Monitoring }
+map('/instances') { run NsMonitoring }
 map('/statistics') { run Statistics }
 map('/auth') { run TeNORAuthentication }

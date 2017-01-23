@@ -67,6 +67,7 @@ RSpec.describe NsProvisioning do
         context 'given a valid request' do
             it 'scale_out a NS' do
                 response = post '/'+ nsr._id.to_s + '/scale_out', File.read(File.expand_path('../fixtures/scaling_out_request.json', __FILE__)), 'CONTENT_TYPE' => 'application/json'
+                puts last_response
                 expect(last_response.status).to eq 200
             end
         end

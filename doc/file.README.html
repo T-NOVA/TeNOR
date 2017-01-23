@@ -63,30 +63,28 @@
 
 <p>TeNOR is the NFV Orchestrator platform developed by the <a href="http://www.t-nova.eu">T-NOVA</a> project, responsible for managing the entire NFV lifecycle service.</p>
 
-<p><a href="https://github.com/T-NOVA/TeNOR/releases/latest"><img src="https://img.shields.io/github/release/T-NOVA/TeNOR.svg" alt="GitHub release"></a>
-<a href="https://travis-ci.org/T-NOVA/TeNOR"><img src="https://travis-ci.org/T-NOVA/TeNOR.svg?branch=master" alt="Build Status"></a> <a href="https://opensource.org/licenses/Apache-2.0"><img src="https://img.shields.io/badge/License-Apache%202.0-yellowgreen.svg" alt="License"></a></p>
-
 <h2>Prerequisites</h2>
 
 <ul>
-<li>Ruby &gt;= 2.2.5 (Recommended 2.3.1) (installation provided in dependencies/install_dependencies.sh)</li>
+<li>Ruby &gt;= 2.2.5 (installation provided in dependencies/install_dependencies.sh)</li>
 <li>Bundler (installation provided in dependencies/install_dependencies.sh)</li>
+<li>Gatekeeper (<a href="https://github.com/piyush82/auth-utils">https://github.com/piyush82/auth-utils</a>). (installation provided in dependencies/install_dependencies.sh)</li>
 <li>MongoDB (installation provided in dependencies/install_dependencies.sh)</li>
 <li>Openstack Juno version or higher</li>
-<li>Enable Keystone and Nova_Flavors in Openstack Heat resources (<a href="#enable-heat-resources">How to do it</a>)</li>
 </ul>
 
 <h2>Optional Requirements</h2>
 
 <ul>
-<li>Service Mapping (<a href="https://github.com/T-NOVA/TeNOR/tree/master/service-mapper">https://github.com/T-NOVA/TeNOR/tree/master/service-mapper</a>). Used when more than 1 PoP is available. Requires the Infrastructure Repository.</li>
-<li>Infrastructure Repository (<a href="https://github.com/T-NOVA/infrastructure-repository">https://github.com/T-NOVA/infrastructure-repository</a>). Used by the Service Mapping algorithm.</li>
-<li>Middleware API (<a href="https://github.com/T-NOVA/mAPI">https://github.com/T-NOVA/mAPI</a>). Required for start/stop the Lifecycle events inside the VNFS.</li>
+<li>Service Mapping (<a href="https://github.com/T-NOVA/TeNOR/tree/master/service-mapper">https://github.com/T-NOVA/TeNOR/tree/master/service-mapper</a>). Used when more than 1 PoP is available.</li>
+<li>Infrastructure Repository (<a href="https://github.com/T-NOVA/infrastructure-repository">https://github.com/T-NOVA/infrastructure-repository</a>). Used by the UI and the Service Mapping algorithm.</li>
+<li>Middleware API (<a href="https://github.com/T-NOVA/mAPI">https://github.com/T-NOVA/mAPI</a>) (required for start/stop the Lifecycle events inside the VNFS)</li>
 <li>VIM Monitoring (<a href="https://github.com/T-NOVA/vim-monitoring">https://github.com/T-NOVA/vim-monitoring</a>). Used for receive the monitoring from each VNF.</li>
-<li>Netfloc (<a href="https://github.com/T-NOVA/netfloc">https://github.com/T-NOVA/netfloc</a>). Used for the VNFFG. Requires Opendaylight installed in the NFVI-PoP(s).</li>
-<li>WICM (<a href="https://github.com/T-NOVA/WICM">https://github.com/T-NOVA/WICM</a>). Responsible for redirecting traffic from a client into a or several NFVI-PoP(s).</li>
-<li>Apache Cassandra. Used for monitoring with the VIM Monitoring. (installation provided in dependencies/install_cassandra.sh)</li>
-<li>RabbitMq. Used for monitoring. (installation provided in dependencies/install_dependencies.sh)</li>
+<li>Netfloc (<a href="https://github.com/T-NOVA/netfloc">https://github.com/T-NOVA/netfloc</a>). Used for the VNFFG.</li>
+<li>WICM (<a href="https://github.com/T-NOVA/WICM">https://github.com/T-NOVA/WICM</a>).</li>
+<li>Apache Cassandra (optional, used for monitoring) (installation provided in dependencies/install_cassandra.sh)</li>
+<li>Logstash (optional) &amp; ElasticSearch (optional)</li>
+<li>RabbitMq (optional, used for monitoring) (installation provided in dependencies/install_dependencies.sh)</li>
 </ul>
 
 <h1>Getting started</h1>
@@ -94,19 +92,19 @@
 <h2>Steps</h2>
 
 <ol>
-<li>Install the prerequisites (Ruby and MongoDB). You can install it using the script located inside the <code>dependencies</code> folder. Use the <code>install_dependencies.sh</code> script for automatic installation.</li>
+<li>Install the prerequisites (Ruby, Gatekeeper and MongoDB). The installation of these requirements is provided a script inside the <code>dependencies</code> folder. Use the <code>install_dependencies.sh</code> script if you want to install it automatically.</li>
 <li>Install TeNOR (internal dependencies and configurations). Installation script provided in the root folder <code>tenor_install.sh</code>.</li>
-<li><a href="#execution">Start TeNOR</a>.</li>
-<li>Register external modules if installed (Mapping, mAPI, WICM, VIMMonitoring, Netfloc...).</li>
-<li><a href="#loading-nfvi-pop-information-in-tenor">Register a Network Function Virtualisation Infrastructure Point of Presence (NFVI-PoP)</a> inserting the Openstack credentials into the authentication module.</li>
-<li>Test <a href="#upload-a-vnfd-and-nsd-and-instantiate-it">deploying</a> a sample NSD/VNFD to the inserted NFVI-PoP.</li>
+<li>Start TeNOR.</li>
+<li>Register the internal modules (automatic) and external modules (Mapping, mAPI, WICM, VIMMonitoring, Netfloc...).</li>
+<li>Register a Network Function Virtualisation Infrastructure Point of Presence (NFVI-PoP) inserting the Openstack credentials into Gatekeeper.</li>
+<li>Test deploying a sample NSD/VNFD to the inserted NFVI-PoP.</li>
 </ol>
 
 <h2>Installation</h2>
 
-<p>We provide an installation script for Ubuntu 14.04 that helps with the installation of Ruby, MongoDB and RabbitMq.</p>
+<p>We provide an installation script for Ubuntu 14.04 that helps with the installation of Ruby, Gatekeeper and MongoDB.</p>
 
-<p>In order to install Ruby and MongoDB execute the following script:</p>
+<p>In order to install Ruby, the MongoDB and Gatekeeper execute the following script:</p>
 
 <pre class="code ruby"><code class="ruby">./dependencies/install_dependencies.sh
 </code></pre>
@@ -120,7 +118,7 @@
 
 <p>A menu will appear and you can choose a number in the menu [1-7].</p>
 
-<p>For TeNOR installation, insert the number 1 and press the Enter Key. The installation will start automatically installing the Ruby Gem dependencies. After few minutes, the script will ask you a set of questions regarding the location of the MongoDB and Cassandra (if installed). In the case of insert an emty values, the script will use the default values (localhost).</p>
+<p>For TeNOR installation, insert the number 1 and press the Enter Key. The installation will start automatically installing the Ruby Gem dependencies. After few minutes, the script will ask you a set of questions regarding the location of the MongoDB, Gatekeeper and Logstash. In the case of insert an emty values, the script will use the default values (localhost).</p>
 
 <p><strong>Make sure that you have installed a Ruby version &gt;= 2.2.5 and the <code>bundle</code> command is installed.</strong></p>
 
@@ -128,11 +126,11 @@
 
 <h2>Vagrant (alternative installation)</h2>
 
-<p>A Vagrantfile is provided with TeNOR and  Mongodb installed.</p>
+<p>A Vagrantfile is provided with TeNOR, Gatekeeper and Mongodb installed.</p>
 
 <h2>Docker (alternative installation)</h2>
 
-<p>A Dockerfile is provided that generates a container with TeNOR and Mongodb installed. Once is running, all the components are installed and running.</p>
+<p>A Dockerfile is provided that generates a container with TeNOR, Gatekeeper and Mongodb installed. Once is running, all the components are installed and running.</p>
 
 <ol>
 <li><p>Build it with:</p>
@@ -141,7 +139,7 @@
 </code></pre></li>
 <li><p>Run the container with:</p>
 
-<pre class="code ruby"><code class="ruby">docker run -itd -p 4000:4000 -p 9000:9000 -v /opt/mongo:/var/lib/mongodb tnova/tenor bash
+<pre class="code ruby"><code class="ruby">docker run -itd -p 4000:4000 -p 8000:8000 -p 9000:9000 -v /opt/mongo:/var/lib/mongodb -v /opt/gatekeeper:/root/gatekeeper tnova/tenor bash
 </code></pre></li>
 <li><p>Then, you can test TeNOR (<a href="#test-if-tenor-is-installed-and-running">Test if TeNOR is installed and running</a>), and you can access to the command line with:</p>
 
@@ -187,7 +185,7 @@
 <li>F6 exit from Byobu</li>
 </ul>
 
-<h2>Registering modules in TeNOR</h2>
+<h2>Registering modules in TeNOR and Gatekeeper</h2>
 
 <p>TeNOR has a microservice architecture and requires a registration of each microservices to the system. The NS Manager (API gateway) is the responsible to manage this registration. The internal TeNOR modules are managed automatically, but external modules like mAPI, WICM, Infrastructure repository and Netfloc needs to be registered.</p>
 
@@ -202,18 +200,43 @@
 <code>./loadModules.sh</code></li>
 </ul>
 
-<p>The content of the loadModules.sh is a set of CuRL request to the NS Manager inserting the IP and PORT of each microservice. When the NS Manager recevies the requests, automatically register each module in order to generate a microservice-token.</p>
+<p>The content of the loadModules.sh is a set of CuRL request to the NS Manager inserting the IP and PORT of each microservice. When the NS Manager recevies the requests, automatically register each module into Gatekeeper in order to generate a microservice-token.</p>
 
-<h2>Loading NFVI-PoP information in TeNOR</h2>
+<h2>Loading NFVI-PoP information in Gatekeeper</h2>
 
-<p>The NFVI-PoP information is saved in the Authentication module. First of all, TeNOR recevies the registration requests and validates the authentication. If it works, TeNOR saves the NFVI-PoP. The NFVI-PoP can be inserted in two manners:</p>
+<p>The PoP information is saved in Gatekeeper. This can be inserted in three manners:</p>
 
 <ul>
 <li>Using the TeNOR User Interface:
 <code>Configuration -&gt; PoPs</code></li>
 <li>Using the TeNOR script:
 Execute the tenor_install.sh script and choose the option <code>4. Add new PoP</code></li>
+<li>Using the CLI:</li>
 </ul>
+
+<p>First of all, define the following variables (you can copy and paste in the command prompt):</p>
+
+<pre class="code ruby"><code class="ruby"> GATEKEEPER_HOST=localhost:8000
+ GATEKEEPER_PASS=Eq7K8h9gpg
+ GATEKEEPER_USER_ID=1
+ OPENSTACK_IP=localhost
+ admin_tenant_name=tenantName
+ keystonePass=password
+ keystoneUser=admin
+ openstack_dns=8.8.8.8
+</code></pre>
+
+<p>Get the Gatekeeper token (you can copy and paste in the command prompt):</p>
+
+<pre class="code ruby"><code class="ruby">tokenId=$(curl -XPOST http://$GATEKEEPER_HOST/token/ -H &quot;X-Auth-Password:$GATEKEEPER_PASS&quot; -H &quot;X-Auth-Uid:$GATEKEEPER_USER_ID&quot; | python -c &#39;import json,sys;obj=json.load(sys.stdin);print obj[&quot;token&quot;][&quot;id&quot;]&#39;)
+</code></pre>
+
+<p>Post PoP Information (you can copy and paste in the command prompt):</p>
+
+<pre class="code ruby"><code class="ruby"> curl -X POST http://$GATEKEEPER_HOST/admin/dc/ \
+   -H &#39;X-Auth-Token: &#39;$tokenId&#39;&#39; \
+   -d &#39;{&quot;msg&quot;: &quot;PoP Testbed&quot;, &quot;dcname&quot;:&quot;default&quot;, &quot;adminid&quot;:&quot;&#39;$keystoneUser&#39;&quot;,&quot;password&quot;:&quot;&#39;$keystonePass&#39;&quot;, &quot;extrainfo&quot;:&quot;pop-ip=&#39;$OPENSTACK_IP&#39; tenant-name=&#39;$admin_tenant_name&#39; keystone-endpoint=http://&#39;$OPENSTACK_IP&#39;:35357/v2.0 orch-endpoint=http://&#39;$OPENSTACK_IP&#39;:8004/v1 compute-endpoint=http://&#39;$OPENSTACK_IP&#39;:8774/v2.1 neutron-endpoint=http://&#39;$OPENSTACK_IP&#39;:9696/v2.0 dns=&#39;$openstack_dns&#39;&quot;}&#39;
+</code></pre>
 
 <h2>User Interface</h2>
 
@@ -221,26 +244,19 @@ Execute the tenor_install.sh script and choose the option <code>4. Add new PoP</
 
 <p>This user interface is located in the <code>ui</code> folder and contains their own README file with the installation guide.</p>
 
-<p>The UI has a default user for authentication, the credentials are (can be changed in the UI):</p>
-
-<ul>
-<li>Username: admin</li>
-<li>Password: adminpass</li>
-</ul>
-
 <h1>Initial steps</h1>
 
 <h2>Test if TeNOR is installed and running</h2>
 
 <p>Make a request to the following address (NS Manager):</p>
 
-<pre class="code ruby"><code class="ruby">curl -XGET http://127.0.0.1:4000/
+<pre class="code ruby"><code class="ruby">curl -XGET http://localhost:4000/
 </code></pre>
 
 <p>If nothing is received, make sure that the NS Manager is running.
 If you receive a response, means that the NS Manager is ready for recevie requests.</p>
 
-<p>In order to see the available APIs for the NS Manager, visit the API Documentation (<a href="http://t-nova.github.io/TeNOR/">http://t-nova.github.io/TeNOR/</a>)</p>
+<p>In order to see the available IPs for the NS Manager, visit the API Documentation (<a href="http://t-nova.github.io/TeNOR/">http://t-nova.github.io/TeNOR/</a>)</p>
 
 <h2>Define a VNFD and a NSD</h2>
 
@@ -254,7 +270,7 @@ If you receive a response, means that the NS Manager is ready for recevie reques
 
 <p>The next step is add the dummy descriptors to TeNOR system using the API. This step is explained in the following subsection.</p>
 
-<h3>Upload a VNFD and NSD and instantiate it</h3>
+<h2>Create a VNFD and NSD and instantiate it</h2>
 
 <p>In order to test TeNOR functionality, you can deploy a dummy NSD/VNFD located in the Validator folders. Follow the next steps in order to test TeNOR (you can copy and paste in the command prompt):</p>
 
@@ -265,42 +281,17 @@ If you receive a response, means that the NS Manager is ready for recevie reques
 </code></pre></li>
 <li><p>Add the NSD in the NS catalogue</p>
 
-<pre class="code ruby"><code class="ruby">ns_id=$(curl -XPOST 127.0.0.1:4000/network-services -H &quot;Content-Type: application/json&quot; --data-binary @nsd-validator/assets/samples/nsd_example.json | ruby -r rubygems -r json -e &quot;puts JSON[STDIN.read][&#39;nsd&#39;][&#39;id&#39;];&quot;)
+<pre class="code ruby"><code class="ruby">curl -XPOST localhost:4000/network-services -H &quot;Content-Type: application/json&quot; --data-binary @nsd-validator/assets/samples/nsd_example.json
+</code></pre></li>
+<li><p>Get the NSD ID (identification) from the NS Catalogue (getting the first NSD, so if more NSDs are defined, this command needs to be modified accordingly)</p>
+
+<pre class="code ruby"><code class="ruby">ns_id=$(curl -XGET localhost:4000/network-services | python -c &#39;import json,sys;obj=json.load(sys.stdin);print obj[0][&quot;nsd&quot;][&quot;id&quot;]&#39;)
 </code></pre></li>
 <li><p>Instantiate the NSD using the NSD ID extracted from the catalogue</p>
 
 <pre class="code ruby"><code class="ruby">curl -XPOST localhost:4000/ns-instances -H &quot;Content-Type: application/json&quot; --data &#39;{&quot;ns_id&quot;: &quot;&#39;$ns_id&#39;&quot;, &quot;callbackUrl&quot;: &quot;https://httpbin.org/post&quot;, &quot;flavour&quot;: &quot;basic&quot;}&#39;
 </code></pre></li>
 </ol>
-
-<h3>Other examples</h3>
-
-<p>We provide several examples with different functionalities. The VNFD_validator contains the VNFD examples and the NSD_validator folders the associtated NSDs.</p>
-
-<p>The provided examples are:</p>
-
-<ul>
-<li>vnfd-validator/assets/samples/2910_vnfd_example.json -&gt; Basic VNFD using a clean Ubuntu Cloud Image.</li>
-<li>vnfd-validator/assets/samples/2911_vnfd_existing_image_id.json -&gt; You can reuse an image already loaded in Openstack. Modify the IMAGE_ID field.</li>
-<li>vnfd-validator/assets/samples/2912_vnfd_existing_network_id.json -&gt; You can reuse a network already created in Openstack. Modify the NETWORK_ID field.</li>
-<li>vnfd-validator/assets/samples/2913_vnfd_scaling.json -&gt; You can see how scale out/in works with this example.</li>
-<li>vnfd-validator/assets/samples/2914_vnfd_two_vdus.json -&gt; This VDU contains two VDUs (instances).</li>
-</ul>
-
-<p>You can test it using the same commands shown before but chaning the file.</p>
-
-<h3>Tests</h3>
-
-<p>Each module has their own unit tests. Inside each folder execute the following command in order to run the tests:
-<code>rspec</code></p>
-
-<p>Furhtermore, an integration tests is provided in the root folder that executes and end-to-end tests testing all the functionalities of TeNOR. In the root folder configure the file <code>.env</code> with a valid Openstack credentials and then execute <code>rspec</code>.</p>
-
-<p>A sample NSDs will be created and instantiated into the Openstack PoP defined in the <code>.env</code> file.  After the execution, the test will remove the created components automatically.</p>
-
-<h2>Logs</h2>
-
-<p>TeNOR uses Fluentd in order to store the logs in a MongoDB. The UI inlcudes a view that allows to browser through the logs based on the date, severity and module.</p>
 
 <h2>Write a Lifecycle events</h2>
 
@@ -310,21 +301,10 @@ If you receive a response, means that the NS Manager is ready for recevie reques
 <li>Get PublicIp of port in a VDU: get_attr[vdu0,CP5v7d,PublicIp]</li>
 <li>Get PrivateIp of port in a VDU: get_attr[CPr3k7,fixed_ips,0,ip_address]</li>
 <li>Get the last VDU for scaling-out: get_attr[vdu1,vdus]</li>
-<li>Get the last PrivateIps for scaling-out: get_attr[CPsx4l,fixed_ips,0,ip_address]</li>
+<li>Get the last PrivateIps for scaling-out: gig-adaet_attr[CPsx4l,fixed_ips,0,ip_address]</li>
 <li>Get the last PublicIps for scaling-out: get_attr[vdu0,CPudhr,PublicIp]</li>
 <li>Timeout before remove instance due scale-in event:</li>
 </ul>
-
-<h1>Enable heat resources</h1>
-
-<p>TeNOR uses Openstack heat templates in order to deploy the VNFs. Make sure that Openstack used has the basic resource types. In general, Nova Flavors and Keystone types are disabled by default. Please, enable these resources.</p>
-
-<p>You can see the available list of resources in:
-<code>/usr/lib/python2.7/dist-packages/heat/contrib/</code></p>
-
-<p>Then, modify the heat.conf (/etc/heat/heat.conf) and add the line:
-<code>plugin_dirs=/usr/lib/python2.7/dist-packages/heat/contrib/nova_flavor/nova_flavor</code>
-<code>plugin_dirs=/usr/lib/python2.7/dist-packages/heat/contrib/heat_keystone/heat_keystone</code></p>
 
 <h1>Development</h1>
 
@@ -384,17 +364,13 @@ If you receive a response, means that the NS Manager is ready for recevie reques
 </tr>
 </tbody></table>
 
-<h1>Bug reports and Feature requests</h1>
-
-<p>Please use <a href="https://github.com/T-NOVA/TeNOR/issues">Github Issue Tracker</a> for feature requests or bug reports.</p>
-
 <h1>License</h1>
 
 <p>Each module is published under different licenses, please take a look on each License file.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Wed Jan 18 17:07:03 2017 by
+  Generated on Mon Oct 10 16:31:09 2016 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.5 (ruby-2.3.0).
 </div>

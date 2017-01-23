@@ -7,6 +7,4 @@ tmp
 **/puma.pid
 **/puma.state
 fluentd
-ns-monitoring/db/*.sqlite3
-.yardoc
-**/.yardoc
+ns-monitoring/db/tenor_*.sqlite3

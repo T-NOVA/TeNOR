@@ -16,15 +16,13 @@
 # limitations under the License.
 #
 # @see TnovaManager
-class Monitoring < TnovaManager
+class NsMonitoring < TnovaManager
     # @method get_instances_monitoring_data
     # @overload get '/instances/:instance_id/monitoring-data/'
     # Get monitoring data given instance type and/or metrics
-    # @param [string] instance_id NS/VNF Instance id
-    # @param [string] instance_type NS or VNF
-    # @param [string] metric Name of the metric (freemem, httpnum...)
-    # @param [string] start Start time from request data
-    # @param [string] end End time until request data
+    # @param [string] instance_type
+    # @param [string] instance_id
+    # @param [string] metric
     get '/:instance_id/monitoring-data/' do |instance_id|
         if params['instance_type'] == 'ns'
             monitoring, errors = ServiceConfigurationHelper.get_module('ns_monitoring')
@@ -52,7 +50,7 @@ class Monitoring < TnovaManager
     # @method get_monitoring_data_last100
     # @overload get '/instances/:instance_id/monitoring-data/last100'
     # Get last 100 values
-    # @param [string] instance_id NS/VNF Instance id
+    # @param [string] Instance id
     get '/:instance_id/monitoring-data/last100/' do |instance_id|
         if params['instance_type'] == 'ns'
             monitoring, errors = ServiceConfigurationHelper.get_module('ns_monitoring')

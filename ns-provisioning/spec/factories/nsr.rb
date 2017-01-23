@@ -5,7 +5,6 @@ FactoryGirl.define do
 		resource_reservation []
 		vnfrs []
 		lifecycle_event_history []
-		cooldown DateTime.now.iso8601(3)
 	end
 
 	factory :nsr_example, class: Nsr do
