@@ -2,7 +2,7 @@
 
 TeNOR is the NFV Orchestrator platform developed by the [T-NOVA](http://www.t-nova.eu) project, responsible for managing the entire NFV lifecycle service.
 
-[![GitHub release](https://img.shields.io/github/release/T-NOVA/TeNOR.svg)]()
+[![GitHub release](https://img.shields.io/github/release/T-NOVA/TeNOR.svg)](https://github.com/T-NOVA/TeNOR/releases/latest)
 [![Build Status](https://travis-ci.org/T-NOVA/TeNOR.svg?branch=master)](https://travis-ci.org/T-NOVA/TeNOR) [![License](https://img.shields.io/badge/License-Apache%202.0-yellowgreen.svg)](https://opensource.org/licenses/Apache-2.0)
 
 ## Prerequisites
@@ -14,23 +14,23 @@ TeNOR is the NFV Orchestrator platform developed by the [T-NOVA](http://www.t-no
 
 ## Optional Requirements
 - Service Mapping (https://github.com/T-NOVA/TeNOR/tree/master/service-mapper). Used when more than 1 PoP is available. Requires the Infrastructure Repository.
-- Infrastructure Repository (https://github.com/T-NOVA/infrastructure-repository). Used by the UI and the Service Mapping algorithm.
-- Middleware API (https://github.com/T-NOVA/mAPI) (required for start/stop the Lifecycle events inside the VNFS)
+- Infrastructure Repository (https://github.com/T-NOVA/infrastructure-repository). Used by the Service Mapping algorithm.
+- Middleware API (https://github.com/T-NOVA/mAPI). Required for start/stop the Lifecycle events inside the VNFS.
 - VIM Monitoring (https://github.com/T-NOVA/vim-monitoring). Used for receive the monitoring from each VNF.
-- Netfloc (https://github.com/T-NOVA/netfloc). Used for the VNFFG. Requires ODL.
-- WICM (https://github.com/T-NOVA/WICM). Responsible for redirecting traffic from a client into a or several NFVI-PoP(s)
-- Apache Cassandra (used for monitoring) (installation provided in dependencies/install_cassandra.sh)
-- RabbitMq (used for monitoring) (installation provided in dependencies/install_dependencies.sh)
+- Netfloc (https://github.com/T-NOVA/netfloc). Used for the VNFFG. Requires Opendaylight installed in the NFVI-PoP(s).
+- WICM (https://github.com/T-NOVA/WICM). Responsible for redirecting traffic from a client into a or several NFVI-PoP(s).
+- Apache Cassandra. Used for monitoring with the VIM Monitoring. (installation provided in dependencies/install_cassandra.sh)
+- RabbitMq. Used for monitoring. (installation provided in dependencies/install_dependencies.sh)
 
 #Getting started
 
 ## Steps
 1. Install the prerequisites (Ruby and MongoDB). You can install it using the script located inside the `dependencies` folder. Use the `install_dependencies.sh` script for automatic installation.
 2. Install TeNOR (internal dependencies and configurations). Installation script provided in the root folder `tenor_install.sh`.
-3. Start TeNOR.
+3. [Start TeNOR](#execution).
 4. Register external modules if installed (Mapping, mAPI, WICM, VIMMonitoring, Netfloc...).
-5. Register a Network Function Virtualisation Infrastructure Point of Presence (NFVI-PoP) inserting the Openstack credentials into the authentication module.
-6. Test deploying a sample NSD/VNFD to the inserted NFVI-PoP.
+5. [Register a Network Function Virtualisation Infrastructure Point of Presence (NFVI-PoP)](#loading-nfvi-pop-information-in-tenor) inserting the Openstack credentials into the authentication module.
+6. Test [deploying](#upload-a-vnfd-and-nsd-and-instantiate-it) a sample NSD/VNFD to the inserted NFVI-PoP.
 
 ## Installation
 We provide an installation script for Ubuntu 14.04 that helps with the installation of Ruby, MongoDB and RabbitMq.
@@ -186,14 +186,9 @@ In order to test TeNOR functionality, you can deploy a dummy NSD/VNFD located in
 2. Add the NSD in the NS catalogue
 
     ````
-    curl -XPOST localhost:4000/network-services -H "Content-Type: application/json" --data-binary @nsd-validator/assets/samples/nsd_example.json
+    ns_id=$(curl -XPOST 127.0.0.1:4000/network-services -H "Content-Type: application/json" --data-binary @nsd-validator/assets/samples/nsd_example.json | ruby -r rubygems -r json -e "puts JSON[STDIN.read]['nsd']['id'];")
     ````
-3. Get the NSD ID (identification) from the NS Catalogue (getting the first NSD, so if more NSDs are defined, this command needs to be modified accordingly)
-
-    ````
-    ns_id=$(curl -XGET localhost:4000/network-services | python -c 'import json,sys;obj=json.load(sys.stdin);print obj[0]["nsd"]["id"]')
-    ````
-4. Instantiate the NSD using the NSD ID extracted from the catalogue
+3. Instantiate the NSD using the NSD ID extracted from the catalogue
 
     ````
     curl -XPOST localhost:4000/ns-instances -H "Content-Type: application/json" --data '{"ns_id": "'$ns_id'", "callbackUrl": "https://httpbin.org/post", "flavour": "basic"}'
