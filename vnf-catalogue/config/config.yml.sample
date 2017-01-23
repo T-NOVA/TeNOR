@@ -12,6 +12,6 @@ threaded: true
 logger_host: 127.0.0.1
 logger_port: 24224
 
-vnfd_validator: localhost:4570
+vnfd_validator: 127.0.0.1:4570
 vnfd_validator_token: 
 dependencies: [vnfd_validator]
