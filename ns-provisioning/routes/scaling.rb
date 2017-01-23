@@ -30,6 +30,11 @@ class Scaling < NsProvisioning
             halt(404)
         end
 
+        if instance['cooldown'] > DateTime.now.iso8601(3)
+            logger.info "#{id}: scale out no executed due cooldown time. Can be executed at: #{instance['cooldown']}"
+            halt 400, "Scale out no executed due cooldown time"
+        end
+
         instance['vnfrs'].each do |vnf|
             logger.info 'Scale out VNF ' + vnf['vnfr_id'].to_s + ' into Pop_id: ' + vnf['pop_id'].to_s
             raise 'VNF not defined' if vnf['pop_id'].nil?
@@ -40,8 +45,8 @@ class Scaling < NsProvisioning
             credentials, errors = authenticate(pop_urls['keystone'], pop_auth['tenant_name'], pop_auth['username'], pop_auth['password'])
             logger.error errors if errors
             return if errors
-            scale = { auth: { tenant_id: credentials[:tenant_id], user_id: credentials[:user_id], token: credentials[:token], url: { keystone: pop_urls['keystone'], heat: pop_urls['heat'] } }}
 
+            scale = { auth: { tenant_id: credentials[:tenant_id], user_id: credentials[:user_id], token: credentials[:token], url: { keystone: pop_urls['keystone'], heat: pop_urls['heat'] } }}
             begin
                 response = RestClient.post settings.vnf_manager + '/vnf-instances/scaling/' + vnf['vnfr_id'] + '/scale_out', scale.to_json, content_type: :json
             rescue => e
@@ -50,6 +55,8 @@ class Scaling < NsProvisioning
 
             logger.debug response
         end
+        #instance['cooldown'] = (DateTime.now + (1/24.0)).iso8601(3) #1h cooldown
+        instance['cooldown'] = (DateTime.now + (5/1440.0)).iso8601(3) #5min cooldown
         halt 200, 'Scale out done.'
     end
 
@@ -64,6 +71,11 @@ class Scaling < NsProvisioning
             instance = Nsr.find(id)
         rescue Mongoid::Errors::DocumentNotFound => e
             halt(404)
+        end
+
+        if instance['cooldown'] > DateTime.now.iso8601(3)
+            logger.info "#{id}: scale in no executed due cooldown time. Can be executed at: #{instance['cooldown']}"
+            halt 400, "Scale in no executed due cooldown time"
         end
 
         instance['vnfrs'].each do |vnf|
@@ -86,6 +98,7 @@ class Scaling < NsProvisioning
 
             logger.debug response
         end
+        instance['cooldown'] = (DateTime.now + (5/1440.0)).iso8601(3) #5min cooldown
         halt 200, 'Scale in done.'
     end
 end

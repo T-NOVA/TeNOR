@@ -20,7 +20,6 @@ services.factory('tenorService', function ($http, TENOR) {
             return promise;
         },
         post: function (url, data) {
-            console.log(data)
             var promise = $http.post("rest/api/" + url, data, {
                 headers: {
                     "X-host": TENOR,

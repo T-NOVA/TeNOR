@@ -51,7 +51,7 @@ RSpec.configure do |config|
   end
 
   config.before(:each) do
-    stub_request(:post, "localhost:4570/vnfds").to_return(status: 200, body: "")
+    stub_request(:post, "127.0.0.1:4570/vnfds").to_return(status: 200, body: "")
   end
 
   # rspec-expectations config goes here. You can use an alternate

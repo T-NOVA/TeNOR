@@ -12,8 +12,8 @@ threaded: true
 logger_host: 127.0.0.1
 logger_port: 24224
 
-ns_manager: 
-vim_monitoring: 
-vnf_manager: 
+ns_manager:
+vim_monitoring: 10.10.1.62:8080
+vnf_monitoring_repo: 127.0.0.1:4018
 
-dependencies: [ns_manager, vim_monitoring, vnf_manager]
+dependencies: [ns_manager, vim_monitoring, vnf_monitoring_repo]

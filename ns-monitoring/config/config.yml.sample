@@ -12,7 +12,7 @@ threaded: true
 logger_host: 127.0.0.1
 logger_port: 24224
 
-ns_monitoring_repo: 
-vnf_manager: 
+ns_monitoring_repo: 127.0.0.1:4014
+vnf_manager: 127.0.0.1:4567
 
 dependencies: [ns_monitoring_repo, vnf_manager]

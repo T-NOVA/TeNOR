@@ -3,7 +3,6 @@
 angular.module('tNovaApp')
     .controller('configurationController', function ($window, $scope,  $filter, AuthService, $alert, tenorService) {
         $scope.user = {};
-        console.log($window.localStorage);
         $scope.user.name = $window.localStorage.username;
         var uid = $window.localStorage.uid;
 

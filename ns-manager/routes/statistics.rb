@@ -41,12 +41,12 @@ class Statistics < TnovaManager
     end
 
     # @method post_performance_stats
-    # @overload get "/performance_stats"
+    # @overload post "/performance_stats"
     # Post performance values
     post '/performance_stats' do
         body, errors = parse_json(request.body.read)
         return 415 unless request.content_type == 'application/json'
-        
+
         savePerformance(body)
     end
 end

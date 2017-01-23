@@ -20,43 +20,32 @@ module InstantiationHelper
     # Create an authentication to PoP_id
     #
     # @param [JSON] instance NSR instance
-    # @param [JSON] nsd_id NSD id
     # @param [JSON] pop_info Information about the PoP
-    # @param [JSON] callback_url Callback url in case of error happens
     # @return [Hash, nil] authentication
     # @return [Hash, String] if the parsed message is an invalid JSON
     def create_authentication(instance, pop_info)
         @instance = instance
 
         logger.info 'Authentication not created for this PoP. Starting creation of credentials.'
-
         pop_auth = {}
         pop_auth['pop_id'] = pop_info['id'].to_s
         pop_auth['is_admin'] = pop_info['is_admin']
-        extra_info = pop_info['extra_info']
-        pop_urls = getPoPExtraInfo(extra_info)
-        pop_auth['urls'] = pop_urls
+        pop_auth['urls'] = getPoPExtraInfo(pop_info['extra_info'])
+        pop_urls = pop_auth['urls']
 
         # create credentials for pop_id
         if pop_urls['keystone'].nil? || pop_urls['heat'].nil?
-            logger.error pop_urls['keystone']
-            logger.error pop_urls['heat']
+            logger.error "Url missing: Keystone: #{pop_urls['keystone']}. Heat: #{pop_urls['heat']}."
             return handleError(@instance, 'Internal error: Keystone and/or openstack urls missing.')
         end
-
         token = ''
-        keystone_url = pop_urls['keystone']
         if @instance['project'].nil?
-            credentials, errors = authenticate(keystone_url, pop_info['tenant_name'], pop_info['user'], pop_info['password'])
-            logger.error errors if errors
-            @instance.update_attribute('status', 'ERROR_CREATING') if errors
-            @instance.push(audit_log: errors) if errors
-            return 400, errors.to_json if errors
+            credentials, errors = authenticate(pop_urls['keystone'], pop_info['tenant_name'], pop_info['user'], pop_info['password'])
+            return handleError(@instance, errors) if errors
 
             tenant_id = credentials[:tenant_id]
             user_id = credentials[:user_id]
             token = credentials[:token]
-
             if !pop_info['is_admin']
                 pop_auth['username'] = pop_info['user']
                 pop_auth['tenant_name'] = pop_info['tenant_name']
@@ -84,7 +73,7 @@ module InstantiationHelper
     # @return [Hash, String] if the parsed message is an invalid JSON
     def instantiate_vnf(instance, nsd_id, vnf, slaInfo)
         @instance = instance
-        logger.info 'Start instantiation process of ' + vnf.to_s
+        logger.info @instance['id'].to_s + ': start instantiation process of ' + vnf.to_s
         pop_id = vnf['maps_to_PoP'].gsub('/pop/', '')
         vnf_id = vnf['vnf'].delete('/')
         pop_auth = @instance['authentication'].find { |pop| pop['pop_id'] == pop_id }
@@ -93,12 +82,9 @@ module InstantiationHelper
         # needs to be migrated to the VNFGFD
         sla_info = slaInfo['constituent_vnf'].find { |cvnf| cvnf['vnf_reference'] == vnf_id }
         if sla_info.nil?
-            logger.error 'NO SLA found with the VNF ID that has the NSD.'
-            error = { 'info' => 'Error with the VNF ID. NO SLA found with the VNF ID that has the NSD.' }
-            recoverState(@instance, error)
+            recoverState(@instance, { 'info' => 'Error with the VNF ID. NO SLA found with the VNF ID that has the NSD.' })
         end
         vnf_flavour = sla_info['vnf_flavour_id_reference']
-        logger.debug 'VNF Flavour: ' + vnf_flavour
 
         vnf_provisioning_info = {
             nsr_id: @instance['id'],

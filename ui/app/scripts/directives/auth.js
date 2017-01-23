@@ -11,11 +11,6 @@ angular.module('tNovaApp')
             },
             compile: function (element, attr) {
                 var accessDenied = true;
-                //var user = AuthService.getUser();
-                //if(attr.access)
-                //var t = attr.access.includes(' ');
-                console.log(attr.access);
-                //if (attr.access.includes(' ')) {
                 if (typeof attr.access.includes == 'function') {
                     if (attr.access.includes(' ')) {
                         var attributes = attr.access.split(' ');

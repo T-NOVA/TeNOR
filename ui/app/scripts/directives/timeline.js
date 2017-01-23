@@ -18,13 +18,8 @@ angular.module('tNovaApp')
                 events: '='
             },
             link: function (scope, element, attr) {
-
                 var timeline = null;
-
-
-
                 scope.$watch('data', function () {
-                    console.log("Data changed");
                     // Sanity check
                     if (scope.data == null) {
                         return;
