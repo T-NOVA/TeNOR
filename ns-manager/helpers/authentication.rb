@@ -22,7 +22,7 @@ module AuthenticationHelper
 		begin
             token = UserToken.find_by(token: token)
         rescue Mongoid::Errors::DocumentNotFound => e
-            puts 'User not found.'
+            logger.error 'User not found.'
             return false
         end
         return true

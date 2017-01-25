@@ -94,8 +94,8 @@ class Monitoring < VNFManager
     begin
       response = RestClient.get provisioner.host + "/vnf-provisioning/vnf-instances/" + vnfr_id, 'X-Auth-Token' => provisioner.token, :content_type => :json, :accept => :json
     rescue RestClient::NotFound => e
-      puts e
-      puts e.response
+      logger.error e
+      logger.error e.response
       logger.debug "This VNF instance no exists. Getting list of subscriptions in order to get the Subscription ID."
 
       begin
@@ -147,8 +147,8 @@ class Monitoring < VNFManager
       begin
         response = RestClient.get provisioner.host + "/vnf-provisioning/vnf-instances/" + vnfi_id, 'X-Auth-Token' => provisioner.token, :content_type => :json, :accept => :json
       rescue RestClient::NotFound => e
-        puts e
-        puts e.response
+        logger.error e
+        logger.error e.response
         logger.debug "This VNF instance no exists. Getting list of subscriptions in order to get the Subscription ID."
       end
       halt 404 if response.nil?

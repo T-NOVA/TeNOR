@@ -55,11 +55,11 @@ module MappingHelper
             begin
                 mapping = Mapping.create!(mapping)
             rescue => e
-                puts 'ERROR.................'
-                puts e
+                logger.error 'ERROR.................'
+                logger.error e
             end
         rescue => e
-            puts e
+            logger.error e
             logger.error 'Error saving mapping.'
             halt 400
         end

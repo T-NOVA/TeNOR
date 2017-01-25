@@ -109,7 +109,7 @@ class Catalogue < NsCatalogue
     # @overload put '/network-services/:id'
     # Update a NS
     # @param [JSON] NS in JSON format
-    put '/:external_ns_id' do
+    put '/:external_ns_id' do |external_ns_id|
         # Return if content-type is invalid
         return 415 unless request.content_type == 'application/json'
 
@@ -118,7 +118,7 @@ class Catalogue < NsCatalogue
         return 400, errors.to_json if errors
 
         begin
-            ns = Ns.find_by('nsd.id' => params[:external_ns_id])
+            ns = Ns.find_by('nsd.id' => external_ns_id)
         rescue Mongoid::Errors::DocumentNotFound => e
             return 400, 'This NSD no exists'
         end
@@ -149,10 +149,9 @@ class Catalogue < NsCatalogue
     # @overload delete '/network-services/:external_vnf_id'
     #	Delete a NS by its ID
     #	@param [Integer] external_ns_id NS external ID
-    delete '/:external_ns_id' do
+    delete '/:external_ns_id' do |external_ns_id|
         begin
-            # ns = Ns.find( params[:external_ns_id] )
-            ns = Ns.find_by('nsd.id' => params[:external_ns_id])
+            ns = Ns.find_by('nsd.id' => external_ns_id)
         rescue Mongoid::Errors::DocumentNotFound => e
             halt 404
         end
@@ -160,11 +159,11 @@ class Catalogue < NsCatalogue
         return 200
     end
 
-    get '/vnf/:vnf_id' do
+    get '/vnf/:vnf_id' do |vnf_id|
         begin
-            nss = Ns.find_by('nsd.vnfds' => params[:vnf_id])
+            nss = Ns.find_by('nsd.vnfds' => vnf_id)
         rescue Mongoid::Errors::DocumentNotFound => e
-            halt 404, 'No services using this VNFD'
+            halt 404, 'No services using the VNFD ' + vnf_id
         end
         return 200, nss.to_json
     end

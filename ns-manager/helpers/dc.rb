@@ -63,7 +63,7 @@ module DcHelper
         end
         pop_extra_info
     end
-    
+
     # Return the status of a PoP
     def popStatus(pop_info)
         keystone_url = getPoPExtraInfo(pop_info[:extra_info])['keystone']
@@ -97,7 +97,7 @@ module DcHelper
         begin
             api_version = JSON.parse RestClient.get keystone_url, :content_type => :json, :'X-Auth-Token' => token
         rescue => e
-            puts e
+            logger.error e
         end
 
         return 200, JSON.pretty_generate(api_version)
