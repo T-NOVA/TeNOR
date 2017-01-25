@@ -52,8 +52,7 @@ script:
   - rspec
   - rake start &
   - cd $TRAVIS_BUILD_DIR
-  - sleep 10
-  - sleep 20
+  - sleep 30
   - curl localhost:4000/
   - curl localhost:4000/network-services
   - curl localhost:4569/vnfs

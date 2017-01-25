@@ -113,8 +113,7 @@ module InstantiationHelper
         begin
             response = RestClient.post settings.vnf_manager + '/vnf-provisioning/vnf-instances', vnf_provisioning_info.to_json, content_type: :json
         #        rescue RestClient::ExceptionWithResponse => e
-        #             puts "Excepion with response"
-        #             puts e
+        #             logger.error "Excepion with response"
         #             logger.error e
         #             logger.error e.response
         #             if !e.response.nil?

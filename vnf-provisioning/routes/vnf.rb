@@ -66,7 +66,7 @@ class Provisioning < VnfProvisioning
             halt 400, "Deployment flavour #{instantiation_info['flavour']} not found"
         end
 
-        logger.debug 'Instantiation info: nsd_id -> ' + instantiation_info['ns_id'].to_s + ' Vnf_id -> ' + instantiation_info['vnf_id'].to_s + ' Flavour -> ' + vnf_flavour
+        logger.debug 'Instantiation request: nsd_id -> ' + instantiation_info['ns_id'].to_s + ' Vnf_id -> ' + instantiation_info['vnf_id'].to_s + ' Flavour -> ' + vnf_flavour
 
         # Verify if the VDU images are accessible to download
         logger.debug 'Verifying VDU images'
@@ -112,7 +112,7 @@ class Provisioning < VnfProvisioning
         vim_info['heat'] = vim_info['url']['heat']
         vim_info['compute'] = vim_info['url']['compute']
 
-        logger.debug 'Send VNFD to Hot Generator'
+        logger.debug vnfr.id.to_s + ': Send VNFD to Hot Generator'
         hot_generator_message = {
             vnf: vnf,
             vnfr_id: vnfr.id,
@@ -219,7 +219,7 @@ class Provisioning < VnfProvisioning
 
         # Validate JSON format
         destroy_info = parse_json(request.body.read)
-        logger.debug 'Destroy info: ' + destroy_info.to_json
+        #logger.debug 'Destroy info: ' + destroy_info.to_json
 
         begin
             vnfr = Vnfr.find(vnfr_id)
@@ -236,13 +236,13 @@ class Provisioning < VnfProvisioning
         vnfr['scale_resources'].each do |resource|
             stack_url = resource['stack_url']
             logger.info 'Sending request to Openstack for Remove scaled resource'
-            response, errors = delete_stack_with_wait(stack_url, vim_info['token'])
+            response, errors = delete_stack_with_wait(vnfr_id, stack_url, vim_info['token'])
             vnfr.pull(scale_resources: resource)
             logger.info 'Removed scaled resources.'
         end
 
         # Requests the VIM to delete the stack
-        response, errors = delete_stack_with_wait(vnfr.stack_url, vim_info['token'])
+        response, errors = delete_stack_with_wait(vnfr_id, vnfr.stack_url, vim_info['token'])
         logger.error errors if errors
         if response == 400
             halt 400, errors if errors
@@ -254,12 +254,11 @@ class Provisioning < VnfProvisioning
             logger.info 'mAPI not defined. No action performed to mAPI.'
         else
             # Delete the VNFR from mAPI
-            logger.info 'Sending delete command to mAPI...'
-            logger.debug 'VNFR: ' + vnfr_id
+            logger.info 'Sending delete command to mAPI for VNFR: ' + vnfr_id
             sendDeleteCommandToMAPI(vnfr_id)
         end
 
-        logger.info 'Removing the VNFR from the database...'
+        logger.info 'Removing the VNFR (' + vnfr_id + ') from the database...'
         vnfr.destroy
         halt 200 # , response.body
     end
@@ -326,10 +325,10 @@ class Provisioning < VnfProvisioning
             halt 404
         end
 
+        logger.info params[:status]
+
         # If stack is in create complete state
         if params[:status] == 'create_complete'
-            logger.info 'Create complete'
-
             vms = vnfr.vms
             vms_id = {}
             # get stack resources
@@ -471,8 +470,8 @@ class Provisioning < VnfProvisioning
                 end
             end
 
-            logger.info 'Registring values to mAPI if required...'
             # Send the VNFR to the mAPI
+            logger.info 'Registring values to mAPI if required...' unless settings.mapi.nil?
             registerRequestToMAPI(vnfr) unless settings.mapi.nil?
 
             # Build message to send to the NS Manager callback
@@ -482,12 +481,11 @@ class Provisioning < VnfProvisioning
             nsmanager_callback(stack_info['ns_manager_callback'], message)
 
             Thread.new do
-                logger.info "Saving resource creation time."
+                logger.debug "Saving resource creation time."
                 resource_stats = []
                 events, errors = getStackEvents(vnfr.stack_url, auth_token)
                 if !events.nil?
                     resource_stats = calculate_event_time(resources, events)
-                    logger.info resource_stats
                     vnfr.update_attributes!(resource_stats: resource_stats)
                 end
             end
@@ -495,7 +493,6 @@ class Provisioning < VnfProvisioning
         else
             # If the stack has failed to create
             if params[:status] == 'create_failed'
-                logger.debug 'Created failed'
 
                 # Request VIM information about the error
                 begin
@@ -509,7 +506,7 @@ class Provisioning < VnfProvisioning
                 logger.error 'Response from the VIM about the error: ' + response.to_s
 
                 # Request VIM to delete the stack
-                # response, errors = delete_stack_with_wait(stack_url, auth_token)
+                # response, errors = delete_stack_with_wait(params['vnfr_id'], stack_url, auth_token)
                 # logger.debug 'Response from VIM to destroy allocated resources: ' + response.to_json
                 logger.error 'VIM ERROR: ' + response['stack']['stack_status_reason'].to_s
                 vnfr.push(lifecycle_event_history: stack_info['stack']['stack_status'])

@@ -23,8 +23,8 @@ module ComputeHelper
         rescue Errno::ECONNREFUSED
             return 500, "Compute API unrechable."
         rescue RestClient::ExceptionWithResponse => e
-                 puts "Excepion with response"
-                 puts e
+                 logger.error "Excepion with response"
+                 logger.error e
                  return e.response.code, e.response.body
         rescue => e
             logger.error e

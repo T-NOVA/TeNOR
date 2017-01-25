@@ -101,8 +101,7 @@ class ServiceConfiguration < VNFManager
                 begin
                     RestClient.post dependency['host'] + ':' + dependency['port'] + '/gk_dependencies', serv.to_json, :content_type => :json, 'X-Auth-Token' => dependency['token']
                 rescue => e
-                    # logger.error e
-                    puts e
+                    logger.error e
                     # halt 500, {'Content-Type' => 'text/plain'}, "Error sending dependencies to " +service['name']
                 end
             end

@@ -17,6 +17,10 @@
 #
 # @see Authentication
 class TeNORAuthentication < TnovaManager
+
+    # @method post_validation
+    # @overload post '/validation'
+    #  Validate a token
     post '/validation' do
         return 415 unless request.content_type == 'application/json'
         token, errors = parse_json(request.body.read)
@@ -33,6 +37,9 @@ class TeNORAuthentication < TnovaManager
         halt 200
     end
 
+    # @method post_login
+    # @overload post '/login'
+    # Login method returns a token
     post '/login' do
         return 415 unless request.content_type == 'application/json'
         credentials, errors = parse_json(request.body.read)
@@ -69,6 +76,9 @@ class TeNORAuthentication < TnovaManager
         halt 400
     end
 
+    # @method post_logout
+    # @overload post '/logout'
+    #  Logout method
     post '/logout' do
         return 415 if request.env['HTTP_X_AUTH_TOKEN'].nil?
         begin
@@ -80,6 +90,9 @@ class TeNORAuthentication < TnovaManager
         halt 200
     end
 
+    # @method post_register
+    # @overload post '/register'
+    # Register a new user
     post '/register' do
         user = User.new
         # user.name = params[:user][:name]
@@ -95,14 +108,14 @@ class TeNORAuthentication < TnovaManager
             user.save!
             status 201
         rescue => ex
-            puts "Error #{$ERROR_INFO}"
+            logger.error "Error #{$ERROR_INFO}"
             halt 422, { 'Content-Type' => 'text/plain' }, ex.message
         end
     end
 
     delete '/:uid' do
-        puts 'Delete user'
-        puts 'Admin user cannot be deleted.'
+        logger.error 'Delete user'
+        logger.error 'Admin user cannot be deleted.'
     end
 
     post '/:uid/reset_password' do

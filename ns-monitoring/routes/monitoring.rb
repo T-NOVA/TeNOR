@@ -17,7 +17,7 @@
 #
 # @see NSMonitoring
 class NSMonitoring < Sinatra::Application
-    
+
     # @method post_monitoring_parameters
     # @overload post '/network-services/:external_vnf_id'
     #	Post monitoring parameters
@@ -87,8 +87,8 @@ class NSMonitoring < Sinatra::Application
             logger.debug monitoring_vnf['id']
             logger.debug 'Removing threads...'
             @@testThreads.delete_if do |thr|
-                puts thr[:vnfi_id]
-                puts monitoring_vnf['vnfr_id']
+                logger.debug thr[:vnfi_id]
+                logger.debug monitoring_vnf['vnfr_id']
                 if thr[:vnfi_id] == monitoring_vnf['vnfr_id']
                     thr[:queue].cancel
                     true
