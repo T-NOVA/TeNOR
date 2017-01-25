@@ -1,3 +1,7 @@
+## 0.12.1
+- Included Swagger documentation.
+- Changed some puts to logs.
+
 ## 0.12.0
 - NS provisioning: fix unreachable openstack when login.
 - UI: Improved Monitoring scroll metrics. Included threshold in NS monitoring graph.
