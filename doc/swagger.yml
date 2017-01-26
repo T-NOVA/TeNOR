@@ -55,7 +55,7 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/Vnfd'
+              $ref: 'https://raw.githubusercontent.com/T-NOVA/TeNOR/master/vnfd-validator/assets/schemas/vnfd_schema.json'
         default:
           description: unexpected error
           schema:
@@ -70,12 +70,12 @@ paths:
           description: Vnfd to add to the catalogue
           required: true
           schema:
-            $ref: '#/definitions/NewVnfd'
+            $ref: 'https://raw.githubusercontent.com/T-NOVA/TeNOR/master/vnfd-validator/assets/schemas/vnfd_schema.json'
       responses:
         "201":
           description: vnfd response
           schema:
-            $ref: '#/definitions/Vnfd'
+            $ref: 'https://raw.githubusercontent.com/T-NOVA/TeNOR/master/vnfd-validator/assets/schemas/vnfd_schema.json'
         default:
           description: unexpected error
           schema:
@@ -96,7 +96,7 @@ paths:
         "200":
           description: vnfd response
           schema:
-            $ref: '#/definitions/Vnfd'
+            $ref: 'https://raw.githubusercontent.com/T-NOVA/TeNOR/master/vnfd-validator/assets/schemas/vnfd_schema.json'
         default:
           description: unexpected error
           schema:
@@ -146,7 +146,7 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/Nsd'
+              $ref: 'https://raw.githubusercontent.com/T-NOVA/TeNOR/master/nsd-validator/assets/schemas/nsd_schema.json'
         default:
           description: unexpected error
           schema:
@@ -162,12 +162,12 @@ paths:
           description: Nsd to add to the catalogue
           required: true
           schema:
-            $ref: '#/definitions/NewNsd'
+            $ref: 'https://raw.githubusercontent.com/T-NOVA/TeNOR/master/nsd-validator/assets/schemas/nsd_schema.json'
       responses:
         "201":
           description: nsd response
           schema:
-            $ref: '#/definitions/Nsd'
+            $ref: 'https://raw.githubusercontent.com/T-NOVA/TeNOR/master/nsd-validator/assets/schemas/nsd_schema.json'
         default:
           description: unexpected error
           schema:
@@ -188,7 +188,7 @@ paths:
         "200":
           description: nsd response
           schema:
-            $ref: '#/definitions/Nsd'
+            $ref: 'https://raw.githubusercontent.com/T-NOVA/TeNOR/master/nsd-validator/assets/schemas/nsd_schema.json'
         default:
           description: unexpected error
           schema:
@@ -436,7 +436,7 @@ paths:
           description: unexpected error
           schema:
             $ref: '#/definitions/Error'
-  /monitoring/{id}/monitoring-data:
+  /instances/{id}/monitoring-data:
     get:
       tags:
       - Monitoring
@@ -448,11 +448,35 @@ paths:
           required: true
           type: integer
           format: int64
+        - name: instance_type
+          in: query
+          description: Instance type 'ns' or 'vnf'
+          required: false
+          type: string
+        - name: metric
+          in: query
+          description: Metric name
+          required: false
+          type: string
+        - name: start
+          in: query
+          description: Start date
+          required: false
+          type: integer
+          format: int64
+        - name: end
+          in: query
+          description: End date
+          required: false
+          type: integer
+          format: int64
       responses:
         "200":
           description: monitoring response
           schema:
-            $ref: '#/definitions/Monitoring'
+            type: array
+            items:
+              $ref: '#/definitions/Monitoring'
         default:
           description: unexpected error
           schema:
@@ -509,23 +533,7 @@ paths:
   
 
 definitions:
-
-  Vnfd:
-    required:
-      - id
-    properties:
-      id:
-        type: integer
-        format: int64
-
-  Nsd:
-    required:
-      - id
-    properties:
-      id:
-        type: integer
-        format: int64
-
+  
   Dc:
     required:
       - id
@@ -561,39 +569,42 @@ definitions:
             format: int64
 
   Monitoring:
-    allOf:
-      - required:
-        - id
-        properties:
-          id:
-            type: integer
-            format: int64
+    properties:
+      metricname:
+        type: string
+      date:
+        type: string
+      unit:
+        type: string
+      value:
+        type: string
 
   NsInstance:
     required:
       - id
     properties:
       id:
-        type: integer
-        format: int64
-        
-  NewVnfd:
-    required:
-      - name
-    properties:
-      name:
         type: string
-      tag:
+      nsd_id:
         type: string
-
-  NewNsd:
-    required:
-      - name
-    properties:
-      name:
+      status:
         type: string
-      tag:
+      vendor:
         type: string
+      version:
+        type: string
+      notification:
+        type: string
+      resource_reservation:
+        type: array
+        items:
+          type: string
+      service_deployment_flavour:
+        type: string
+      vnfrs:
+        type: array
+        items:
+          type: string
 
   NewDc:
     required:
