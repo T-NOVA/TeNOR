@@ -342,10 +342,6 @@
             "id": "http://www.t-nova.eu/vlinks/3/qos",
             "type": "string"
           },
-/*          "port_security_enabled":{
-            "id": "http://www.t-nova.eu/vlinks/3/port_security_enabled",
-            "type": "boolean"
-          },*/
           "existing_net_id":{
             "id": "http://www.t-nova.eu/vlinks/3/existing_net_id",
             "type": "string"
