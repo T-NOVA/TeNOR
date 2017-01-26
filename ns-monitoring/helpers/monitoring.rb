@@ -61,7 +61,7 @@ module MonitoringHelper
                         @queue = VnfQueue.find_or_create_by(nsi_id: nsi_id, vnfi_id: vnf_instance['vnfr_id'], parameter_id: measurements['type'])
                         @queue.update_attributes(value: measurements['value'], timestamp: measurements['timestamp'], unit: measurements['unit'])
                     rescue => e
-                        puts e
+                        logger.error e
                     end
                     begin
                         @list_vnfs_parameters = VnfQueue.where(nsi_id: nsi_id, parameter_id: measurements['type'])
@@ -77,13 +77,13 @@ module MonitoringHelper
                             logger.error 'NO equal. Wait next value'
                         end
                     rescue => e
-                        puts e
+                        logger.error e
                     end
                 end
                 logger.debug 'Adding to queue'
                 @@testThreads << { vnfi_id: vnf_instance['vnfr_id'], queue: t }
             rescue => e
-                puts e
+                logger.error e
             rescue Interrupt => _
                 logger.error 'THREAD INTERRUPTION ...'
                 conn.close
@@ -150,8 +150,8 @@ module MonitoringHelper
                 end
             end
         rescue => e
-            puts 'Error!'
-            puts e
+            logger.error 'Error!'
+            logger.error e
         end
     end
 

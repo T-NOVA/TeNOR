@@ -56,7 +56,7 @@ class VNFMonitoring < Sinatra::Application
             begin
                 response = RestClient.post settings.vim_monitoring + '/api/subscriptions', subscribe.to_json, content_type: :json, accept: :json
             rescue => e
-                puts e
+                logger.error e
                 halt 400, 'VIM Monitoring Module not available'
             end
 
@@ -85,7 +85,7 @@ class VNFMonitoring < Sinatra::Application
             begin
                 response = RestClient.delete settings.vim_monitoring + '/api/subscriptions/' + mon_metrics['subscription_id'], accept: :json
             rescue => e
-                puts e
+                logger.error e
                 halt 400, 'VIM Monitoring Module not available'
             end
             mon_metrics.destroy
@@ -129,15 +129,15 @@ class VNFMonitoring < Sinatra::Application
             begin
                 respone = RestClient.post settings.manager + '/vnf-monitoring/' + vnfr_id, metrics.to_json, content_type: :json, accept: :json
             rescue => e
-                puts e
-                puts 'Error saving values to Cassandra.'
+                logger.error e
+                logger.error 'Error saving values to Cassandra.'
             end
 
             begin
                 RestClient.post settings.manager + '/ns-monitoring/vnf-instance-readings/' + vnfr_id, metrics.to_json, content_type: :json, accept: :json
             rescue => e
-                puts e
-                puts 'Error with sending the values to the NS Monitoring.'
+                logger.error e
+                logger.error 'Error with sending the values to the NS Monitoring.'
             end
 =end
         end

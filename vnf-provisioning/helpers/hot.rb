@@ -65,7 +65,7 @@ module HotHelper
         [events['events'], nil]
     end
 
-    def delete_stack_with_wait(stack_url, auth_token)
+    def delete_stack_with_wait(id, stack_url, auth_token)
         status = 'DELETING'
         count = 0
         counter_progress = 0
@@ -87,13 +87,13 @@ module HotHelper
                 logger.info 'Stack already removed.'
                 status = 'DELETE_COMPLETE'
             rescue => e
-                puts 'If no exists means that is deleted correctly'
+                logger.error 'If no exists means that is deleted correctly'
                 status = 'DELETE_COMPLETE'
                 logger.error e
                 logger.error e.response
             end
 
-            logger.debug 'Try: ' + count.to_s + ', status: ' + status.to_s
+            logger.debug "#{id} - Retry: #{count.to_s}, status: #{status.to_s}"
             if status == 'DELETE_FAILED'
                 deleteStack(stack_url, auth_token)
                 status = 'DELETING'

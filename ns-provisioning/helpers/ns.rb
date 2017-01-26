@@ -22,7 +22,7 @@ module NsProvisioner
     # @param [JSON] notification_url Notification URL
     # @param [JSON] message The message to send
     def generateMarketplaceResponse(notification_url, message)
-        logger.error message
+        logger.debug message.inspect
         logger.debug 'Notification url: ' + notification_url
         begin
             response = RestClient.post notification_url, message.to_json, content_type: :json
@@ -91,7 +91,7 @@ module NsProvisioner
                 begin
                     RestClient.delete pop_info['urls']['wicm_ip'] + '/vnf-connectivity/' + @instance['id']
                 rescue => e
-                    puts e
+                    logger.error e
                 end
             end
         end
@@ -112,7 +112,7 @@ module NsProvisioner
                 next
             end
             logger.debug 'Removing reserved stack...'
-            response, errors = delete_stack_with_wait(stack_url, credentials[:token])
+            response, errors = delete_stack_with_wait(@instance['id'], stack_url, credentials[:token])
             return errorDeleting(@instance, errors) if errors
             logger.debug 'Reserved stack removed correctly'
         end
@@ -137,7 +137,7 @@ module NsProvisioner
                 logger.debug 'Removing user stack....'
                 stack_url = auth_info['stack_url']
                 if !auth_info['stack_url'].nil?
-                    response, errors = delete_stack_with_wait(auth_info['stack_url'], credentials[:token])
+                    response, errors = delete_stack_with_wait(@instance['id'], auth_info['stack_url'], credentials[:token])
                     return errorDeleting(@instance, errors) if errors
                     logger.debug 'User and tenant removed correctly.'
                 else

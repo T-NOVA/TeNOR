@@ -1,0 +1,674 @@
+swagger: "2.0"
+info:
+  version: 1.0.0
+  title: TeNOR API
+  description: TeNOR API
+schemes:
+  - http
+consumes:
+  - application/json
+produces:
+  - application/json
+host: "localhost:4000"
+basePath: "/"
+tags:
+- name: Authentication
+  description: Operations with authentication module
+- name: VNFD Catalogue
+  description: Management of VNFD catalogue
+- name: NSD Catalogue
+  description: Management of NSD catalogue
+- name: Provisioning
+  description: Management of the Instance lifecycle
+- name: Datacenters
+  description: Datacenters management.
+- name: Statistics
+  description: Operations with stastistics
+- name: Logs
+  description: Operations with logs
+- name: Monitoring
+  description: Operations with monitoring
+- name: Modules
+  description: Operations with service modules
+paths:
+  /vnfs:
+    get:
+      tags:
+      - VNFD Catalogue
+      description: |
+      parameters:
+        - name: page
+          in: query
+          description: page
+          required: false
+          type: integer
+          format: int32
+        - name: limit
+          in: query
+          description: maximum number of results to return
+          required: false
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: vnfd response
+          schema:
+            type: array
+            items:
+              $ref: 'https://raw.githubusercontent.com/T-NOVA/TeNOR/master/vnfd-validator/assets/schemas/vnfd_schema.json'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      tags:
+      - VNFD Catalogue
+      description: Creates a new vnfd in the catalogue. Duplicates are not allowed
+      parameters:
+        - name: Vnfd
+          in: body
+          description: Vnfd to add to the catalogue
+          required: true
+          schema:
+            $ref: 'https://raw.githubusercontent.com/T-NOVA/TeNOR/master/vnfd-validator/assets/schemas/vnfd_schema.json'
+      responses:
+        "201":
+          description: vnfd response
+          schema:
+            $ref: 'https://raw.githubusercontent.com/T-NOVA/TeNOR/master/vnfd-validator/assets/schemas/vnfd_schema.json'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /vnfs/{id}:
+    get:
+      tags:
+      - VNFD Catalogue
+      description: Returns a VNFD based on a single ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of the VNFD to fetch
+          required: true
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: vnfd response
+          schema:
+            $ref: 'https://raw.githubusercontent.com/T-NOVA/TeNOR/master/vnfd-validator/assets/schemas/vnfd_schema.json'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      tags:
+      - VNFD Catalogue
+      description: deletes a single vnfd based on the ID supplied
+      operationId: deleteVnfd
+      parameters:
+        - name: id
+          in: path
+          description: ID of the vnfd to delete
+          required: true
+          type: integer
+          format: int64
+      responses:
+        "204":
+          description: vnfd deleted
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /network-services:
+    get:
+      tags:
+      - NSD Catalogue
+      description: |
+      parameters:
+        - name: page
+          in: query
+          description: page
+          required: false
+          type: integer
+          format: int32
+          items:
+            type: string
+        - name: limit
+          in: query
+          description: maximum number of results to return
+          required: false
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: nsd response
+          schema:
+            type: array
+            items:
+              $ref: 'https://raw.githubusercontent.com/T-NOVA/TeNOR/master/nsd-validator/assets/schemas/nsd_schema.json'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      tags:
+      - NSD Catalogue
+      description: Creates a new network service in the catalogue.  Duplicates are not allowed
+      operationId: addNsd
+      parameters:
+        - name: nsd
+          in: body
+          description: Nsd to add to the catalogue
+          required: true
+          schema:
+            $ref: 'https://raw.githubusercontent.com/T-NOVA/TeNOR/master/nsd-validator/assets/schemas/nsd_schema.json'
+      responses:
+        "201":
+          description: nsd response
+          schema:
+            $ref: 'https://raw.githubusercontent.com/T-NOVA/TeNOR/master/nsd-validator/assets/schemas/nsd_schema.json'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /network-services/{id}:
+    get:
+      tags:
+      - NSD Catalogue
+      description: Returns a network service given an ID.
+      parameters:
+        - name: id
+          in: path
+          description: ID of nsd to fetch
+          required: true
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: nsd response
+          schema:
+            $ref: 'https://raw.githubusercontent.com/T-NOVA/TeNOR/master/nsd-validator/assets/schemas/nsd_schema.json'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      tags:
+      - NSD Catalogue
+      description: deletes a single Nsd based on the ID supplied
+      parameters:
+        - name: id
+          in: path
+          description: ID of the Nsd to delete
+          required: true
+          type: integer
+          format: int64
+      responses:
+        "204":
+          description: nsd deleted
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /ns-instances:
+    get:
+      tags:
+      - Provisioning
+      description: Returns a list of created instances
+      responses:
+        "200":
+          description: nsd response
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/NsInstance'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      tags:
+      - Provisioning
+      description: Creates a new instance.
+      parameters:
+        - name: nsd_id
+          in: body
+          description: NSD Id to provision
+          required: true
+          schema:
+            $ref: '#/definitions/NewNsInstance'
+      responses:
+        "201":
+          description: ns instance response
+          schema:
+            $ref: '#/definitions/NsInstance'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /ns-instances/{id}:
+    get:
+      tags:
+      - Provisioning
+      description: Returns an instane based on a ID.
+      parameters:
+        - name: id
+          in: path
+          description: ID of instance to fetch
+          required: true
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: id response
+          schema:
+            $ref: '#/definitions/NsInstance'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      tags:
+      - Provisioning
+      description: deletes a single instance based on the ID supplied
+      parameters:
+        - name: id
+          in: path
+          description: ID of instance to delete
+          required: true
+          type: integer
+          format: int64
+      responses:
+        "204":
+          description: instance deleted
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /pops/dc:
+    get:
+      tags:
+      - Datacenters
+      description: List of NFVIs
+      responses:
+        "200":
+          description: dc response
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Dc'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      tags:
+      - Datacenters
+      description: Creates a new dc.  Duplicates are not allowed
+      parameters:
+        - name: dc
+          in: body
+          description: Dc to add
+          required: true
+          schema:
+            $ref: '#/definitions/NewDc'
+      responses:
+        "201":
+          description: dc response
+          schema:
+            $ref: '#/definitions/Dc'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /pops/dc/{id}:
+    get:
+      tags:
+      - Datacenters
+      description: Returns a dc based on a single ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of dc to fetch
+          required: true
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: dc response
+          schema:
+            $ref: '#/definitions/Dc'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      tags:
+      - Datacenters
+      description: deletes a single dc based on the ID supplied
+      parameters:
+        - name: id
+          in: path
+          description: ID of the dc to delete
+          required: true
+          type: integer
+          format: int64
+      responses:
+        "204":
+          description: dc deleted
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /modules/services:
+    get:
+      tags:
+      - Modules
+      description: List of registered microservices
+      responses:
+        "200":
+          description: service response
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Service'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      tags:
+      - Modules
+      description: Register new module.
+      parameters:
+        - name: service
+          in: body
+          description: Service to add
+          required: true
+          schema:
+            $ref: '#/definitions/NewService'
+      responses:
+        "200":
+          description: service response
+          schema:
+            $ref: '#/definitions/Service'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /modules/services/{id}:
+    get:
+      tags:
+      - Modules
+      description: Returns a service based on a single ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of service to fetch
+          required: true
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: service response
+          schema:
+            $ref: '#/definitions/Service'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      tags:
+      - Modules
+      description: deletes a single service based on the ID supplied
+      parameters:
+        - name: id
+          in: path
+          description: ID of the service to delete
+          required: true
+          type: integer
+          format: int64
+      responses:
+        "204":
+          description: service deleted
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /instances/{id}/monitoring-data:
+    get:
+      tags:
+      - Monitoring
+      description: Returns a monitoring based on a single ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of service to fetch
+          required: true
+          type: integer
+          format: int64
+        - name: instance_type
+          in: query
+          description: Instance type 'ns' or 'vnf'
+          required: false
+          type: string
+        - name: metric
+          in: query
+          description: Metric name
+          required: false
+          type: string
+        - name: start
+          in: query
+          description: Start date
+          required: false
+          type: integer
+          format: int64
+        - name: end
+          in: query
+          description: End date
+          required: false
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: monitoring response
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Monitoring'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /auth/login:
+    post:
+      tags:
+      - Authentication
+      description: Login method
+      parameters:
+        - name: login
+          in: body
+          description: Credentials
+          required: true
+          schema:
+            properties:
+              username:
+                type: string
+              password:
+                type: string
+      responses:
+        "200":
+          description: token response
+          schema:
+            properties:
+              uid: 
+                type: string
+              token: 
+                type: string
+              expires_at: 
+                type: string
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /auth/logout:
+    post:
+      tags:
+      - Authentication
+      description: Logout method
+      parameters:
+        - name: X-Auth-Token
+          in: header
+          description: Token
+          required: true
+          type: string
+      responses:
+        "200":
+          description: empty response
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  
+
+definitions:
+  
+  Dc:
+    required:
+      - id
+    properties:
+      id:
+        type: integer
+        format: int64
+      name:
+        type: string
+      host:
+        type: string
+      user:
+        type: string
+      password:
+        type: string
+      tenant_name:
+        type: string
+      is_admin:
+        type: boolean
+      description:
+        type: string
+      extra_info:
+        type: string
+
+  Service:
+    allOf:
+      - $ref: '#/definitions/NewService'
+      - required:
+        - id
+        properties:
+          id:
+            type: integer
+            format: int64
+
+  Monitoring:
+    properties:
+      metricname:
+        type: string
+      date:
+        type: string
+      unit:
+        type: string
+      value:
+        type: string
+
+  NsInstance:
+    required:
+      - id
+    properties:
+      id:
+        type: string
+      nsd_id:
+        type: string
+      status:
+        type: string
+      vendor:
+        type: string
+      version:
+        type: string
+      notification:
+        type: string
+      resource_reservation:
+        type: array
+        items:
+          type: string
+      service_deployment_flavour:
+        type: string
+      vnfrs:
+        type: array
+        items:
+          type: string
+
+  NewDc:
+    required:
+      - name
+      - host
+      - user
+      - password
+      - tenant_name
+      - is_admin
+    properties:
+      name:
+        type: string
+      host:
+        type: string
+      user:
+        type: string
+      password:
+        type: string
+      tenant_name:
+        type: string
+      is_admin:
+        type: boolean
+      description:
+        type: string
+      extra_info:
+        type: string
+
+  NewService:
+    required:
+      - nsd
+    properties:
+      nsd:
+        type: object
+  
+  NewNsInstance:
+    required:
+      - ns_id
+      - flavour
+    properties:
+      ns_id:
+        type: string
+      flavour:
+        type: string
+      callbackUrl:
+        type: string
+      customer_id:
+        type: string
+      nap_id:
+        type: string
+      vnf_pop:
+        type: string
+      pop_id:
+        type: string
+      mapping_id:
+        type: string
+
+  Error:
+    required:
+      - code
+      - message
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+

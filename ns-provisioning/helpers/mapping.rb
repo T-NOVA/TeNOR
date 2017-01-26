@@ -67,7 +67,7 @@ module MappingHelper
     def replace_pop_name_by_pop_id(mapping, pops)
         mapping['vnf_mapping'].each do |m|
             found_pops = pops.find{ |q| q['name'] ==  m['maps_to_PoP'].split("/pop/")[1] }
-            puts found_pops
+            logger.debug found_pops
             if found_pops.nil?
                 return 400, "The PoP from Mapping cannot be matched to a PoP in TeNOR."
             else

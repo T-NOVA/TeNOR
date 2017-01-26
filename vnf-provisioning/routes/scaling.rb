@@ -67,7 +67,6 @@ class Scaling < VnfProvisioning
         event = 'scaling_out'
 
         # send reqeuest to HEAT generator with the VIM info
-        logger.debug 'Send VNFD to Hot Generator'
         hot_generator_message = {
             vnf: vnfd,
             vnfr_id: vnfr['id'],
@@ -76,7 +75,6 @@ class Scaling < VnfProvisioning
             networks_id: vnfr['vlr_instances'],
             vdus_deployed_info: vdus_to_scale
         }
-        # vnfd, tnova_flavour, networks_id, security_group_id, vdus_deployed_info
         begin
             hot, errors = parse_json(RestClient.post(settings.hot_generator + '/scale/' + vnf_flavour, hot_generator_message.to_json, content_type: :json, accept: :json))
         rescue Errno::ECONNREFUSED
@@ -88,7 +86,7 @@ class Scaling < VnfProvisioning
         logger.error errors if errors
         halt 400, errors if errors
 
-        logger.debug 'HEAT template generated'
+        logger.debug "#{vnfr_id}: HEAT Scaling template generated"
 
         vim_info = scale_info['auth']
         vim_info['keystone'] = vim_info['url']['keystone']
@@ -97,7 +95,7 @@ class Scaling < VnfProvisioning
         # Request VIM to provision a VNF
         name = vnfd['vnfd']['name'].delete(' ') + '_' + vnfr['_id'] + '_scaling_out_' + vnfr['scale_resources'].size.to_s
         response = provision_vnf(vim_info, name, hot)
-        logger.debug 'Provision response: ' + response.to_json
+        logger.debug "#{vnfr_id}: Provision response: #{response.to_json}"
 
         stack_url = response['stack']['links'][0]['href']
         vnfr.push(scale_resources: { stack_url: stack_url, name: name, vdus: vdus_id_to_scale })
@@ -133,7 +131,7 @@ class Scaling < VnfProvisioning
 
         resource = vnfr['scale_resources'][vnfr['scale_resources'].size - 1]
         logger.debug resource
-        logger.debug 'Using scaling-in saved events...'
+        logger.debug vnfr_id.to_s + ': Using scaling-in saved events...'
 
         scaling_in_events = {}
 
@@ -164,10 +162,10 @@ class Scaling < VnfProvisioning
 
         resource = vnfr['scale_resources'][vnfr['scale_resources'].size - 1]
         stack_url = resource['stack_url']
-        logger.info 'Sending request to Openstack for Scale IN'
-        response, errors = delete_stack_with_wait(stack_url, vim_info['token'])
+        logger.info "#{vnfr_id}: Sending request to Openstack for Scale IN"
+        response, errors = delete_stack_with_wait(vnfr_id, stack_url, vim_info['token'])
         vnfr.pull(scale_resources: resource)
-        logger.info 'Scale in correct'
+        logger.info "#{vnfr_id}: Scale in correct"
 
         # Update the VNFR event history
         vnfr.push(lifecycle_event_history: "Executed a #{event}")

@@ -90,11 +90,11 @@ class DcController < TnovaManager
             begin
                 dc = Dc.create!(serv)
             rescue => e
-                puts 'ERROR.................'
-                puts e
+                logger.error 'ERROR.................'
+                logger.error e
             end
         rescue => e
-            puts e
+            logger.error e
             logger.error 'Error saving dc.'
             halt 400
         end
