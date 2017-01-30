@@ -140,7 +140,7 @@ The NFVI-PoP information is saved in the Authentication module. First of all, Te
 
 TeNOR has a User Interface that provides a global view of the all the orchestration functionalities. Allows to read the descriptors, instantiate services, see the monitoring data and configure TeNOR.
 
-This user interface is located in the `ui` folder and contains their own README file with the installation guide.
+This user interface is located in the `ui` folder and contains their own README file with the installation guide. You need to start the UI and then visit the page http://localhost:9000 in your browser.
 
 The UI has a default user for authentication, the credentials are (can be changed in the UI):
 
@@ -256,6 +256,7 @@ Each microservice is listening in different port. This port is configured in the
 |    HOT Generator    |    4571    |
 |    VNF Catalogue    |    4572    |
 |    VNF Monitoring    |    4573    |
+|    UI    |    9000    |
 
 # Bug reports and Feature requests
 
