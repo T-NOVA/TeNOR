@@ -73,7 +73,7 @@ int build_NIdat( const std::string filename, jsoncons::json * const pop_link_det
 	// by total_delay and tot_linkusage that in this case are equal to 0...
 	// To prevent this, we create a fake link whose source and destination is the first node in the pop_id_array, and
 	// whose LinkDelay and LinkUsage are abnormally high.
-	if (pop_link_id_array.size() == 0) {
+	/*if (pop_link_id_array.size() == 0) {
 		pop_link_id_array.add( "/pop/link/fakelink" );
 		jsoncons::json fakelink_detail = jsoncons::json();
 		jsoncons::json fakelink_detail_attributes = jsoncons::json();
@@ -85,7 +85,7 @@ int build_NIdat( const std::string filename, jsoncons::json * const pop_link_det
 		fakelink_detail_attributes["occi.epa.pop.roundtrip_time_sec"] = std::string( "1.0" );
 		fakelink_detail["attributes"] = fakelink_detail_attributes;
 		pop_link_detail_array->add( fakelink_detail );
-	}
+	}*/
 
 	// Begin write NI_generated.dat
 	// data;
