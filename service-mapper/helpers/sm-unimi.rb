@@ -88,20 +88,9 @@ class MapperUnimi < Sinatra::Application
 		ir_address       = requestbody_hash['infr_repo_api']
 		catalogs_address = requestbody_hash['tenor_api']
 
-
-		# Temporary keys in the request body: if true, IR/NS requests return the dummy NI/NSd/VNFd
-		#if requestbody_hash.has_key?('ir_simulation')
-		#	ir_simulation_requested = requestbody_hash['ir_simulation']
-		#else
-			ir_simulation_requested = "false"
-		#end
-
-		#if requestbody_hash.has_key?('ns_simulation')
-		#	ns_simulation_requested = requestbody_hash['ns_simulation']
-		#else
-			ns_simulation_requested = "false"
-		#end
-
+		# No more simulations...
+		ir_simulation_requested = "false"
+		ns_simulation_requested = "false"
 
 		# Look for the NS_id into the request
 		if requestbody_hash.has_key?('NS_id')
@@ -145,7 +134,6 @@ class MapperUnimi < Sinatra::Application
 		if status['status'] < 0
 			return JSON.pretty_generate( status )
 		end
-
 
 
 		# We collected all the data we needed, now let's call the GLPK solver but, before that,
