@@ -26,6 +26,8 @@
 # curl -X POST localhost:4042/mapper -H "Content-Type: application/json" -d "{\"NS_id\":\"demo1\", \"NS_sla\":\"gold\", \"ir_simulation\":\"false\", \"tenor_api\":\"http://10.20.30.40:5454\", \"infr_repo_api\":\"http://1.2.3.4:5544\"}"
 # @see sm-unimi
 
+require 'logger'
+
 require_relative 'sm-unimi_IR_helper'
 require_relative 'sm-unimi_NS_helper'
 
@@ -76,6 +78,13 @@ class MapperUnimi < Sinatra::Application
 		#ir_address       = 'http://143.233.227.120:8888'
 		#catalogs_address = 'http://apis.t-nova.eu/orchestrator'
 
+		if File.exist?('log/logfile.log')
+			smLogFile = File.open('log/logfile.log', File::WRONLY | File::APPEND)
+		else
+			smLogFile = File.open('log/logfile.log', File::WRONLY | File::APPEND | File::CREAT)
+		end
+		smLogger = Logger.new(smLogFile)
+
 		# prints usefull stuff
 		debugprint = true
 
@@ -100,6 +109,7 @@ class MapperUnimi < Sinatra::Application
 	  	else
 			status = {'status' => -122,
 					'error' => "Invalid json request: no ns_id found"}
+			smLogger.error {JSON.pretty_generate( status )}
 			return JSON.pretty_generate( status )
 		end
 
@@ -112,6 +122,7 @@ class MapperUnimi < Sinatra::Application
 	  	if ns_sla == ""
 			puts "\nWARNING: No NS_sla specified. 'gold' used by default.\n"
 			ns_sla = "gold"
+			smLogger.info "\nWARNING: No NS_sla specified. 'gold' used by default.\n"
 		end
 
 		# Look for optional overcommitting
@@ -121,33 +132,40 @@ class MapperUnimi < Sinatra::Application
 			overcommitting = "false"
 		end
 
+		# Generate a random number used for unique namefile
+		randNum = Random.rand(65535).to_s
+
 		# Query to NS and VNF catalogs
 		service_catalogs = NS_helper.new
-		status = service_catalogs.queryServiceCatalogs( catalogs_address, requestbody_hash, ns_id, ns_sla, ns_simulation_requested, debugprint )
+		status = service_catalogs.queryServiceCatalogs( catalogs_address, requestbody_hash, ns_id, ns_sla, ns_simulation_requested, randNum, debugprint )
 		if status['status'] < 0
+			smLogger.error {JSON.pretty_generate( status )}
 			return JSON.pretty_generate( status )
 		end
 
 		# Query to Infrastructure Repository.
 		ir = IR_helper.new
-		status = ir.queryIR( ir_address, simulation=ir_simulation_requested, debugprint, overcommitting )
+		status = ir.queryIR( ir_address, simulation=ir_simulation_requested, randNum, debugprint, overcommitting )
 		if status['status'] < 0
+			smLogger.error {JSON.pretty_generate( status )}
 			return JSON.pretty_generate( status )
 		end
 
 
 		# We collected all the data we needed, now let's call the GLPK solver but, before that,
 		# check for the existance of generated datafiles before invoking the binary application
-		if !File.exist?('bin/workspace/NS.json')
+		if !File.exist?('bin/workspace/NS' + randNum + '.json')
 			puts "NS.json not found!"
 			status = {'status' => -120,
 					'error' => "NS.json not found / not generated"}
+			smLogger.error {JSON.pretty_generate( status )}
 			return JSON.pretty_generate( status )
 		end
-		if !File.exist?('bin/workspace/NI.json')
+		if !File.exist?('bin/workspace/NI' + randNum + '.json')
 			puts "NI.json not found!"
 			status = {'status' => -121,
 					'error' => "NI.json not found / not generated"}
+			smLogger.error {JSON.pretty_generate( status )}
 			return JSON.pretty_generate( status )
 		end
 
@@ -155,18 +173,19 @@ class MapperUnimi < Sinatra::Application
 
 		# Let's make the actual call
 		puts "System call to mapper"
-		system("bin/jsonConverter bin/workspace/NS.json bin/workspace/NI.json")
-		system("bin/solver")
+		system("bin/jsonConverter bin/workspace/NS" + randNum + ".json bin/workspace/NI" + randNum + ".json " + randNum.to_s)
+		system("bin/solver " + randNum.to_s)
 
 		# It may happen that the solver do not generate the response in case of malformed
 		# NSD or VNFD.
 		begin
-			mapper_solution_json = File.read('bin/workspace/mapperResponse.json')
+			mapper_solution_json = File.read('bin/workspace/mapperResponse' + randNum + '.json')
 		rescue => e
 			puts e
 			puts "mapper_response.json not found / not generated. Check logs..."
 			status = {'status' => -123,
 					'error' => "mapper_response.json not found / not generated. Check logs..."}
+			smLogger.error {JSON.pretty_generate( status )}
 			return JSON.pretty_generate( status )
 		end
 
@@ -178,29 +197,42 @@ class MapperUnimi < Sinatra::Application
 
 		if mapper_hash.has_key?("error")
 			mapper_hash['status'] = 1
+			smLogger.error {JSON.pretty_generate(mapper_hash)}
 		else
 			mapper_hash['status'] = 0
 		end
 
-		# Rename the files in the workspace
-		if File.exist?('bin/workspace/mapperResponse.json')
-			File.rename('bin/workspace/mapperResponse.json', 'bin/workspace/mapperResponse_old.json')
+		# Delete temporary files in the workspace
+		if File.exist?('bin/workspace/mapperResponse' + randNum + '.json')
+			#File.rename('bin/workspace/mapperResponse.json', 'bin/workspace/mapperResponse_old.json')
+			File.delete('bin/workspace/mapperResponse' + randNum + '.json')
 		end
-		if File.exist?('bin/workspace/NI.json')
-			File.rename('bin/workspace/NI.json', 'bin/workspace/NI_old.json')
+		if File.exist?('bin/workspace/NI' + randNum + '.json')
+			#File.rename('bin/workspace/NI.json', 'bin/workspace/NI_old.json')
+			File.delete('bin/workspace/NI' + randNum + '.json')
 		end
-		if File.exist?('bin/workspace/NS.json')
-			File.rename('bin/workspace/NS.json', 'bin/workspace/NS_old.json')
+		if File.exist?('bin/workspace/NS' + randNum + '.json')
+			#File.rename('bin/workspace/NS.json', 'bin/workspace/NS_old.json')
+			File.delete('bin/workspace/NS' + randNum + '.json')
 		end
-		if File.exist?('bin/workspace/NI_generated.dat')
-			File.rename('bin/workspace/NI_generated.dat', 'bin/workspace/NI_generated_old.dat')
+		if File.exist?('bin/workspace/NI' + randNum + '_generated.dat')
+			#File.rename('bin/workspace/NI_generated.dat', 'bin/workspace/NI_generated_old.dat')
+			File.delete('bin/workspace/NI' + randNum + '_generated.dat')
 		end
-		if File.exist?('bin/workspace/NS_generated.dat')
-			File.rename('bin/workspace/NS_generated.dat', 'bin/workspace/NS_generated_old.dat')
+		if File.exist?('bin/workspace/NS' + randNum + '_generated.dat')
+			#File.rename('bin/workspace/NS_generated.dat', 'bin/workspace/NS_generated_old.dat')
+			File.delete('bin/workspace/NS' + randNum + '_generated.dat')
 		end
-		if File.exist?('bin/workspace/pref_generated.dat')
-			File.rename('bin/workspace/pref_generated.dat', 'bin/workspace/pref_generated_old.dat')
+		if File.exist?('bin/workspace/pref' + randNum + '_generated.dat')
+			#File.rename('bin/workspace/pref_generated.dat', 'bin/workspace/pref_generated_old.dat')
+			File.delete('bin/workspace/pref' + randNum + '_generated.dat')
 		end
+		if File.exist?('bin/workspace/print' + randNum + '_mip.out')
+			#File.rename('bin/workspace/pref_generated.dat', 'bin/workspace/pref_generated_old.dat')
+			File.delete('bin/workspace/print' + randNum + '_mip.out')
+		end
+
+		smLogger.close
 
 		return JSON.pretty_generate(mapper_hash)
 	end

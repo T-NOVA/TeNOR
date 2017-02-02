@@ -44,7 +44,7 @@ class IR_helper
 	# but I haven't had the chance to try them in a working environment. Code may change drastically if
 	# I decide to implement filtered-based queries!
 	#
-	def queryIR(ir_address, simulation, debugprint, overcommiting)
+	def queryIR(ir_address, simulation, randNum, debugprint, overcommiting)
 
 		conv = Sm_converters.new
 
@@ -303,12 +303,12 @@ class IR_helper
 		outputHash.store( "PoP_aggregate_resources", hypervisors_detail_hash )
 
 		# ...and save it to disk
-		niFile = File.open('bin/workspace/NI.json', 'w') do |f|
+		niFile = File.open('bin/workspace/NI' + randNum.to_s + '.json', 'w') do |f|
 			f.puts JSON.pretty_generate( outputHash )
 		end
 
 		return {'status' => 0,
-                        'error'=> "Ok"}
+                'error'=> "Ok"}
 
 	end
 
