@@ -28,7 +28,7 @@ require_relative 'sm-unimi_converters'
 
 class NS_helper
 
-	def queryServiceCatalogs(ns_address, requestbody_hash, ns_id, ns_sla, simulation, debugprint)
+	def queryServiceCatalogs(ns_address, requestbody_hash, ns_id, ns_sla, simulation, randNum, debugprint)
 
 		conv = Sm_converters.new
 
@@ -278,7 +278,7 @@ class NS_helper
 			ns_out["toPoP01"] = requestbody_hash["toPoP01"]
 		end
 
-		nsreqFile = File.open('bin/workspace/NS.json', 'w') do |f|
+		nsreqFile = File.open('bin/workspace/NS' + randNum.to_s + '.json', 'w') do |f|
 			f.puts JSON.pretty_generate(ns_out)
 		end
 
