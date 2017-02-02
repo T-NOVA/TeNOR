@@ -22,7 +22,7 @@ module NsProvisioner
     # @param [JSON] notification_url Notification URL
     # @param [JSON] message The message to send
     def generateMarketplaceResponse(notification_url, message)
-        logger.debug message.inspect
+        logger.debug message.to_json
         logger.debug 'Notification url: ' + notification_url
         begin
             response = RestClient.post notification_url, message.to_json, content_type: :json
@@ -186,7 +186,6 @@ module NsProvisioner
             mapping = getMappingResponse(nsd, pop_id)
         elsif !instantiation_info['vnf_mapping'].nil?
             mapping = getMappingResponseWithPops(instantiation_info['vnf_mapping'])
-            logger.debug ""
         elsif !mapping_info.nil?
             logger.info 'Calling Mapping algorithm ' + mapping_info.to_s
             if infr_repo_url.nil?
