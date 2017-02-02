@@ -22,82 +22,18 @@
 # -----------------------------------------------------
 
 
-# clears the bin/workspace directory
-if [ -f "workspace/mapperResponse.json" ]
-then
-    rm workspace/mapperResponse.json
-    echo "workspace/mapperResponse.json deleted"
+# clears the bin/workspace directory from old json, dat and out files
+if ls workspace/*.json 1> /dev/null 2>&1; then
+    rm workspace/*.json
+    echo "workspace/*.json deleted"
 fi
 
-if [ -f "workspace/mapperResponse_old.json" ]
-then
-    rm workspace/mapperResponse_old.json
-    echo "workspace/mapperResponse_old.json deleted"
+if ls workspace/*.dat 1> /dev/null 2>&1; then
+    rm workspace/*.dat
+    echo "workspace/*.dat deleted"
 fi
 
-if [ -f "workspace/NI.json" ]
-then
-    rm workspace/NI.json
-    echo "workspace/NI.json deleted"
+if ls workspace/*.out 1> /dev/null 2>&1; then
+    rm workspace/*.out
+    echo "workspace/*.out deleted"
 fi
-
-if [ -f "workspace/NI_old.json" ]
-then
-    rm workspace/NI_old.json
-    echo "workspace/NI_old.json deleted"
-fi
-
-if [ -f "workspace/NS.json" ]
-then
-    rm workspace/NS.json
-    echo "workspace/NS.json deleted"
-fi
-
-if [ -f "workspace/NS_old.json" ]
-then
-    rm workspace/NS_old.json
-    echo "workspace/NS_old.json deleted"
-fi
-
-if [ -f "workspace/NI_generated.dat" ]
-then
-    rm workspace/NI_generated.dat
-    echo "workspace/NI_generated.dat deleted"
-fi
-
-if [ -f "workspace/NI_generated_old.dat" ]
-then
-    rm workspace/NI_generated_old.dat
-    echo "workspace/NI_generated_old.dat deleted"
-fi
-
-if [ -f "workspace/NS_generated.dat" ]
-then
-    rm workspace/NS_generated.dat
-    echo "workspace/NS_generated.dat deleted"
-fi
-
-if [ -f "workspace/NS_generated_old.dat" ]
-then
-    rm workspace/NS_generated_old.dat
-    echo "workspace/NS_generated_old.dat deleted"
-fi
-
-if [ -f "workspace/pref_generated.dat" ]
-then
-    rm workspace/pref_generated.dat
-    echo "workspace/pref_generated.dat deleted"
-fi
-
-if [ -f "workspace/pref_generated_old.dat" ]
-then
-    rm workspace/pref_generated_old.dat
-    echo "workspace/pref_generated_old.dat deleted"
-fi
-
-if [ -f "workspace/print_mip.out" ]
-then
-    rm workspace/print_mip.out
-    echo "workspace/print_mip.out deleted"
-fi
-

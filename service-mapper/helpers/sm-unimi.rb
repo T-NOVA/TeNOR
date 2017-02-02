@@ -78,10 +78,10 @@ class MapperUnimi < Sinatra::Application
 		#ir_address       = 'http://143.233.227.120:8888'
 		#catalogs_address = 'http://apis.t-nova.eu/orchestrator'
 
-		if File.exist?('bin/workspace/logfile.log')
-			smLogFile = File.open('bin/workspace/logfile.log', File::WRONLY | File::APPEND)
+		if File.exist?('log/logfile.log')
+			smLogFile = File.open('log/logfile.log', File::WRONLY | File::APPEND)
 		else
-			smLogFile = File.open('bin/workspace/logfile.log', File::WRONLY | File::APPEND | File::CREAT)
+			smLogFile = File.open('log/logfile.log', File::WRONLY | File::APPEND | File::CREAT)
 		end
 		smLogger = Logger.new(smLogFile)
 
