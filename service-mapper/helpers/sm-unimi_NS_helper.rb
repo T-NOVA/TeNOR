@@ -25,14 +25,12 @@
 # and building the data json file to be passed to the binary application
 
 require_relative 'sm-unimi_converters'
-#require_relative 'sm-unimi_dummyRest'
 
 class NS_helper
 
 	def queryServiceCatalogs(ns_address, requestbody_hash, ns_id, ns_sla, simulation, debugprint)
 
 		conv = Sm_converters.new
-		#dummyRest = Sm_dummyRest.new
 
 		if simulation == "true"
 			ns_base_address = "_"
@@ -48,7 +46,6 @@ class NS_helper
 				puts "\nmapper: API call fail /network-services\n"
 				puts e
 			end
-			#nsd_from_catalogue = dummyRest.dummy_NScatalogue(ns_id, debugprint)
 			return {'status' => -32,
 					'error' => "API call fail: /network-services"}
 		end
@@ -61,17 +58,14 @@ class NS_helper
 					'error' => "No matching NSd in NS catalog"}
 		end
 
-
 		# Select the requested flavour and extract its associated relevant VNFd data from the NSd
 		constituent_vnf_array = Array.new
 		nsd_from_catalogue_hash["sla"].each do |sla|
 			if sla["id"].downcase == ns_sla
 				sla["constituent_vnf"].each do |const_vnf|
 					vnf_id_hash = Hash.new
-					vnf_id_hash["vnf_id"] = "/" + const_vnf["vnf_reference"].to_s
-					#vnf_id_hash["vnf_id"] = "/7"   ### TEMPORARY STUFF
-					#vnf_id_hash["vnf_id"] = "/619"	### TEMPORARY CRAP
-					vnf_id_hash["vnf_flavour"] = const_vnf["vnf_flavour_id_reference"]
+					vnf_id_hash["vnf_id"]        = "/" + const_vnf["vnf_reference"].to_s
+					vnf_id_hash["vnf_flavour"]   = const_vnf["vnf_flavour_id_reference"]
 					vnf_id_hash["vnf_instances"] = const_vnf["number_of_instances"]
 					constituent_vnf_array.push(vnf_id_hash)
 				end
@@ -100,7 +94,6 @@ class NS_helper
 					puts "mapper: API call fail /vnfs\n"
 					puts e
 				end
-				#vnfd = dummyRest.dummy_VNFcatalogue(vnf_id, debugprint)
 				return {'status' => -33,
 						'error' => "API call fail: /vnfs"}
 			end
@@ -115,10 +108,8 @@ class NS_helper
 			# Now we scan the vnfd.deployment_flavour in the retrieved VNFd, looking for the matching requested flavour.
 			# Init these vars with dummy values
 			vdu_arr = Array.new
-			#number_of_vdu_inst = "_"
 
 			vnfd_temp_hash["vnfd"]["deployment_flavours"].each do |depl_flavour|
-				#if vnf_flavour == depl_flavour["id"] ## In NSD it is referenced by id, while in vnf, id is ignored and it is referenced by flavour_key. This is messy.
 				if vnf_flavour == depl_flavour["flavour_key"]
 					vdu_arr = depl_flavour["vdu_reference"]
 					#number_of_vdu_inst = depl_flavour["number_of_instances"]
@@ -153,8 +144,7 @@ class NS_helper
 				vdu_arr.each do |vdu_name|
 					if vdu["id"] == vdu_name
 						tot_vcpu    += vdu["resource_requirements"]["vcpus"].to_i
-						#tot_ram     += conv.ram_conversion(vdu["resource_requirements"]["memory"], vdu["resource_requirements"]["memory_unit"]) ### memory unit removed, apparently
-						tot_ram     += conv.ram_conversion(vdu["resource_requirements"]["memory"], vdu["resource_requirements"]["memory_unit"])  ### not anymore, apparently
+						tot_ram     += conv.ram_conversion(vdu["resource_requirements"]["memory"], vdu["resource_requirements"]["memory_unit"])
 						tot_hdd     += conv.hdd_conversion(vdu["resource_requirements"]["storage"]["size"], vdu["resource_requirements"]["storage"]["size_unit"])
 						### networking resources still missing in the Marketplace generated VNFD
 						if vdu["networking_resources"] == ""
@@ -212,8 +202,7 @@ class NS_helper
 					virt_link_item["root_requirements"] = 0.001
 				end
 
-				# This junk has been made in order to adapat the marketplace generated VLD
-				# "data" VLD has been guessed, since I've never seen an example of this kind of link
+				# Adaptation for the marketplace generated VLD
 				# 14/Mar/16: it's clear the aliases are arbitrary
 				if virtual_link["alias"] == "ingress"
 					virt_link_item["source"] = "ns_ext_ingress"
@@ -234,7 +223,6 @@ class NS_helper
 					virtual_links_array.push(virt_link_item)
 				end
 				if virtual_link["alias"] == "data"
-					### 14/Mar/16: more junk, since now links might be E-LAN type, in opposition with the model and what has been discussed so far
 					if virtual_link["connections"].size == 1
 						virt_link_item["source"] = virtual_link["connections"][0]
 						virt_link_item["source"].slice! "VNF#"
@@ -260,8 +248,6 @@ class NS_helper
 			nfp_item["nfp_id"] = nfp["nfp_id"]
 			nfp_item["nfp_graph"] = nfp["graph"]
 			nfp["connection_points"].each do |cp|
-				# Again, I suppose that this array contained only the external connection points
-				# more junk code to be compliant with the Marketplace generated VNFFGD
 				if !(cp.include? ":")
 					connection_points.push(cp)
 				end

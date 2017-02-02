@@ -66,7 +66,12 @@
       var y {VNFnodes cross NInodes}, binary;
 
       /* objective function */
-      minimize min: alpha * (sum{h in VNFnodes}sum{p in NInodes} c[h,p]*y[h,p]) / tot_cost + beta * (sum{path in IndexDelayPaths}sum{(h,k) in PD[path], (p,q) in NIlinks} LinkDelay[p,q]*x[h,k,p,q]) / tot_delay + gamma * (sum{(p,q) in NIlinks, t in LT}sum{(h,k) in NSlinks} ResourceLinkDemand[h,k,t]*x[h,k,p,q]) / tot_linkusage;
+      /*
+      minimize min: alpha * (sum{h in VNFnodes}sum{p in NInodes} c[h,p]*y[h,p]) / ( if tot_cost = 0 then 1 else tot_cost ) + beta * (sum{path in IndexDelayPaths}sum{(h,k) in PD[path], (p,q) in NIlinks} LinkDelay[p,q]*x[h,k,p,q]) / tot_delay + gamma * (sum{(p,q) in NIlinks, t in LT}sum{(h,k) in NSlinks} ResourceLinkDemand[h,k,t]*x[h,k,p,q]) / tot_linkusage;
+      */
+      minimize min: alpha * (sum{h in VNFnodes}sum{p in NInodes} c[h,p]*y[h,p]) / ( if tot_cost = 0 then 1 else tot_cost ) +
+                    beta * (sum{path in IndexDelayPaths}sum{(h,k) in PD[path], (p,q) in NIlinks} LinkDelay[p,q]*x[h,k,p,q]) / ( if tot_delay = 0 then 1 else tot_delay ) +
+                    gamma * (sum{(p,q) in NIlinks, t in LT}sum{(h,k) in NSlinks} ResourceLinkDemand[h,k,t]*x[h,k,p,q]) / ( if tot_linkusage = 0 then 1 else tot_linkusage );
 
       /* Constraints */
       /************** univoc VM assignment (2) ***********************************/
