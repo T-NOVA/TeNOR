@@ -16,9 +16,7 @@ angular.module('tNovaApp')
 
         tenorService.get("modules/services/type/infr_repo").then(function (data) {
             if (data === undefined) return;
-            console.log(data);
             $scope.infr_repo_url = data[0].host + ":" + data[0].port;
-            console.log($scope.infr_repo_url);
             $scope.getTypes();
             $scope.getPops();
         });
@@ -115,17 +113,13 @@ angular.module('tNovaApp')
                 edges: $scope.edges
             };
 
-            console.log($rootScope.network_data);
             $rootScope.$broadcast('completeTopologyData', data);
-            console.log($scope.infrModel);
             //var pop = $rootScope.rootElement["Intel Ireland's Leixlip Campus, Kildare, Ireland"];
             var pop = $scope.infrModel[popId];
             $loading.start('topology');
             for (var layers in pop.resources) {
 
-                console.log(layers);
                 if (layers !== "virtual_resource") continue;
-                console.log(layers);
                 for (var elType in pop.resources[layers]) {
                     if (elType === 'port') continue;
                     if (elType === 'cache') continue;
@@ -140,7 +134,6 @@ angular.module('tNovaApp')
                         var j = 0;
                         angular.forEach(_data, function (res) {
                             infrRepoService.get($scope.infr_repo_url, res.identifier.slice(1)).then(function (resource) {
-                                //console.log(resource)
                                 $scope.dataCollection.push(resource.attributes);
                                 data.nodes.push({
                                     id: resource['identifier'],
@@ -185,7 +178,6 @@ angular.module('tNovaApp')
                 if ($scope.selectedLayer[i].isChecked !== true) continue;
                 var layer = $scope.selectedLayer[i].type;
                 for (var elType in pop.resources[layer]) {
-                    console.log(elType);
 
                     if (elType === 'port') continue;
                     if (elType === 'cache') continue;
@@ -270,7 +262,6 @@ angular.module('tNovaApp')
                 });
 
             }).finally(function () {
-                console.log("END");
                 // $scope.generateTemplate();
             });
         };
@@ -357,14 +348,11 @@ angular.module('tNovaApp')
             $scope.showPops = false;
             $scope.showPop = true;
             $scope.pop = {};
-            console.log(popId);
             $scope.pop = $scope.infrModel[popId];
             $scope.pop.id = popId;
-            //$scope.getResourcesByPoP(popId);
             return;
             url = 'pop/' + $scope.infrModel[popId]['occi.epa.popuuid'].slice(1);
             infrRepoService.get($scope.infr_repo_url, url).then(function (_data) {
-                console.log(_data);
                 $scope.pop = _data.attributes;
             });
         };
@@ -386,7 +374,6 @@ angular.module('tNovaApp')
                             }
                             if (resource.attributes['occi.epa.index_type'] !== undefined)
                                 $scope.infrModel[popId].resources[resource.attributes['occi.epa.index_type']][type.id].push(resource.attributes);
-                            console.log(index);
                         });
                     });
                 });

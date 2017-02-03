@@ -332,7 +332,7 @@ class Scaling < VnfProvisioning
     # @overload post '/vnf-instances/scaling/:id/scale_in'
     # Post a Scale in request
     # @param [JSON]
-    # DE
+    # DEPRECATED
     post '/:vnfr_id/auto_scale_in' do
         # TODO
 

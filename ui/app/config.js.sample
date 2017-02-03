@@ -1,5 +1,5 @@
 'use strict';
 
 angular.module('tNovaApp.config', [])
-    .constant('BACKEND', 'http://localhost:9000/')
-    .constant('TENOR', 'http://localhost:4000');
+    .constant('BACKEND', 'http://127.0.0.1:9000/')
+    .constant('TENOR', 'http://127.0.0.1:4000');
