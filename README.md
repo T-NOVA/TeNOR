@@ -140,7 +140,7 @@ The NFVI-PoP information is saved in the Authentication module. First of all, Te
 
 TeNOR has a User Interface that provides a global view of the all the orchestration functionalities. Allows to read the descriptors, instantiate services, see the monitoring data and configure TeNOR.
 
-This user interface is located in the `ui` folder and contains their own README file with the installation guide.
+This user interface is located in the `ui` folder and contains their own README file with the installation guide. You need to start the UI and then visit the page http://127.0.0.1:9000 in your browser.
 
 The UI has a default user for authentication, the credentials are (can be changed in the UI):
 
@@ -181,7 +181,7 @@ In order to test TeNOR functionality, you can deploy a dummy NSD/VNFD located in
 1. Add the VNFD in the VNF catalogue
 
     ````
-    curl -XPOST localhost:4000/vnfs -H "Content-Type: application/json" --data-binary @vnfd-validator/assets/samples/vnfd_example.json
+    curl -XPOST 127.0.0.1:4000/vnfs -H "Content-Type: application/json" --data-binary @vnfd-validator/assets/samples/vnfd_example.json
     ````
 2. Add the NSD in the NS catalogue
 
@@ -191,7 +191,7 @@ In order to test TeNOR functionality, you can deploy a dummy NSD/VNFD located in
 3. Instantiate the NSD using the NSD ID extracted from the catalogue
 
     ````
-    curl -XPOST localhost:4000/ns-instances -H "Content-Type: application/json" --data '{"ns_id": "'$ns_id'", "callbackUrl": "https://httpbin.org/post", "flavour": "basic"}'
+    curl -XPOST 127.0.0.1:4000/ns-instances -H "Content-Type: application/json" --data '{"ns_id": "'$ns_id'", "callbackUrl": "https://httpbin.org/post", "flavour": "basic"}'
     ````
 
 ### Other examples
@@ -256,6 +256,7 @@ Each microservice is listening in different port. This port is configured in the
 |    HOT Generator    |    4571    |
 |    VNF Catalogue    |    4572    |
 |    VNF Monitoring    |    4573    |
+|    UI    |    9000    |
 
 # Bug reports and Feature requests
 

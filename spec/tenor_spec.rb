@@ -74,10 +74,8 @@ RSpec.describe "Tenor" do
 					begin
 						response = RestClient.get $TENOR_URL.to_s + '/network-services/'+ nsd['nsd']['id'].to_s, :'X-Auth-Token' => $token
 					rescue RestClient::ExceptionWithResponse => e
-						puts e
 					end
 					if !response.nil?
-						puts response
 						RestClient.delete $TENOR_URL.to_s + '/network-services/'+ nsd['nsd']['id'].to_s, :'X-Auth-Token' => $token
 					end
 				end
@@ -87,11 +85,8 @@ RSpec.describe "Tenor" do
 					begin
 						response = RestClient.get $TENOR_URL.to_s + '/vnfs/'+ vnfd['vnfd']['id'].to_s, :'X-Auth-Token' => $token
 					rescue RestClient::ExceptionWithResponse => e
-						puts e
 					end
 					if !response.nil?
-						puts $TENOR_URL.to_s + '/vnfs/'+ vnfd['vnfd']['id'].to_s
-						puts response
 						RestClient.delete $TENOR_URL.to_s + '/vnfs/'+ vnfd['vnfd']['id'].to_s, :'X-Auth-Token' => $token
 					end
 				end
@@ -129,7 +124,7 @@ RSpec.describe "Tenor" do
 						instance = {"ns_id": nsd_id, "callbackUrl":"https://httpbin.org/post", "pop_id": pop_id, "flavour":"Basic"}
 						response = RestClient.post "#{$TENOR_URL.to_s}/ns-instances", instance.to_json, :content_type => :json, :'X-Auth-Token' => $token
 						instance = JSON.parse response.body
-						puts instance['id']
+						puts "Created instance with id: #{instance['id']}"
 						@instances << {:id => instance['id'], :status => "INIT"}
 						expect(response.code).to eq 201
 						expect(JSON.parse response.body).to be_an Hash

@@ -24,7 +24,7 @@ Run `rake start` and the server will listen on port 9000 by default.
 
 4. Login to your system
 
-Visit the page http://localhost:9000 in your browser.
+Visit the page http://127.0.0.1:9000 in your browser.
 
 Default user: admin
 Default password: adminpass

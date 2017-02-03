@@ -42,7 +42,9 @@ angular.module('tNovaApp')
                     }
                 },
                 customRange: {
-                    left: {},
+                    left: {
+                        min: 0
+                    },
                     showMinorLabels: true
                 },
                 left: {

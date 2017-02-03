@@ -107,7 +107,6 @@ class NsScaling < TnovaManager
     auto_scale_policy = nsr['auto_scale_policy'][flavour].find { |as| as['criteria'][0]['assurance_parameter_id'] == auto_scale_info['parameter_id'].to_s }
     halt 500, "No autoscale policy for flavour with this parameter." if auto_scale_policy.nil?
 
-    #if auto_scale_policy
     if auto_scale_policy['actions'][0]['type'] == "Scale Out"
       event = "scale_out"
     elsif auto_scale_policy['actions'][0]['type'] == "Scale In"

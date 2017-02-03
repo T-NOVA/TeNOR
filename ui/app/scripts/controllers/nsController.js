@@ -102,10 +102,12 @@ angular.module('tNovaApp')
                     }
                     delete instance["pop_id"];
                 } else { //use selected PoP
-                    if (instance.pop_id == null) {
-                        error = "PoP not selected."
-                    } else if (true) {
+                    if (instance.select_pop_vnfs == 1){
                         console.log(instance.vnf_pop);
+                    } else{
+                        if (instance.pop_id == null) {
+                            error = "PoP not selected."
+                        }
                     }
                     delete instance["mapping_id"];
                 }

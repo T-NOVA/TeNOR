@@ -43,6 +43,7 @@ class Scaling < VnfProvisioning
         vdus_to_scale = []
         vnfd['vnfd']['vdu'].each do |vdu|
             next unless vdu['scale_in_out']['maximum'] > 1
+            #next unless !vdu['controller'] #controller cannot scale?
             logger.info "VDU #{vdu['id']} can scale."
             # check if the VNFR can scale_out
             scaled_vdu = []
@@ -331,7 +332,7 @@ class Scaling < VnfProvisioning
     # @overload post '/vnf-instances/scaling/:id/scale_in'
     # Post a Scale in request
     # @param [JSON]
-    # DE
+    # DEPRECATED
     post '/:vnfr_id/auto_scale_in' do
         # TODO
 

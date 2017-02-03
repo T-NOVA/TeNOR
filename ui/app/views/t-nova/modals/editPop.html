@@ -17,7 +17,7 @@
                 <div class="panel-group" ng-model="panels.activePanel" role="tablist" aria-multiselectable="true" bs-collapse>
                     <div class="panel panel-default" ng-repeat="panel in panels">
                         <div class="panel-body">
-                                <pre ng-if="!edit" modalscroll ng-jsoneditor ng-model="obj.data" options="obj.options"></pre>
+                                <pre ng-if="!edit" modalscrollupload ng-jsoneditor ng-model="obj.data" options="obj.options"></pre>
                         </div>
                     </div>
                     <div class="form-group">
