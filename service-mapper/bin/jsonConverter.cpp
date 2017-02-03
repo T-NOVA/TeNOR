@@ -46,9 +46,11 @@
 #include <ctime>
 
 // Builds NI.dat from NI.json
-int build_NIdat( const std::string filename, jsoncons::json * const pop_link_detail_array, jsoncons::json * const pop_id_array, const jsoncons::json * const vnf_id_array, const jsoncons::json * const ns_connection_points ) {
+int build_NIdat( const std::string filename, jsoncons::json * const pop_link_detail_array,
+				jsoncons::json * const pop_id_array, const jsoncons::json * const vnf_id_array,
+				const jsoncons::json * const ns_connection_points, std::string randStringId ) {
 	std::string			NI_inFilename 		= filename;
-	std::string			NI_outFilename		= BINPATH + std::string( "workspace/NI_generated.dat" );
+	std::string			NI_outFilename		= BINPATH + std::string( "workspace/NI" + randStringId + "_generated.dat" );
 	std::ofstream		NI_outFile;
 	jsoncons::json		NI_json;
 	jsoncons::json		pop_detail_array( jsoncons::json::an_array );
@@ -73,7 +75,7 @@ int build_NIdat( const std::string filename, jsoncons::json * const pop_link_det
 	// by total_delay and tot_linkusage that in this case are equal to 0...
 	// To prevent this, we create a fake link whose source and destination is the first node in the pop_id_array, and
 	// whose LinkDelay and LinkUsage are abnormally high.
-	if (pop_link_id_array.size() == 0) {
+	/*if (pop_link_id_array.size() == 0) {
 		pop_link_id_array.add( "/pop/link/fakelink" );
 		jsoncons::json fakelink_detail = jsoncons::json();
 		jsoncons::json fakelink_detail_attributes = jsoncons::json();
@@ -85,7 +87,7 @@ int build_NIdat( const std::string filename, jsoncons::json * const pop_link_det
 		fakelink_detail_attributes["occi.epa.pop.roundtrip_time_sec"] = std::string( "1.0" );
 		fakelink_detail["attributes"] = fakelink_detail_attributes;
 		pop_link_detail_array->add( fakelink_detail );
-	}
+	}*/
 
 	// Begin write NI_generated.dat
 	// data;
@@ -220,9 +222,10 @@ int build_NIdat( const std::string filename, jsoncons::json * const pop_link_det
 	return 0;
 }
 
-int build_NSdat( const std::string filename, jsoncons::json * const vnf_id_array, jsoncons::json * const NS_json, jsoncons::json * const ns_connection_points ) {
+int build_NSdat( const std::string filename, jsoncons::json * const vnf_id_array, jsoncons::json * const NS_json,
+				jsoncons::json * const ns_connection_points, std::string randStringId ) {
 	std::string			NS_inFilename = filename;
-	std::string			NS_outFilename = BINPATH + std::string( "workspace/NS_generated.dat" );
+	std::string			NS_outFilename = BINPATH + std::string( "workspace/NS" + randStringId + "_generated.dat" );
 	std::string			source_tmp, dest_tmp, link_id_tmp;
 	std::ofstream		NS_outFile;
 	jsoncons::json		vnf_req( jsoncons::json::an_array );
@@ -400,8 +403,10 @@ int build_NSdat( const std::string filename, jsoncons::json * const vnf_id_array
 	return 0;
 }
 
-int build_prefdat( const jsoncons::json * const pop_id_array, const jsoncons::json * const vnf_id_array, const jsoncons::json * const NS_json, const jsoncons::json * const ns_connection_points ) {
-	std::string			pref_outFilename = BINPATH + std::string( "workspace/pref_generated.dat" );
+int build_prefdat( const jsoncons::json * const pop_id_array, const jsoncons::json * const vnf_id_array,
+				const jsoncons::json * const NS_json, const jsoncons::json * const ns_connection_points,
+				std::string randStringId ) {
+	std::string			pref_outFilename = BINPATH + std::string( "workspace/pref" + randStringId + "_generated.dat" );
 	std::ofstream		pref_outFile;
 
 	pref_outFile.open( pref_outFilename.c_str(), std::ios::out );
@@ -466,6 +471,7 @@ int build_prefdat( const jsoncons::json * const pop_id_array, const jsoncons::js
 
 int main( int argc, char **argv ) {
 
+	std::string		randStringId;
 	std::string		NSinFilename;
 	std::string		NIinFilename;
 	std::string		jsonOutFilename;
@@ -480,17 +486,19 @@ int main( int argc, char **argv ) {
 	if (argc > 1){
 		NSinFilename = std::string( argv[1] );
 		NIinFilename = std::string( argv[2] );
+		randStringId = std::string( argv[3] );
 	}
 	else {
 		NSinFilename = std::string( "workspace/NS.json" );
 		NIinFilename = std::string( "workspace/NI.json" );
+		randStringId = "";
 		std::cout << "Invalid number of arguments! Using default filenames..." << std::endl;
 	}
 
 	// scan of json files and build each .dat
-	build_NSdat( NSinFilename, &vnf_id_array, &NS_json, &ns_connection_points );
-	build_NIdat( NIinFilename, &pop_link_detail_array, &pop_id_array, &vnf_id_array, &ns_connection_points );
-	build_prefdat( &pop_id_array, &vnf_id_array, &NS_json, &ns_connection_points );
+	build_NSdat( NSinFilename, &vnf_id_array, &NS_json, &ns_connection_points, randStringId );
+	build_NIdat( NIinFilename, &pop_link_detail_array, &pop_id_array, &vnf_id_array, &ns_connection_points, randStringId );
+	build_prefdat( &pop_id_array, &vnf_id_array, &NS_json, &ns_connection_points, randStringId );
 
     // provvisorio: aggiungere altri controlli e return value
     return 0;

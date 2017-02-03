@@ -50,7 +50,7 @@
 #include <ctime>
 
 
-int build_solution( glp_prob *problem, const jsoncons::json * const pop_link_detail_array, jsoncons::json * const solution ) {
+int build_solution( glp_prob *problem, const jsoncons::json * const pop_link_detail_array, std::string randStringId, jsoncons::json * const solution ) {
 
 	// Scan the entire problem for searching whose lines begin with 'y' or 'x'; if any of these lines has a value of
 	// 1 (one), it means that the solver allocates a vnf into a PoP (for the 'y') or a vnf link into a link between PoP ('x');
@@ -66,8 +66,8 @@ int build_solution( glp_prob *problem, const jsoncons::json * const pop_link_det
 	jsoncons::json		temp_json_item;
 	std::string			temp_str, first_item, second_item, third_item, last_item;
 	std::string			temp_source_dest_array[2];
-    std::string			NI_generatedFilename		= BINPATH + std::string( "workspace/NI_generated.dat" );
-	std::string			NS_generatedFilename		= BINPATH + std::string( "workspace/NS_generated.dat" );
+    std::string			NI_generatedFilename		= BINPATH + std::string( "workspace/NI" + randStringId + "_generated.dat" );
+	std::string			NS_generatedFilename		= BINPATH + std::string( "workspace/NS" + randStringId + "_generated.dat" );
 	std::ifstream		NI_generatedFile;
 	std::ifstream		NS_generatedFile;
 	size_t				item_begin, item_end;
@@ -263,12 +263,22 @@ int main( int argc, char **argv ) {
 
 	int				glpk_err_dat, glpk_err_gen, glpk_err_post, glpk_err_save; //glpk_err_mod;		// Error status
 	int				glp_status, mip_status;
+
+	std::string		randStringId;
+	if (argc > 1){
+		randStringId = std::string( argv[1] );
+	}
+	else {
+		randStringId = "";
+		std::cout << "Invalid number of arguments! Using default filenames..." << std::endl;
+	}
+
 	std::string		modFilename		= BINPATH + std::string( "workspace/TNOVA.mod" );
-	std::string		NIdatFilename	= BINPATH + std::string( "workspace/NI_generated.dat" );
-	std::string		NSdatFilename	= BINPATH + std::string( "workspace/NS_generated.dat" );
-	std::string		prefdatFilename = BINPATH + std::string( "workspace/pref_generated.dat" );
-	std::string		outFilename		= BINPATH + std::string( "workspace/print_mip.out" );
-	std::string		jsonOutFilename = BINPATH + std::string( "workspace/mapperResponse.json");
+	std::string		NIdatFilename	= BINPATH + std::string( "workspace/NI" + randStringId + "_generated.dat" );
+	std::string		NSdatFilename	= BINPATH + std::string( "workspace/NS" + randStringId + "_generated.dat" );
+	std::string		prefdatFilename = BINPATH + std::string( "workspace/pref" + randStringId + "_generated.dat" );
+	std::string		outFilename		= BINPATH + std::string( "workspace/print" + randStringId + "_mip.out" );
+	std::string		jsonOutFilename = BINPATH + std::string( "workspace/mapperResponse" + randStringId + ".json");
 	std::ofstream	jsonOutFile;
 	glp_prob		*mpl_problem;
 	glp_tran		*mpl_translator;
@@ -369,7 +379,7 @@ int main( int argc, char **argv ) {
 
 	// if solver has not broken, builds a solution in json format
 	if (!solution_json.has_member("error"))
-		build_solution( mpl_problem, &pop_link_detail_array, &solution_json );
+		build_solution( mpl_problem, &pop_link_detail_array, randStringId, &solution_json );
 
 	// saves the mip solution to file (not mandatory, just for debugging purpose)
 	glpk_err_save = glp_print_mip( mpl_problem, outFilename.c_str() );
