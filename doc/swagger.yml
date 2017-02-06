@@ -524,11 +524,11 @@ paths:
           description: token response
           schema:
             properties:
-              uid: 
+              uid:
                 type: string
-              token: 
+              token:
                 type: string
-              expires_at: 
+              expires_at:
                 type: string
         default:
           description: unexpected error
@@ -745,7 +745,7 @@ paths:
             $ref: '#/definitions/Error'
 
 definitions:
-  
+
   Dc:
     required:
       - id
@@ -784,6 +784,8 @@ definitions:
         type: string
       depends_on:
         type: array
+        items:
+          type: string
       status:
         type: string
 
@@ -869,9 +871,11 @@ definitions:
         type: string
       depends_on:
         type: array
+        items:
+          type: string
       status:
         type: string
-  
+
   NewNsInstance:
     required:
       - ns_id
@@ -893,7 +897,7 @@ definitions:
         type: string
       mapping_id:
         type: string
-        
+
   Vnfr:
     required:
       - id
@@ -911,36 +915,54 @@ definitions:
         type: string
       vlr_instances:
         type: array
+        items:
+          type: string
       port_instances:
         type: array
+        items:
+          type: string
       vnf_addresses:
         type: object
       vnf_status:
         type: string
       notifications:
         type: array
+        items:
+          type: string
       lifecycle_event_history:
         type: array
+        items:
+          type: string
       audit_log:
         type: array
+        items:
+          type: string
       stack_url:
         type: string
       vms_id:
         type: object
       vms:
         type: array
+        items:
+          type: string
       scale_info:
         type: object
       scale_resources:
         type: array
+        items:
+          type: string
       outputs:
         type: array
+        items:
+          type: string
       lifecycle_info:
         type: object
       lifecycle_events_values:
         type: object
       vdu:
         type: array
+        items:
+          type: string
       security_group_id:
         type: string
       public_network_id:
@@ -958,4 +980,3 @@ definitions:
         format: int32
       message:
         type: string
-
