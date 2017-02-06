@@ -237,6 +237,7 @@ configureIps(){
 EOL
 
 }
+
 configureFiles(){
   printf "\nConfiguring NS/VNF modules\n\n"
 
@@ -396,6 +397,7 @@ insertSamples(){
   done
   #pause
 }
+
 read_options(){
 
   if [ -n "$1" ]; then

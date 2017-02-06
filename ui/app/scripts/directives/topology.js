@@ -299,23 +299,6 @@ function onClick(selectedItems) {
         }
     }
     nodes.update(updateArray);
-    //data.nodes = [];
-    //graph.setData(data);
-    /*
-                            console.log(ntdata);
-                            console.log(properties);
-                            var ty;
-                            ntdata.nodes.forEach(function(entry){
-                                console.log(entry);
-                                console.log(entry.id);
-                                console.log(properties.nodes);
-                                console.log(entry.id === properties.nodes[0]);
-                                if(entry.id === properties.nodes[0]) ty = entry.group;
-                            });
-                            console.log('Clicked node ' + properties.nodes + " "+ty);
-                            console.log(scope);
-                            scope.ui_handler(properties.nodes[0], ty);*/
-    //test. my_tree_handler();
 }
 
 function storeLevelOfSeperation(connectedNodes, level, allNodes) {

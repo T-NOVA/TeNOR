@@ -30,6 +30,10 @@ tags:
   description: Operations with monitoring
 - name: Modules
   description: Operations with service modules
+- name: VNF Provisioning
+  description: Information about VNF lifecycle
+- name: Scaling
+  description: Scaling Network Services
 paths:
   /vnfs:
     get:
@@ -56,10 +60,8 @@ paths:
             type: array
             items:
               $ref: 'https://raw.githubusercontent.com/T-NOVA/TeNOR/master/vnfd-validator/assets/schemas/vnfd_schema.json'
-        default:
-          description: unexpected error
-          schema:
-            $ref: '#/definitions/Error'
+        "500":
+          description: Some internal module is not registered/Validator is down
     post:
       tags:
       - VNFD Catalogue
@@ -76,10 +78,10 @@ paths:
           description: vnfd response
           schema:
             $ref: 'https://raw.githubusercontent.com/T-NOVA/TeNOR/master/vnfd-validator/assets/schemas/vnfd_schema.json'
-        default:
-          description: unexpected error
-          schema:
-            $ref: '#/definitions/Error'
+        "400":
+          description: Error in the descriptor or while is parsed.
+        "500":
+          description: Some internal module is not registered/Validator is down¡
   /vnfs/{id}:
     get:
       tags:
@@ -97,6 +99,8 @@ paths:
           description: vnfd response
           schema:
             $ref: 'https://raw.githubusercontent.com/T-NOVA/TeNOR/master/vnfd-validator/assets/schemas/vnfd_schema.json'
+        "404":
+          description: Not found
         default:
           description: unexpected error
           schema:
@@ -116,6 +120,8 @@ paths:
       responses:
         "204":
           description: vnfd deleted
+        "404":
+          description: Not found
         default:
           description: unexpected error
           schema:
@@ -147,10 +153,8 @@ paths:
             type: array
             items:
               $ref: 'https://raw.githubusercontent.com/T-NOVA/TeNOR/master/nsd-validator/assets/schemas/nsd_schema.json'
-        default:
-          description: unexpected error
-          schema:
-            $ref: '#/definitions/Error'
+        "500":
+          description: Some internal module is not registered/Validator is down
     post:
       tags:
       - NSD Catalogue
@@ -168,6 +172,10 @@ paths:
           description: nsd response
           schema:
             $ref: 'https://raw.githubusercontent.com/T-NOVA/TeNOR/master/nsd-validator/assets/schemas/nsd_schema.json'
+        "400":
+          description: Error in the descriptor or while is parsed.
+        "500":
+          description: Some internal module is not registered/Validator is down
         default:
           description: unexpected error
           schema:
@@ -189,6 +197,8 @@ paths:
           description: nsd response
           schema:
             $ref: 'https://raw.githubusercontent.com/T-NOVA/TeNOR/master/nsd-validator/assets/schemas/nsd_schema.json'
+        "404":
+          description: Not found
         default:
           description: unexpected error
           schema:
@@ -207,6 +217,8 @@ paths:
       responses:
         "204":
           description: nsd deleted
+        "404":
+          description: Not found
         default:
           description: unexpected error
           schema:
@@ -243,6 +255,8 @@ paths:
           description: ns instance response
           schema:
             $ref: '#/definitions/NsInstance'
+        "400":
+          description: Dynamic error message.
         default:
           description: unexpected error
           schema:
@@ -264,6 +278,8 @@ paths:
           description: id response
           schema:
             $ref: '#/definitions/NsInstance'
+        "404":
+          description: Not found
         default:
           description: unexpected error
           schema:
@@ -282,6 +298,8 @@ paths:
       responses:
         "204":
           description: instance deleted
+        "404":
+          description: Not found
         default:
           description: unexpected error
           schema:
@@ -339,6 +357,8 @@ paths:
           description: dc response
           schema:
             $ref: '#/definitions/Dc'
+        "404":
+          description: Not found
         default:
           description: unexpected error
           schema:
@@ -357,6 +377,8 @@ paths:
       responses:
         "204":
           description: dc deleted
+        "404":
+          description: Not found
         default:
           description: unexpected error
           schema:
@@ -530,7 +552,197 @@ paths:
           description: unexpected error
           schema:
             $ref: '#/definitions/Error'
-  
+  /vnf-provisioning/vnf-instances:
+    get:
+      tags:
+      - VNF Provisioning
+      description: Get list of VNF instances
+      responses:
+        "200":
+          description: vnfr list
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Vnfr'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /vnf-provisioning/vnf-instances/{id}:
+    get:
+      tags:
+      - VNF Provisioning
+      description: Get list of VNF instances
+      parameters:
+        - name: id
+          in: path
+          description: ID of the VNFr to fetch
+          required: true
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: vnfr
+          schema:
+            $ref: '#/definitions/Vnfr'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /statistics/generic:
+    get:
+      tags:
+      - Statistics
+      description: Get list of statistics
+      responses:
+        "200":
+          description: vnfr
+          schema:
+            type: array
+            items:
+              properties:
+                name:
+                  type: string
+                value:
+                  type: string
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /statistics/generic/{metric}:
+    post:
+      tags:
+      - Statistics
+      description: Add 1 to the specified metric in the path
+      parameters:
+        - name: metric name
+          in: path
+          description: Metric name to update
+          required: true
+          type: string
+      responses:
+        "200":
+          description: vnfr
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /statistics/performance_stats:
+    get:
+      tags:
+      - Statistics
+      description: Get instantiation times of each provisioned service
+      responses:
+        "200":
+          description: Time of deployment of each request
+          schema:
+            type: array
+            items:
+              properties:
+                instance_id:
+                  type: string
+                created_at:
+                  type: string
+                mapping:
+                  type: string
+                instantiation:
+                  type: string
+                total:
+                  type: string
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      tags:
+      - Statistics
+      description: Get instantiation times of each provisioned service
+      parameters:
+        - name: stats
+          in: body
+          description: Nsr stats time
+          required: true
+          schema:
+            properties:
+              instance_id:
+                type: string
+              created_at:
+                type: string
+              mapping:
+                type: string
+              instantiation:
+                type: string
+              total:
+                type: string
+      responses:
+        "200":
+          description: Ok
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /ns-instances/scaling/{id}/scale_in:
+    post:
+      tags:
+      - Scaling
+      description: Scale in the selected NSr
+      parameters:
+        - name: id
+          in: path
+          description: ID of the NSr to fetch
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Scale in done
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /ns-instances/scaling/{id}/scale_out:
+    post:
+      tags:
+      - Scaling
+      description: Scale out the selected NSr
+      parameters:
+        - name: id
+          in: path
+          description: ID of the NSr to fetch
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Scale out done
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /ns-instances/scaling/{id}/auto_scale:
+    post:
+      tags:
+      - Scaling
+      description: Scale in the selected NSr
+      parameters:
+        - name: id
+          in: path
+          description: ID of the NSr to fetch
+          required: true
+          type: string
+        - name: auto_scale
+          in: body
+          description: Autoscale parameter
+          required: true
+          schema:
+            properties:
+              parameter_id:
+                type: string
+      responses:
+        "200":
+          description: Scale done
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
 
 definitions:
   
@@ -559,14 +771,21 @@ definitions:
         type: string
 
   Service:
-    allOf:
-      - $ref: '#/definitions/NewService'
-      - required:
-        - id
-        properties:
-          id:
-            type: integer
-            format: int64
+    properties:
+      name:
+        type: string
+      host:
+        type: string
+      port:
+        type: string
+      path:
+        type: string
+      token:
+        type: string
+      depends_on:
+        type: array
+      status:
+        type: string
 
   Monitoring:
     properties:
@@ -634,10 +853,24 @@ definitions:
 
   NewService:
     required:
-      - nsd
+      - name
+      - host
+      - port
     properties:
-      nsd:
-        type: object
+      name:
+        type: string
+      host:
+        type: string
+      port:
+        type: string
+      path:
+        type: string
+      token:
+        type: string
+      depends_on:
+        type: array
+      status:
+        type: string
   
   NewNsInstance:
     required:
@@ -659,6 +892,60 @@ definitions:
       pop_id:
         type: string
       mapping_id:
+        type: string
+        
+  Vnfr:
+    required:
+      - id
+      - deployment_flavour
+    properties:
+      id:
+        type: string
+      deployment_flavour:
+        type: string
+      nsr_instance:
+        type: string
+      vnfd_reference:
+        type: string
+      vim_id:
+        type: string
+      vlr_instances:
+        type: array
+      port_instances:
+        type: array
+      vnf_addresses:
+        type: object
+      vnf_status:
+        type: string
+      notifications:
+        type: array
+      lifecycle_event_history:
+        type: array
+      audit_log:
+        type: array
+      stack_url:
+        type: string
+      vms_id:
+        type: object
+      vms:
+        type: array
+      scale_info:
+        type: object
+      scale_resources:
+        type: array
+      outputs:
+        type: array
+      lifecycle_info:
+        type: object
+      lifecycle_events_values:
+        type: object
+      vdu:
+        type: array
+      security_group_id:
+        type: string
+      public_network_id:
+        type: string
+      resource_stats:
         type: string
 
   Error:
